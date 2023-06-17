@@ -5,4 +5,16 @@
 			<Text>Eliminated!</Text>
 		</Row>
 	</Language_en_US>
+
+	<Language_zh_CN>
+		<Row Tag="TXT_KEY_SPY_STATE_TERMINATED">
+			<Text>任务终止！</Text>
+		</Row>
+	</Language_zh_CN>
+
+	<Language_zh_Hant_HK>
+		<Row Tag="TXT_KEY_SPY_STATE_TERMINATED">
+			<Text>任務終止！</Text>
+		</Row>
+	</Language_zh_Hant_HK>
 </GameData>

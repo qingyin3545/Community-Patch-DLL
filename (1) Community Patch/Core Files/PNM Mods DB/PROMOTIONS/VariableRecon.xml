@@ -21,6 +21,48 @@
 		</Row>
 	</Language_en_US>
 
+	<Language_zh_CN>
+		<Row Tag="TXT_KEY_PROMOTION_RECON_SHORT_RANGE">
+			<Text>减少侦察范围</Text>
+		</Row>
+		<Row Tag="TXT_KEY_PROMOTION_RECON_SHORT_RANGE_HELP">
+			<Text>减少侦察范围（-2视野）</Text>
+		</Row>
+		<Row Tag="TXT_KEY_PEDIA_PROMOTION_RECON_SHORT_RANGE">
+			<Text>减少侦察范围</Text>
+		</Row>
+		<Row Tag="TXT_KEY_PROMOTION_RECON_LONG_RANGE">
+			<Text>增加侦察范围</Text>
+		</Row>
+		<Row Tag="TXT_KEY_PROMOTION_RECON_LONG_RANGE_HELP">
+			<Text>增加侦察范围（+2视野）</Text>
+		</Row>
+		<Row Tag="TXT_KEY_PEDIA_PROMOTION_RECON_LONG_RANGE">
+			<Text>增加侦察范围</Text>
+		</Row>
+	</Language_zh_CN>
+
+	<Language_zh_Hant_HK>
+		<Row Tag="TXT_KEY_PROMOTION_RECON_SHORT_RANGE">
+			<Text>減少偵察範圍</Text>
+		</Row>
+		<Row Tag="TXT_KEY_PROMOTION_RECON_SHORT_RANGE_HELP">
+			<Text>減少偵察範圍（-2視野）</Text>
+		</Row>
+		<Row Tag="TXT_KEY_PEDIA_PROMOTION_RECON_SHORT_RANGE">
+			<Text>減少偵察範圍</Text>
+		</Row>
+		<Row Tag="TXT_KEY_PROMOTION_RECON_LONG_RANGE">
+			<Text>增加偵察範圍</Text>
+		</Row>
+		<Row Tag="TXT_KEY_PROMOTION_RECON_LONG_RANGE_HELP">
+			<Text>增加偵察範圍（+2視野）</Text>
+		</Row>
+		<Row Tag="TXT_KEY_PEDIA_PROMOTION_RECON_LONG_RANGE">
+			<Text>增加偵察範圍</Text>
+		</Row>
+	</Language_zh_Hant_HK>
+
 	<CustomModDbUpdates>
 		<Row Name="PROMOTIONS_VARIABLE_RECON_XML" Value="1"/>
 	</CustomModDbUpdates>

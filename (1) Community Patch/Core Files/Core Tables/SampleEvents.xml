@@ -344,4 +344,166 @@
 			<Text>Two warriors appear near the City.</Text>
 		</Row>
 	</Language_en_US>
+
+	<Language_zh_CN>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_WANDERER_CHOICE_1_S">
+			<Text>{1_Playername}在{2_City}遇见了一位流浪者...</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_WANDERER_CHOICE_1">
+			<Text>{1_Playername}邀请流浪者在{2_City}定居，城市人口增长了。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_COMET_SIGHTING_CHOICE_1_S">
+			<Text>{1_Playername}发生了彗星陨落！</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_COMET_SIGHTING_CHOICE_1">
+			<Text>{1_Playername}发生了彗星陨落，他们的战士变得更强大了。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_COMET_SIGHTING_CHOICE_2_S">
+			<Text>{1_Playername}发生了彗星陨落!</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_COMET_SIGHTING_CHOICE_2">
+			<Text>{1_Playername}发生了彗星陨落，将更快地开启一个[ICON_GOLDEN_AGE]黄金时代..</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_COMET_SIGHTING_CHOICE_3_S">
+			<Text>{1_Playername}发生了彗星陨落!</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_COMET_SIGHTING_CHOICE_3">
+			<Text>{1_Playername}发生了彗星陨落，获得来自天空的[ICON_RES_IRON]铁。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_DESCRIPTION">
+			<Text>彗星！</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_HELP">
+			<Text>一颗彗星出现在你的文明上空！你的占卜师不确定如何处理这个问题，期望着你的指导。[NEWLINE][NEWLINE]从下列选项中选择一个...</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_HELP_CHOICE_1">
+			<Text>近战单位获得[COLOR_POSITIVE_TEXT]操练一级[ENDCOLOR]晋升。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_HELP_CHOICE_2">
+			<Text>获得100[ICON_GOLDEN_AGE]黄金时代点数。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_HELP_CHOICE_3">
+			<Text>获得1单位[ICON_RES_IRON]铁。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_DESCRIPTION_CHOICE_1">
+			<Text>我们的勇士受到了鼓舞…</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_DESCRIPTION_CHOICE_2">
+			<Text>真是来自天堂的征兆。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_DESCRIPTION_CHOICE_3">
+			<Text>有什么东西从天上掉下来了吗？</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_MARKET_DAY_DESCRIPTION_CHOICE_1">
+			<Text>赶集日</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_MARKET_DAY_HELP_CHOICE_1">
+			<Text>此城市已开启一场赶集日，持续5回合，获得1座免费的市场。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_WANDERER_DESCRIPTION">
+			<Text>孤独的流浪者</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_WANDERER_HELP">
+			<Text>一个流浪者来到城门，寻求庇护。他声称自己有精湛的工艺，并且愿意用他的技能来换取你的收留。[NEWLINE][NEWLINE]从以下选项中选择…</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_EVENT_WANDERER_DESCRIPTION_CHOICE_1">
+			<Text>我们需要更多的工匠。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_WANDERER_HELP_CHOICE_1">
+			<Text>该城市获得50点大工程师点数</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_EVENT_WANDERER_DESCRIPTION_CHOICE_2">
+			<Text>你不受欢迎，外乡人。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_WANDERER_HELP_CHOICE_2">
+			<Text>本城市附近两处农场被摧毁</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_EVENT_WANDERER_DESCRIPTION_CHOICE_3">
+			<Text>流浪者？抓去军营充军！</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_WANDERER_HELP_CHOICE_3">
+			<Text>在城市附近获得两个勇士。</Text>
+		</Row>
+	</Language_zh_CN>
+
+	<Language_zh_Hant_HK>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_WANDERER_CHOICE_1_S">
+			<Text>{1_Playername}在{2_City}遇見了一位流浪者...</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_WANDERER_CHOICE_1">
+			<Text>{1_Playername}邀請流浪者在{2_City}定居，城市人口增長了。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_COMET_SIGHTING_CHOICE_1_S">
+			<Text>{1_Playername}發生了彗星隕落！</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_COMET_SIGHTING_CHOICE_1">
+			<Text>{1_Playername}發生了彗星隕落，他們的戰士變得更強大了。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_COMET_SIGHTING_CHOICE_2_S">
+			<Text>{1_Playername}發生了彗星隕落!</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_COMET_SIGHTING_CHOICE_2">
+			<Text>{1_Playername}發生了彗星隕落，將更快地開啟一個[ICON_GOLDEN_AGE]黃金時代..</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_COMET_SIGHTING_CHOICE_3_S">
+			<Text>{1_Playername}發生了彗星隕落!</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_EVENT_COMET_SIGHTING_CHOICE_3">
+			<Text>{1_Playername}發生了彗星隕落，獲得來自天空的[ICON_RES_IRON]鐵。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_DESCRIPTION">
+			<Text>彗星！</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_HELP">
+			<Text>一顆彗星出現在你的文明上空！你的占蔔師不確定如何處理這個問題，期望著你的指導。[NEWLINE][NEWLINE]從下列選項中選擇一個...</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_HELP_CHOICE_1">
+			<Text>近戰單位獲得[COLOR_POSITIVE_TEXT]操練一級[ENDCOLOR]晉升。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_HELP_CHOICE_2">
+			<Text>獲得100[ICON_GOLDEN_AGE]黃金時代點數。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_HELP_CHOICE_3">
+			<Text>獲得1單位[ICON_RES_IRON]鐵。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_DESCRIPTION_CHOICE_1">
+			<Text>我們的勇士受到了鼓舞…</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_DESCRIPTION_CHOICE_2">
+			<Text>真是來自天堂的征兆。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_COMET_SIGHTING_DESCRIPTION_CHOICE_3">
+			<Text>有什麽東西從天上掉下來了嗎？</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_MARKET_DAY_DESCRIPTION_CHOICE_1">
+			<Text>趕集日</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_MARKET_DAY_HELP_CHOICE_1">
+			<Text>此城市已開啟一場趕集日，持續5回合，獲得1座免費的市場。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_WANDERER_DESCRIPTION">
+			<Text>孤獨的流浪者</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_WANDERER_HELP">
+			<Text>一個流浪者來到城門，尋求庇護。他聲稱自己有精湛的工藝，並且願意用他的技能來換取你的收留。[NEWLINE][NEWLINE]從以下選項中選擇…</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_EVENT_WANDERER_DESCRIPTION_CHOICE_1">
+			<Text>我們需要更多的工匠。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_WANDERER_HELP_CHOICE_1">
+			<Text>該城市獲得50點大工程師點數</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_EVENT_WANDERER_DESCRIPTION_CHOICE_2">
+			<Text>你不受歡迎，外鄉人。</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_WANDERER_HELP_CHOICE_2">
+			<Text>本城市附近兩處農場被摧毀</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_EVENT_WANDERER_DESCRIPTION_CHOICE_3">
+			<Text>流浪者？抓去軍營充軍！</Text>
+		</Row>
+		<Row Tag="TXT_KEY_EVENT_WANDERER_HELP_CHOICE_3">
+			<Text>在城市附近獲得兩個勇士。</Text>
+		</Row>
+	</Language_zh_Hant_HK>
 </GameData>

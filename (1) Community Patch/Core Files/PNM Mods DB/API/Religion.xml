@@ -14,4 +14,34 @@
 			<Text>Pantheon Enhanced</Text>
 		</Row>
 	</Language_en_US>
+
+	<Language_zh_CN>
+		<Row Tag="TXT_KEY_NOTIFICATION_PANTHEON_ENHANCED_ACTIVE_PLAYER">
+			<Text>你添加了一项新信条并强化了你的宗教</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_PANTHEON_ENHANCED">
+			<Text>{1_CivName}{1: plural 1?has; 2?have;}添加了一项新信条并强化了他们的宗教</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_PANTHEON_ENHANCED_UNKNOWN">
+			<Text>一个未知文明已经添加了一项新信条并强化了他们的宗教</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_PANTHEON_ENHANCED_S">
+			<Text>强化宗教</Text>
+		</Row>
+	</Language_zh_CN>
+
+	<Language_zh_Hant_HK>
+		<Row Tag="TXT_KEY_NOTIFICATION_PANTHEON_ENHANCED_ACTIVE_PLAYER">
+			<Text>你添加了一項新信條並強化了你的宗教</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_PANTHEON_ENHANCED">
+			<Text>{1_CivName}{1: plural 1?has; 2?have;}添加了一項新信條並強化了他們的宗教</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_PANTHEON_ENHANCED_UNKNOWN">
+			<Text>一個未知文明已經添加了一項新信條並強化了他們的宗教</Text>
+		</Row>
+		<Row Tag="TXT_KEY_NOTIFICATION_PANTHEON_ENHANCED_S">
+			<Text>強化宗教</Text>
+		</Row>
+	</Language_zh_Hant_HK>
 </GameData>

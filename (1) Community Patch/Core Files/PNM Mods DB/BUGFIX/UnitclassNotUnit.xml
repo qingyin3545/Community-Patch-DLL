@@ -16,6 +16,36 @@
 		</Row>
 	</Language_en_US>
 
+	<Language_zh_CN>
+		<Row Tag="TXT_KEY_TP_FAITH_NEXT_PROPHET_PARAM">
+			<Text>需要至少{1_Num}[ICON_PEACE]信仰才可诞生下一个{2_UNITCLASS_PROPHET}</Text>
+		</Row>
+		<Row Tag="TXT_KEY_RO_FAITH_TOOLTIP_PARAM">
+			<Text>至少需要{1_MinFaith}[ICON_PEACE]信仰才诞生下个{2_UNITCLASS_PROPHET}</Text>
+		</Row>
+		<Row Tag="TXT_KEY_RO_AUTO_FAITH_PROPHET_PARAM">
+			<Text>为{1_UNITCLASS_PROPHET}留存</Text>
+		</Row>
+		<Row Tag="TXT_KEY_RO_AUTO_FAITH_PURCHASE_PROPHET_PARAM">
+			<Text>购买{1_UNITCLASS_PROPHET}</Text>
+		</Row>
+	</Language_zh_CN>
+
+	<Language_zh_Hant_HK>
+		<Row Tag="TXT_KEY_TP_FAITH_NEXT_PROPHET_PARAM">
+			<Text>需要至少{1_Num}[ICON_PEACE]信仰才可誕生下一個{2_UNITCLASS_PROPHET}</Text>
+		</Row>
+		<Row Tag="TXT_KEY_RO_FAITH_TOOLTIP_PARAM">
+			<Text>至少需要{1_MinFaith}[ICON_PEACE]信仰才誕生下個{2_UNITCLASS_PROPHET}</Text>
+		</Row>
+		<Row Tag="TXT_KEY_RO_AUTO_FAITH_PROPHET_PARAM">
+			<Text>為{1_UNITCLASS_PROPHET}留存</Text>
+		</Row>
+		<Row Tag="TXT_KEY_RO_AUTO_FAITH_PURCHASE_PROPHET_PARAM">
+			<Text>購買{1_UNITCLASS_PROPHET}</Text>
+		</Row>
+	</Language_zh_Hant_HK>
+
 	<CustomModDbUpdates>
 		<Row Name="BUGFIX_UNITCLASS_NOT_UNIT_XML" Value="1"/>
 	</CustomModDbUpdates>

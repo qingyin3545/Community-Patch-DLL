@@ -39,6 +39,84 @@
 		</Row>
 	</Language_en_US>
 
+	<Language_zh_CN>
+		<Update>
+			<Where Tag="TXT_KEY_GOODY_GOLD"/>
+			<Set>
+				<Text>你在该遗迹中找到了古老帝国的宝藏！</Text>
+			</Set>
+		</Update>
+		<Update>
+			<Where Tag="TXT_KEY_GOODY_PROPHET_FAITH"/>
+			<Set>
+				<Text>你发现了一个秘密的宗教团体，他们预言了大先知的来临！</Text>
+			</Set>
+		</Update>
+		<Update>
+			<Where Tag="TXT_KEY_GOODY_FAITH"/>
+			<Set>
+				<Text>你发现了一座古老的祭司神殿，祭司向你揭示了神的启示，赐予你祝福。</Text>
+			</Set>
+		</Update>
+		<Update>
+			<Where Tag="TXT_KEY_GOODY_CULTURE"/>
+			<Set>
+				<Text>你找到了令人敬畏的文化宝物！</Text>
+			</Set>
+		</Update>
+		<Update>
+			<Where Tag="TXT_KEY_MISC_RECEIVED_GOLD"/>
+			<Set>
+				<Text>[SPACE]你获得了{1_Num}[ICON_GOLD]金钱！</Text>
+			</Set>
+		</Update>
+		<Row Tag="TXT_KEY_MISC_RECEIVED_CULTURE">
+			<Text>[SPACE]你获得了{1_Num}[ICON_CULTURE]文化！</Text>
+		</Row>
+		<Row Tag="TXT_KEY_MISC_RECEIVED_FAITH">
+			<Text>[SPACE]你获得了{1_Num}[ICON_PEACE]信仰！</Text>
+		</Row>
+	</Language_zh_CN>
+
+	<Language_zh_Hant_HK>
+		<Update>
+			<Where Tag="TXT_KEY_GOODY_GOLD"/>
+			<Set>
+				<Text>你在該遺跡中找到了古老帝國的寶藏！</Text>
+			</Set>
+		</Update>
+		<Update>
+			<Where Tag="TXT_KEY_GOODY_PROPHET_FAITH"/>
+			<Set>
+				<Text>你發現了一個秘密的宗教團體，他們預言了大先知的來臨！</Text>
+			</Set>
+		</Update>
+		<Update>
+			<Where Tag="TXT_KEY_GOODY_FAITH"/>
+			<Set>
+				<Text>你發現了一座古老的祭司神殿，祭司向你揭示了神的啟示，賜予你祝福。</Text>
+			</Set>
+		</Update>
+		<Update>
+			<Where Tag="TXT_KEY_GOODY_CULTURE"/>
+			<Set>
+				<Text>你找到了令人敬畏的文化寶物！</Text>
+			</Set>
+		</Update>
+		<Update>
+			<Where Tag="TXT_KEY_MISC_RECEIVED_GOLD"/>
+			<Set>
+				<Text>[SPACE]你獲得了{1_Num}[ICON_GOLD]金錢！</Text>
+			</Set>
+		</Update>
+		<Row Tag="TXT_KEY_MISC_RECEIVED_CULTURE">
+			<Text>[SPACE]你獲得了{1_Num}[ICON_CULTURE]文化！</Text>
+		</Row>
+		<Row Tag="TXT_KEY_MISC_RECEIVED_FAITH">
+			<Text>[SPACE]你獲得了{1_Num}[ICON_PEACE]信仰！</Text>
+		</Row>
+	</Language_zh_Hant_HK>
+
 	<CustomModDbUpdates>
 		<Row Name="BUGFIX_GOODY_HUT_MESSAGES" Value="1"/>
 	</CustomModDbUpdates>
