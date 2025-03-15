@@ -60,3 +60,11 @@ clang-output/
 
 #ignore output from any other IDEs/tools
 .idea/
+
+(2) Vox Populi/
+(3a) EUI Compatibility Files/
+(3b) 43 Civs Community Patch/
+(4a) Squads for VP/
+UI_bc1/
+VPUI/
+VPUI Text/

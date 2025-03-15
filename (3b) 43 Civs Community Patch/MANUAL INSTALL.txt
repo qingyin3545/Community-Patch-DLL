@@ -1,2 +1,0 @@
--- MANUAL INSTALLATION NOTE -- 
-Replace the CvGameCore_Expansion2.dll file in (1) Community Patch with the version in this folder.
