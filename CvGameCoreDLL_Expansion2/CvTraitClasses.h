@@ -471,6 +471,14 @@ public:
 
 	bool NoTrain(UnitClassTypes eUnitClassType);
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	bool GetCorruptionLevelReduceByOne() const;
+	int GetMaxCorruptionLevel() const;
+	int GetRiverCorruptionScoreChange() const;
+	int GetNaturalWonderCorruptionScoreChange() const;
+	int GetNaturalWonderCorruptionRadius() const;
+#endif
+
 	virtual bool CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility);
 
 protected:
@@ -827,6 +835,14 @@ protected:
 	std::vector<bool> m_abNoTrainUnitClass;
 
 	set<int> m_siFreePromotions;
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	bool m_bCorruptionLevelReduceByOne = 0;
+	int m_iMaxCorruptionLevel = -1;
+	int m_iRiverCorruptionScoreChange = 0;
+	int m_iNaturalWonderCorruptionScoreChange = 0;
+	int m_iNaturalWonderCorruptionRadius = 0;
+#endif
 
 private:
 	CvTraitEntry(const CvTraitEntry&);
@@ -2121,6 +2137,29 @@ public:
 		return m_seFreePromotions;
 	}
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	bool GetCorruptionLevelReduceByOne() const
+	{
+		return m_bCorruptionLevelReduceByOne ;
+	}
+	int GetMaxCorruptionLevel() const
+	{
+		return m_iMaxCorruptionLevel;
+	}
+	int GetRiverCorruptionScoreChange() const
+	{
+		return m_iRiverCorruptionScoreChange;
+	}
+	int GetNaturalWonderCorruptionScoreChange() const
+	{
+		return m_iNaturalWonderCorruptionScoreChange;
+	}
+	int GetNaturalWonderCorruptionRadius() const
+	{
+		return m_iNaturalWonderCorruptionRadius;
+	}
+#endif
+
 private:
 	bool ConvertBarbarianCamp(CvUnit* pByUnit, CvPlot* pPlot);
 	bool ConvertBarbarianNavalUnit(CvUnit* pByUnit, CvUnit* pUnit);
@@ -2496,6 +2535,14 @@ private:
 	std::vector<FreeResourceXCities> m_aFreeResourceXCities;
 
 	set<PromotionTypes> m_seFreePromotions;
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	bool m_bCorruptionLevelReduceByOne = 0;
+	int m_iMaxCorruptionLevel = -1;
+	int m_iRiverCorruptionScoreChange = 0;
+	int m_iNaturalWonderCorruptionScoreChange = 0;
+	int m_iNaturalWonderCorruptionRadius = 0;
+#endif
 };
 
 FDataStream& operator>>(FDataStream&, CvPlayerTraits&);

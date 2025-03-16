@@ -2008,6 +2008,10 @@ public:
 
 	void DoGreatPersonSpawnBonus(CvCity* pSpawnCity);
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	CvString GetPlotCorruptionScoreReport() const;
+#endif
+
 protected:
 	const MissionData* HeadMissionData() const;
 	MissionData* HeadMissionData();

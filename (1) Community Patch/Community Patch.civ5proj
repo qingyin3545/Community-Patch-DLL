@@ -850,6 +850,11 @@
       <Action>
         <Set>OnModActivated</Set>
         <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\CustomModOptions.xml</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
         <FileName>MPDLL\DB\_TEXT\AllText_en_US.xml</FileName>
       </Action>
       <Action>
@@ -3527,6 +3532,10 @@
     <Content Include="Mapscripts\Terra.lua">
       <SubType>Lua</SubType>
       <ImportIntoVFS>True</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\CustomModOptions.xml">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\_TEXT\AllText_en_US.xml">
       <SubType>Lua</SubType>

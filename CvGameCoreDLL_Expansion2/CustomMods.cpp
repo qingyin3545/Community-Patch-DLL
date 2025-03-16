@@ -602,6 +602,8 @@ int CustomMods::getOption(const string& sOption, int defValue) {
 		MOD_OPT_CACHE(LOG_MAP_STATE);
 		MOD_OPT_CACHE(ROUTE_PLANNER);
 
+		MOD_OPT_CACHE(GLOBAL_CORRUPTION);
+
 		m_bInit = true;
 	}
 

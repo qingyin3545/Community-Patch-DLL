@@ -1496,6 +1496,10 @@ void CvLuaPlayer::PushMethods(lua_State* L, int t)
 
 	Method(IsInstantYieldNotificationDisabled);
 	Method(SetInstantYieldNotificationDisabled);
+#ifdef MOD_GLOBAL_CORRUPTION
+	Method(IsCorruptionLevelReduceByOne);
+	Method(GetCorruptionScoreModifierFromPolicy);
+#endif
 }
 //------------------------------------------------------------------------------
 void CvLuaPlayer::HandleMissingInstance(lua_State* L)
@@ -18330,3 +18334,8 @@ int CvLuaPlayer::lSetInstantYieldNotificationDisabled(lua_State* L)
 	pkPlayer->SetInstantYieldNotificationDisabled(eInstantYield, bNewValue);
 	return 1;
 }
+
+#ifdef MOD_GLOBAL_CORRUPTION
+LUAAPIIMPL(Player, IsCorruptionLevelReduceByOne)
+LUAAPIIMPL(Player, GetCorruptionScoreModifierFromPolicy)
+#endif
