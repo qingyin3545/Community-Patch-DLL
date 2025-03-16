@@ -847,6 +847,171 @@
         <Type>UpdateDatabase</Type>
         <FileName>Database Changes\Remapper.sql</FileName>
       </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\_TEXT\AllText_en_US.xml</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\_TEXT\AllText_zh_CN.xml</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\_TEXT\AllText_zh_Hant_HK.xml</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\LUA_FORMULA\LuaFormula.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\GLOBAL\Resolutions.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\GLOBAL\ResourceExtraBuff.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\GLOBAL\Specialist_Resources.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\GLOBAL\SPMisc.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\GLOBAL\GoodyHuts.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\GLOBAL\International_Immigration.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\GLOBAL\CityScales.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\GLOBAL\Corruption.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\GLOBAL\NuclearWinter.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\GLOBAL\TroopsAndCrops.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\GLOBAL\WarCasualties.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\TRAITS\DLL_Traits.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\BUILDING\BuildingClassCollections.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\BUILDING\DLL_Buildings.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\BUILDS\DLL_Builds.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\POLICIES\DLL_Policies.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\POLICIES\Policy_CityResources.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\PROJECT\DLL_Project.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\RELIGION\DLL_Belief.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\TECHS\DLL_Technologies.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\IMPROVEMENTS\DLL_Improvement.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\IMPROVEMENTS\Improvement_Upgrade_Downgrade.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\IMPROVEMENTS\Improvements_Create_Item.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\UNIT\DLL_Units.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\UNIT\DLL_Promotions.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\UNIT\InflictDamageChange.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\UNIT\PromotionAutoRemove.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\UNIT\PromotionCollections.sql</FileName>
+      </Action>
+      <Action>
+        <Set>OnModActivated</Set>
+        <Type>UpdateDatabase</Type>
+        <FileName>MPDLL\DB\UNIT\NewBattleEffects.sql</FileName>
+      </Action>
     </ModActions>
     <ModContent>
       <Content>
@@ -3362,6 +3527,138 @@
     <Content Include="Mapscripts\Terra.lua">
       <SubType>Lua</SubType>
       <ImportIntoVFS>True</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\_TEXT\AllText_en_US.xml">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>False</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\_TEXT\AllText_zh_CN.xml">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>False</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\_TEXT\AllText_zh_Hant_HK.xml">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>False</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\LUA_FORMULA\LuaFormula.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\GLOBAL\Resolutions.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\GLOBAL\ResourceExtraBuff.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\GLOBAL\Specialist_Resources.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\GLOBAL\SPMisc.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\GLOBAL\GoodyHuts.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\GLOBAL\International_Immigration.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\GLOBAL\CityScales.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\GLOBAL\Corruption.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\GLOBAL\NuclearWinter.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\GLOBAL\TroopsAndCrops.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\GLOBAL\WarCasualties.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\TRAITS\DLL_Traits.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\BUILDING\BuildingClassCollections.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\BUILDING\DLL_Buildings.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\BUILDS\DLL_Builds.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\POLICIES\DLL_Policies.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\POLICIES\Policy_CityResources.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\PROJECT\DLL_Project.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\RELIGION\DLL_Belief.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\TECHS\DLL_Technologies.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\IMPROVEMENTS\DLL_Improvement.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\IMPROVEMENTS\Improvement_Upgrade_Downgrade.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\IMPROVEMENTS\Improvements_Create_Item.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\UNIT\DLL_Units.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\UNIT\DLL_Promotions.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\UNIT\InflictDamageChange.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\UNIT\PromotionAutoRemove.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\UNIT\PromotionCollections.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\DB\UNIT\NewBattleEffects.sql">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>FALSE</ImportIntoVFS>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Firaxis\ModBuddy\Civ5Mod.targets" />

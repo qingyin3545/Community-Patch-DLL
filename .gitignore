@@ -61,6 +61,7 @@ clang-output/
 #ignore output from any other IDEs/tools
 .idea/
 
+(1) Community Patch (v 142).modinfo
 (2) Vox Populi/
 (3a) EUI Compatibility Files/
 (3b) 43 Civs Community Patch/
