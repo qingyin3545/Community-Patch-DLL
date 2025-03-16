@@ -2024,6 +2024,23 @@ public:
 #ifdef MOD_GLOBAL_CORRUPTION
 	CvString GetPlotCorruptionScoreReport() const;
 #endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	const int GetCrops() const;
+	void ChangeCrops(int iValue);
+	bool IsCrops() const;
+
+	const int GetArmee() const;
+	void ChangeArmee(int iValue);
+	bool IsArmee() const;
+
+	bool IsNoTroops() const;
+
+	bool IsCanEstablishCorps() const;
+	void ChangeNumEstablishCorps(int iValue);
+
+	bool IsCanBeEstablishedCorps() const;
+	void ChangeNumCannotBeEstablishedCorps(int iValue);
+#endif
 
 protected:
 	const MissionData* HeadMissionData() const;
@@ -2478,6 +2495,14 @@ private:
 	int m_iTacticalMoveSetTurn;
 	AIHomelandMove m_eHomelandMove;
 	int m_iHomelandMoveSetTurn;
+
+
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	int m_iCrops = 0;
+	int m_iArmee = 0;
+	int m_iNumEstablishCorps = 0;
+	int m_iCannotBeEstablishedCorps = 0;
+#endif
 
 	friend class CvLuaUnit;
 };
