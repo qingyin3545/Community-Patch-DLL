@@ -35,6 +35,10 @@ public:
 	{
 		m_stream << value;
 	}
+	inline void operator()(const CorruptionLevelTypes& value)
+	{
+		m_stream << (int)value;
+	}
 
 	template<typename To, typename From>
 	inline void as(const From& value)
@@ -103,6 +107,10 @@ public:
 	inline void operator()(T& value)
 	{
 		m_stream >> value;
+	}
+	inline void operator()(CorruptionLevelTypes& value)
+	{
+		m_stream >> (int&)value;
 	}
 
 	template<typename To, typename From>
