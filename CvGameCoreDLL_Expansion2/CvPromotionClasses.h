@@ -365,6 +365,13 @@ public:
 #endif
 	bool IsPostCombatRandomPromotion(int i) const;
 
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	bool IsCrops() const;
+	bool IsArmee() const;
+	int GetNumEstablishCorps() const;
+	bool IsCannotBeEstablishedCorps() const;
+#endif
+
 protected:
 	int m_iLayerAnimationPath;
 	int m_iPrereqPromotion;
@@ -688,6 +695,13 @@ protected:
 #endif
 	bool* m_pbPostCombatRandomPromotion;
 	std::map<int, std::pair<int, int>> m_yieldFromPillage;
+
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	bool m_bCrops = false;
+	bool m_bArmee = false;
+	int m_iNumEstablishCorps = 0;
+	bool m_bCannotBeEstablishedCorps = false;
+#endif
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

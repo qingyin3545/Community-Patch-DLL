@@ -711,6 +711,12 @@ bool CvUnitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& k
 		std::map<int, int>(m_piResourceQuantityTotals).swap(m_piResourceQuantityTotals);
 	}
 #endif
+
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	m_bNoTroops = kResults.GetBool("NoTroopConsume");
+	m_bCannotBeEstablishedCorps = kResults.GetBool("CannotBeEstablishedCorps");
+#endif
+
 	// Calculate military Power and cache it
 	DoUpdatePower();
 
@@ -2075,6 +2081,17 @@ UnitMoveRate CvUnitEntry::GetMoveRate(int numHexes) const
 		numHexes = 11;
 	return m_unitMoveRate[numHexes];
 }
+
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+bool CvUnitEntry::IsNoTroops() const
+{
+	return m_bNoTroops;
+}
+bool CvUnitEntry::IsCannotBeEstablishedCorps() const
+{
+	return m_bCannotBeEstablishedCorps;
+}
+#endif
 
 //=====================================
 // CvUnitXMLEntries
