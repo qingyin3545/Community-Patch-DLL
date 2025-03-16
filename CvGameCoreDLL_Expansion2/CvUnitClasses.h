@@ -255,6 +255,11 @@ public:
 
 	UnitMoveRate GetMoveRate(int numHexes) const;
 
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	bool IsNoTroops() const;
+	bool IsCannotBeEstablishedCorps() const;
+#endif
+
 private:
 
 	int m_iProductionCost;
@@ -473,6 +478,11 @@ private:
 	GreatWorkType* m_paeGreatWorks;
 #if defined(MOD_BALANCE_CORE)
 	EraTypes* m_paeGreatPersonEra;
+#endif
+
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	bool m_bNoTroops = false;
+	bool m_bCannotBeEstablishedCorps = false;
 #endif
 };
 
