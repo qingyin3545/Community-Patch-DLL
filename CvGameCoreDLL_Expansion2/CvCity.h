@@ -1857,6 +1857,12 @@ public:
 	int GetSecondCapitalsExtraScore() const;
 	void ChangeSecondCapitalsExtraScore(int iChange);
 #endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	bool HasEnableCrops() const;
+	void ChangeNumEnableCrops(int iChange);
+	bool HasEnableArmee() const;
+	void ChangeNumEnableArmee(int iChange);
+#endif
 
 protected:
 	SYNC_ARCHIVE_MEMBER(CvCity)
@@ -2278,6 +2284,10 @@ private:
 	int m_iCorruptionLevelChangeFromBuilding = 0;
 	bool m_bIsSecondCapital = false;
 	int m_iSecondCapitalsExtraScore = 0;
+#endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	int m_iCityEnableCrops = 0;
+	int m_iCityEnableArmee = 0;
 #endif
 };
 
