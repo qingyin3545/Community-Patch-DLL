@@ -377,6 +377,13 @@ public:
 	void GetUnitName(UnitTypes eUnit, CvString& sUnitName) const;
 	bool IsPostCombatRandomPromotion(int i) const;
 
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	bool IsCrops() const;
+	bool IsArmee() const;
+	int GetNumEstablishCorps() const;
+	bool IsCannotBeEstablishedCorps() const;
+#endif
+
 protected:
 	int m_iLayerAnimationPath;
 	int m_iPrereqPromotion;
@@ -694,6 +701,13 @@ protected:
 	std::map<int, std::pair<int, int>> m_yieldFromPillage;
 	std::set<int> m_siBlockedPromotions;
 	std::vector<PlagueInfo> m_vsPlagues;
+
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	bool m_bCrops = false;
+	bool m_bArmee = false;
+	int m_iNumEstablishCorps = 0;
+	bool m_bCannotBeEstablishedCorps = false;
+#endif
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
