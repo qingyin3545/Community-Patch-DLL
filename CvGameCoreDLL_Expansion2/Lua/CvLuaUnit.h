@@ -670,6 +670,13 @@ protected:
 #ifdef MOD_GLOBAL_CORRUPTION
 	static int lGetPlotCorruptionScoreReport(lua_State* L);
 #endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	LUAAPIEXTN(IsNoTroops, bool);
+	LUAAPIEXTN(IsCanEstablishCorps, bool);
+	LUAAPIEXTN(ChangeNumEstablishCorps, void, iValue);
+	LUAAPIEXTN(IsCanBeEstablishedCorps, bool);
+	LUAAPIEXTN(ChangeNumCannotBeEstablishedCorps, void, iValue);
+#endif
 };
 
 namespace CvLuaArgs

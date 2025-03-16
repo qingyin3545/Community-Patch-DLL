@@ -669,6 +669,13 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 #ifdef MOD_GLOBAL_CORRUPTION
 	Method(GetPlotCorruptionScoreReport);
 #endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	Method(IsNoTroops);
+	Method(IsCanEstablishCorps);
+	Method(ChangeNumEstablishCorps);
+	Method(IsCanBeEstablishedCorps);
+	Method(ChangeNumCannotBeEstablishedCorps);
+#endif
 }
 //------------------------------------------------------------------------------
 const char* CvLuaUnit::GetTypeName()
@@ -6710,4 +6717,11 @@ int CvLuaUnit::lGetPlotCorruptionScoreReport(lua_State* L)
 	lua_pushstring(L, corruptionScoreReport.c_str());
 	return 1;
 }
+#endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+LUAAPIIMPL(Unit, IsNoTroops)
+LUAAPIIMPL(Unit, IsCanEstablishCorps)
+LUAAPIIMPL(Unit, ChangeNumEstablishCorps)
+LUAAPIIMPL(Unit, IsCanBeEstablishedCorps)
+LUAAPIIMPL(Unit, ChangeNumCannotBeEstablishedCorps)
 #endif

@@ -607,6 +607,10 @@ CvBuildingEntry::~CvBuildingEntry(void)
 #if defined(MOD_BALANCE_CORE)
 	m_piiGreatPersonProgressFromConstruction.clear();
 #endif
+
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	SAFE_DELETE_ARRAY(m_piDomainTroops);
+#endif
 }
 
 /// Read from XML file
@@ -1815,6 +1819,13 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 	m_iCorruptionPolicyCostModifier = kResults.GetInt("CorruptionPolicyCostModifier");
 	m_iMinCorruptionLevelNeeded = kResults.GetInt("MinCorruptionLevelNeeded");
 	m_iMaxCorruptionLevelNeeded = kResults.GetInt("MaxCorruptionLevelNeeded");
+#endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	m_iNumCrops = kResults.GetInt("NumCrops");
+	m_iNumArmee = kResults.GetInt("NumArmee");
+	m_bEnableCrops = kResults.GetBool("EnableCrops");
+	m_bEnableArmee = kResults.GetBool("EnableArmee");
+	kUtility.PopulateArrayByValue(m_piDomainTroops, "Domains", "Building_DomainTroops", "DomainType", "BuildingType", szBuildingType, "NumTroop", 0, NUM_DOMAIN_TYPES);
 #endif
 
 	return true;
@@ -4961,6 +4972,30 @@ int CvBuildingEntry::GetMaxCorruptionLevelNeeded() const
 int CvBuildingEntry::GetCorruptionPolicyCostModifier() const
 {
 	return m_iCorruptionPolicyCostModifier;
+}
+#endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+int CvBuildingEntry::GetDomainTroops(int i) const
+{
+	return m_piDomainTroops ? m_piDomainTroops[i] : -1;
+}
+int CvBuildingEntry::GetNumCrops() const
+{
+	return m_iNumCrops;
+}
+int CvBuildingEntry::GetNumArmee() const
+{
+	return m_iNumArmee;
+}
+/// Does this building EnableCrops?
+bool CvBuildingEntry::IsEnableCrops() const
+{
+	return m_bEnableCrops;
+}
+/// Does this building EnableArmee?
+bool CvBuildingEntry::IsEnableArmee() const
+{
+	return m_bEnableArmee;
 }
 #endif
 

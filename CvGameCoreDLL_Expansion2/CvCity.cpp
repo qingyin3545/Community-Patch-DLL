@@ -1109,6 +1109,10 @@ void CvCity::init(int iID, PlayerTypes eOwner, int iX, int iY, bool bBumpUnits, 
 		owningPlayer.CreateSpies(owningPlayer.GetPlayerTraits()->GetStartingSpies(), false);
 	}
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	if (MOD_GLOBAL_CORRUPTION) UpdateCorruption();
+#endif
+
 	owningPlayer.CalculateNetHappiness();
 
 	// Initialize all buildings to not be hidden
@@ -1861,6 +1865,20 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 	}
 
 	m_iVassalLevyEra = 0;
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	m_iCachedCorruptionScore = 0;
+	m_eCachedCorruptionLevel = INVALID_CORRUPTION;
+
+	m_iCorruptionScoreChangeFromBuilding = 0;
+	m_iCorruptionLevelChangeFromBuilding = 0;
+	m_bIsSecondCapital = false;
+	m_iSecondCapitalsExtraScore = 0;
+#endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	m_iCityEnableCrops = 0;
+	m_iCityEnableArmee = 0;
+#endif
 }
 
 
@@ -8772,6 +8790,16 @@ bool CvCity::canTrain(UnitTypes eUnit, bool bContinue, bool bTestVisible, bool b
 					return false;
 			}
 		}
+
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+		//when lacking Troops, can't built combat unit
+		if(GET_PLAYER(getOwner()).IsLackingTroops() && (pkUnitEntry->GetCombat() > 0 || pkUnitEntry->GetRangedCombat() > 0) && !pkUnitEntry->IsNoTroops())
+		{
+			GC.getGame().BuildCannotPerformActionHelpText(toolTipSink, "TXT_KEY_NO_ACTION_LACKING_TROOPS");
+			if(toolTipSink == NULL)
+					return false;
+		}
+#endif
 	}
 
 	if (!plot()->canTrain(eUnit))
@@ -15065,6 +15093,21 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 			GetCityCitizens()->ChangeBuildingGreatPeopleRateChanges((SpecialistTypes)pBuildingInfo->GetSpecialistType(), pBuildingInfo->GetGreatPeopleRateChange() * iChange);
 		}
 
+#ifdef MOD_GLOBAL_CORRUPTION
+		ChangeCorruptionScoreChangeFromBuilding(pBuildingInfo->GetCorruptionScoreChange() * iChange);
+		ChangeCorruptionLevelChangeFromBuilding(pBuildingInfo->GetCorruptionLevelChange() * iChange);
+
+		if (pBuildingInfo->GetCorruptionScoreChange() * iChange != 0 || 
+			pBuildingInfo->GetCorruptionLevelChange() * iChange != 0)
+		{
+			UpdateCorruption();
+		}
+#endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+        ChangeNumEnableCrops(pBuildingInfo->IsEnableCrops() ? iChange : 0);
+		ChangeNumEnableArmee(pBuildingInfo->IsEnableArmee() ? iChange : 0);
+#endif
+
 		// Process for our player
 		for (int iI = 0; iI < MAX_PLAYERS; iI++)
 		{
@@ -20108,6 +20151,10 @@ void CvCity::SetPuppet(bool bValue)
 			}
 		}
 	}
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	if (MOD_GLOBAL_CORRUPTION) UpdateCorruption();
+#endif
 }
 
 //	--------------------------------------------------------------------------------
@@ -32268,6 +32315,20 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 	visitor(city.m_aiYieldPerPopInEmpire);
 	visitor(city.m_miTechEnhancedYields);
 	visitor(city.m_miGreatPersonPointFromConstruction);
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	visitor(city.m_iCachedCorruptionScore);
+	visitor(city.m_eCachedCorruptionLevel);
+
+	visitor(city.m_iCorruptionScoreChangeFromBuilding);
+	visitor(city.m_iCorruptionLevelChangeFromBuilding);
+	visitor(city.m_bIsSecondCapital);
+	visitor(city.m_iSecondCapitalsExtraScore);
+#endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	visitor(city.m_iCityEnableCrops);
+	visitor(city.m_iCityEnableArmee);
+#endif
 }
 
 //	--------------------------------------------------------------------------------
@@ -32360,6 +32421,17 @@ bool CvCity::isValidBuildingLocation(BuildingTypes eBuilding) const
 			return false;
 		}
 	}
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	if(MOD_GLOBAL_CORRUPTION && GET_PLAYER(getOwner()).EnableCorruption())
+	{
+		int iCorruptionLevel = GetCorruptionLevel() - GC.getInfoTypeForString("CORRUPTION_LV0", true);
+		int iMinLevel = pkBuildingInfo->GetMinCorruptionLevelNeeded();
+		if(iMinLevel >= 0 && iCorruptionLevel < iMinLevel) return false;
+		int iMaxLevel = pkBuildingInfo->GetMaxCorruptionLevelNeeded();
+		if(iMaxLevel >= 0 && iCorruptionLevel > iMinLevel) return false;
+	}
+#endif
 
 	// Requires adjacent Mountain
 	if (pkBuildingInfo->IsMountain())
@@ -35850,6 +35922,24 @@ void CvCity::ChangeSecondCapitalsExtraScore(int iChange)
 		SetSecondCapital(false);
 		GET_PLAYER(getOwner()).RemoveSecondCapital(GetID());
 	}
+}
+#endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+bool CvCity::HasEnableCrops() const  
+{  
+    return m_iCityEnableCrops > 0;  
+}
+void CvCity::ChangeNumEnableCrops(int iChange)
+{
+	m_iCityEnableCrops += iChange;
+}
+bool CvCity::HasEnableArmee() const  
+{  
+    return m_iCityEnableArmee > 0;  
+}
+void CvCity::ChangeNumEnableArmee(int iChange)
+{
+	m_iCityEnableArmee += iChange;
 }
 #endif
 
