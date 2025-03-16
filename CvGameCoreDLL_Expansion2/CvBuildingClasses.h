@@ -708,6 +708,13 @@ public:
 	int GetMinCorruptionLevelNeeded() const;
 	int GetMaxCorruptionLevelNeeded() const;
 #endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	int GetDomainTroops(int i) const;
+	int GetNumCrops() const;
+	int GetNumArmee() const;
+	bool IsEnableCrops() const;
+	bool IsEnableArmee() const;
+#endif
 
 private:
 	int m_iBuildingClassType;
@@ -1152,7 +1159,14 @@ private:
 	int m_iCorruptionPolicyCostModifier = 0;
 	int m_iMinCorruptionLevelNeeded = -1;
 	int m_iMaxCorruptionLevelNeeded = -1;
-#endif	
+#endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	int* m_piDomainTroops = nullptr;
+	int  m_iNumCrops = 0;
+	int  m_iNumArmee = 0;
+	int  m_bEnableCrops = false;
+	int  m_bEnableArmee = false;
+#endif
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
