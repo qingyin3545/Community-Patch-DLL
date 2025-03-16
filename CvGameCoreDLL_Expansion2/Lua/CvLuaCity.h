@@ -809,6 +809,10 @@ protected:
 	LUAAPIEXTN(GetMaxCorruptionLevel, int);
 	LUAAPIEXTN(IsCorruptionLevelReduceByOne, bool);
 #endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	LUAAPIEXTN(HasEnableCrops, bool);
+	LUAAPIEXTN(HasEnableArmee, bool);
+#endif
 
 #endif
 };

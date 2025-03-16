@@ -809,6 +809,10 @@ void CvLuaCity::PushMethods(lua_State* L, int t)
 	Method(GetMaxCorruptionLevel);
 	Method(IsCorruptionLevelReduceByOne);
 #endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	Method(HasEnableCrops);
+	Method(HasEnableArmee);
+#endif
 }
 //------------------------------------------------------------------------------
 void CvLuaCity::HandleMissingInstance(lua_State* L)
@@ -7128,4 +7132,8 @@ int CvLuaCity::lDecideCorruptionLevelForNormalCity(lua_State* L)
 	lua_pushinteger(L, iResult);
 	return 1;
 }
+#endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+LUAAPIIMPL(City, HasEnableCrops);
+LUAAPIIMPL(City, HasEnableArmee);
 #endif

@@ -2991,6 +2991,12 @@ public:
 	GD_INT_MEMBER(CORRUPTION_SCORE_PER_DISTANCE);
 	GD_INT_MEMBER(CORRUPTION_SCORE_COASTAL_BONUS);
 #endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	GD_INT_MEMBER(TROOP_RATE_TIMES100_LOW);
+	GD_INT_MEMBER(TROOP_RATE_TIMES100_DEFAULT);
+	GD_INT_MEMBER(TROOP_RATE_TIMES100_HIGH);
+	GD_INT_MEMBER(TROOP_NUM_BASE);
+#endif
 
 	////////////// END DEFINES //////////////////
 
@@ -3206,6 +3212,7 @@ protected:
 	CvCorruptionLevel* m_pPuppetCityCorruptionLevel = nullptr;
 	CvCorruptionLevel* m_pCapitalCityCorruptionLevel = nullptr;
 #endif
+
 
 	//////////////////////////////////////////////////////////////////////////
 	// GLOBAL TYPES
