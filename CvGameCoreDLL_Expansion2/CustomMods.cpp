@@ -582,6 +582,7 @@ int CustomMods::getOption(const string& sOption, int defValue)
 		MOD_OPT_CACHE(BALANCE_CORE_JFD);
 
 		MOD_OPT_CACHE(GLOBAL_CORRUPTION);
+		MOD_OPT_CACHE(TROOPS_AND_CROPS_FOR_SP);
 
 		m_bInit = true;
 	}
