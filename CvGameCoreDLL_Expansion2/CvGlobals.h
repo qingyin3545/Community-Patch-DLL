@@ -162,6 +162,9 @@ class ICvPlot1;
 class ICvRandom1;
 class ICvUnit1;
 
+#ifdef MOD_GLOBAL_CORRUPTION
+#include "CvCorruption.h"
+#endif
 
 class CvGlobals
 {
@@ -646,6 +649,19 @@ public:
 	std::vector<CvAchievementInfo*>& getAchievementInfo();
 	_Ret_maybenull_ CvAchievementInfo* getAchievementInfo(EAchievement eAchievementNum);
 	CvAchievementXMLEntries* GetGameAchievements() const;
+
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	int getNumCorruptionLevel();
+	std::vector<CvCorruptionLevel*>& getCorruptionLevelInfo();
+	CvCorruptionLevel* getCorruptionLevelInfo(CorruptionLevelTypes eCorruptionLevel);
+
+	std::vector<CvCorruptionLevel*>& getOrderedNormalCityCorruptionLevels();
+	void initCityCorruptionLevelsByCityType();
+
+	CvCorruptionLevel* getPuppetCityCorruptionLevel() const;
+	CvCorruptionLevel* getCapitalCityCorruptionLevel() const;
+#endif
 
 	//
 	// Global Types
@@ -2970,6 +2986,11 @@ public:
 	GD_INT_MEMBER(INQUISITION_EFFECTIVENESS); // VP
 	GD_INT_MEMBER(INQUISITOR_CONVERSION_REDUCTION_FACTOR); // VP
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	GD_INT_MEMBER(CORRUPTION_SCORE_PER_DISTANCE);
+	GD_INT_MEMBER(CORRUPTION_SCORE_COASTAL_BONUS);
+#endif
+
 	////////////// END DEFINES //////////////////
 
 	public: // Note - Macros above clobber the visibility
@@ -3177,6 +3198,13 @@ protected:
 #if defined(MOD_BALANCE_CORE)
 	CvCorporationXMLEntries* m_pCorporations;
 	CvContractXMLEntries* m_pContracts;
+#endif
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	CvCorruptionLevelXMLEntries* m_pCorruptionInfo;
+	std::vector<CvCorruptionLevel*> m_vOrderedNormalCityCorruptionLevels; // order by score lower bound.
+	CvCorruptionLevel* m_pPuppetCityCorruptionLevel = nullptr;
+	CvCorruptionLevel* m_pCapitalCityCorruptionLevel = nullptr;
 #endif
 
 	//////////////////////////////////////////////////////////////////////////

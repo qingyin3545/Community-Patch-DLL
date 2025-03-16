@@ -1527,6 +1527,12 @@ protected:
 
 	static int lIsInstantYieldNotificationDisabled(lua_State* L);
 	static int lSetInstantYieldNotificationDisabled(lua_State* L);
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	LUAAPIEXTN(IsCorruptionLevelReduceByOne, bool);
+	LUAAPIEXTN(GetCorruptionScoreModifierFromPolicy, int);
+#endif
+
 };
 
 namespace CvLuaArgs

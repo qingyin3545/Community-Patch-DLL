@@ -1918,6 +1918,10 @@ public:
 	bool isFeature(int i) const;
 	bool isFeatureTerrain(int i) const;
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	int GetCorruptionScoreChange() const;
+#endif
+
 	virtual bool CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility);
 
 protected:
@@ -1982,6 +1986,10 @@ protected:
 	bool* m_pbTerrain;
 	bool* m_pbFeature;
 	bool* m_pbFeatureTerrain;
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	int m_iCorruptionScoreChange = 0;
+#endif
 
 private:
 	CvResourceInfo(const CvResourceInfo&);

@@ -1809,6 +1809,14 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 		pResourceTypes->Reset();
 	}
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	m_iCorruptionScoreChange = kResults.GetInt("CorruptionScoreChange");
+	m_iCorruptionLevelChange = kResults.GetInt("CorruptionLevelChange");
+	m_iCorruptionPolicyCostModifier = kResults.GetInt("CorruptionPolicyCostModifier");
+	m_iMinCorruptionLevelNeeded = kResults.GetInt("MinCorruptionLevelNeeded");
+	m_iMaxCorruptionLevelNeeded = kResults.GetInt("MaxCorruptionLevelNeeded");
+#endif
+
 	return true;
 }
 
@@ -4927,6 +4935,34 @@ bool CvBuildingEntry::IsFaithPurchaseOnly() const
 
 	return false;
 }
+
+
+#ifdef MOD_GLOBAL_CORRUPTION
+int CvBuildingEntry::GetCorruptionScoreChange() const
+{
+	return m_iCorruptionScoreChange;
+}
+
+int CvBuildingEntry::GetCorruptionLevelChange() const
+{
+	return m_iCorruptionLevelChange;
+}
+
+int CvBuildingEntry::GetMinCorruptionLevelNeeded() const
+{
+	return m_iMinCorruptionLevelNeeded;
+}
+
+int CvBuildingEntry::GetMaxCorruptionLevelNeeded() const
+{
+	return m_iMaxCorruptionLevelNeeded;
+}
+
+int CvBuildingEntry::GetCorruptionPolicyCostModifier() const
+{
+	return m_iCorruptionPolicyCostModifier;
+}
+#endif
 
 //=====================================
 // CvBuildingXMLEntries
