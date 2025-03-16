@@ -850,7 +850,7 @@
       <Action>
         <Set>OnModActivated</Set>
         <Type>UpdateDatabase</Type>
-        <FileName>MPDLL\DB\CustomModOptions.xml</FileName>
+        <FileName>MPDLL\CustomModOptions.xml</FileName>
       </Action>
       <Action>
         <Set>OnModActivated</Set>
@@ -3533,7 +3533,7 @@
       <SubType>Lua</SubType>
       <ImportIntoVFS>True</ImportIntoVFS>
     </Content>
-    <Content Include="MPDLL\DB\CustomModOptions.xml">
+    <Content Include="MPDLL\CustomModOptions.xml">
       <SubType>Lua</SubType>
       <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
@@ -3668,6 +3668,14 @@
     <Content Include="MPDLL\DB\UNIT\NewBattleEffects.sql">
       <SubType>Lua</SubType>
       <ImportIntoVFS>FALSE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\LUA\CorruptionUIUtils.lua">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>TRUE</ImportIntoVFS>
+    </Content>
+    <Content Include="MPDLL\LUA\DllVersionCheck.lua">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>TRUE</ImportIntoVFS>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Firaxis\ModBuddy\Civ5Mod.targets" />
