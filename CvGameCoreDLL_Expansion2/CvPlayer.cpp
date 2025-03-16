@@ -1644,6 +1644,16 @@ void CvPlayer::uninit()
 	m_iCorruptionScoreModifierFromPolicy = 0;
 	m_iCorruptionLevelReduceByOneRC = 0;
 	m_iCorruptionPolicyCostModifier = 0;
+	m_paiCorruptionLevelPolicyCostModifier.clear();
+#endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	m_iNumCropsTotal = 0;
+	m_iNumCropsUsed = 0;
+	m_iNumArmeeTotal = 0;
+	m_iNumArmeeUsed = 0;
+
+	m_aiDomainTroopsTotal.clear();
+	m_aiDomainTroopsUsed.clear();
 #endif
 }
 
@@ -2259,6 +2269,17 @@ void CvPlayer::reset(PlayerTypes eID, bool bConstructorCall)
 
 	m_iPlotFoundValuesUpdateTurn = -1;
 	m_iPreviousBestSettlePlot = -1;
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	m_paiCorruptionLevelPolicyCostModifier.clear();
+	m_paiCorruptionLevelPolicyCostModifier.resize(GC.getNumCorruptionLevel(), 0);
+#endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	m_aiDomainTroopsTotal.clear();
+	m_aiDomainTroopsTotal.resize(NUM_DOMAIN_TYPES, 0);
+	m_aiDomainTroopsUsed.clear();
+	m_aiDomainTroopsUsed.resize(NUM_DOMAIN_TYPES, 0);
+#endif
 }
 
 /// This is called after the map and other game constructs have been setup and just before the game starts (also after reload!)
@@ -15846,6 +15867,24 @@ void CvPlayer::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst
 	if (MOD_GLOBAL_CORRUPTION)
 	{
 		ChangeCorruptionPolicyCostModifier(pBuildingInfo->GetCorruptionPolicyCostModifier() * iChange);
+	}
+#endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	for (int iDomains = 0; iDomains < NUM_DOMAIN_TYPES; iDomains++)
+	{
+		DomainTypes eDomain = (DomainTypes)iDomains;
+		if (eDomain != NO_DOMAIN && pBuildingInfo->GetDomainTroops(iDomains) != 0)
+		{
+			ChangeDomainTroopsTotalTimes100(pBuildingInfo->GetDomainTroops(iDomains) * GetTroopsRateTimes100() * iChange);
+		}
+	}
+	if(pBuildingInfo->GetNumCrops() != 0)
+	{
+		ChangeNumCropsTotalTimes100(pBuildingInfo->GetNumCrops() * GetTroopsRateTimes100() * iChange);
+	}
+	if(pBuildingInfo->GetNumArmee() != 0)
+	{
+		ChangeNumArmeeTotalTimes100(pBuildingInfo->GetNumArmee() * GetTroopsRateTimes100() * iChange);
 	}
 #endif
 
@@ -43966,6 +44005,15 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 	visitor(player.m_paiCorruptionLevelPolicyCostModifier);
 	visitor(player.m_viSecondCapitals);
 #endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	visitor(player.m_aiDomainTroopsTotal);
+	visitor(player.m_aiDomainTroopsUsed);
+
+	visitor(player.m_iNumCropsTotal);
+	visitor(player.m_iNumCropsUsed);
+	visitor(player.m_iNumArmeeTotal);
+	visitor(player.m_iNumArmeeUsed);
+#endif
 }
 
 //
@@ -49223,6 +49271,111 @@ void CvPlayer::RemoveSecondCapital(int iSecondCapitalID)
 	}
 }
 #endif
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetDomainTroopsTotalTimes100(DomainTypes eIndex) const
+{
+	return m_aiDomainTroopsTotal[eIndex] + GC.getTROOP_NUM_BASE() * GetTroopsRateTimes100();
+}
+void CvPlayer::ChangeDomainTroopsTotalTimes100(int iChange, DomainTypes eIndex)
+{
+	m_aiDomainTroopsTotal[eIndex] += iChange;
+}
+void CvPlayer::SetDomainTroopsTotalTimes100(int iValue, DomainTypes eIndex)
+{
+	m_aiDomainTroopsTotal[eIndex] = iValue;
+}
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetDomainTroopsUsed(DomainTypes eIndex) const
+{
+	return m_aiDomainTroopsUsed[eIndex];
+}
+void CvPlayer::ChangeDomainTroopsUsed(int iChange, DomainTypes eIndex)
+{
+	m_aiDomainTroopsUsed[eIndex] +=  iChange;
+}
+void CvPlayer::SetDomainTroopsUsed(int iValue, DomainTypes eIndex)
+{
+	m_aiDomainTroopsUsed[eIndex] = iValue;
+}
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetTroopsRateTimes100() const
+{
+	if(GC.getGame().isOption(GAMEOPTION_SP_CORPS_MODE_HIGH))
+		return GC.getTROOP_RATE_TIMES100_HIGH();
+	if(GC.getGame().isOption(GAMEOPTION_SP_CORPS_MODE_LOW))
+		return GC.getTROOP_RATE_TIMES100_LOW();
+	return GC.getTROOP_RATE_TIMES100_DEFAULT();
+}
+int CvPlayer::GetDomainTroopsTotal(DomainTypes eIndex) const
+{
+	return GetDomainTroopsTotalTimes100(eIndex) / 100;
+}
+bool CvPlayer::IsLackingTroops(DomainTypes eIndex) const
+{
+	if(!MOD_TROOPS_AND_CROPS_FOR_SP || GC.getGame().isOption(GAMEOPTION_SP_CORPS_MODE_DISABLE)) return false;
+	return GetDomainTroopsTotal(eIndex) - GetDomainTroopsUsed(eIndex) <= 0;
+}
+int CvPlayer::GetDomainTroopsActive(DomainTypes eIndex) const
+{
+	if(!MOD_TROOPS_AND_CROPS_FOR_SP || GC.getGame().isOption(GAMEOPTION_SP_CORPS_MODE_DISABLE)) return 0;
+	return GetDomainTroopsTotal(eIndex) - GetDomainTroopsUsed(eIndex);
+}
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetNumCropsTotalTimes100() const
+{
+	return m_iNumCropsTotal;
+}
+void CvPlayer::ChangeNumCropsTotalTimes100(int iChange)
+{
+	m_iNumCropsTotal += iChange;
+}
+int CvPlayer::GetNumCropsUsed() const
+{
+	return m_iNumCropsUsed;
+}
+void CvPlayer::ChangeNumCropsUsed(int iChange)
+{
+	m_iNumCropsUsed += iChange;
+}
+int CvPlayer::GetNumCropsTotal() const
+{
+	return m_iNumCropsTotal / 100;
+}
+bool CvPlayer::IsCanEstablishCrops() const
+{
+	if(!MOD_TROOPS_AND_CROPS_FOR_SP || GC.getGame().isOption(GAMEOPTION_SP_CORPS_MODE_DISABLE)) return false;
+	return GetNumCropsTotal() - GetNumCropsUsed() > 0;
+}
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetNumArmeeTotalTimes100() const
+{
+	return m_iNumArmeeTotal;
+}
+void CvPlayer::ChangeNumArmeeTotalTimes100(int iChange)
+{
+	m_iNumArmeeTotal += iChange;
+}
+int CvPlayer::GetNumArmeeUsed() const
+{
+	return m_iNumArmeeUsed;
+}
+void CvPlayer::ChangeNumArmeeUsed(int iChange)
+{
+	m_iNumArmeeUsed += iChange;
+}
+int CvPlayer::GetNumArmeeTotal() const
+{
+	return m_iNumArmeeTotal / 100;
+}
+bool CvPlayer::IsCanEstablishArmee() const
+{
+	if(!MOD_TROOPS_AND_CROPS_FOR_SP || GC.getGame().isOption(GAMEOPTION_SP_CORPS_MODE_DISABLE)) return false;
+	return GetNumArmeeTotal() - GetNumArmeeUsed() > 0;
+}
+//	--------------------------------------------------------------------------------
+#endif
+
 BuildingTypes CvPlayer::GetCivBuilding(BuildingClassTypes eBuildingClass) const
 {
 	CvBuildingClassInfo* pBuildingClassInfo = GC.getBuildingClassInfo(eBuildingClass);

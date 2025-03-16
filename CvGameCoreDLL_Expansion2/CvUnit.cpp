@@ -1241,6 +1241,14 @@ void CvUnit::initWithNameOffset(int iID, UnitTypes eUnit, int iNameOffset, UnitA
 	if(bSetupGraphical)
 		setupGraphical();
 
+
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	if(!IsNoTroops())
+	{
+		kPlayer.ChangeDomainTroopsUsed(1);
+	}
+#endif
+		
 	if (MOD_EVENTS_UNIT_CREATED)
 		GAMEEVENTINVOKE_HOOK(GAMEEVENT_UnitCreated, getOwner(), GetID(), getUnitType(), getX(), getY());
 }
@@ -1628,6 +1636,13 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_eHomelandMove = AI_HOMELAND_MOVE_NONE;
 	m_iHomelandMoveSetTurn = 0;
 	m_strMissionInfoString = "";
+
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	m_iCrops = 0;
+	m_iArmee = 0;
+	m_iNumEstablishCorps = 0;
+	m_iCannotBeEstablishedCorps = 0;
+#endif
 
 	if(!bConstructorCall)
 	{
@@ -2703,6 +2718,21 @@ void CvUnit::kill(bool bDelay, PlayerTypes ePlayer /*= NO_PLAYER*/)
 			}
 		}
 	}
+
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	if(!IsNoTroops())
+	{
+		GET_PLAYER(getOwner()).ChangeDomainTroopsUsed(-1);
+	}
+	if(IsCrops())
+	{
+		GET_PLAYER(getOwner()).ChangeNumCropsUsed(-1);
+	}
+	if(IsArmee())
+	{
+		GET_PLAYER(getOwner()).ChangeNumArmeeUsed(-1);
+	}
+#endif
 
 	//////////////////////////////////////////////////////////////////////////
 	// WARNING: This next statement will delete 'this'
@@ -13729,6 +13759,12 @@ bool CvUnit::CanUpgradeTo(UnitTypes eUpgradeUnitType, bool bOnlyTestVisible) con
 	// Show the upgrade, but don't actually allow it
 	if (!bOnlyTestVisible)
 	{
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+		if(GET_PLAYER(getOwner()).IsLackingTroops())
+		{
+			return false;
+		}
+#endif
 		if (!canEndTurnAtPlot(pPlot))
 			return false;
 
@@ -27898,6 +27934,13 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 		ChangeConvertDomainUnit((UnitTypes)thisPromotion.GetConvertDomainUnit());
 	}
 
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	if(thisPromotion.IsCrops()) ChangeCrops(iChange);
+	if(thisPromotion.IsArmee()) ChangeArmee(iChange);
+	ChangeNumEstablishCorps(thisPromotion.GetNumEstablishCorps() * iChange);
+	ChangeNumCannotBeEstablishedCorps(thisPromotion.IsCannotBeEstablishedCorps() ? iChange: 0);
+#endif
+
 	if (IsSelected())
 	{
 		DLLUI->setDirty(SelectionButtons_DIRTY_BIT, true);
@@ -28565,6 +28608,13 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 		visitor(unit.m_uiLastPathFlags);
 		visitor(unit.m_uiLastPathTurnSlice);
 	}
+
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	visitor(unit.m_iCrops);
+	visitor(unit.m_iArmee);
+	visitor(unit.m_iNumEstablishCorps);
+	visitor(unit.m_iCannotBeEstablishedCorps);
+#endif
 }
 
 //	--------------------------------------------------------------------------------
@@ -33941,5 +33991,78 @@ CvString CvUnit::GetPlotCorruptionScoreReport() const
 		szRtnValue = GetLocalizedText("TXT_KEY_FOUNDED_CITY_LEVEL_PREVIEW", iTotalScore, resultLevel) + szRtnValue;
 	}
 	return szRtnValue;
+}
+#endif
+//	--------------------------------------------------------------------------------
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+const int CvUnit::GetCrops() const
+{
+	return m_iCrops;
+}
+void CvUnit::ChangeCrops(int iValue)
+{
+	int oldValue = m_iCrops;
+	m_iCrops += iValue;
+	if(oldValue <= 0 && m_iCrops > 0)
+	{
+		GET_PLAYER(getOwner()).ChangeNumCropsUsed(1);
+	}
+	else if(oldValue > 0 && m_iCrops <=0)
+	{
+		GET_PLAYER(getOwner()).ChangeNumCropsUsed(-1);
+	}
+}
+bool CvUnit::IsCrops() const
+{
+	return m_iCrops > 0;
+}
+//	--------------------------------------------------------------------------------
+const int CvUnit::GetArmee() const
+{
+	return m_iArmee;
+}
+void CvUnit::ChangeArmee(int iValue)
+{
+	int oldValue = m_iArmee;
+	m_iArmee += iValue;
+	if(oldValue <= 0 && m_iArmee > 0)
+	{
+		GET_PLAYER(getOwner()).ChangeNumArmeeUsed(1);
+	}
+	else if(oldValue > 0 && m_iArmee <=0)
+	{
+		GET_PLAYER(getOwner()).ChangeNumArmeeUsed(-1);
+	}
+}
+bool CvUnit::IsArmee() const
+{
+	return m_iArmee > 0;
+}
+//	--------------------------------------------------------------------------------
+bool CvUnit::IsNoTroops() const
+{
+	return m_pUnitInfo->IsNoTroops() || !IsCombatUnit();
+}
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeNumEstablishCorps(int iValue)
+{
+	m_iNumEstablishCorps += iValue;
+}
+bool CvUnit::IsCanEstablishCorps() const
+{
+	return m_iNumEstablishCorps > 0;
+}
+
+void CvUnit::ChangeNumCannotBeEstablishedCorps(int iValue)
+{
+	m_iCannotBeEstablishedCorps += iValue;
+}
+bool CvUnit::IsCanBeEstablishedCorps() const
+{
+	return 
+		m_iCannotBeEstablishedCorps <= 0
+		&& IsCombatUnit()
+		&& m_pUnitInfo->GetDomainType() == DOMAIN_LAND && !isEmbarked()
+		&& !m_pUnitInfo->IsCannotBeEstablishedCorps();
 }
 #endif

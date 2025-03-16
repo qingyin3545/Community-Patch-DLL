@@ -1418,6 +1418,13 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 		"PromotionType",
 		szPromotionType);
 
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+	m_bCrops = kResults.GetBool("IsCrops");
+	m_bArmee = kResults.GetBool("IsArmee");
+	m_iNumEstablishCorps = kResults.GetInt("NumEstablishCorps");
+	m_bCannotBeEstablishedCorps = kResults.GetBool("CannotBeEstablishedCorps");
+#endif
+
 	return true;
 }
 
@@ -3578,6 +3585,25 @@ bool CvPromotionEntry::IsPostCombatRandomPromotion(int i) const
 	PRECONDITION(i > -1, "Index out of bounds");
 	return m_pbPostCombatRandomPromotion ? m_pbPostCombatRandomPromotion[i] : false;
 }
+
+#if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
+bool CvPromotionEntry::IsCrops() const
+{
+	return m_bCrops;
+}
+bool CvPromotionEntry::IsArmee() const
+{
+	return m_bArmee;
+}
+int CvPromotionEntry::GetNumEstablishCorps() const
+{
+	return m_iNumEstablishCorps;
+}
+bool CvPromotionEntry::IsCannotBeEstablishedCorps() const
+{
+	return m_bCannotBeEstablishedCorps;
+}
+#endif
 
 //=====================================
 // CvPromotionEntryXMLEntries
