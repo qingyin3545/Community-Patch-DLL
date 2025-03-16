@@ -3500,7 +3500,7 @@ void CvTacticalAI::ExecuteRepositionMoves()
 	for (int i = 0; i < iNumPlots - 1; i++)
 	{
 		int iSwapIndex = GC.getGame().randRangeExclusive(0, iNumPlots - i, CvSeeder(m_CurrentMoveUnits.size()).mix(i));
-		std::swap<int>(shuffledIndex[i], shuffledIndex[iSwapIndex]);
+		std::swap(shuffledIndex[i], shuffledIndex[iSwapIndex]);
 	}
 
 	for (unsigned int iI = 0; iI < m_CurrentMoveUnits.size(); iI++)
