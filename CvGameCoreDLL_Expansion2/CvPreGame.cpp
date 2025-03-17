@@ -89,6 +89,10 @@ const char* ConvertGameOptionTypeToString(GameOptionTypes eOption)
 	case GAMEOPTION_SP_CORPS_MODE_LOW:
 		return "GAMEOPTION_SP_CORPS_MODE_LOW";
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	case GAMEOPTION_SP_NUCLEARWINTER_OFF:
+		return "GAMEOPTION_SP_NUCLEARWINTER_OFF";
+#endif
 	}
 
 	// Option is unrecognized but we still want to return a value because this function

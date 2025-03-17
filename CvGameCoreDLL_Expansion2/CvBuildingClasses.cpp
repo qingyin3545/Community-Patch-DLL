@@ -1995,6 +1995,9 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 	m_bEnableArmee = kResults.GetBool("EnableArmee");
 	kUtility.PopulateArrayByValue(m_piDomainTroops, "Domains", "Building_DomainTroops", "DomainType", "BuildingType", szBuildingType, "NumTroop", 0, NUM_DOMAIN_TYPES);
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	m_bNoNuclearWinterLocal = kResults.GetBool("NoNuclearWinterLocal");
+#endif
 
 	return true;
 }
@@ -5234,6 +5237,12 @@ bool CvBuildingEntry::IsEnableCrops() const
 bool CvBuildingEntry::IsEnableArmee() const
 {
 	return m_bEnableArmee;
+}
+#endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+bool CvBuildingEntry::IsNoNuclearWinterLocal() const
+{
+	return m_bNoNuclearWinterLocal;
 }
 #endif
 

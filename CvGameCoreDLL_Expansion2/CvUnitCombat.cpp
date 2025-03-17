@@ -2524,6 +2524,10 @@ void CvUnitCombat::GenerateNuclearCombatInfo(CvUnit& kAttacker, CvPlot& plot, Cv
 	int iDamageMembers = GenerateNuclearExplosionDamage(&plot, iNukeDamageLevel, &kAttacker, pkCombatInfo->getDamageMembers(), pkCombatInfo->getMaxDamageMemberCount());
 	pkCombatInfo->setDamageMemberCount(iDamageMembers);
 
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	GC.getGame().ChangeNuclearWinterProcess(kAttacker.getUnitInfo().GetNuclearWinterProcess(), true, false);
+#endif
+
 	GC.GetEngineUserInterface()->setDirty(UnitInfo_DIRTY_BIT, true);
 }
 
