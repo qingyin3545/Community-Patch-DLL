@@ -256,6 +256,9 @@ int CvLuaEnums::pRegister(lua_State* L)
 	RegisterEnum(GAMEOPTION_SP_CORPS_MODE_HIGH);
 	RegisterEnum(GAMEOPTION_SP_CORPS_MODE_LOW);
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	RegisterEnum(GAMEOPTION_SP_NUCLEARWINTER_OFF);
+#endif
 
 	//DomainTypes
 	EnumStart(L, "DomainTypes");

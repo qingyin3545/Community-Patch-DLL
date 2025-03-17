@@ -2743,6 +2743,9 @@ void CvGlobals::init()
 #ifdef MOD_GLOBAL_CITY_SCALES
 	m_pCityScales = FNEW(CvCityScaleXMLEntries, c_eCiv5GameplayDLL, 0);
 #endif
+#ifdef MOD_NUCLEAR_WINTER_FOR_SP
+	m_pNuclearWinterInfo= FNEW(CvNuclearWinterLevelXMLEntries, c_eCiv5GameplayDLL, 0);
+#endif
 
 	CvPlayerAI::initStatics();
 	CvTeam::initStatics();
@@ -2816,6 +2819,9 @@ void CvGlobals::uninit()
 #endif
 #ifdef MOD_GLOBAL_CITY_SCALES
 	SAFE_DELETE(m_pCityScales);
+#endif
+#ifdef MOD_NUCLEAR_WINTER_FOR_SP
+	SAFE_DELETE(m_pNuclearWinterInfo);
 #endif
 
 	// already deleted outside of the dll, set to null for safety
@@ -5156,6 +5162,43 @@ CvCityScaleEntry* CvGlobals::getCityScaleInfoByPopulation(int iPopulation) const
 	}
 
 	return nullptr;
+}
+#endif
+#ifdef MOD_NUCLEAR_WINTER_FOR_SP
+int CvGlobals::getNumNuclearWinterLevel()
+{
+	return m_pNuclearWinterInfo->GetEntries().size();
+}
+
+std::vector<CvNuclearWinterLevel*>& CvGlobals::getNuclearWinterLevelInfo()
+{
+	return m_pNuclearWinterInfo->GetEntries();
+}
+
+CvNuclearWinterLevel* CvGlobals::getNuclearWinterLevelInfo(NuclearWinterLevelTypes eLevel)
+{
+	return m_pNuclearWinterInfo->GetEntry(eLevel);
+}
+void CvGlobals::initGlobalNuclearWinterLevels()
+{
+	m_vOrderedNuclearWinterLevels.clear();
+	auto& nuclearWinterLevels = getNuclearWinterLevelInfo();
+	for (auto* level : nuclearWinterLevels)
+	{
+		if (level == nullptr)
+		{
+			continue;
+		}
+		m_vOrderedNuclearWinterLevels.push_back(level);
+	}
+
+	std::sort(m_vOrderedNuclearWinterLevels.begin(), m_vOrderedNuclearWinterLevels.end(), [](CvNuclearWinterLevel* a, CvNuclearWinterLevel* b) {
+		return a->GetTriggerThreshold() < b->GetTriggerThreshold();
+	});
+}
+std::vector<CvNuclearWinterLevel*>& CvGlobals::getOrderedNuclearWinterLevels()
+{
+	return m_vOrderedNuclearWinterLevels;
 }
 #endif
 
