@@ -808,6 +808,7 @@ protected:
 	LUAAPIEXTN(GetCorruptionScoreModifierFromPolicy, int);
 	LUAAPIEXTN(GetMaxCorruptionLevel, int);
 	LUAAPIEXTN(IsCorruptionLevelReduceByOne, bool);
+	LUAAPIEXTN(IsSecondCapital, bool);
 #endif
 #ifdef MOD_GLOBAL_CITY_SCALES
 	LUAAPIEXTN(GetScale, int);
@@ -824,7 +825,7 @@ protected:
 	LUAAPIEXTN(CanImmigrantOut, bool);
 #endif
 	LUAAPIEXTN(GetYieldRateInfoTool, CvString);
-
+	LUAAPIEXTN(GetFoodConsumptionPerPopTimes100, int);
 #endif
 };
 
