@@ -2075,6 +2075,8 @@ public:
 	bool IsCanBeEstablishedCorps() const;
 	void ChangeNumCannotBeEstablishedCorps(int iValue);
 #endif
+	int GetPromotionMaintenanceCost() const;
+	void ChangePromotionMaintenanceCost(int iValue);
 
 protected:
 	const MissionData* HeadMissionData() const;
@@ -2561,6 +2563,7 @@ private:
 	int m_iNumEstablishCorps = 0;
 	int m_iCannotBeEstablishedCorps = 0;
 #endif
+	int m_iPromotionMaintenanceCost = 0;
 
 	friend class CvLuaUnit;
 };

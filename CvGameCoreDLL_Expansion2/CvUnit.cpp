@@ -822,7 +822,7 @@ void CvUnit::initWithNameOffset(int iID, UnitTypes eUnit, int iNameOffset, UnitA
 		kPlayer.ChangeUnhappinessFromUnits(GC.getUnitInfo(getUnitType())->GetUnhappiness());
 	}
 
-	kPlayer.changeExtraUnitCost(getUnitInfo().GetExtraMaintenanceCost());
+	kPlayer.changeExtraUnitCost(getUnitInfo().GetExtraMaintenanceCost() + GetPromotionMaintenanceCost());
 
 	// Add Resource Quantity to Used
 	if(MOD_BALANCE_CORE_JFD)
@@ -1758,6 +1758,7 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iNumEstablishCorps = 0;
 	m_iCannotBeEstablishedCorps = 0;
 #endif
+	m_iPromotionMaintenanceCost = 0;
 
 	if(!bConstructorCall)
 	{
@@ -2724,7 +2725,7 @@ void CvUnit::kill(bool bDelay, PlayerTypes ePlayer /*= NO_PLAYER*/)
 		GET_PLAYER(eUnitOwner).ChangeUnhappinessFromUnits(-getUnitInfo().GetUnhappiness());
 	}
 
-	GET_PLAYER(eUnitOwner).changeExtraUnitCost(-(getUnitInfo().GetExtraMaintenanceCost()));
+	GET_PLAYER(eUnitOwner).changeExtraUnitCost(-(getUnitInfo().GetExtraMaintenanceCost() + GetPromotionMaintenanceCost()));
 
 	if(getUnitInfo().GetNukeDamageLevel() > 0)
 	{
@@ -28045,6 +28046,7 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 	ChangeNumEstablishCorps(thisPromotion.GetNumEstablishCorps() * iChange);
 	ChangeNumCannotBeEstablishedCorps(thisPromotion.IsCannotBeEstablishedCorps() ? iChange: 0);
 #endif
+	ChangePromotionMaintenanceCost(thisPromotion.GetMaintenanceCost() > 0 ? iChange: 0);
 
 	if (IsSelected())
 	{
@@ -28721,6 +28723,7 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iNumEstablishCorps);
 	visitor(unit.m_iCannotBeEstablishedCorps);
 #endif
+	visitor(unit.m_iPromotionMaintenanceCost);
 }
 
 //	--------------------------------------------------------------------------------
@@ -34165,3 +34168,21 @@ bool CvUnit::IsCanBeEstablishedCorps() const
 		&& !m_pUnitInfo->IsCannotBeEstablishedCorps();
 }
 #endif
+
+//	--------------------------------------------------------------------------------
+/// Get extra cost for unit maintenance in Gold from promotions
+int CvUnit::GetPromotionMaintenanceCost() const
+{
+	return m_iPromotionMaintenanceCost;
+}
+/// Change extra cost for unit maintenance in Gold from promotions
+void CvUnit::ChangePromotionMaintenanceCost(int iValue)
+{
+	if(iValue != 0)
+	{
+		m_iPromotionMaintenanceCost += iValue;
+		GET_PLAYER(getOwner()).changeExtraUnitCost(iValue);
+	}
+}
+
+//	--------------------------------------------------------------------------------

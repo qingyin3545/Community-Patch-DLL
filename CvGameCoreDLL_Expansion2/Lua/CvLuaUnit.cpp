@@ -682,6 +682,7 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	Method(GetNuclearWinterProcess);
 #endif
+	Method(GetPromotionMaintenanceCost);
 }
 //------------------------------------------------------------------------------
 const char* CvLuaUnit::GetTypeName()
@@ -6785,3 +6786,4 @@ int CvLuaUnit::lGetNuclearWinterProcess(lua_State* L)
 	return 1;
 }
 #endif
+LUAAPIIMPL(Unit, GetPromotionMaintenanceCost)
