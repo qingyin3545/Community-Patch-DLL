@@ -516,6 +516,13 @@ void CvLuaGame::RegisterMembers(lua_State* L)
 
 	Method(SetExeWantForceResyncValue);
 	Method(IsExeWantForceResyncAvailable);
+
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	Method(GetNuclearWinterProcess);
+	Method(ChangeNuclearWinterProcess);
+	Method(GetNuclearWinterNaturalReduction);
+	Method(ChangeNuclearWinterNaturalReduction);
+#endif	
 }
 //------------------------------------------------------------------------------
 
@@ -4242,3 +4249,17 @@ int CvLuaGame::lIsExeWantForceResyncAvailable(lua_State* L)
 {
 	return BasicLuaMethod(L, &CvGame::IsExeWantForceResyncAvailable);
 }
+
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+LUAAPIIMPL(Game, GetNuclearWinterProcess)
+int CvLuaGame::lChangeNuclearWinterProcess(lua_State* L)
+{
+	const int iChange = luaL_optint(L, 1, 0);
+	const bool bUpdate = luaL_optbool(L, 2, false);
+	const bool bAllowLevelReduce = luaL_optbool(L, 3, false);
+	GC.getGame().ChangeNuclearWinterProcess(iChange, bUpdate, bAllowLevelReduce);
+	return 0;
+}
+LUAAPIIMPL(Game, GetNuclearWinterNaturalReduction)
+LUAAPIIMPL(Game, ChangeNuclearWinterNaturalReduction)
+#endif

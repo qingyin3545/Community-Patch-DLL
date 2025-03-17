@@ -716,6 +716,9 @@ bool CvUnitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& k
 	m_bNoTroops = kResults.GetBool("NoTroopConsume");
 	m_bCannotBeEstablishedCorps = kResults.GetBool("CannotBeEstablishedCorps");
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	m_iNuclearWinterProcess = kResults.GetInt("NuclearWinterProcess");
+#endif
 
 	// Calculate military Power and cache it
 	DoUpdatePower();
@@ -2090,6 +2093,12 @@ bool CvUnitEntry::IsNoTroops() const
 bool CvUnitEntry::IsCannotBeEstablishedCorps() const
 {
 	return m_bCannotBeEstablishedCorps;
+}
+#endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+int CvUnitEntry::GetNuclearWinterProcess() const
+{
+	return m_iNuclearWinterProcess;
 }
 #endif
 

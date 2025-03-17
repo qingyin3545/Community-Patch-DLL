@@ -185,6 +185,7 @@
     <ClCompile Include="CvGameCoreStructs.cpp" />
     <ClCompile Include="CvGreatPersonInfo.cpp" />
     <ClCompile Include="CvLoggerCSV.cpp" />
+    <ClCompile Include="CvNuclearWinter.cpp" />
     <ClCompile Include="CvPlotInfo.cpp" />
     <ClCompile Include="CvSerialize.cpp" />
     <ClCompile Include="CvTargeting.cpp" />
@@ -504,6 +505,7 @@
     <ClInclude Include="CvMinorCivAI.h" />
     <ClInclude Include="CvNotificationClasses.h" />
     <ClInclude Include="CvNotifications.h" />
+    <ClInclude Include="CvNuclearWinter.h" />
     <ClInclude Include="CvPlayer.h" />
     <ClInclude Include="CvPlayerAI.h" />
     <ClInclude Include="CvPlayerManager.h" />

@@ -1885,6 +1885,9 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 	m_iCityEnableCrops = 0;
 	m_iCityEnableArmee = 0;
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	m_iNumNoNuclearWinterLocal = 0;
+#endif
 }
 
 
@@ -15113,6 +15116,9 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
         ChangeNumEnableCrops(pBuildingInfo->IsEnableCrops() ? iChange : 0);
 		ChangeNumEnableArmee(pBuildingInfo->IsEnableArmee() ? iChange : 0);
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+		ChangeNumNoNuclearWinterLocal(pBuildingInfo->IsNoNuclearWinterLocal() ? iChange : 0);
+#endif
 
 		// Process for our player
 		for (int iI = 0; iI < MAX_PLAYERS; iI++)
@@ -17909,6 +17915,10 @@ int CvCity::GetBaseJONSCulturePerTurn() const
 		iCulturePerTurn += GetYieldFromDevelopment(YIELD_CULTURE);
 	}
 
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	if(!IsNoNuclearWinterLocal()) iCulturePerTurn += GC.getGame().GetYieldFromNuclearWinter(YIELD_CULTURE);
+#endif
+
 	return iCulturePerTurn;
 }
 
@@ -18151,6 +18161,10 @@ int CvCity::GetFaithPerTurn(bool bStatic) const
 		iFaith += GetYieldFromCrime(YIELD_FAITH);
 		iFaith += GetYieldFromDevelopment(YIELD_FAITH);
 	}
+
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	if(!IsNoNuclearWinterLocal()) iFaith += GC.getGame().GetYieldFromNuclearWinter(YIELD_FAITH);
+#endif
 
 	CvPlot* pCityPlot = plot();
 	for (int iUnitLoop = 0; iUnitLoop < pCityPlot->getNumUnits(); iUnitLoop++)
@@ -23574,6 +23588,20 @@ int CvCity::getBaseYieldRateModifier(YieldTypes eIndex, int iExtra, CvString* to
 
 	iModifier += iExtra;
 
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	// Yield Modifier from Nuclear Winter
+	iTempMod = 0;
+	if(!IsNoNuclearWinterLocal()) iTempMod = GC.getGame().GetNuclearWinterYieldMultiplier(eIndex);
+	if(iTempMod != 0)
+	{	
+		iModifier *= (iTempMod + 100);
+		iModifier /= 100;
+		if(iTempMod != 0 && toolTipSink){
+			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_NUCLERA_WINTER_YIELD", iTempMod);
+		}
+	}
+#endif
+
 	// note: player->invalidateYieldRankCache() must be called for anything that is checked here
 	// so if any extra checked things are added here, the cache needs to be invalidated
 
@@ -23820,6 +23848,10 @@ int CvCity::getBaseYieldRate(YieldTypes eIndex) const
 		iValue += GetYieldFromCrime(eIndex);
 		iValue += GetYieldFromDevelopment(eIndex);
 	}
+#endif
+
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	if(!IsNoNuclearWinterLocal()) iValue += GC.getGame().GetYieldFromNuclearWinter(eIndex);
 #endif
 
 	return iValue;
@@ -32350,6 +32382,9 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 	visitor(city.m_iCityEnableCrops);
 	visitor(city.m_iCityEnableArmee);
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	visitor(city.m_iNumNoNuclearWinterLocal);
+#endif
 }
 
 //	--------------------------------------------------------------------------------
@@ -36078,6 +36113,16 @@ bool CvCity::HasEnableArmee() const
 void CvCity::ChangeNumEnableArmee(int iChange)
 {
 	m_iCityEnableArmee += iChange;
+}
+#endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+bool CvCity::IsNoNuclearWinterLocal() const
+{
+	return m_iNumNoNuclearWinterLocal > 0;
+}
+void CvCity::ChangeNumNoNuclearWinterLocal(int iChange)
+{
+	m_iNumNoNuclearWinterLocal += iChange;
 }
 #endif
 
