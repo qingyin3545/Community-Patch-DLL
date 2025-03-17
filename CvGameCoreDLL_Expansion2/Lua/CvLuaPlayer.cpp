@@ -1564,6 +1564,11 @@ void CvLuaPlayer::PushMethods(lua_State* L, int t)
 	Method(GetImmigrationInRateFromPolicy);
 	Method(GetImmigrationOutRateFromPolicy);
 #endif
+	Method(GetCivBuilding);
+	Method(GetCivUnit);
+	Method(GetCivBuildingWithDefault);
+	Method(GetCivUnitWithDefault);
+	Method(GetCivUnitNowTech);
 }
 //------------------------------------------------------------------------------
 void CvLuaPlayer::HandleMissingInstance(lua_State* L)
@@ -19386,3 +19391,56 @@ int CvLuaPlayer::lGetImmigrationOutRateFromPolicy(lua_State* L)
 	return 1;
 }
 #endif
+
+int CvLuaPlayer::lGetCivBuilding(lua_State* L)
+{
+	return BasicLuaMethod(L, &CvPlayerAI::GetCivBuilding);
+}
+
+int CvLuaPlayer::lGetCivUnit(lua_State* L)
+{
+	return BasicLuaMethod(L, &CvPlayerAI::GetCivUnit);
+}
+
+int CvLuaPlayer::lGetCivBuildingWithDefault(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	BuildingClassTypes eBuildingClass = (BuildingClassTypes)lua_tointeger(L, 2);
+	int iResult = pkPlayer->GetCivBuilding(eBuildingClass);
+	if (iResult == NO_BUILDING)
+	{
+		CvBuildingClassInfo* pBuildingClassInfo = GC.getBuildingClassInfo(eBuildingClass);
+		if(pBuildingClassInfo) iResult = pBuildingClassInfo->getDefaultBuildingIndex();
+	}
+	lua_pushinteger(L, iResult);
+	return 1;
+}
+
+int CvLuaPlayer::lGetCivUnitWithDefault(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	UnitClassTypes eUnitClass = (UnitClassTypes)lua_tointeger(L, 2);
+	lua_pushinteger(L, pkPlayer->GetCivUnitWithDefault(eUnitClass));
+	return 1;
+}
+int CvLuaPlayer::lGetCivUnitNowTech(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	UnitClassTypes eUnitClass = (UnitClassTypes)lua_tointeger(L, 2);
+	UnitTypes eResUnitType = NO_UNIT;
+	while(eUnitClass != NO_UNITCLASS)
+	{
+		UnitTypes eUnitType = pkPlayer->GetCivUnitWithDefault(eUnitClass);
+		CvUnitEntry* pUnitEntry = GC.getUnitInfo(eUnitType);
+		if(pUnitEntry == nullptr) break;
+		// eResUnitType should have a default value
+		if(eResUnitType == NO_UNIT || pkPlayer->HasTech((TechTypes)pUnitEntry->GetPrereqAndTech()))
+		{
+			eResUnitType = eUnitType;
+		}
+		else break;
+		eUnitClass = (UnitClassTypes)pUnitEntry->GetGoodyHutUpgradeUnitClass();
+	}
+	lua_pushinteger(L, eResUnitType);
+	return 1;
+}
