@@ -807,6 +807,7 @@ protected:
 	LUAAPIEXTN(CanImmigrantIn, bool);
 	LUAAPIEXTN(CanImmigrantOut, bool);
 #endif
+	LUAAPIEXTN(GetYieldRateInfoTool, CvString);
 	
 #endif
 };

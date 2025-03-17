@@ -1926,6 +1926,13 @@ public:
 	bool CanAllScaleImmigrantIn() const;
 	void ChangeNumAllScaleImmigrantIn(int iChange);
 #endif
+	int GetBaseYieldRateFromBuildingsPolicies(YieldTypes eIndex) const;
+	void ChangeBaseYieldRateFromBuildingsPolicies(YieldTypes eIndex, int iChange);
+	int GetBaseYieldRateFromPolicy(YieldTypes eIndex) const;
+	int GetBaseYieldRateFromTrait(YieldTypes eIndex) const;				// only getYieldRateInfoTool
+	int GetBaseYieldRateFromLeagues(YieldTypes eIndex) const;			// only getYieldRateInfoTool
+	int GetYieldPerTurnFromUnimprovedFeatures(YieldTypes eYield) const;
+	CvString getYieldRateInfoTool(YieldTypes eIndex, bool bIgnoreTrade = true) const;
 
 protected:
 	SYNC_ARCHIVE_MEMBER(CvCity)
@@ -2384,6 +2391,7 @@ protected:
 	bool m_bCanDoImmigration = true;
 	int m_iNumAllScaleImmigrantIn = 0;
 #endif
+	std::vector<int> m_aiBaseYieldRateFromBuildingsPolicies;
 };
 
 namespace FSerialization
