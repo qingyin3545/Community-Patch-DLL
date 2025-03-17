@@ -801,6 +801,12 @@ protected:
 	LUAAPIEXTN(HasEnableCrops, bool);
 	LUAAPIEXTN(HasEnableArmee, bool);
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	LUAAPIEXTN(IsCanDoImmigration, bool);
+	LUAAPIEXTN(SetCanDoImmigration, void);
+	LUAAPIEXTN(CanImmigrantIn, bool);
+	LUAAPIEXTN(CanImmigrantOut, bool);
+#endif
 	
 #endif
 };

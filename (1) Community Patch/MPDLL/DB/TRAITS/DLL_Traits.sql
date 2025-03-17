@@ -67,7 +67,6 @@ create table Trait_CityYieldPerAdjacentFeature (
 ALTER TABLE Traits ADD 'TrainedAll' BOOLEAN DEFAULT 0; 
 ALTER TABLE Traits ADD 'CanConquerUC' BOOLEAN DEFAULT 0; 
 
-ALTER TABLE Traits ADD COLUMN 'ExceedingHappinessImmigrationModifier' INTEGER DEFAULT 0;
 ALTER TABLE Traits ADD COLUMN 'NumFreeWorldWonderPerCity' INTEGER DEFAULT 0;
 
 alter table Traits add column `CanDiplomaticMarriage` boolean not null default 0;
