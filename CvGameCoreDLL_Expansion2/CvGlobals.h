@@ -160,6 +160,9 @@ class ICvUnit1;
 #ifdef MOD_GLOBAL_CORRUPTION
 #include "CvCorruption.h"
 #endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+#include "CvCityScaleClasses.h"
+#endif
 
 class CvGlobals
 {
@@ -650,6 +653,14 @@ public:
 
 	CvCorruptionLevel* getPuppetCityCorruptionLevel() const;
 	CvCorruptionLevel* getCapitalCityCorruptionLevel() const;
+#endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+	int getNumCityScales();
+	std::vector<CvCityScaleEntry*>& getCityScaleInfo();
+	_Ret_maybenull_ CvCityScaleEntry* getCityScaleInfo(CityScaleTypes eCityScale);
+
+	void sortAndUpdateOrderedCityScale(const std::vector<CvCityScaleEntry*>&);
+	CvCityScaleEntry* getCityScaleInfoByPopulation(int iPopulation) const;
 #endif
 
 	//
@@ -3179,7 +3190,10 @@ protected:
 	CvCorruptionLevel* m_pPuppetCityCorruptionLevel = nullptr;
 	CvCorruptionLevel* m_pCapitalCityCorruptionLevel = nullptr;
 #endif
-
+#ifdef MOD_GLOBAL_CITY_SCALES
+	CvCityScaleXMLEntries* m_pCityScales;
+	std::vector<CvCityScaleEntry*> m_vOrderedCityScales; // order by min population
+#endif
 
 	//////////////////////////////////////////////////////////////////////////
 	// GLOBAL TYPES

@@ -3852,4 +3852,9 @@ enum CLOSED_ENUM IsHumanReason
 enum CLOSED_ENUM CorruptionLevelTypes {
 	INVALID_CORRUPTION = -1
 };
+#ifdef MOD_GLOBAL_CITY_SCALES
+enum CityScaleTypes {
+	NO_CITY_SCALE = -1
+};
+#endif
 #endif

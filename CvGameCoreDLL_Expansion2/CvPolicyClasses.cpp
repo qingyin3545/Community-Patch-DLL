@@ -5281,6 +5281,16 @@ void CvPlayerPolicies::SetPolicyBranchUnlocked(PolicyBranchTypes eBranchType, bo
 
 		m_pabPolicyBranchUnlocked[eBranchType] = bNewValue;
 
+#ifdef MOD_GLOBAL_CITY_SCALES
+		if (MOD_GLOBAL_CITY_SCALES && m_pPlayer)
+		{
+			int iLoop = 0;
+			for(auto* pLoopCity = m_pPlayer->firstCity(&iLoop); pLoopCity != NULL; pLoopCity = m_pPlayer->nextCity(&iLoop))
+			{
+				pLoopCity->UpdateScaleBuildings();
+			}
+		}
+#endif
 		if (!bRevolution)
 		{
 			GAMEEVENTINVOKE_HOOK(GAMEEVENT_IdeologyAdopted, m_pPlayer->GetID(), eBranchType);
