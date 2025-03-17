@@ -2961,6 +2961,7 @@ public:
 #endif
 	BuildingTypes GetCivBuilding(BuildingClassTypes eBuildingClass) const;
 	UnitTypes GetCivUnit(UnitClassTypes eUnitClass, int iFakeSeed = 0) const;
+	UnitTypes GetCivUnitWithDefault(UnitClassTypes eUnitClass) const;
 
 protected:
 	class ConqueredByBoolField

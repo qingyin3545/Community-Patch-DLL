@@ -522,7 +522,10 @@ void CvLuaGame::RegisterMembers(lua_State* L)
 	Method(ChangeNuclearWinterProcess);
 	Method(GetNuclearWinterNaturalReduction);
 	Method(ChangeNuclearWinterNaturalReduction);
-#endif	
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	Method(GetImmigrationRegressand);
+#endif
 }
 //------------------------------------------------------------------------------
 
@@ -4262,4 +4265,17 @@ int CvLuaGame::lChangeNuclearWinterProcess(lua_State* L)
 }
 LUAAPIIMPL(Game, GetNuclearWinterNaturalReduction)
 LUAAPIIMPL(Game, ChangeNuclearWinterNaturalReduction)
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+int CvLuaGame::lGetImmigrationRegressand(lua_State* L)
+{
+	int iRtnValue = 0;
+	if(!GC.getGame().isOption(GAMEOPTION_SP_IMMIGRATION_OFF))
+	{
+		iRtnValue = GC.getIMMIGRATION_BASE_RATE() * GC.getGame().getGameSpeedInfo().getCulturePercent();
+		iRtnValue /= 100;
+	}
+	lua_pushinteger(L, iRtnValue);
+	return 1;
+}
 #endif
