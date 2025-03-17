@@ -1918,6 +1918,14 @@ public:
 	bool IsNoNuclearWinterLocal() const;
 	void ChangeNumNoNuclearWinterLocal(int iChange);
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	bool IsCanDoImmigration() const;
+	void SetCanDoImmigration(bool iValue);
+	bool CanImmigrantIn() const;
+	bool CanImmigrantOut() const;
+	bool CanAllScaleImmigrantIn() const;
+	void ChangeNumAllScaleImmigrantIn(int iChange);
+#endif
 
 protected:
 	SYNC_ARCHIVE_MEMBER(CvCity)
@@ -2371,6 +2379,10 @@ protected:
 #endif
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	int m_iNumNoNuclearWinterLocal = 0;
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	bool m_bCanDoImmigration = true;
+	int m_iNumAllScaleImmigrantIn = 0;
 #endif
 };
 

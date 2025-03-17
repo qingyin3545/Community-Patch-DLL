@@ -728,6 +728,9 @@ public:
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	bool IsNoNuclearWinterLocal() const;
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	bool CanAllScaleImmigrantIn() const;
+#endif
 
 private:
 	int m_iBuildingClassType;
@@ -1214,6 +1217,9 @@ private:
 #endif
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	bool m_bNoNuclearWinterLocal = false;
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	bool m_bCanAllScaleImmigrantIn = false;
 #endif
 };
 
