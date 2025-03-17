@@ -1307,6 +1307,9 @@ enum CLOSED_ENUM GameOptionTypes
 	GAMEOPTION_SP_CORPS_MODE_HIGH,
 	GAMEOPTION_SP_CORPS_MODE_LOW,
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	GAMEOPTION_SP_NUCLEARWINTER_OFF,
+#endif
 
 	// KWG: Please do add anymore enums.  Use the CvPreGame::GetGameOption which uses a text key.
 	//      These enums are shared between DLLs and would diverge if each added their own.
@@ -3854,6 +3857,12 @@ enum CLOSED_ENUM CorruptionLevelTypes {
 #ifdef MOD_GLOBAL_CITY_SCALES
 enum CityScaleTypes {
 	NO_CITY_SCALE = -1
+};
+#endif
+#ifdef MOD_NUCLEAR_WINTER_FOR_SP
+enum NuclearWinterLevelTypes {
+	INVALID_NUCLEAR_WINTER = -1,
+	NO_NUCLEAR_WINTER = 0
 };
 #endif
 #endif
