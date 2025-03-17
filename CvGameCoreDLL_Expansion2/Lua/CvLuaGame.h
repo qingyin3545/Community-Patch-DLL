@@ -505,6 +505,9 @@ protected:
 	LUAAPIEXTN(GetNuclearWinterNaturalReduction, int);
 	LUAAPIEXTN(ChangeNuclearWinterNaturalReduction, void, iChange);
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	LUAAPIEXTN(GetImmigrationRegressand, int);
+#endif
 };
 
 #endif //CVLUAGAME_H
