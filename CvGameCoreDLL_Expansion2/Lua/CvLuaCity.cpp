@@ -796,6 +796,7 @@ void CvLuaCity::PushMethods(lua_State* L, int t)
 	Method(CanImmigrantIn);
 	Method(CanImmigrantOut);
 #endif
+	Method(GetYieldRateInfoTool);
 }
 //------------------------------------------------------------------------------
 void CvLuaCity::HandleMissingInstance(lua_State* L)
@@ -7106,3 +7107,13 @@ LUAAPIIMPL(City, SetCanDoImmigration)
 LUAAPIIMPL(City, CanImmigrantIn)
 LUAAPIIMPL(City, CanImmigrantOut)
 #endif
+//------------------------------------------------------------------------------
+int CvLuaCity::lGetYieldRateInfoTool(lua_State* L)
+{
+	CvCity* pkCity = GetInstance(L);
+	const YieldTypes eIndex = (YieldTypes)lua_tointeger(L, 2);
+	CvString toolTip;
+	pkCity->getBaseYieldRateTimes100(eIndex, &toolTip);
+	lua_pushstring(L, toolTip.c_str());
+	return 1;
+}
