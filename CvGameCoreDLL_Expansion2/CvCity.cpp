@@ -1080,6 +1080,9 @@ void CvCity::init(int iID, PlayerTypes eOwner, int iX, int iY, bool bBumpUnits, 
 		owningPlayer.CreateSpies(owningPlayer.GetPlayerTraits()->GetStartingSpies(), false);
 	}
 
+#ifdef MOD_GLOBAL_CITY_SCALES
+	if (MOD_GLOBAL_CITY_SCALES) UpdateScaleBuildings();
+#endif
 #ifdef MOD_GLOBAL_CORRUPTION
 	if (MOD_GLOBAL_CORRUPTION) UpdateCorruption();
 #endif
@@ -1820,6 +1823,9 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 	m_iCorruptionLevelChangeFromBuilding = 0;
 	m_bIsSecondCapital = false;
 	m_iSecondCapitalsExtraScore = 0;
+#endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+	m_eCityScale = NO_CITY_SCALE;
 #endif
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
 	m_iCityEnableCrops = 0;
@@ -16846,6 +16852,14 @@ void CvCity::setPopulation(int iNewValue, bool bReassignPop /* = true */, bool b
 			}
 		}
 
+#ifdef MOD_GLOBAL_CITY_SCALES
+		if (MOD_GLOBAL_CITY_SCALES)
+		{
+			CvCityScaleEntry* pNewScaleInfo = GC.getCityScaleInfoByPopulation(getPopulation());
+			SetScale(pNewScaleInfo? (CityScaleTypes)pNewScaleInfo->GetID() : NO_CITY_SCALE);
+		}
+#endif
+
 		setLayoutDirty(true);
 		{
 			CvInterfacePtr<ICvCity1> pkDllCity(new CvDllCity(this));
@@ -18933,6 +18947,10 @@ void CvCity::changeFoodTimes100(int iChange)
 int CvCity::getMaxFoodKeptPercent() const
 {
 	VALIDATE_OBJECT();
+#ifdef MOD_GLOBAL_CITY_SCALES
+	if (MOD_GLOBAL_CITY_SCALES && !CanGrowNormally())
+		return 0;
+#endif
 	return m_iMaxFoodKeptPercent;
 }
 
@@ -32131,6 +32149,9 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 	visitor(city.m_bIsSecondCapital);
 	visitor(city.m_iSecondCapitalsExtraScore);
 #endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+	visitor(city.m_eCityScale);
+#endif
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
 	visitor(city.m_iCityEnableCrops);
 	visitor(city.m_iCityEnableArmee);
@@ -35781,6 +35802,123 @@ void CvCity::ChangeSecondCapitalsExtraScore(int iChange)
 		SetSecondCapital(false);
 		GET_PLAYER(getOwner()).RemoveSecondCapital(GetID());
 	}
+}
+#endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+void CvCity::SetScale(CityScaleTypes eNewScale)
+{
+	if (!MOD_GLOBAL_CITY_SCALES) return;
+	CityScaleTypes eOldScale = GetScale();
+
+	if (eOldScale == eNewScale)
+	{
+		return;
+	}
+
+	m_eCityScale = eNewScale;
+	UpdateScaleBuildings();
+
+	if (!CanGrowNormally())
+	{
+		setFood(0);
+	}
+
+#ifdef MOD_EVENTS_CITY_SCALES
+	if (MOD_EVENTS_CITY_SCALES)
+		GAMEEVENTINVOKE_HOOK(GAMEEVENT_OnCityScaleChange, getOwner(), GetID(), eOldScale, eNewScale);
+#endif
+}
+
+void CvCity::UpdateScaleBuildings()
+{
+	CityScaleTypes eScale = GetScale();
+	CvCityScaleEntry *pNewScale = GC.getCityScaleInfo(eScale);
+	auto &pAllScales = GC.getCityScaleInfo();
+	CvPlayerAI &pkOwner = GET_PLAYER(getOwner());
+	std::tr1::unordered_map<BuildingClassTypes, int> buildingClassNum;
+
+	// clear all scale buildings
+	for (auto *pScale : pAllScales)
+	{
+		if (pScale == nullptr)
+			continue;
+
+		for (auto& vFreeBuildings : pScale->GetFreeBuildingClassInfo())
+		{
+			buildingClassNum[vFreeBuildings.m_eBuildingClass] = 0;
+		}
+
+		for (auto& vFreeBuildings : pScale->GetFreeBuildingClassInfoFromPolicies())
+		{
+			buildingClassNum[vFreeBuildings.m_eBuildingClass] = 0;
+		}
+
+		for (auto& vFreeBuildings : pScale->GetFreeBuildingClassInfoFromTraits())
+		{
+			buildingClassNum[vFreeBuildings.m_eBuildingClass] = 0;
+		}
+	}
+
+	// add new scale buildings
+	if (pNewScale)
+	{
+		for (auto& vFreeBuildings : pNewScale->GetFreeBuildingClassInfo())
+		{
+			buildingClassNum[vFreeBuildings.m_eBuildingClass] += vFreeBuildings.m_iNum;
+		}
+		for (auto& vFreeBuildings : pNewScale->GetFreeBuildingClassInfoFromPolicies())
+		{
+			if (pkOwner.HasPolicy(vFreeBuildings.m_eRequiredPolicy) && !pkOwner.GetPlayerPolicies()->IsPolicyBlocked(vFreeBuildings.m_eRequiredPolicy))
+			{
+				buildingClassNum[vFreeBuildings.m_eBuildingClass] += vFreeBuildings.m_iNum;
+			}
+		}
+		for (auto& vFreeBuildings : pNewScale->GetFreeBuildingClassInfoFromTraits())
+		{
+			if (pkOwner.isMajorCiv() && pkOwner.GetPlayerTraits()->HasTrait(vFreeBuildings.m_eRequiredTrait))
+			{
+				buildingClassNum[vFreeBuildings.m_eBuildingClass] += vFreeBuildings.m_iNum;
+			}
+		}
+	}
+
+	for (auto iter = buildingClassNum.begin(); iter != buildingClassNum.end(); iter++)
+	{
+		BuildingTypes eBuilding = pkOwner.GetCivBuilding(iter->first);
+		GetCityBuildings()->SetNumRealBuilding(eBuilding, iter->second);
+	}
+}
+
+bool CvCity::CanGrowNormally() const
+{
+	auto* info = GetScaleInfo();
+	if (info == nullptr || !info->NeedGrowthBuilding())
+	{
+		return true;
+	}
+
+	for (auto& it = info->GetBuildingsSupportGrowth().begin(); it != info->GetBuildingsSupportGrowth().end(); it++)
+	{
+		auto eBuilding = *it;
+		if (HasBuilding(eBuilding))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CvCity::CanScaleImmigrantIn() const
+{
+	auto* info = GetScaleInfo();
+	if (info == nullptr) return true;
+	return info->CanImmigrantIn();
+}
+bool CvCity::CanScaleImmigrantOut() const
+{
+	auto* info = GetScaleInfo();
+	if (info == nullptr) return true;
+	return info->CanImmigrantOut();
 }
 #endif
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
