@@ -1878,6 +1878,10 @@ public:
 	bool HasEnableArmee() const;
 	void ChangeNumEnableArmee(int iChange);
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	bool IsNoNuclearWinterLocal() const;
+	void ChangeNumNoNuclearWinterLocal(int iChange);
+#endif
 
 protected:
 	SYNC_ARCHIVE_MEMBER(CvCity)
@@ -2307,6 +2311,9 @@ private:
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
 	int m_iCityEnableCrops = 0;
 	int m_iCityEnableArmee = 0;
+#endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	int m_iNumNoNuclearWinterLocal = 0;
 #endif
 };
 

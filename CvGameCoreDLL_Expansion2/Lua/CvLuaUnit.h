@@ -657,6 +657,9 @@ protected:
 	LUAAPIEXTN(IsCanBeEstablishedCorps, bool);
 	LUAAPIEXTN(ChangeNumCannotBeEstablishedCorps, void, iValue);
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	LUAAPIEXTN(GetNuclearWinterProcess, int);
+#endif
 };
 
 namespace CvLuaArgs

@@ -232,6 +232,9 @@ public:
 	bool IsNoTroops() const;
 	bool IsCannotBeEstablishedCorps() const;
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	int GetNuclearWinterProcess() const;
+#endif
 
 private:
 
@@ -431,6 +434,9 @@ private:
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
 	bool m_bNoTroops = false;
 	bool m_bCannotBeEstablishedCorps = false;
+#endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	int m_iNuclearWinterProcess = 0;
 #endif
 };
 
