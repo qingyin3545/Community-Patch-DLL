@@ -793,6 +793,7 @@ void CvLuaCity::PushMethods(lua_State* L, int t)
 	Method(DecideCorruptionLevelForNormalCity);
 	Method(GetMaxCorruptionLevel);
 	Method(IsCorruptionLevelReduceByOne);
+	Method(IsSecondCapital);
 #endif
 #ifdef MOD_GLOBAL_CITY_SCALES
 	Method(GetScale);
@@ -809,7 +810,7 @@ void CvLuaCity::PushMethods(lua_State* L, int t)
 	Method(CanImmigrantOut);
 #endif
 	Method(GetYieldRateInfoTool);
-
+	Method(GetFoodConsumptionPerPopTimes100);
 #endif
 }
 //------------------------------------------------------------------------------
@@ -6715,7 +6716,7 @@ LUAAPIIMPL(City, CalculateCorruptionScoreFromTrait);
 LUAAPIIMPL(City, GetCorruptionScoreModifierFromPolicy);
 LUAAPIIMPL(City, GetMaxCorruptionLevel);
 LUAAPIIMPL(City, IsCorruptionLevelReduceByOne);
-
+LUAAPIIMPL(City, IsSecondCapital);
 int CvLuaCity::lDecideCorruptionLevelForNormalCity(lua_State* L)
 {
 	CvCity* pCity = GetInstance(L);
@@ -6747,5 +6748,37 @@ int CvLuaCity::lGetYieldRateInfoTool(lua_State* L)
 	const YieldTypes eIndex = (YieldTypes)lua_tointeger(L, 2);
 	CvString toolTip = pkCity->getYieldRateInfoTool(eIndex);
 	lua_pushstring(L, toolTip.c_str());
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaCity::lGetFoodConsumptionPerPopTimes100(lua_State* L)
+{
+	CvCity* pCity = GetInstance(L);
+
+	int iResult = GC.getFOOD_CONSUMPTION_PER_POPULATION() * 100;
+	
+	TerrainTypes eTerrain = pCity->plot()->getTerrainType();
+	if(eTerrain == NO_TERRAIN)
+	{
+		lua_pushinteger(L, iResult);
+		return 1;
+	}
+
+	int iConsumptionModifier = 100;
+#ifdef TODO_SP
+	ReligionTypes eMajority = pCity->GetCityReligions()->GetReligiousMajority();
+	if(eMajority != NO_RELIGION)
+	{
+		iConsumptionModifier += GC.getGame().GetGameReligions()->GetReligion(eMajority, pCity->getOwner())->m_Beliefs.GetTerrainCityFoodConsumption(eTerrain);
+	}	
+	BeliefTypes eSecondaryPantheon = pCity->GetCityReligions()->GetSecondaryReligionPantheonBelief();
+	if(eSecondaryPantheon != NO_BELIEF)
+	{
+		iConsumptionModifier += GC.GetGameBeliefs()->GetEntry(eSecondaryPantheon)->GetTerrainCityFoodConsumption(eTerrain);
+	}
+#endif
+	iResult = iResult * iConsumptionModifier;
+	iResult /= 100;
+	lua_pushinteger(L, iResult);
 	return 1;
 }
