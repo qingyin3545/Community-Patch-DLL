@@ -823,6 +823,8 @@
 
 #define MOD_GLOBAL_CORRUPTION						gCustomMods.isGLOBAL_CORRUPTION()
 #define MOD_TROOPS_AND_CROPS_FOR_SP           		gCustomMods.isTROOPS_AND_CROPS_FOR_SP()
+#define MOD_GLOBAL_CITY_SCALES						gCustomMods.isGLOBAL_CITY_SCALES()
+#define MOD_EVENTS_CITY_SCALES						gCustomMods.isEVENTS_CITY_SCALES()
 
 //
 // NOTHING BELOW HERE SHOULD NEED CHANGING
@@ -1187,6 +1189,10 @@ enum BattleTypeTypes
 #define GAMEEVENT_CityFlipChance			"CityFlipChance", "ii"
 #define GAMEEVENT_CityFlipRecipientChance	"CityFlipChance", "iii"
 #define GAMEEVENT_PlayerAnarchy				"PlayerAnarchyBegins", "iii"
+
+#ifdef MOD_EVENTS_CITY_SCALES
+#define GAMEEVENT_OnCityScaleChange			"OnCityScaleChange", "iiii"
+#endif
 
 // Serialization wrappers
 #define MOD_SERIALIZE
@@ -1588,6 +1594,8 @@ public:
 
 	MOD_OPT_DECL(GLOBAL_CORRUPTION);
 	MOD_OPT_DECL(TROOPS_AND_CROPS_FOR_SP);
+	MOD_OPT_DECL(GLOBAL_CITY_SCALES);
+	MOD_OPT_DECL(EVENTS_CITY_SCALES);
 
 protected:
 	bool m_bInit;
