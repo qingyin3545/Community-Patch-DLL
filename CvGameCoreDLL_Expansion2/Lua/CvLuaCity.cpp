@@ -808,6 +808,7 @@ void CvLuaCity::PushMethods(lua_State* L, int t)
 	Method(CanImmigrantIn);
 	Method(CanImmigrantOut);
 #endif
+	Method(GetYieldRateInfoTool);
 
 #endif
 }
@@ -6739,3 +6740,12 @@ LUAAPIIMPL(City, SetCanDoImmigration)
 LUAAPIIMPL(City, CanImmigrantIn)
 LUAAPIIMPL(City, CanImmigrantOut)
 #endif
+//------------------------------------------------------------------------------
+int CvLuaCity::lGetYieldRateInfoTool(lua_State* L)
+{
+	CvCity* pkCity = GetInstance(L);
+	const YieldTypes eIndex = (YieldTypes)lua_tointeger(L, 2);
+	CvString toolTip = pkCity->getYieldRateInfoTool(eIndex);
+	lua_pushstring(L, toolTip.c_str());
+	return 1;
+}

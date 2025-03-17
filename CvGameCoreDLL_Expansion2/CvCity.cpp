@@ -1892,6 +1892,8 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 	m_bCanDoImmigration = true;
 	m_iNumAllScaleImmigrantIn = 0;
 #endif
+	m_aiBaseYieldRateFromBuildingsPolicies.clear();
+	m_aiBaseYieldRateFromBuildingsPolicies.resize(NUM_YIELD_TYPES, 0);
 }
 
 
@@ -14951,7 +14953,7 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 
 			CvPlayerPolicies* pPolicies = GET_PLAYER(getOwner()).GetPlayerPolicies();
 			changeYieldRateModifier(eYield, pPolicies->GetBuildingClassYieldModifier(eBuildingClass, eYield) * iChange);
-			ChangeBaseYieldRateFromBuildings(eYield, pPolicies->GetBuildingClassYieldChange(eBuildingClass, eYield) * iChange);
+			ChangeBaseYieldRateFromBuildingsPolicies(eYield, pPolicies->GetBuildingClassYieldChange(eBuildingClass, eYield) * iChange);
 
 			int iYieldMod = pBuildingInfo->GetBuildingClassYieldModifier(eBuildingClass, eYield);
 			if (iYieldMod != 0)
@@ -17840,7 +17842,7 @@ int CvCity::GetBaseJONSCulturePerTurn() const
 
 	int iCulturePerTurn = 0;
 	iCulturePerTurn += GetJONSCulturePerTurnFromBuildings();
-	iCulturePerTurn += GetJONSCulturePerTurnFromPolicies();
+	iCulturePerTurn += GetBaseYieldRateFromPolicy(YIELD_CULTURE);
 	iCulturePerTurn += GetJONSCulturePerTurnFromSpecialists();
 
 	// GetJONSCulturePerTurnFromSpecialists() uses the Specialists.CulturePerTurn column,
@@ -17861,14 +17863,7 @@ int CvCity::GetBaseJONSCulturePerTurn() const
 	iCulturePerTurn += GetBaseYieldRateFromGreatWorks(YIELD_CULTURE);
 	iCulturePerTurn += GetBaseYieldRateFromTerrain(YIELD_CULTURE);
 
-	for (int iI = 0; iI < GC.getNumFeatureInfos(); iI++)
-	{
-		FeatureTypes eFeature = (FeatureTypes)iI;
-		if (eFeature != NO_FEATURE)
-		{
-			iCulturePerTurn += GetYieldPerTurnFromUnimprovedFeatures(eFeature, YIELD_CULTURE);
-		}
-	}
+	iCulturePerTurn += GetYieldPerTurnFromUnimprovedFeatures(YIELD_CULTURE);
 
 	iCulturePerTurn += GetJONSCulturePerTurnFromTraits();
 	iCulturePerTurn += GetJONSCulturePerTurnFromReligion();
@@ -18105,6 +18100,7 @@ int CvCity::GetFaithPerTurn(bool bStatic) const
 	}
 
 	int iFaith = GetFaithPerTurnFromBuildings();
+	iFaith += GetBaseYieldRateFromPolicy(YIELD_FAITH);
 	iFaith += GetBaseYieldRateFromSpecialists(YIELD_FAITH);
 	iFaith += (GetYieldPerPopTimes100(YIELD_FAITH) * getPopulation()) / 100;
 	iFaith += (GetYieldPerPopInEmpireTimes100(YIELD_FAITH) * GET_PLAYER(getOwner()).getTotalPopulation()) / 100;
@@ -18122,14 +18118,7 @@ int CvCity::GetFaithPerTurn(bool bStatic) const
 	iFaith += GetBaseYieldRateFromTerrain(YIELD_FAITH);
 	iFaith += GetFaithPerTurnFromPolicies();
 
-	for (int iI = 0; iI < GC.getNumFeatureInfos(); iI++)
-	{
-		FeatureTypes eFeature = (FeatureTypes)iI;
-		if (eFeature != NO_FEATURE)
-		{
-			iFaith += GetYieldPerTurnFromUnimprovedFeatures(eFeature, YIELD_FAITH);
-		}
-	}
+	iFaith += GetYieldPerTurnFromUnimprovedFeatures(YIELD_FAITH);
 
 	iFaith += GetFaithPerTurnFromReligion();
 
@@ -23787,6 +23776,8 @@ int CvCity::getBaseYieldRate(YieldTypes eIndex) const
 	iValue += GetBaseYieldRateFromGreatWorks(eIndex);
 	iValue += GetBaseYieldRateFromTerrain(eIndex);
 	iValue += GetBaseYieldRateFromBuildings(eIndex);
+	iValue += GetBaseYieldRateFromPolicy(eIndex);
+	iValue += GetYieldPerTurnFromUnimprovedFeatures(eIndex);
 	iValue += GetBaseYieldRateFromSpecialists(eIndex);
 	iValue += GetBaseYieldRateFromMisc(eIndex);
 	iValue += GetBaseYieldRateFromReligion(eIndex);
@@ -36168,6 +36159,384 @@ void CvCity::ChangeNumAllScaleImmigrantIn(int iChange)
 	m_iNumAllScaleImmigrantIn += iChange;
 }
 #endif
+
+//	--------------------------------------------------------------------------------
+/// Base yield rate from Buildings with Policy bonus
+int CvCity::GetBaseYieldRateFromBuildingsPolicies(YieldTypes eIndex) const
+{
+	VALIDATE_OBJECT();
+	ASSERT_DEBUG(eIndex >= 0, "eIndex expected to be >= 0");
+	ASSERT_DEBUG(eIndex < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+	return m_aiBaseYieldRateFromBuildingsPolicies[eIndex];
+}
+/// Base yield rate from Buildings with Policy bonus
+void CvCity::ChangeBaseYieldRateFromBuildingsPolicies(YieldTypes eIndex, int iChange)
+{
+	VALIDATE_OBJECT();
+	ASSERT_DEBUG(eIndex >= 0, "eIndex expected to be >= 0");
+	ASSERT_DEBUG(eIndex < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+	if(iChange != 0)
+	{
+		m_aiBaseYieldRateFromBuildingsPolicies[eIndex] += iChange;
+		if(getTeam() == GC.getGame().getActiveTeam())
+		{
+			if(isCitySelected())
+			{
+				DLLUI->setDirty(CityScreen_DIRTY_BIT, true);
+			}
+		}
+	}
+}
+//	--------------------------------------------------------------------------------
+/// Base yield rate from Policy --TODO this is a very simple func now
+int CvCity::GetBaseYieldRateFromPolicy(YieldTypes eIndex) const
+{
+	VALIDATE_OBJECT();
+	ASSERT_DEBUG(eIndex >= 0, "eIndex expected to be >= 0");
+	ASSERT_DEBUG(eIndex < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+	int iRtnValue = 0;
+	if(eIndex == YIELD_CULTURE) iRtnValue += GetJONSCulturePerTurnFromPolicies();
+	iRtnValue += GetBaseYieldRateFromBuildingsPolicies(eIndex);
+
+	return iRtnValue;
+}
+//	--------------------------------------------------------------------------------
+/// Base yield rate from Trait --TODO this is a very simple func now
+int CvCity::GetBaseYieldRateFromTrait(YieldTypes eIndex) const
+{
+	VALIDATE_OBJECT();
+	ASSERT_DEBUG(eIndex >= 0, "eIndex expected to be >= 0");
+	ASSERT_DEBUG(eIndex < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+	switch (eIndex)
+	{
+	case YIELD_CULTURE:
+		return GetJONSCulturePerTurnFromTraits();
+		break;
+	default:
+		return 0;
+		break;
+	}
+}
+//	--------------------------------------------------------------------------------
+/// Base yield rate from Leagues --TODO this is a very simple func now
+int CvCity::GetBaseYieldRateFromLeagues(YieldTypes eIndex) const
+{
+VALIDATE_OBJECT();
+	ASSERT_DEBUG(eIndex >= 0, "eIndex expected to be >= 0");
+	ASSERT_DEBUG(eIndex < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+	switch (eIndex)
+	{
+	case YIELD_CULTURE:
+		return GetJONSCulturePerTurnFromLeagues();
+		break;
+	default:
+		return 0;
+		break;
+	}
+}
+//	--------------------------------------------------------------------------------
+int CvCity::GetYieldPerTurnFromUnimprovedFeatures(YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	ASSERT_DEBUG(eIndex >= 0, "eIndex expected to be >= 0");
+	ASSERT_DEBUG(eIndex < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+	int res = 0;
+	for (int iI = 0; iI < GC.getNumFeatureInfos(); iI++)
+	{
+		FeatureTypes eFeature = (FeatureTypes)iI;
+		if (eFeature != NO_FEATURE)
+		{
+			res += GetYieldPerTurnFromUnimprovedFeatures(eFeature, eYield);
+		}
+	}
+	return res;
+}
+//	--------------------------------------------------------------------------------
+CvString CvCity::getYieldRateInfoTool(YieldTypes eIndex, bool bIgnoreTrade) const
+{
+	ASSERT_DEBUG(eIndex >= 0, "eIndex expected to be >= 0");
+	ASSERT_DEBUG(eIndex < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+	CvString szRtnValue = "";
+	if(IsResistance() || IsRazing())
+	{
+		if(eIndex == YIELD_GOLD || eIndex == YIELD_SCIENCE || eIndex == YIELD_TOURISM || eIndex == YIELD_GOLDEN_AGE_POINTS)
+		{
+			return szRtnValue;
+		}
+	}
+
+	const char* YieldIcon = GC.getYieldInfo(eIndex)->getIconString();
+	int iBaseValue = 0;
+	if (getProductionToYieldModifier(eIndex) != 0)
+	{
+		// We want to process production to production and call it stockpiling!
+		int iTradeRouteBonus = bIgnoreTrade ? 0 : GET_PLAYER(m_eOwner).GetTrade()->GetTradeValuesAtCityTimes100(this, YIELD_PRODUCTION);
+		iBaseValue = ((getBasicYieldRateTimes100(YIELD_PRODUCTION) + iTradeRouteBonus) * getProductionToYieldModifier(eIndex)) / 100;
+	}
+	if(iBaseValue != 0)
+	{
+		double iBaseYieldTimes100 = iBaseValue;
+		iBaseYieldTimes100 /= 100;
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_CITY_PRODUCTION_TO", iBaseYieldTimes100, YieldIcon);
+	}
+	//Yield from Policy
+	iBaseValue = GetBaseYieldRateFromPolicy(eIndex);
+	if(iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_POLICY", iBaseValue, YieldIcon);
+	}
+	iBaseValue = GetBaseYieldRateFromGreatWorks(eIndex);
+	if(iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_GREATWORK", iBaseValue, YieldIcon);
+	}
+	iBaseValue = GetBaseYieldRateFromTerrain(eIndex);
+	if(iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_TERRAIN", iBaseValue, YieldIcon);
+	}
+	iBaseValue = GetYieldPerTurnFromUnimprovedFeatures(eIndex);
+	if(iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_UNIMPROVEMENT_FEATURES", iBaseValue, YieldIcon);
+	}
+#ifdef TODO_SP
+	iBaseValue = GetYieldPerTurnFromAdjacentFeatures(eIndex);
+	if(iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_PER_ADJACENT_FEATURES", iBaseValue, YieldIcon);
+	}
+#endif
+	//Special case: Yield from trait
+	iBaseValue = GetBaseYieldRateFromTrait(eIndex);
+	if(iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_TRAITS", iBaseValue, YieldIcon);
+	}
+	//Special case: Yield from Leagues
+	iBaseValue = GetBaseYieldRateFromLeagues(eIndex);
+	if(iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_LEAGUES", iBaseValue, YieldIcon);
+	}
+	iBaseValue = GetBaseYieldRateFromBuildings(eIndex);
+	if(iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_BUILDINGS", iBaseValue, YieldIcon);
+	}
+	iBaseValue = GetBaseYieldRateFromSpecialists(eIndex);
+	if(iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_SPECIALISTS", iBaseValue, YieldIcon);
+	}
+	iBaseValue = GetBaseYieldRateFromMisc(eIndex);
+	if(iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_MISC", iBaseValue, YieldIcon);
+	}
+#ifdef TODO_SP
+	iBaseValue = GetBaseYieldRateFromProjects(eIndex);
+	if (iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_PROJECTS", iBaseValue, YieldIcon);
+	}
+#endif
+	//Special case for FAITH and Culture
+	iBaseValue = GetBaseYieldRateFromReligion(eIndex);
+	if(iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_RELIGION", iBaseValue, YieldIcon);
+	}
+#ifdef MOD_BUILDINGS_YIELD_FROM_OTHER_YIELD
+	if (MOD_BUILDINGS_YIELD_FROM_OTHER_YIELD)
+	{
+		iBaseValue = GetBaseYieldRateFromOtherYield(eIndex);
+		for (int iI = 0; iI < NUM_YIELD_TYPES; iI++)
+		{
+			YieldTypes eIndex2 = (YieldTypes)iI;
+			if (eIndex2 == NO_YIELD)
+				continue;
+			if (eIndex == eIndex2)
+				continue;
+
+			//NOTE! We flip it here, because we want the OUT yield
+			iBaseValue += GetRealYieldFromYield(eIndex2, eIndex);
+		}
+
+		if(iBaseValue != 0)
+		{
+			szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_OTHER_YIELD", iBaseValue, YieldIcon);
+		}
+	}
+#endif
+	if (IsRouteToCapitalConnected())
+	{
+		iBaseValue = GET_PLAYER(getOwner()).GetYieldChangeTradeRoute(eIndex);
+		iBaseValue += GET_PLAYER(getOwner()).GetPlayerTraits()->GetYieldChangeTradeRoute(eIndex);
+		if(iBaseValue != 0)
+		{
+			szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_TRADE_ROUTE", iBaseValue, YieldIcon);
+		}
+	}
+
+#ifdef TODO_SP
+	if (eIndex == YIELD_HEALTH) 
+	{
+		if (plot()->isFreshWater())
+		{
+			iBaseValue = GC.getCITY_FRESH_WATER_HEALTH_YIELD();
+			szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FRESH_WATER", iBaseValue, YieldIcon);
+		}
+		else
+		{
+			iBaseValue = -GC.getCITY_FRESH_WATER_HEALTH_YIELD();
+			szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_NO_FRESH_WATER", iBaseValue, YieldIcon);
+		}
+	}
+
+	if (eIndex == YIELD_CRIME)
+	{
+
+		iBaseValue = getCrimeFromSpy();
+		if (iBaseValue != 0)
+		{
+			szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_SPIES", iBaseValue, YieldIcon);
+		}
+
+		iBaseValue = getCrimeFromOpinion();
+		if (iBaseValue != 0)
+		{
+			szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_OPINION", iBaseValue, YieldIcon);
+		}
+
+		iBaseValue = getCrimeFromGarrisonedUnit();
+		if (iBaseValue != 0)
+		{
+			szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_GARRISONED_UNIT", iBaseValue, YieldIcon);
+		}
+	}
+
+	if (eIndex == YIELD_HERESY)
+	{
+		iBaseValue = getHeresyFromDiscord();
+		if (iBaseValue != 0)
+		{
+			szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_DISCORD", iBaseValue, YieldIcon);
+		}
+	}
+
+	if (eIndex != YIELD_HEALTH && eIndex != YIELD_FOOD)
+	{
+		iBaseValue = GetYieldFromHealth(eIndex);
+		if (iBaseValue != 0)
+		{
+			szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_HEALTH", iBaseValue, YieldIcon);
+		}
+	}
+
+	if (eIndex == YIELD_DISEASE)
+	{
+		iBaseValue = getDiseaseFromConnectionAndTradeRoute();
+		if (iBaseValue != 0)
+		{
+			szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_CITY_CONNECTION", iBaseValue, YieldIcon);
+		}
+	}
+
+	if (MOD_DISEASE_BREAK)
+	{
+		if (eIndex == YIELD_FOOD)
+		{
+			iBaseValue = getYieldRate(YIELD_HEALTH, false) - getYieldRate(YIELD_DISEASE, false);
+			if (iBaseValue < 0)
+			{
+				szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_HEALTH", iBaseValue, YieldIcon);
+			}
+		}
+	}
+
+	if (eIndex != YIELD_CRIME)
+	{
+		iBaseValue = GetYieldFromCrime(eIndex);
+		if(iBaseValue != 0)
+		{
+			szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_CRIME", iBaseValue, YieldIcon);
+		}
+	}
+#endif
+	iBaseValue = GetYieldFromHappiness(eIndex);
+	if(iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_HAPPINESS", iBaseValue, YieldIcon);
+	}
+
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	iBaseValue = 0;
+	if(!IsNoNuclearWinterLocal()) iBaseValue = GC.getGame().GetYieldFromNuclearWinter(eIndex);
+	if(iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_NUCLEAR_WINTER", iBaseValue, YieldIcon);
+	}
+#endif
+
+	double iBaseYieldTimes100 = 0.0;
+	iBaseValue = ((GetYieldPerPopTimes100(eIndex)/*+ GET_PLAYER(getOwner()).GetYieldPerPopChange(eIndex)*/) * getPopulation());
+	if(iBaseValue != 0)
+	{
+		iBaseYieldTimes100 = iBaseValue;
+		iBaseYieldTimes100 /= 100;
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_POPULATION", iBaseYieldTimes100, YieldIcon);
+	}
+
+	iBaseValue = GetYieldPerReligionTimes100(eIndex) * GetCityReligions()->GetNumReligionsWithFollowers();
+	if(iBaseValue != 0)
+	{
+		iBaseYieldTimes100 = iBaseValue;
+		iBaseYieldTimes100 /= 100;
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_RELOGION_POPULATION", iBaseYieldTimes100, YieldIcon);
+	}
+
+	iBaseValue = (GET_PLAYER(getOwner()).getYieldFromNonSpecialistCitizens(eIndex)) * (getPopulation() - GetCityCitizens()->GetTotalSpecialistCount());
+	if (iBaseValue != 0)
+	{
+		iBaseYieldTimes100 = iBaseValue;
+		iBaseYieldTimes100 /= 100;
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_NON_SPECIALIST_CITIZENS", iBaseYieldTimes100, YieldIcon);
+	}
+
+	iBaseValue = (GetYieldPerPopInEmpireTimes100(eIndex) * GET_PLAYER(m_eOwner).getTotalPopulation());
+	if(iBaseValue != 0)
+	{
+		iBaseYieldTimes100 = iBaseValue;
+		iBaseYieldTimes100 /= 100;
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_TOTAL_POPULATION", iBaseYieldTimes100, YieldIcon);
+	}
+#ifdef TODO_SP
+	iBaseValue = GetBaseYieldRateFromEspionageSpy(eIndex);
+	if (iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_ESPIONAGE_SPY", iBaseValue, YieldIcon);
+	}
+#endif
+	iBaseValue = GetBaseYieldRateFromCSFriendship(eIndex);
+	if (iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_CS_FRIENDSHIP", iBaseValue, YieldIcon);
+	}
+
+	iBaseValue = GetBaseYieldRateFromCSAlliance(eIndex);
+	if (iBaseValue != 0)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_CS_ALLIANCE", iBaseValue, YieldIcon);
+	}
+
+	iBaseValue = GET_PLAYER(m_eOwner).GetTrade()->GetTradeValuesAtCityTimes100(this, eIndex);
+	if(iBaseValue != 0 && !bIgnoreTrade)
+	{
+		szRtnValue += GetLocalizedText("TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_TRADE_VALUE", iBaseValue, YieldIcon);
+	}
+	return szRtnValue;
+}
 
 FDataStream& operator<<(FDataStream& saveTo, const SCityExtraYields& readFrom)
 {

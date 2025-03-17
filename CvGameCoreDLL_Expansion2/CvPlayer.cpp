@@ -42034,7 +42034,7 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 
 				pLoopCity->changeYieldRateModifier(eYield, pkPolicyInfo->GetBuildingClassYieldModifiers(iI, iJ) * iBuildingCount * iChange);
 				pLoopCity->changeReligionBuildingYieldRateModifier(eBuildingClass, eYield, pkPolicyInfo->GetReligionBuildingYieldMod(iI, iJ) * iBuildingCount * iChange);
-				pLoopCity->ChangeBaseYieldRateFromBuildings(eYield, pkPolicyInfo->GetYieldChangeWorldWonder(iJ) * iTotalWonders * iChange);
+				pLoopCity->ChangeBaseYieldRateFromBuildingsPolicies(eYield, pkPolicyInfo->GetYieldChangeWorldWonder(iJ) * iTotalWonders * iChange);
 
 				int iBuildingYieldChange = pkPolicyInfo->GetBuildingClassYieldChanges(iI, iJ);
 				switch (eYield)
@@ -42048,7 +42048,7 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 						pLoopCity->ChangeFaithPerTurnFromPolicies(iBuildingYieldChange * iBuildingCount * iChange);
 						break;
 					default:
-						pLoopCity->ChangeBaseYieldRateFromBuildings(eYield, iBuildingYieldChange * iBuildingCount * iChange);
+						pLoopCity->ChangeBaseYieldRateFromBuildingsPolicies(eYield, iBuildingYieldChange * iBuildingCount * iChange);
 				}
 			}
 		}
