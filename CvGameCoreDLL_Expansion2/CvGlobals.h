@@ -163,6 +163,9 @@ class ICvUnit1;
 #ifdef MOD_GLOBAL_CITY_SCALES
 #include "CvCityScaleClasses.h"
 #endif
+#ifdef MOD_NUCLEAR_WINTER_FOR_SP
+#include "CvNuclearWinter.h"
+#endif
 
 class CvGlobals
 {
@@ -661,6 +664,13 @@ public:
 
 	void sortAndUpdateOrderedCityScale(const std::vector<CvCityScaleEntry*>&);
 	CvCityScaleEntry* getCityScaleInfoByPopulation(int iPopulation) const;
+#endif
+#ifdef MOD_NUCLEAR_WINTER_FOR_SP
+	int getNumNuclearWinterLevel();
+	std::vector<CvNuclearWinterLevel*>& getNuclearWinterLevelInfo();
+	CvNuclearWinterLevel* getNuclearWinterLevelInfo(NuclearWinterLevelTypes eLevel);
+	void initGlobalNuclearWinterLevels();
+	std::vector<CvNuclearWinterLevel*>& CvGlobals::getOrderedNuclearWinterLevels();
 #endif
 
 	//
@@ -3188,6 +3198,10 @@ protected:
 #ifdef MOD_GLOBAL_CITY_SCALES
 	CvCityScaleXMLEntries* m_pCityScales;
 	std::vector<CvCityScaleEntry*> m_vOrderedCityScales; // order by min population
+#endif
+#ifdef MOD_NUCLEAR_WINTER_FOR_SP
+	CvNuclearWinterLevelXMLEntries* m_pNuclearWinterInfo;
+	std::vector<CvNuclearWinterLevel*> m_vOrderedNuclearWinterLevels; // order by Trigger Threshold lower bound.
 #endif
 
 	//////////////////////////////////////////////////////////////////////////
