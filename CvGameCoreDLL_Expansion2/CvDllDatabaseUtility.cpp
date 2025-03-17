@@ -406,6 +406,10 @@ bool CvDllDatabaseUtility::PrefetchGameData()
 	PrefetchCollection(GC.getCityScaleInfo(), "CityScales");
 	GC.sortAndUpdateOrderedCityScale(GC.getCityScaleInfo());
 #endif
+#ifdef MOD_NUCLEAR_WINTER_FOR_SP
+	PrefetchCollection(GC.getNuclearWinterLevelInfo(), "NuclearWinterLevels");
+	GC.initGlobalNuclearWinterLevels();
+#endif
 
 	//Copy flavors into string array
 	{
