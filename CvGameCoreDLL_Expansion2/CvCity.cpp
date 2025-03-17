@@ -1,4 +1,4 @@
-﻿/*	-------------------------------------------------------------------------------------------------------
+/*	-------------------------------------------------------------------------------------------------------
 	© 1991-2012 Take-Two Interactive Software and its subsidiaries.  Developed by Firaxis Games.
 	Sid Meier's Civilization V, Civ, Civilization, 2K Games, Firaxis Games, Take-Two Interactive Software
 	and their respective logos are all trademarks of Take-Two interactive Software, Inc.
@@ -1817,6 +1817,9 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
 	m_iCityEnableCrops = 0;
 	m_iCityEnableArmee = 0;
+#endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	m_iNumNoNuclearWinterLocal = 0;
 #endif
 }
 
@@ -14998,6 +15001,9 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
         ChangeNumEnableCrops(pBuildingInfo->IsEnableCrops() ? iChange : 0);
 		ChangeNumEnableArmee(pBuildingInfo->IsEnableArmee() ? iChange : 0);
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+		ChangeNumNoNuclearWinterLocal(pBuildingInfo->IsNoNuclearWinterLocal() ? iChange : 0);
+#endif
 
 		// Process for our player
 		for (int iI = 0; iI < MAX_PLAYERS; iI++)
@@ -23115,6 +23121,20 @@ int CvCity::getBaseYieldRateModifier(YieldTypes eIndex, int iAssumedExtraModifie
 	// only used for internal calculations, so it doesn't need a tooltip
 	iModifier += iAssumedExtraModifier;
 
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	// Yield Modifier from Nuclear Winter
+	iTempMod = 0;
+	if(!IsNoNuclearWinterLocal()) iTempMod = GC.getGame().GetNuclearWinterYieldMultiplier(eIndex);
+	if(iTempMod != 0)
+	{	
+		iModifier *= (iTempMod + 100);
+		iModifier /= 100;
+		if(iTempMod != 0 && toolTipSink){
+			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_NUCLERA_WINTER_YIELD", iTempMod);
+		}
+	}
+#endif
+
 	// note: player->invalidateYieldRankCache() must be called for anything that is checked here
 	// so if any extra checked things are added here, the cache needs to be invalidated
 
@@ -23600,6 +23620,16 @@ int CvCity::getBaseYieldRateTimes100(const YieldTypes eYield, CvString* tooltipS
 		if (tooltipSink)
 			GC.getGame().BuildYieldTimes100HelpText(tooltipSink, "TXT_KEY_YIELD_FROM_TILE_EXPEND", iTempYield, szIconString);
 	}
+
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	if(!IsNoNuclearWinterLocal())
+	{
+		iTempYield = GC.getGame().GetYieldFromNuclearWinter(eYield);
+		iYield += iTempYield;
+		if (tooltipSink)
+			GC.getGame().BuildYieldTimes100HelpText(tooltipSink, "TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_NUCLEAR_WINTER", iTempYield, szIconString);
+	}
+#endif
 
 	return iYield;
 }
@@ -32253,6 +32283,9 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 	visitor(city.m_iCityEnableCrops);
 	visitor(city.m_iCityEnableArmee);
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	visitor(city.m_iNumNoNuclearWinterLocal);
+#endif
 }
 
 //	--------------------------------------------------------------------------------
@@ -36029,6 +36062,16 @@ bool CvCity::HasEnableArmee() const
 void CvCity::ChangeNumEnableArmee(int iChange)
 {
 	m_iCityEnableArmee += iChange;
+}
+#endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+bool CvCity::IsNoNuclearWinterLocal() const
+{
+	return m_iNumNoNuclearWinterLocal > 0;
+}
+void CvCity::ChangeNumNoNuclearWinterLocal(int iChange)
+{
+	m_iNumNoNuclearWinterLocal += iChange;
 }
 #endif
 
