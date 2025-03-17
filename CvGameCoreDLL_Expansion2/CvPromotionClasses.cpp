@@ -1300,6 +1300,7 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iNumEstablishCorps = kResults.GetInt("NumEstablishCorps");
 	m_bCannotBeEstablishedCorps = kResults.GetBool("CannotBeEstablishedCorps");
 #endif
+	m_iMaintenanceCost = kResults.GetInt("MaintenanceCost");
 
 	return true;
 }
@@ -3310,6 +3311,10 @@ bool CvPromotionEntry::IsCannotBeEstablishedCorps() const
 	return m_bCannotBeEstablishedCorps;
 }
 #endif
+int CvPromotionEntry::GetMaintenanceCost() const
+{
+	return m_iMaintenanceCost;
+}
 
 //=====================================
 // CvPromotionEntryXMLEntries
