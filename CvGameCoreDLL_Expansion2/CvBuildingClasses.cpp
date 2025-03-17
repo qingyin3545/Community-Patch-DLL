@@ -1925,6 +1925,29 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 	m_iMinCorruptionLevelNeeded = kResults.GetInt("MinCorruptionLevelNeeded");
 	m_iMaxCorruptionLevelNeeded = kResults.GetInt("MaxCorruptionLevelNeeded");
 #endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+	m_bEnableAllCityScaleGrowth = kResults.GetBool("EnableAllCityScaleGrowth");
+	auto* strCityScale = kResults.GetText("EnableCityScaleGrowth");
+	if (strCityScale != nullptr)
+	{
+		int len = strlen(strCityScale);
+		if (len > 0)
+		{
+			std::string strKey("Building_EnableCityScaleGrowth");
+			Database::Results* pResults = kUtility.GetResults(strKey);
+			if (pResults == NULL)
+			{
+				pResults = kUtility.PrepareResults(strKey, "select ID from CityScales where Type = ?");
+			}
+
+			pResults->Bind(1, strCityScale);
+			if (pResults->Step())
+			{
+				m_eEnableCityScaleGrowth = (CityScaleTypes)pResults->GetInt(0);
+			}
+		}
+	}
+#endif
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
 	m_iNumCrops = kResults.GetInt("NumCrops");
 	m_iNumArmee = kResults.GetInt("NumArmee");
@@ -5120,6 +5143,16 @@ int CvBuildingEntry::GetMaxCorruptionLevelNeeded() const
 int CvBuildingEntry::GetCorruptionPolicyCostModifier() const
 {
 	return m_iCorruptionPolicyCostModifier;
+}
+#endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+CityScaleTypes CvBuildingEntry::GetEnableCityScaleGrowth() const
+{
+	return m_eEnableCityScaleGrowth;
+}
+bool CvBuildingEntry::GetEnableAllCityScaleGrowth() const
+{
+	return m_bEnableAllCityScaleGrowth;
 }
 #endif
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
