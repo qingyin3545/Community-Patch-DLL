@@ -793,6 +793,10 @@ protected:
 	LUAAPIEXTN(GetMaxCorruptionLevel, int);
 	LUAAPIEXTN(IsCorruptionLevelReduceByOne, bool);
 #endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+	LUAAPIEXTN(GetScale, int);
+	LUAAPIEXTN(CanGrowNormally, bool);
+#endif
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
 	LUAAPIEXTN(HasEnableCrops, bool);
 	LUAAPIEXTN(HasEnableArmee, bool);

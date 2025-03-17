@@ -409,6 +409,10 @@ bool CvDllDatabaseUtility::PrefetchGameData()
 	PrefetchCollection(GC.getCorruptionLevelInfo(), "CorruptionLevels");
 	GC.initCityCorruptionLevelsByCityType();
 #endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+	PrefetchCollection(GC.getCityScaleInfo(), "CityScales");
+	GC.sortAndUpdateOrderedCityScale(GC.getCityScaleInfo());
+#endif
 
 	//Copy flavors into string array
 	{
