@@ -660,6 +660,7 @@ protected:
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	LUAAPIEXTN(GetNuclearWinterProcess, int);
 #endif
+	LUAAPIEXTN(GetPromotionMaintenanceCost, int);
 };
 
 namespace CvLuaArgs
