@@ -1857,6 +1857,15 @@ public:
 	int GetSecondCapitalsExtraScore() const;
 	void ChangeSecondCapitalsExtraScore(int iChange);
 #endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+	CityScaleTypes GetScale() const { return m_eCityScale; }
+	CvCityScaleEntry* GetScaleInfo() const { return GC.getCityScaleInfo(m_eCityScale); }
+	void SetScale(CityScaleTypes eScale);
+	void UpdateScaleBuildings();
+	bool CanGrowNormally() const;
+	bool CanScaleImmigrantIn() const;
+	bool CanScaleImmigrantOut() const;
+#endif
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
 	bool HasEnableCrops() const;
 	void ChangeNumEnableCrops(int iChange);
@@ -2284,6 +2293,9 @@ private:
 	int m_iCorruptionLevelChangeFromBuilding = 0;
 	bool m_bIsSecondCapital = false;
 	int m_iSecondCapitalsExtraScore = 0;
+#endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+	CityScaleTypes m_eCityScale = NO_CITY_SCALE;
 #endif
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
 	int m_iCityEnableCrops = 0;
