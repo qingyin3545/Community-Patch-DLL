@@ -48859,6 +48859,16 @@ UnitTypes CvPlayer::GetCivUnit(UnitClassTypes eUnitClass, int iFakeSeed) const
 
 	return eCivUnit;
 }
+UnitTypes CvPlayer::GetCivUnitWithDefault(UnitClassTypes eUnitClass) const
+{
+	UnitTypes eUnitType = GetCivUnit(eUnitClass);
+	if (eUnitType == NO_UNIT)
+	{
+		CvUnitClassInfo* pUnitClassInfo = GC.getUnitClassInfo(eUnitClass);
+		if(pUnitClassInfo) eUnitType = (UnitTypes)pUnitClassInfo->getDefaultUnitIndex();
+	}
+	return eUnitType;
+}
 
 //	--------------------------------------------------------------------------------
 int CvPlayer::getPolicyModifiers(PolicyModifierType eIndex) const
