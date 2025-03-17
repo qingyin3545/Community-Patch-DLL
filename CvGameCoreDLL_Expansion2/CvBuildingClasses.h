@@ -714,6 +714,10 @@ public:
 	int GetMinCorruptionLevelNeeded() const;
 	int GetMaxCorruptionLevelNeeded() const;
 #endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+	CityScaleTypes GetEnableCityScaleGrowth() const;
+	bool GetEnableAllCityScaleGrowth() const;
+#endif
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
 	int GetDomainTroops(int i) const;
 	int GetNumCrops() const;
@@ -1193,6 +1197,10 @@ private:
 	int m_iCorruptionPolicyCostModifier = 0;
 	int m_iMinCorruptionLevelNeeded = -1;
 	int m_iMaxCorruptionLevelNeeded = -1;
+#endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+	CityScaleTypes m_eEnableCityScaleGrowth = NO_CITY_SCALE;
+	bool m_bEnableAllCityScaleGrowth = false;
 #endif
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
 	int* m_piDomainTroops = nullptr;
