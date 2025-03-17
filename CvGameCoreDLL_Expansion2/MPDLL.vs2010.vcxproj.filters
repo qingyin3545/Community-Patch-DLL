@@ -557,6 +557,9 @@
     <ClCompile Include="CvLoggerCSV.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CvCityScaleClasses.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="banned.h">
@@ -1376,6 +1379,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CppLaterFeatures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
