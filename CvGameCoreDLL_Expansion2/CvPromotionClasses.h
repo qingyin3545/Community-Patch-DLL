@@ -370,6 +370,7 @@ public:
 	int GetNumEstablishCorps() const;
 	bool IsCannotBeEstablishedCorps() const;
 #endif
+	int GetMaintenanceCost() const;
 
 protected:
 	int m_iLayerAnimationPath;
@@ -700,6 +701,7 @@ protected:
 	int m_iNumEstablishCorps = 0;
 	bool m_bCannotBeEstablishedCorps = false;
 #endif
+	int m_iMaintenanceCost = 0;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
