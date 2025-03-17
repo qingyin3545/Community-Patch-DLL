@@ -725,6 +725,9 @@ public:
 	bool IsEnableCrops() const;
 	bool IsEnableArmee() const;
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	bool IsNoNuclearWinterLocal() const;
+#endif
 
 private:
 	int m_iBuildingClassType;
@@ -1208,6 +1211,9 @@ private:
 	int  m_iNumArmee = 0;
 	int  m_bEnableCrops = false;
 	int  m_bEnableArmee = false;
+#endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	bool m_bNoNuclearWinterLocal = false;
 #endif
 };
 

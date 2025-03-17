@@ -502,6 +502,13 @@ protected:
 
 	static int lIsExeWantForceResyncAvailable(lua_State* L);
 	static int lSetExeWantForceResyncValue(lua_State* L);
+
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	LUAAPIEXTN(GetNuclearWinterProcess, int);
+	LUAAPIEXTN(ChangeNuclearWinterProcess, void, iChange, bUpdate, bAllowLevelReduce);
+	LUAAPIEXTN(GetNuclearWinterNaturalReduction, int);
+	LUAAPIEXTN(ChangeNuclearWinterNaturalReduction, void, iChange);
+#endif
 };
 
 #endif //CVLUAGAME_H

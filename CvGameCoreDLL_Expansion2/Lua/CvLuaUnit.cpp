@@ -676,6 +676,9 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(IsCanBeEstablishedCorps);
 	Method(ChangeNumCannotBeEstablishedCorps);
 #endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	Method(GetNuclearWinterProcess);
+#endif
 }
 //------------------------------------------------------------------------------
 const char* CvLuaUnit::GetTypeName()
@@ -6724,4 +6727,12 @@ LUAAPIIMPL(Unit, IsCanEstablishCorps)
 LUAAPIIMPL(Unit, ChangeNumEstablishCorps)
 LUAAPIIMPL(Unit, IsCanBeEstablishedCorps)
 LUAAPIIMPL(Unit, ChangeNumCannotBeEstablishedCorps)
+#endif
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+int CvLuaUnit::lGetNuclearWinterProcess(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	lua_pushinteger(L, pkUnit->getUnitInfo().GetNuclearWinterProcess());
+	return 1;
+}
 #endif

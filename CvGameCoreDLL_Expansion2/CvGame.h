@@ -834,6 +834,18 @@ public:
 	void SetExeWantForceResyncValue(int value);
 	void SetExeWantForceResyncPointer(int* pointer);
 
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	int GetNuclearWinterProcess() const;
+	void ChangeNuclearWinterProcess(int iChange, bool bUpdate = false, bool bAllowLevelReduce = false);
+	int GetNuclearWinterNaturalReduction() const;
+	void ChangeNuclearWinterNaturalReduction(int iChange);
+	int GetNowNuclearWinterLevelIndex();
+	void DoNuclearWinterTurn();
+	void UpdateNuclearWinterLevel();
+	int GetNuclearWinterYieldMultiplier(YieldTypes eIndex);
+	int GetYieldFromNuclearWinter(YieldTypes eIndex);
+#endif
+
 protected:
 
 	// exe things
@@ -1059,6 +1071,12 @@ protected:
 
 	void PopulateDigSite(CvPlot& kPlot, EraTypes eEra, GreatWorkArtifactClass eArtifact);
 	void SpawnArchaeologySitesHistorically();
+
+#if defined(MOD_NUCLEAR_WINTER_FOR_SP)
+	int m_iNuclearWinterProcess = 0;
+	int m_iNuclearWinterNaturalReduction = 1;
+	int m_iNuclearWinterLevelIndex = NO_NUCLEAR_WINTER;
+#endif
 };
 
 extern int gTactMovesCount[NUM_AI_TACTICAL_MOVES];
