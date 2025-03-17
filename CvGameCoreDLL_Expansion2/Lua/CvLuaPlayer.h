@@ -1561,7 +1561,11 @@ protected:
 	LUAAPIEXTN(GetImmigrationInRateFromPolicy, int);
 	LUAAPIEXTN(GetImmigrationOutRateFromPolicy, int);
 #endif
-
+	LUAAPIEXTN(GetCivBuilding, int);
+	LUAAPIEXTN(GetCivUnit, int);
+	LUAAPIEXTN(GetCivBuildingWithDefault, int);
+	LUAAPIEXTN(GetCivUnitWithDefault, int);
+	LUAAPIEXTN(GetCivUnitNowTech, int);
 };
 
 namespace CvLuaArgs
