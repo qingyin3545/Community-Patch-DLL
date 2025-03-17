@@ -3,5 +3,7 @@
   <CustomModOptions>
     <Row Class="6" Name="GLOBAL_CORRUPTION" Value="0"/>
     <Row Class="6" Name="TROOPS_AND_CROPS_FOR_SP" Value="0"/>
+    <Row Class="6" Name="GLOBAL_CITY_SCALES" Value="0"/>
+    <Row Class="6" Name="EVENTS_CITY_SCALES" Value="0"/>
   </CustomModOptions>
 </GameData>

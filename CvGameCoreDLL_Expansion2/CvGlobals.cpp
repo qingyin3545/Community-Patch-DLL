@@ -2740,6 +2740,9 @@ void CvGlobals::init()
 #ifdef MOD_GLOBAL_CORRUPTION
 	m_pCorruptionInfo = FNEW(CvCorruptionLevelXMLEntries, c_eCiv5GameplayDLL, 0);
 #endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+	m_pCityScales = FNEW(CvCityScaleXMLEntries, c_eCiv5GameplayDLL, 0);
+#endif
 
 	CvPlayerAI::initStatics();
 	CvTeam::initStatics();
@@ -2810,6 +2813,9 @@ void CvGlobals::uninit()
 
 #ifdef MOD_GLOBAL_CORRUPTION
 	SAFE_DELETE(m_pCorruptionInfo);
+#endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+	SAFE_DELETE(m_pCityScales);
 #endif
 
 	// already deleted outside of the dll, set to null for safety
@@ -5088,6 +5094,69 @@ CvCorruptionLevel* CvGlobals::getCapitalCityCorruptionLevel() const
 	return m_pCapitalCityCorruptionLevel;
 }
 
+#endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+int CvGlobals::getNumCityScales() { return m_pCityScales->GetNumCityScales(); }
+
+std::vector<CvCityScaleEntry*>& CvGlobals::getCityScaleInfo()
+{
+	return m_pCityScales->GetEntries();
+}
+
+_Ret_maybenull_ CvCityScaleEntry* CvGlobals::getCityScaleInfo(CityScaleTypes eCityScale)
+{
+	if (eCityScale <= NO_CITY_SCALE || eCityScale >= getNumCityScales())
+		return nullptr;
+
+	return m_pCityScales->GetEntry(eCityScale);
+}
+
+void CvGlobals::sortAndUpdateOrderedCityScale(const std::vector<CvCityScaleEntry*>& vCityScale)
+{
+	// sort by population
+	int i = vCityScale.size();
+	m_vOrderedCityScales = vCityScale;
+	// The FirePlace code will insert a nullptr element into the vector,
+	// so we need to remove it before sorting.
+	for (auto iter = m_vOrderedCityScales.begin(); iter != m_vOrderedCityScales.end();)
+	{
+		CvCityScaleEntry* val = *iter;
+		if (val == nullptr)
+			iter = m_vOrderedCityScales.erase(iter);
+		else
+			iter++;
+	}
+	std::sort(m_vOrderedCityScales.begin(), m_vOrderedCityScales.end(), [](CvCityScaleEntry* a, CvCityScaleEntry* b) {
+		return a->GetMinPopulation() < b->GetMinPopulation();
+		});
+}
+
+CvCityScaleEntry* CvGlobals::getCityScaleInfoByPopulation(int iPopulation) const
+{
+	// binary search to find the first entry with a minPopulation <= iPopulation
+	if (iPopulation < 1 || m_vOrderedCityScales.empty())
+	{
+		return nullptr;
+	}
+
+	int iMin = 0;
+	int iMax = m_vOrderedCityScales.size() - 1;
+	while (iMin <= iMax)
+	{
+		int iMid = (iMin + iMax) / 2;
+		if (m_vOrderedCityScales[iMid]->GetMinPopulation() <= iPopulation)
+		{
+			if (iMid == m_vOrderedCityScales.size() - 1 || m_vOrderedCityScales[iMid + 1]->GetMinPopulation() > iPopulation)
+				return m_vOrderedCityScales[iMid];
+			else
+				iMin = iMid + 1;
+		}
+		else
+			iMax = iMid - 1;
+	}
+
+	return nullptr;
+}
 #endif
 
 

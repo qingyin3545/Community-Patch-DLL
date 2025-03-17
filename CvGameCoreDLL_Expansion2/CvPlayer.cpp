@@ -4284,6 +4284,10 @@ CvCity* CvPlayer::acquireCity(CvCity* pCity, bool bConquest, bool bGift, bool bO
 	GET_PLAYER(eOldOwner).DoUpdateProximityToPlayers();
 	DoUpdateProximityToPlayers();
 
+#ifdef MOD_GLOBAL_CITY_SCALES
+	if (MOD_GLOBAL_CITY_SCALES && pNewCity) pNewCity->UpdateScaleBuildings();
+#endif
+
 	// Update events
 	ICvEngineScriptSystem1* pkScriptSystem = gDLL->GetScriptSystem();
 	if (pkScriptSystem)
@@ -42896,13 +42900,18 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	}
 
 	// Generic updates
-#ifdef MOD_GLOBAL_CORRUPTION
-	if (MOD_GLOBAL_CORRUPTION && pkPolicyInfo->IsInvolveCorruption())
 	{
 		int iLoop = 0;
-		for (CvCity* pLoopCity = firstCity(&iLoop); pLoopCity != NULL; pLoopCity = nextCity(&iLoop)) pLoopCity->UpdateCorruption();
-	}
+		for (CvCity* pLoopCity = firstCity(&iLoop); pLoopCity != NULL; pLoopCity = nextCity(&iLoop))
+		{
+#ifdef MOD_GLOBAL_CITY_SCALES
+			if (MOD_GLOBAL_CITY_SCALES) pLoopCity->UpdateScaleBuildings();
 #endif
+#ifdef MOD_GLOBAL_CORRUPTION
+			if (MOD_GLOBAL_CORRUPTION && pkPolicyInfo->IsInvolveCorruption()) pLoopCity->UpdateCorruption();
+#endif
+		}
+	}
 
 	GetTrade()->UpdateTradeConnectionValues();
 	recomputeGreatPeopleModifiers();
