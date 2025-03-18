@@ -2513,7 +2513,8 @@ void CvPlayer::initFreeUnits()
 
 		// If this isn't a Settler, we must be able to train the unit and it must match with the AI type.
 		// If we can't, then find a substitute unit with the same AI type
-		if ((eRequiredUnitAI != NO_UNITAI && !pkUnitInfo->GetUnitAIType(eRequiredUnitAI)) || (!pkUnitInfo->IsFound() && !canTrainUnit(eUnit)))
+		// for SuperPower, Don't want this check
+		if (!MOD_NO_TRAIN_CHECK_INIT_FREE_UNIT && ((eRequiredUnitAI != NO_UNITAI && !pkUnitInfo->GetUnitAIType(eRequiredUnitAI)) || (!pkUnitInfo->IsFound() && !canTrainUnit(eUnit))))
 		{
 			bool bSuccess = false;
 			for (int iUnitLoop = 0; iUnitLoop < GC.getNumUnitInfos(); iUnitLoop++)

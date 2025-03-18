@@ -2722,22 +2722,22 @@ int CvBuilderTaskingAI::GetResourceWeight(ResourceTypes eResource, int iQuantity
 	if (!pkResource)
 		return 0;
 
+	int iValue = 0;
 	// if this is a luxury resource the player doesn't have, provide a bonus to getting it
 	if (pkResource->getResourceUsage() == RESOURCEUSAGE_LUXURY && !GC.getGame().GetGameLeagues()->IsLuxuryHappinessBanned(m_pPlayer->GetID(), eResource))
 	{
-		int iValue = pkResource->getHappiness() * /*750*/ GD_INT_GET(BUILDER_TASKING_PLOT_EVAL_MULTIPLIER_LUXURY_RESOURCE) * iQuantity;
-
-		return iValue;
+		iValue = pkResource->getHappiness() * /*750*/ GD_INT_GET(BUILDER_TASKING_PLOT_EVAL_MULTIPLIER_LUXURY_RESOURCE) * iQuantity;
 	}
 	else if (pkResource->getResourceUsage() == RESOURCEUSAGE_STRATEGIC)
 	{
 		// measure quantity
-		int iValue = (iQuantity + 1) * 250;
-
-		return iValue;
+		iValue = (iQuantity + 1) * 250;
 	}
+	else return 0;
 
-	return 0;
+	int iWeightModifier = 100 + pkResource->GetCreateResouceWightModifier();
+	if(iWeightModifier != 100) iValue = iValue * iWeightModifier / 100;
+	return iValue;
 }
 
 /// Does this city want to rush a build?
