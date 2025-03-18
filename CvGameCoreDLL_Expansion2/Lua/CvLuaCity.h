@@ -808,6 +808,7 @@ protected:
 #endif
 	LUAAPIEXTN(GetYieldRateInfoTool, CvString);
 	LUAAPIEXTN(GetFoodConsumptionPerPopTimes100, int);
+	LUAAPIEXTN(GetGreatPersonPointFromReligion, int);
 };
 
 namespace CvLuaArgs
