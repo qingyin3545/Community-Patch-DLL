@@ -1921,6 +1921,7 @@ public:
 #ifdef MOD_GLOBAL_CORRUPTION
 	int GetCorruptionScoreChange() const;
 #endif
+	int GetCreateResouceWightModifier() const;
 
 	virtual bool CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility);
 
@@ -1990,6 +1991,7 @@ protected:
 #ifdef MOD_GLOBAL_CORRUPTION
 	int m_iCorruptionScoreChange = 0;
 #endif
+	int m_iCreateResouceWightModifier = 0;
 
 private:
 	CvResourceInfo(const CvResourceInfo&);

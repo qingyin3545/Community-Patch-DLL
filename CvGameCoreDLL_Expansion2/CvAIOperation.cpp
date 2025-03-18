@@ -372,7 +372,7 @@ bool CvAIOperation::FinishedBuildingUnit(OperationSlot thisOperationSlot)
 /// Assigns available units to our operation. Returns true if all needed units assigned.
 bool CvAIOperation::RecruitUnit(CvUnit* pUnit)
 {
-	if(!pUnit)
+	if(!pUnit || !pUnit->plot())
 		return false;
 
 	CvArmyAI* pThisArmy = GetArmy(0);
