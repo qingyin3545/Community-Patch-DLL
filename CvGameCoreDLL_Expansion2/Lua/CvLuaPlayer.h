@@ -1566,6 +1566,8 @@ protected:
 	LUAAPIEXTN(GetCivBuildingWithDefault, int);
 	LUAAPIEXTN(GetCivUnitWithDefault, int);
 	LUAAPIEXTN(GetCivUnitNowTech, int);
+	LUAAPIEXTN(GetUnitCountFromHasPromotion, int, ePromotionType);
+	LUAAPIEXTN(GetUnitsListFromHasPromotion, table, ePromotionType);
 };
 
 namespace CvLuaArgs
