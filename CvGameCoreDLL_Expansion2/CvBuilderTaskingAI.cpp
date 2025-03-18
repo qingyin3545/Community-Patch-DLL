@@ -3073,6 +3073,9 @@ int CvBuilderTaskingAI::GetResourceWeight(ResourceTypes eResource, int iQuantity
 			}
 		}
 
+		int iWeightModifier = 100 + pkResource->GetCreateResouceWightModifier();
+		if(iWeightModifier != 100) iValue = iValue * iWeightModifier / 100;
+
 		return iValue;
 	}
 
