@@ -1541,6 +1541,8 @@ void CvLuaPlayer::PushMethods(lua_State* L, int t)
 	Method(GetCivBuildingWithDefault);
 	Method(GetCivUnitWithDefault);
 	Method(GetCivUnitNowTech);
+	Method(GetUnitCountFromHasPromotion);
+	Method(GetUnitsListFromHasPromotion);
 }
 //------------------------------------------------------------------------------
 void CvLuaPlayer::HandleMissingInstance(lua_State* L)
@@ -18542,5 +18544,47 @@ int CvLuaPlayer::lGetCivUnitNowTech(lua_State* L)
 		eUnitClass = (UnitClassTypes)pUnitEntry->GetGoodyHutUpgradeUnitClass();
 	}
 	lua_pushinteger(L, eResUnitType);
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaPlayer::lGetUnitCountFromHasPromotion(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	const PromotionTypes ePromotion = (PromotionTypes)lua_tointeger(L, 2);
+	int countOfUnitHasThisPromotion = 0;
+	int iLoop;
+	for(CvUnit* pLoopUnit = pkPlayer->firstUnit(&iLoop); pLoopUnit != NULL; pLoopUnit = pkPlayer->nextUnit(&iLoop))
+	{
+		if(pLoopUnit->isHasPromotion(ePromotion))
+		{
+			countOfUnitHasThisPromotion++;
+		}
+	}
+	lua_pushinteger(L, countOfUnitHasThisPromotion);
+	return 1;
+}
+int CvLuaPlayer::lGetUnitsListFromHasPromotion(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	const PromotionTypes ePromotion = (PromotionTypes)lua_tointeger(L, 2);
+
+	std::vector<CvUnit*> unitsListFromHasPromotion;
+	int iLoop;
+	for (CvUnit* pLoopUnit = pkPlayer->firstUnit(&iLoop); pLoopUnit != NULL; pLoopUnit = pkPlayer->nextUnit(&iLoop))
+	{
+		if (pLoopUnit && pLoopUnit->isHasPromotion(ePromotion))
+		{
+			unitsListFromHasPromotion.push_back(pLoopUnit);
+		}
+	}
+
+	lua_createtable(L, 0, 0);
+	const int t = lua_gettop(L);
+	int idx = 1;
+	for(auto* unit : unitsListFromHasPromotion)
+	{
+		CvLuaUnit::Push(L, unit);
+		lua_rawseti(L, t, idx++);
+	}
 	return 1;
 }
