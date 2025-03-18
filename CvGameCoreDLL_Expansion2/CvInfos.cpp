@@ -6489,6 +6489,11 @@ int CvResourceInfo::GetCorruptionScoreChange() const
 }
 #endif
 //------------------------------------------------------------------------------
+int CvResourceInfo::GetCreateResouceWightModifier() const
+{
+	return m_iCreateResouceWightModifier;
+}
+//------------------------------------------------------------------------------
 bool CvResourceInfo::CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility)
 {
 	if(!CvBaseInfo::CacheResults(kResults, kUtility))
@@ -6762,6 +6767,7 @@ bool CvResourceInfo::CacheResults(Database::Results& kResults, CvDatabaseUtility
 #ifdef MOD_GLOBAL_CORRUPTION
 	m_iCorruptionScoreChange = kResults.GetInt("CorruptionScoreChange");
 #endif
+	m_iCreateResouceWightModifier = kResults.GetInt("CreateResouceWightModifier");
 
 	return true;
 }
