@@ -1725,6 +1725,22 @@ public:
 	int GetScenarioModifier2(PlayerTypes ePlayer);
 	int GetScenarioModifier3(PlayerTypes ePlayer);
 
+
+	// Marriage with players
+	bool IsMarriageAccepted(PlayerTypes ePlayer) const;
+	void SetMarriageAccepted(PlayerTypes ePlayer, bool bValue);
+
+	int GetMarriageAcceptedTurn(PlayerTypes ePlayer) const;
+	int GetTurnsSinceMarriagedPlayer(PlayerTypes ePlayer) const;
+	void SetMarriageAcceptedTurn(PlayerTypes ePlayer, int iValue);
+	
+	int GetMarriageFinishCounter(PlayerTypes ePlayer) const;
+	void SetMarriageFinishCounter(PlayerTypes ePlayer, int iValue);
+	void ChangeMarriageFinishCounter(PlayerTypes ePlayer, int iChange);
+
+	int GetDualEmpireTreatyCounter() const;
+	void  ChangeDualEmpireTreatyCounter(const int value);
+
 	/////////////////////////////////////////////////////////
 	// Miscellaneous
 	/////////////////////////////////////////////////////////
@@ -2139,6 +2155,12 @@ private:
 	PlayerTypes			m_eTestToPlayer;
 	DiploStatementTypes m_eTestStatement;
 	int					m_iTestStatementArg1;
+
+	// Super power
+	std::tr1::array<bool, MAX_MAJOR_CIVS> m_pabMarriageAccepted;
+	std::tr1::array<int, MAX_MAJOR_CIVS> m_paiMarriageAcceptedTurn;
+	std::tr1::array<int, MAX_MAJOR_CIVS> m_paiMarriageFinishCounter;
+	int m_iDualEmpireTreatyCounter = 0;
 };
 
 FDataStream& operator>>(FDataStream&, CvDiplomacyAI&);
