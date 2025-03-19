@@ -2385,6 +2385,7 @@ CvGlobals::CvGlobals() :
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	GD_INT_INIT(IMMIGRATION_BASE_RATE, 30),
 #endif
+	GD_INT_INIT(PLOT_BUILD_MAX_WORKER, 1),
 
 	////////////// END DEFINES //////////////////
 
@@ -7515,6 +7516,7 @@ void CvGlobals::cacheGlobals()
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	GD_INT_CACHE(IMMIGRATION_BASE_RATE);
 #endif
+	GD_INT_CACHE(PLOT_BUILD_MAX_WORKER);
 	////////////// END DEFINES //////////////////
 }
 
