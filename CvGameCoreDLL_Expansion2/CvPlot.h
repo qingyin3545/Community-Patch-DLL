@@ -864,6 +864,8 @@ public:
 	int CalculateCorruptionScoreFromTrait(PlayerTypes ePlayer) const;
 	int CalculateCorruptionScoreModifierFromTrait(PlayerTypes ePlayer) const;
 #endif
+	bool CheckCanChangeBuildProgress(BuildTypes eBuild, bool bNewBuild);
+	bool CheckCanChangeBuildProgressConst(BuildTypes eBuild, bool bNewBuild) const;
 
 protected:
 	class PlotBoolField
@@ -955,6 +957,7 @@ protected:
 	bool* m_abIsImpassable;
 	int m_iNumTradeUnitRoute;
 	short m_iLastTurnBuildChanged;
+	short m_iNumTurnBuild;
 
 	//can add extra yield from lua. no overhead if unused!
 	vector<pair<YieldTypes, int>> m_vExtraYields;

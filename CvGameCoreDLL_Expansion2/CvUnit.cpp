@@ -13084,6 +13084,11 @@ bool CvUnit::canBuild(const CvPlot* pPlot, BuildTypes eBuild, bool bTestVisible,
 
 	if(!bTestVisible)
 	{
+		// we can not build this turn any more ?
+		if(!pPlot->CheckCanChangeBuildProgressConst(eBuild, pPlot->getBuildProgress(eBuild) == 0)) return false;
+
+		int iNumUnitWorking = 0;
+		int iMaxWorker = GD_INT_GET(PLOT_BUILD_MAX_WORKER);
 		// check for any other units working in this plot
 		const IDInfo* pUnitNode = pPlot->headUnitNode();
 		const CvUnit* pLoopUnit = NULL;
@@ -13093,12 +13098,11 @@ bool CvUnit::canBuild(const CvPlot* pPlot, BuildTypes eBuild, bool bTestVisible,
 			pLoopUnit = ::GetPlayerUnit(*pUnitNode);
 			pUnitNode = pPlot->nextUnitNode(pUnitNode);
 
-			if(pLoopUnit && pLoopUnit != this)
+			if(pLoopUnit && pLoopUnit != this && pLoopUnit->IsWork() && pLoopUnit->IsWorking())
 			{
-				if(pLoopUnit->IsWork() && pLoopUnit->IsWorking())
-				{
-					return false;
-				}
+				iNumUnitWorking++;
+				if(iNumUnitWorking >= iMaxWorker) return false;
+				if(pLoopUnit->getBuildType() != eBuild) return false;
 			}
 		}
 	}
@@ -13175,6 +13179,9 @@ bool CvUnit::build(BuildTypes eBuild)
 		NewBuild = true;
 	}
 
+	// we can not build this turn any more, return it and the worker will not lost move
+	if(!pPlot->CheckCanChangeBuildProgress(eBuild, NewBuild)) return false;
+
 	if (!MOD_CIV6_WORKER)
 		bFinished = pPlot->changeBuildProgress(eBuild, iWorkRateWithMoves, getOwner(), NewBuild);
 
@@ -13188,6 +13195,17 @@ bool CvUnit::build(BuildTypes eBuild)
 		// Update Resource info
 		if(pkBuildInfo)
 		{
+			IDInfo* pPlotUnitNode = pPlot->headUnitNode();
+			while (pPlotUnitNode != NULL)
+			{
+				CvUnit* pLoopUnit = ::GetPlayerUnit(*pPlotUnitNode);
+				pPlotUnitNode = pPlot->nextUnitNode(pPlotUnitNode);
+				if (pLoopUnit == this) continue;
+				if (pLoopUnit->getBuildType() == getBuildType()) {
+					pLoopUnit->ClearMissionQueue();
+				}
+			}
+
 			ImprovementTypes eImprovement = NO_IMPROVEMENT;
 			if (pkBuildInfo->getImprovement() != NO_IMPROVEMENT)
 			{
