@@ -2936,6 +2936,12 @@ public:
 	void SetImmigrationCounter(int iIndex, int iValue);
 	int GetImmigrationRate(PlayerTypes eTargetPlayer) const;
 #endif
+#ifdef MOD_SPECIALIST_RESOURCES
+	int getResourceFromSpecialists(ResourceTypes eIndex) const;
+	void changeResourceFromSpecialists(ResourceTypes eIndex, int iChange);
+	void UpdateResourceFromSpecialists();
+	bool MeetSpecialistResourceRequirement(const CvSpecialistInfo::ResourceInfo& info) const;
+#endif
 	BuildingTypes GetCivBuilding(BuildingClassTypes eBuildingClass) const;
 	UnitTypes GetCivUnit(UnitClassTypes eUnitClass, int iFakeSeed = 0) const;
 	UnitTypes GetCivUnitWithDefault(UnitClassTypes eUnitClass) const;
@@ -3854,6 +3860,9 @@ protected:
 #endif
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	std::vector<int> m_aiImmigrationCounter;
+#endif
+#ifdef MOD_SPECIALIST_RESOURCES
+	std::vector<int> m_paiResourcesFromSpecialists;
 #endif
 
 };

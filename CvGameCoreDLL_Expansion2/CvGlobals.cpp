@@ -2774,6 +2774,9 @@ void CvGlobals::init()
 #ifdef MOD_NUCLEAR_WINTER_FOR_SP
 	m_pNuclearWinterInfo= FNEW(CvNuclearWinterLevelXMLEntries, c_eCiv5GameplayDLL, 0);
 #endif
+#ifdef MOD_SPECIALIST_RESOURCES
+	GC.initSpecialistResourcesDependencies();
+#endif
 
 	CvPlayerAI::initStatics();
 	CvTeam::initStatics();
@@ -5235,6 +5238,33 @@ void CvGlobals::initGlobalNuclearWinterLevels()
 std::vector<CvNuclearWinterLevel*>& CvGlobals::getOrderedNuclearWinterLevels()
 {
 	return m_vOrderedNuclearWinterLevels;
+}
+#endif
+#ifdef MOD_SPECIALIST_RESOURCES
+std::tr1::unordered_set<PolicyTypes>& CvGlobals::getSpecialistResourcesPolicies()
+{
+	return m_vSpecialistResourcesPolicies;
+}
+void CvGlobals::initSpecialistResourcesDependencies()
+{
+	for (CvSpecialistInfo* sinfo : getSpecialistInfo())
+	{
+		for (CvSpecialistInfo::ResourceInfo& rinfo : sinfo->GetResourceInfo())
+		{
+			if (rinfo.m_eRequiredPolicy != NO_POLICY)
+			{
+				m_vSpecialistResourcesPolicies.insert(rinfo.m_eRequiredPolicy);
+			}
+			if (rinfo.m_eRequiredTech != NO_TECH)
+			{
+				m_vSpecialistResourcesTechnologies.insert(rinfo.m_eRequiredTech);
+			}
+		}
+	}
+}
+std::tr1::unordered_set<TechTypes>& CvGlobals::getSpecialistResourcesTechnologies()
+{
+	return m_vSpecialistResourcesTechnologies;
 }
 #endif
 
