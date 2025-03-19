@@ -672,6 +672,11 @@ public:
 	void initGlobalNuclearWinterLevels();
 	std::vector<CvNuclearWinterLevel*>& CvGlobals::getOrderedNuclearWinterLevels();
 #endif
+#ifdef MOD_SPECIALIST_RESOURCES
+	std::tr1::unordered_set<PolicyTypes>& getSpecialistResourcesPolicies();
+	std::tr1::unordered_set<TechTypes>& getSpecialistResourcesTechnologies();
+	void initSpecialistResourcesDependencies();
+#endif
 
 	//
 	// Global Types
@@ -3210,6 +3215,10 @@ protected:
 #ifdef MOD_NUCLEAR_WINTER_FOR_SP
 	CvNuclearWinterLevelXMLEntries* m_pNuclearWinterInfo;
 	std::vector<CvNuclearWinterLevel*> m_vOrderedNuclearWinterLevels; // order by Trigger Threshold lower bound.
+#endif
+#ifdef MOD_SPECIALIST_RESOURCES
+	std::tr1::unordered_set<PolicyTypes> m_vSpecialistResourcesPolicies;
+	std::tr1::unordered_set<TechTypes> m_vSpecialistResourcesTechnologies;
 #endif
 
 	//////////////////////////////////////////////////////////////////////////
