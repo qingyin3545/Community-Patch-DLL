@@ -1,3 +1,5 @@
+INSERT INTO Defines(Name, Value) VALUES('PLOT_BUILD_MAX_WORKER', 1);
+
 create table Plot_CityYields (
     PlotType text references Plots(Type),
     YieldType text references Yields(Type),
