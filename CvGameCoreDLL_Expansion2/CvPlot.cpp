@@ -269,6 +269,7 @@ void CvPlot::reset()
 	m_kArchaeologyData.Reset();
 	m_iNumTradeUnitRoute = 0;
 	m_iLastTurnBuildChanged = 0;
+	m_iNumTurnBuild = 0;
 }
 
 //////////////////////////////////////
@@ -12666,9 +12667,6 @@ bool CvPlot::changeBuildProgress(BuildTypes eBuild, int iChange, PlayerTypes ePl
 	if(pkBuildInfo == NULL)
 		return false;
 
-	if (m_iLastTurnBuildChanged == GC.getGame().getGameTurn() && !bNewBuild)
-		return false;
-
 	if(iChange != 0)
 	{
 		// wipe out related build progress when starting a new build
@@ -12679,6 +12677,7 @@ bool CvPlot::changeBuildProgress(BuildTypes eBuild, int iChange, PlayerTypes ePl
 		ImprovementTypes eImprovement = (ImprovementTypes)pkBuildInfo->getImprovement();
 
 		m_iLastTurnBuildChanged = GC.getGame().getGameTurn();
+		m_iNumTurnBuild++;
 
 		m_buildProgress[eBuild] += iChange;
 		ASSERT_DEBUG(getBuildProgress(eBuild) >= 0);
@@ -13700,6 +13699,7 @@ void CvPlot::Serialize(Plot& plot, Visitor& visitor)
 	visitor(plot.m_kArchaeologyData);
 	visitor(plot.m_iNumTradeUnitRoute);
 	visitor(plot.m_iLastTurnBuildChanged);
+	visitor(plot.m_iNumTurnBuild);
 
 	visitor(plot.m_sSpawnedResourceX);
 	visitor(plot.m_sSpawnedResourceY);
@@ -16225,3 +16225,20 @@ int CvPlot::CalculateCorruptionScoreModifierFromTrait(PlayerTypes ePlayer) const
 	return 0;
 }
 #endif
+bool CvPlot::CheckCanChangeBuildProgress(BuildTypes eBuild, bool bNewBuild)
+{
+	if (m_iLastTurnBuildChanged == GC.getGame().getGameTurn() && !bNewBuild)
+	{
+		if(m_iNumTurnBuild >= GD_INT_GET(PLOT_BUILD_MAX_WORKER)) return false;
+	}
+	else m_iNumTurnBuild = 0;
+	return true;
+}
+bool CvPlot::CheckCanChangeBuildProgressConst(BuildTypes eBuild, bool bNewBuild) const
+{
+	if (m_iLastTurnBuildChanged == GC.getGame().getGameTurn() && !bNewBuild)
+	{
+		if(m_iNumTurnBuild >= GD_INT_GET(PLOT_BUILD_MAX_WORKER)) return false;
+	}
+	return true;
+}
