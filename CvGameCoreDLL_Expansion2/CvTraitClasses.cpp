@@ -2273,6 +2273,14 @@ int CvTraitEntry::GetExceedingHappinessImmigrationModifier() const
 	return m_iExceedingHappinessImmigrationModifier;
 }
 #endif
+bool CvTraitEntry::CanDiplomaticMarriage() const
+{
+	return m_bCanDiplomaticMarriage;
+}
+bool CvTraitEntry::IsAbleToDualEmpire() const
+{
+	return m_bAbleToDualEmpire;
+}
 
 /// Load XML data
 bool CvTraitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility)
@@ -3715,6 +3723,8 @@ bool CvTraitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& 
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	m_iExceedingHappinessImmigrationModifier = kResults.GetInt("ExceedingHappinessImmigrationModifier");
 #endif
+	m_bCanDiplomaticMarriage = kResults.GetBool("CanDiplomaticMarriage");
+	m_bAbleToDualEmpire = kResults.GetBool("AbleToDualEmpire");
 
 	return true;
 }
@@ -5133,6 +5143,8 @@ void CvPlayerTraits::InitPlayerTraits()
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 			m_iExceedingHappinessImmigrationModifier += trait->GetExceedingHappinessImmigrationModifier();
 #endif
+			m_bCanDiplomaticMarriage = trait->CanDiplomaticMarriage();
+			m_bAbleToDualEmpire = trait->IsAbleToDualEmpire();
 		}
 	}
 
@@ -5670,6 +5682,8 @@ void CvPlayerTraits::Reset()
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	m_iExceedingHappinessImmigrationModifier = 0;
 #endif
+	m_bCanDiplomaticMarriage = false;
+	m_bAbleToDualEmpire = false;
 }
 
 /// Does this player possess a specific trait?
@@ -7697,6 +7711,8 @@ void CvPlayerTraits::Serialize(PlayerTraits& playerTraits, Visitor& visitor)
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	visitor(playerTraits.m_iExceedingHappinessImmigrationModifier);
 #endif
+	visitor(playerTraits.m_bCanDiplomaticMarriage);
+	visitor(playerTraits.m_bAbleToDualEmpire);
 }
 
 /// Serialization read
