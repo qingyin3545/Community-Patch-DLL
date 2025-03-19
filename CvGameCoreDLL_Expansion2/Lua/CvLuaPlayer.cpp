@@ -1564,6 +1564,10 @@ void CvLuaPlayer::PushMethods(lua_State* L, int t)
 #if defined(MOD_SPECIALIST_RESOURCES)
 	Method(GetSpecialistResources);
 #endif
+	Method(IsMarriageAccepted);
+	Method(GetMarriageCounter);
+	Method(IsCanDiplomaticMarriage);
+	Method(IsAbleToDualEmpire);
 	Method(GetCivBuilding);
 	Method(GetCivUnit);
 	Method(GetCivBuildingWithDefault);
@@ -19414,6 +19418,46 @@ int CvLuaPlayer::lGetSpecialistResources(lua_State* L)
 	return 1;
 }
 #endif
+
+//------------------------------------------------------------------------------
+int CvLuaPlayer::lIsMarriageAccepted(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	PlayerTypes eWithPlayer = (PlayerTypes) lua_tointeger(L, 2);
+
+	const bool bTooSoon = pkPlayer->GetDiplomacyAI()->IsMarriageAccepted(eWithPlayer);
+
+	lua_pushboolean(L, bTooSoon);
+	return 1;
+}
+int CvLuaPlayer::lGetMarriageCounter(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	PlayerTypes eWithPlayer = (PlayerTypes) lua_tointeger(L, 2);
+
+	const short iCounter = pkPlayer->GetDiplomacyAI()->GetTurnsSinceMarriagedPlayer(eWithPlayer);
+
+	lua_pushinteger(L, iCounter);
+	return 1;
+}
+int CvLuaPlayer::lIsCanDiplomaticMarriage(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	const bool bValue = pkPlayer->GetPlayerTraits()->CanDiplomaticMarriage();
+
+	lua_pushboolean(L, bValue);
+	return 1;
+}
+int CvLuaPlayer::lIsAbleToDualEmpire(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	const bool bValue = pkPlayer->GetPlayerTraits()->IsAbleToDualEmpire();
+
+	lua_pushboolean(L, bValue);
+	return 1;
+}
+
+//------------------------------------------------------------------------------
 
 int CvLuaPlayer::lGetCivBuilding(lua_State* L)
 {
