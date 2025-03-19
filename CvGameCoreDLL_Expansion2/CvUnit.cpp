@@ -13096,6 +13096,11 @@ bool CvUnit::canBuild(const CvPlot* pPlot, BuildTypes eBuild, bool bTestVisible,
 
 	if(!bTestVisible)
 	{
+		// we can not build this turn any more ?
+		if(!pPlot->CheckCanChangeBuildProgressConst(eBuild, pPlot->getBuildProgress(eBuild) == 0)) return false;
+
+		int iNumUnitWorking = 0;
+		int iMaxWorker = GD_INT_GET(PLOT_BUILD_MAX_WORKER);
 		// check for any other units working in this plot
 		const IDInfo* pUnitNode = pPlot->headUnitNode();
 		const CvUnit* pLoopUnit = NULL;
@@ -13109,6 +13114,15 @@ bool CvUnit::canBuild(const CvPlot* pPlot, BuildTypes eBuild, bool bTestVisible,
 			{
 				if(pLoopUnit->IsWork() && pLoopUnit->getBuildType() != NO_BUILD)
 				{
+					if (iMaxWorker > 1)
+					{
+						iNumUnitWorking++;
+						if(iNumUnitWorking >= iMaxWorker) return false;
+						if(pLoopUnit->getBuildType() != eBuild) return false;
+						// Only SP rule
+						continue;
+					}
+					
 					// QoL: it's acceptable to build an improvement with no build time while another unit is constructing a road
 					if (pPlot->getBuildTime(eBuild, getOwner()) > 0 || (pkBuildInfo->getRoute() != NO_ROUTE && GC.getBuildInfo(pLoopUnit->getBuildType())->getRoute() != NO_ROUTE) || (pkBuildInfo->getImprovement() != NO_IMPROVEMENT && GC.getBuildInfo(pLoopUnit->getBuildType())->getImprovement() != NO_IMPROVEMENT))
 					{
@@ -13197,6 +13211,9 @@ bool CvUnit::build(BuildTypes eBuild)
 		NewBuild = true;
 	}
 
+	// we can not build this turn any more, return it and the worker will not lost move
+	if(!pPlot->CheckCanChangeBuildProgress(eBuild, NewBuild)) return false;
+
 	if (!MOD_CIV6_WORKER)
 		bFinished = pPlot->changeBuildProgress(eBuild, iWorkRateWithMoves, getOwner(), NewBuild);
 
@@ -13210,6 +13227,17 @@ bool CvUnit::build(BuildTypes eBuild)
 		// Update Resource info
 		if(pkBuildInfo)
 		{
+			IDInfo* pPlotUnitNode = pPlot->headUnitNode();
+			while (pPlotUnitNode != NULL)
+			{
+				CvUnit* pLoopUnit = ::GetPlayerUnit(*pPlotUnitNode);
+				pPlotUnitNode = pPlot->nextUnitNode(pPlotUnitNode);
+				if (pLoopUnit == this) continue;
+				if (pLoopUnit->getBuildType() == getBuildType()) {
+					pLoopUnit->ClearMissionQueue();
+				}
+			}
+
 			ImprovementTypes eImprovement = NO_IMPROVEMENT;
 			if (pkBuildInfo->getImprovement() != NO_IMPROVEMENT)
 			{
