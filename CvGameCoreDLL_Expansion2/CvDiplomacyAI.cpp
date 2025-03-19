@@ -395,6 +395,14 @@ void CvDiplomacyAI::Init(CvPlayer* pPlayer)
 	m_aGreetPlayers.clear();
 	m_eDiploMode = DIPLO_ALL_PLAYERS;
 	m_eTargetPlayer = NO_PLAYER;
+
+	for (int i = 0; i < MAX_MAJOR_CIVS; ++i)
+	{
+		m_pabMarriageAccepted[i] = false;
+		m_paiMarriageAcceptedTurn[i] = -1;
+		m_paiMarriageFinishCounter[i] = 0;
+	}
+	m_iDualEmpireTreatyCounter = 0;
 }
 
 template<typename DiplomacyAI, typename Visitor>
@@ -685,6 +693,11 @@ void CvDiplomacyAI::Serialize(DiplomacyAI& diplomacyAI, Visitor& visitor)
 	visitor(diplomacyAI.m_abVassalTaxLowered);
 	visitor(diplomacyAI.m_aiVassalGoldPerTurnTaxedSinceVassalStarted);
 	visitor(diplomacyAI.m_aiVassalGoldPerTurnCollectedSinceVassalStarted);
+
+	visitor(diplomacyAI.m_pabMarriageAccepted);
+	visitor(diplomacyAI.m_paiMarriageAcceptedTurn);
+	visitor(diplomacyAI.m_paiMarriageFinishCounter);
+	visitor(diplomacyAI.m_iDualEmpireTreatyCounter);
 }
 
 /// Serialization read
@@ -28207,6 +28220,47 @@ void CvDiplomacyAI::DoCounters()
 					pNotifications->Add(NOTIFICATION_FRIENDSHIP_EXPIRED, strBuffer, strSummary, -1, -1, eLoopPlayer, GetID());				
 				}
 			}
+
+			// Has our marriage expired?
+			if (IsMarriageAccepted(eLoopPlayer) && GetTurnsSinceMarriagedPlayer(eLoopPlayer) >= GC.getGame().getGameSpeedInfo().getRelationshipDuration())
+			{
+				SetMarriageAccepted(eLoopPlayer, false);
+				ChangeMarriageFinishCounter(eLoopPlayer, 1);
+
+				GET_PLAYER(eLoopPlayer).GetDiplomacyAI()->SetMarriageAccepted(GetPlayer()->GetID(), false);
+				GET_PLAYER(eLoopPlayer).GetDiplomacyAI()->ChangeMarriageFinishCounter(GetPlayer()->GetID(), 1);
+
+				// Notify both parties that our marriage has expired.
+				CvNotifications *pNotifications = GET_PLAYER(eLoopPlayer).GetNotifications();
+				if (pNotifications)
+				{
+					CvString strBuffer = GetLocalizedText("TXT_KEY_NOTIFICATION_MARRIAGE_EXPIRED_S", GET_PLAYER(GetPlayer()->GetID()).getCivilizationShortDescriptionKey());
+					CvString strSummary = GetLocalizedText("TXT_KEY_NOTIFICATION_MARRIAGE_EXPIRED");
+					strSummary = GetLocalizedText("[COLOR_NEGATIVE_TEXT]") + strSummary + GetLocalizedText("[ENDCOLOR]");
+					strBuffer = GetLocalizedText("[COLOR_NEGATIVE_TEXT]") + strBuffer + GetLocalizedText("[ENDCOLOR]");
+					pNotifications->Add(NOTIFICATION_FRIENDSHIP_EXPIRED, strBuffer, strSummary, -1, -1, GetPlayer()->GetID(), eLoopPlayer);
+					if (eLoopPlayer == GC.getGame().getActivePlayer())
+					{
+						ICvUserInterface2 *pkDLLInterface = GC.GetEngineUserInterface();
+						pkDLLInterface->AddMessage(0, eLoopPlayer, true, GC.getEVENT_MESSAGE_TIME(), strBuffer);
+					}
+				}
+
+				pNotifications = GET_PLAYER(GetPlayer()->GetID()).GetNotifications();
+				if (pNotifications)
+				{
+					CvString strBuffer = GetLocalizedText("TXT_KEY_NOTIFICATION_MARRIAGE_EXPIRED_S", GET_PLAYER(eLoopPlayer).getCivilizationShortDescriptionKey());
+					CvString strSummary = GetLocalizedText("TXT_KEY_NOTIFICATION_MARRIAGE_EXPIRED");
+					strSummary = GetLocalizedText("[COLOR_NEGATIVE_TEXT]") + strSummary + GetLocalizedText("[ENDCOLOR]");
+					strBuffer = GetLocalizedText("[COLOR_NEGATIVE_TEXT]") + strBuffer + GetLocalizedText("[ENDCOLOR]");
+					pNotifications->Add(NOTIFICATION_FRIENDSHIP_EXPIRED, strBuffer, strSummary, -1, -1, eLoopPlayer, GetPlayer()->GetID());
+					if (GetPlayer()->GetID() == GC.getGame().getActivePlayer())
+					{
+						ICvUserInterface2 *pkDLLInterface = GC.GetEngineUserInterface();
+						pkDLLInterface->AddMessage(0, GetPlayer()->GetID(), true, GC.getEVENT_MESSAGE_TIME(), strBuffer);
+					}
+				}
+			}
 		}
 	}
 
@@ -49082,6 +49136,128 @@ int CvDiplomacyAI::GetScenarioModifier3(PlayerTypes ePlayer)
 
 	return 0;
 
+}
+
+// Marriage with players
+bool CvDiplomacyAI::IsMarriageAccepted(PlayerTypes ePlayer) const
+{
+	ASSERT_DEBUG(ePlayer >= 0, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	ASSERT_DEBUG(ePlayer < MAX_MAJOR_CIVS, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	return m_pabMarriageAccepted[ePlayer];
+}
+void CvDiplomacyAI::SetMarriageAccepted(PlayerTypes ePlayer, bool bValue)
+{
+	ASSERT_DEBUG(ePlayer >= 0, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	ASSERT_DEBUG(ePlayer < MAX_MAJOR_CIVS, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	if (m_pabMarriageAccepted[ePlayer] == bValue)
+	{
+		return;
+	}
+
+	if (bValue)
+	{
+		SetMarriageAcceptedTurn(ePlayer, GC.getGame().getGameTurn());
+	}
+	else
+	{
+		SetMarriageAcceptedTurn(ePlayer, -1);
+	}
+	m_pabMarriageAccepted[ePlayer] = bValue;
+	if (!bValue)
+	{
+		return;
+	}
+
+	// Someone made a marriage, send out notifications to everyone
+	Localization::String strText = Localization::Lookup("TXT_KEY_NOTIFICATION_MARRIAGE");
+	Localization::String strSummary = Localization::Lookup("TXT_KEY_NOTIFICATION_MARRIAGE_S");
+	for (int iCurPlayer = 0; iCurPlayer < MAX_MAJOR_CIVS; ++iCurPlayer)
+	{
+		PlayerTypes eCurPlayer = (PlayerTypes)iCurPlayer;
+		CvPlayerAI &kCurPlayer = GET_PLAYER(eCurPlayer);
+		CvNotifications *pNotifications = GET_PLAYER(eCurPlayer).GetNotifications();
+		if (iCurPlayer != ePlayer && iCurPlayer != GetPlayer()->GetID() && pNotifications)
+		{
+			const char *strThisPlayerName;
+			const char *strOtherPlayerName;
+
+			CvTeam *pCurTeam = &GET_TEAM(kCurPlayer.getTeam());
+
+			// Have we met these guys yet?
+			bool bHasMetThisTeam = pCurTeam->isHasMet(GetPlayer()->getTeam());
+			if (bHasMetThisTeam)
+				strThisPlayerName = GetPlayer()->getCivilizationShortDescriptionKey();
+			else
+				strThisPlayerName = "TXT_KEY_UNMET_PLAYER";
+
+			bool bHasMetOtherTeam = pCurTeam->isHasMet(GET_PLAYER(ePlayer).getTeam());
+			if (bHasMetOtherTeam)
+				strOtherPlayerName = GET_PLAYER(ePlayer).getCivilizationShortDescriptionKey();
+			else
+				strOtherPlayerName = "TXT_KEY_UNMET_PLAYER";
+
+			// Only display notification if we've met one of the players.
+			if (bHasMetThisTeam || bHasMetOtherTeam)
+			{
+				Localization::String tempInfoStr = strText;
+				tempInfoStr << strThisPlayerName << strOtherPlayerName;
+				Localization::String tempSummaryStr = strSummary;
+				tempSummaryStr << strThisPlayerName << strOtherPlayerName;
+				pNotifications->Add(NOTIFICATION_DIPLOMACY_DECLARATION, tempInfoStr.toUTF8(), tempSummaryStr.toUTF8(), -1, -1, GetPlayer()->GetID(), ePlayer);
+			}
+		}
+	}
+}
+
+int CvDiplomacyAI::GetMarriageAcceptedTurn(PlayerTypes ePlayer) const
+{
+	ASSERT_DEBUG(ePlayer >= 0, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	ASSERT_DEBUG(ePlayer < MAX_MAJOR_CIVS, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	return m_paiMarriageAcceptedTurn[ePlayer];
+}
+int CvDiplomacyAI::GetTurnsSinceMarriagedPlayer(PlayerTypes ePlayer) const
+{
+	ASSERT_DEBUG(ePlayer >= 0, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	ASSERT_DEBUG(ePlayer < MAX_MAJOR_CIVS, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	if (!IsMarriageAccepted(ePlayer))
+		return -1;
+
+	return (GC.getGame().getGameTurn() - GetMarriageAcceptedTurn(ePlayer));
+}
+void CvDiplomacyAI::SetMarriageAcceptedTurn(PlayerTypes ePlayer, int iValue)
+{
+	ASSERT_DEBUG(ePlayer >= 0, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	ASSERT_DEBUG(ePlayer < MAX_MAJOR_CIVS, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	m_paiMarriageAcceptedTurn[ePlayer] = iValue;
+}
+
+int CvDiplomacyAI::GetMarriageFinishCounter(PlayerTypes ePlayer) const
+{
+	ASSERT_DEBUG(ePlayer >= 0, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	ASSERT_DEBUG(ePlayer < MAX_MAJOR_CIVS, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	return m_paiMarriageFinishCounter[ePlayer];
+}
+void CvDiplomacyAI::SetMarriageFinishCounter(PlayerTypes ePlayer, int iValue)
+{
+	ASSERT_DEBUG(ePlayer >= 0, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	ASSERT_DEBUG(ePlayer < MAX_MAJOR_CIVS, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	m_paiMarriageFinishCounter[ePlayer] = iValue;
+}
+void CvDiplomacyAI::ChangeMarriageFinishCounter(PlayerTypes ePlayer, int iChange)
+{
+	ASSERT_DEBUG(ePlayer >= 0, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	ASSERT_DEBUG(ePlayer < MAX_MAJOR_CIVS, "DIPLOMACY_AI: Invalid Player Index.  Please send Jon this with your last 5 autosaves and what changelist # you're playing.");
+	m_paiMarriageFinishCounter[ePlayer] += iChange;
+}
+
+int CvDiplomacyAI::GetDualEmpireTreatyCounter() const
+{
+	return m_iDualEmpireTreatyCounter;
+}
+
+void  CvDiplomacyAI::ChangeDualEmpireTreatyCounter(const int value)
+{
+	m_iDualEmpireTreatyCounter += value;
 }
 
 /////////////////////////////////////////////////////////
