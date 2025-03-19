@@ -35,6 +35,9 @@ enum CLOSED_ENUM TradeableItems
 	TRADE_ITEM_VASSALAGE,
 	TRADE_ITEM_VASSALAGE_REVOKE,
 
+	TRADE_ITEM_DIPLOMATIC_MARRIAGE,
+	TRADE_ITEM_DUAL_EMPIRE_TREATY,
+
     NUM_TRADEABLE_ITEMS ENUM_META_VALUE,
 };
 FDataStream& operator>>(FDataStream&, TradeableItems&);
@@ -271,6 +274,13 @@ public:
 	void RemoveThirdPartyPeace(PlayerTypes eFrom, TeamTypes eThirdPartyTeam);
 	void RemoveThirdPartyWar(PlayerTypes eFrom, TeamTypes eThirdPartyTeam);
 	void RemoveVoteCommitment(PlayerTypes eFrom, int iResolutionID, int iVoteChoice, int iNumVotes, bool bRepeal);
+
+	void AddDiplomaticMarriage(PlayerTypes eFrom, int iDuration);
+	void AddDualEmpireTreaty(PlayerTypes eFrom);
+	bool IsDiplomaticMarriage(PlayerTypes eFrom);
+	bool IsDualEmpireTreaty(PlayerTypes eFrom);
+	void RemoveDiplomaticMarriage(PlayerTypes eFrom);
+	void RemoveDualEmpireTreaty(PlayerTypes eFrom);
 };
 
 FDataStream& operator>>(FDataStream&, CvDeal&);

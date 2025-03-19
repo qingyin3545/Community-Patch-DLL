@@ -798,6 +798,8 @@ int CvLuaEnums::pRegister(lua_State* L)
 	RegisterEnum(TRADE_ITEM_TECHS);
 	RegisterEnum(TRADE_ITEM_VASSALAGE);
 	RegisterEnum(TRADE_ITEM_VASSALAGE_REVOKE);
+	RegisterEnum(TRADE_ITEM_DIPLOMATIC_MARRIAGE);
+	RegisterEnum(TRADE_ITEM_DUAL_EMPIRE_TREATY);
 	RegisterEnum(NUM_TRADEABLE_ITEMS);
 	EnumEnd(L);
 

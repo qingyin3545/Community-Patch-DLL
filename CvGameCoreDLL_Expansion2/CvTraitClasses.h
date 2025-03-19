@@ -480,6 +480,8 @@ public:
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	int GetExceedingHappinessImmigrationModifier() const;
 #endif
+	bool CanDiplomaticMarriage() const;
+	bool IsAbleToDualEmpire() const;
 
 	virtual bool CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility);
 
@@ -847,6 +849,8 @@ protected:
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	int m_iExceedingHappinessImmigrationModifier = 0;
 #endif
+	bool m_bCanDiplomaticMarriage = false;
+	bool m_bAbleToDualEmpire = false;
 
 private:
 	CvTraitEntry(const CvTraitEntry&);
@@ -2165,6 +2169,14 @@ public:
 		return m_iExceedingHappinessImmigrationModifier;
 	}
 #endif
+	bool CanDiplomaticMarriage() const
+	{
+		return m_bCanDiplomaticMarriage;
+	}
+	bool IsAbleToDualEmpire() const
+	{
+		return m_bAbleToDualEmpire;
+	}
 
 private:
 	bool ConvertBarbarianCamp(CvUnit* pByUnit, CvPlot* pPlot);
@@ -2551,6 +2563,8 @@ private:
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	int m_iExceedingHappinessImmigrationModifier = 0;
 #endif
+	bool m_bCanDiplomaticMarriage = false;
+	bool m_bAbleToDualEmpire = false;
 };
 
 FDataStream& operator>>(FDataStream&, CvPlayerTraits&);
