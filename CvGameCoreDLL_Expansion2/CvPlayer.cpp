@@ -13608,7 +13608,8 @@ bool CvPlayer::canTrainUnit(UnitTypes eUnit, bool bContinue, bool bTestVisible, 
 		// If the player isn't allowed to train this Unit (via XML) then return false
 		if(eThisPlayersUnitType != eUnit)
 		{
-			return false;
+			if (const_cast<CvPlayer*>(this)->GetUUFromDualEmpire().count(eUnit) == 0)
+				return false;
 		}
 	}
 
@@ -13913,9 +13914,11 @@ bool CvPlayer::canConstruct(BuildingTypes eBuilding, const std::vector<int>& vPr
 	const CvBuildingClassInfo& kBuildingClass = pkBuildingInfo->GetBuildingClassInfo();
 
 	// Checks to make sure civilization doesn't have an override that prevents construction of this building
-	if(getCivilizationInfo().getCivilizationBuildings(eBuildingClass) != eBuilding)
+	BuildingTypes eThisPlayersBuildingType = (BuildingTypes)getCivilizationInfo().getCivilizationBuildings(eBuildingClass);
+	if(eThisPlayersBuildingType != eBuilding)
 	{
-		return false;
+		if (const_cast<CvPlayer*>(this)->GetUBFromDualEmpire().count(eBuilding) == 0)
+			return false;
 	}
 
 	if(!bIgnoreCost)
@@ -15953,7 +15956,8 @@ bool CvPlayer::canBuild(const CvPlot* pPlot, BuildTypes eBuild, bool bTestEra, b
 			CivilizationTypes eCiv = pkEntry->GetRequiredCivilization();
 			if(eCiv != getCivilizationType())
 			{
-				return false;
+				if (const_cast<CvPlayer*>(this)->GetUIFromDualEmpire().count(eImprovement) == 0)
+					return false;
 			}
 		}
 
@@ -43625,6 +43629,9 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 	visitor(player.m_paiResourcesFromSpecialists);
 #endif
 	visitor(player.m_aiPolicyModifiers);
+	visitor(player.m_sUUFromDualEmpire);
+	visitor(player.m_sUBFromDualEmpire);
+	visitor(player.m_sUIFromDualEmpire);
 }
 
 //
@@ -48924,6 +48931,73 @@ bool CvPlayer::MeetSpecialistResourceRequirement(const CvSpecialistInfo::Resourc
 }
 
 #endif
+
+//	--------------------------------------------------------------------------------
+void CvPlayer::GetUCTypesFromPlayer(const CvPlayer& player,
+	std::tr1::unordered_set<UnitTypes>* m_sUU,
+	std::tr1::unordered_set<BuildingTypes>* m_sUB,
+	std::tr1::unordered_set<ImprovementTypes>* m_sUI)
+{
+	CvCivilizationInfo* pkInfo = GC.getCivilizationInfo(player.getCivilizationType());
+	if (!pkInfo)
+		return;
+
+	if (m_sUU)
+	{
+		for (size_t i = 0; i < GC.getNumUnitClassInfos(); ++i) {
+			if (!pkInfo->isCivilizationUnitOverridden(i))
+				continue;
+			UnitTypes eUnit = static_cast<UnitTypes>(pkInfo->getCivilizationUnits(i));
+			if (eUnit == NO_UNIT)
+				continue;
+
+			m_sUU->insert(eUnit);
+		}
+	}
+
+	if (m_sUB)
+	{
+		for (size_t i = 0; i < GC.getNumBuildingClassInfos(); ++i) {
+			if (!pkInfo->isCivilizationBuildingOverridden(i))
+				continue;
+
+			BuildingTypes eBuilding = static_cast<BuildingTypes>(pkInfo->getCivilizationBuildings(i));
+			if (eBuilding == NO_BUILDING)
+				continue;
+
+			m_sUB->insert(eBuilding);
+		}
+	}
+
+	if (m_sUI)
+	{
+		for (size_t i = 0; i < GC.getNumImprovementInfos(); ++i) {
+			ImprovementTypes eImprovement = (ImprovementTypes)i;
+			CvImprovementEntry* pkEntry = GC.getImprovementInfo(eImprovement);
+			if (pkEntry && pkEntry->IsSpecificCivRequired())
+			{
+				CivilizationTypes eCiv = pkEntry->GetRequiredCivilization();
+				if (eCiv == pkInfo->GetID()) {
+					m_sUI->insert(eImprovement);
+				}
+			}
+		}
+	}
+}
+
+//	--------------------------------------------------------------------------------
+std::tr1::unordered_set<UnitTypes>& CvPlayer::GetUUFromDualEmpire()
+{
+	return m_sUUFromDualEmpire;
+}
+std::tr1::unordered_set<BuildingTypes>& CvPlayer::GetUBFromDualEmpire()
+{
+	return m_sUBFromDualEmpire;
+}
+std::tr1::unordered_set<ImprovementTypes>& CvPlayer::GetUIFromDualEmpire()
+{
+	return m_sUIFromDualEmpire;
+}
 
 //	--------------------------------------------------------------------------------
 BuildingTypes CvPlayer::GetCivBuilding(BuildingClassTypes eBuildingClass) const
