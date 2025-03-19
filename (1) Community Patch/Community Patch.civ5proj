@@ -3891,131 +3891,131 @@
     </Content>
     <Content Include="MPDLL\DB\LUA_FORMULA\LuaFormula.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\GLOBAL\Resolutions.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\GLOBAL\ResourceExtraBuff.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\GLOBAL\Specialist_Resources.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\GLOBAL\SPMisc.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\GLOBAL\GoodyHuts.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\GLOBAL\International_Immigration.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\GLOBAL\CityScales.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\GLOBAL\Corruption.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\GLOBAL\NuclearWinter.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\GLOBAL\TroopsAndCrops.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\GLOBAL\WarCasualties.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\TRAITS\DLL_Traits.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\BUILDING\BuildingClassCollections.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\BUILDING\DLL_Buildings.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\BUILDS\DLL_Builds.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\POLICIES\DLL_Policies.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\POLICIES\Policy_CityResources.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\PROJECT\DLL_Project.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\RELIGION\DLL_Belief.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\TECHS\DLL_Technologies.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\IMPROVEMENTS\DLL_Improvement.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\IMPROVEMENTS\Improvement_Upgrade_Downgrade.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\IMPROVEMENTS\Improvements_Create_Item.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\UNIT\DLL_Units.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\UNIT\DLL_Promotions.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\UNIT\InflictDamageChange.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\UNIT\PromotionAutoRemove.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\UNIT\PromotionCollections.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\DB\UNIT\NewBattleEffects.sql">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>FALSE</ImportIntoVFS>
+      <ImportIntoVFS>False</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\LUA\CorruptionUIUtils.lua">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>TRUE</ImportIntoVFS>
+      <ImportIntoVFS>True</ImportIntoVFS>
     </Content>
     <Content Include="MPDLL\LUA\DllVersionCheck.lua">
       <SubType>Lua</SubType>
-      <ImportIntoVFS>TRUE</ImportIntoVFS>
+      <ImportIntoVFS>True</ImportIntoVFS>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Firaxis\ModBuddy\Civ5Mod.targets" />
