@@ -1536,6 +1536,9 @@ void CvLuaPlayer::PushMethods(lua_State* L, int t)
 	Method(GetImmigrationInRateFromPolicy);
 	Method(GetImmigrationOutRateFromPolicy);
 #endif
+#if defined(MOD_SPECIALIST_RESOURCES)
+	Method(GetSpecialistResources);
+#endif
 	Method(GetCivBuilding);
 	Method(GetCivUnit);
 	Method(GetCivBuildingWithDefault);
@@ -18490,6 +18493,45 @@ int CvLuaPlayer::lGetImmigrationOutRateFromPolicy(lua_State* L)
 {
 	CvPlayerAI* pkPlayer = GetInstance(L);
 	lua_pushinteger(L, pkPlayer->getPolicyModifiers(POLICYMOD_IMMIGRATION_OUT_MODIFIER));
+	return 1;
+}
+#endif
+#ifdef MOD_SPECIALIST_RESOURCES
+int CvLuaPlayer::lGetSpecialistResources(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	SpecialistTypes eSpecialist = static_cast<SpecialistTypes>(lua_tointeger(L, 2));
+	CvSpecialistInfo* pkSpecialistInfo = GC.getSpecialistInfo(eSpecialist);
+	if (pkSpecialistInfo == nullptr) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	std::tr1::unordered_map<ResourceTypes, int> mapResources;
+    for (auto& info : pkSpecialistInfo->GetResourceInfo())
+    {
+        if (pkPlayer->MeetSpecialistResourceRequirement(info))
+        {
+			mapResources[info.m_eResource] += info.m_iQuantity;
+        }
+    }
+
+	lua_createtable(L, mapResources.size(), 2);
+	int index = 1;
+	for (auto& pair : mapResources)
+	{
+		lua_createtable(L, 0, 0);
+		const int t = lua_gettop(L);
+
+		lua_pushinteger(L, pair.first);
+		lua_setfield(L, t, "ResourceType");
+
+		lua_pushinteger(L, pair.second);
+		lua_setfield(L, t, "Quantity");
+
+		lua_rawseti(L, -2, index++);
+	}
+
 	return 1;
 }
 #endif
