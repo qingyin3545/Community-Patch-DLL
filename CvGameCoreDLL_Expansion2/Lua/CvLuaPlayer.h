@@ -1568,6 +1568,9 @@ protected:
 	LUAAPIEXTN(GetImmigrationInRateFromPolicy, int);
 	LUAAPIEXTN(GetImmigrationOutRateFromPolicy, int);
 #endif
+#if defined(MOD_SPECIALIST_RESOURCES)
+	LUAAPIEXTN(GetSpecialistResources, table, eSpecialist);
+#endif
 	LUAAPIEXTN(GetCivBuilding, int);
 	LUAAPIEXTN(GetCivUnit, int);
 	LUAAPIEXTN(GetCivBuildingWithDefault, int);
