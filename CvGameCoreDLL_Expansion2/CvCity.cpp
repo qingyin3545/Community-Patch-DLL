@@ -15051,7 +15051,21 @@ void CvCity::processProcess(ProcessTypes eProcess, int iChange)
 	}
 }
 
+//	--------------------------------------------------------------------------------
+#ifdef MOD_SPECIALIST_RESOURCES
+static inline void ChangeResourceFromSpecialist(CvCity* city, CvSpecialistInfo* pkSpecialist, int iChange)
+{
+	if (!MOD_SPECIALIST_RESOURCES) return;
 
+	CvPlayerAI& owner = GET_PLAYER(city->getOwner());
+	for (auto& resourceInfo : pkSpecialist->GetResourceInfo())
+	{
+		if (!owner.MeetSpecialistResourceRequirement(resourceInfo)) continue;
+
+		owner.changeResourceFromSpecialists(resourceInfo.m_eResource, resourceInfo.m_iQuantity * iChange);
+	}
+}
+#endif
 //	--------------------------------------------------------------------------------
 void CvCity::processSpecialist(SpecialistTypes eSpecialist, int iChange, CvCity::eUpdateMode updateMode)
 {
@@ -15089,6 +15103,10 @@ void CvCity::processSpecialist(SpecialistTypes eSpecialist, int iChange, CvCity:
 			changeDomainProductionModifier(eDomain, iModifierPerSpecialist * iChange);
 		}
 	}
+
+#ifdef MOD_SPECIALIST_RESOURCES
+	ChangeResourceFromSpecialist(this, pkSpecialist, iChange);
+#endif
 
 	if (updateMode == CvCity::YIELD_UPDATE_GLOBAL)
 		UpdateAllNonPlotYields(true);
