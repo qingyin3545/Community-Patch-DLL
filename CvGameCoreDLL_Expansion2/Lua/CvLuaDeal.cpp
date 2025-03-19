@@ -92,6 +92,11 @@ void CvLuaDeal::PushMethods(lua_State* L, int t)
 	Method(AddRevokeVassalageTrade);
 	Method(RemoveTechTrade);
 
+	Method(AddDiplomaticMarriage);
+	Method(AddDualEmpireTreaty);
+	Method(RemoveDiplomaticMarriage);
+	Method(RemoveDualEmpireTreaty);
+
 	// DEPRECATED
 	Method(AddUnitTrade);
 	Method(AddTradeAgreement);

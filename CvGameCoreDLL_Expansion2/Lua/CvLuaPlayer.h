@@ -1560,6 +1560,10 @@ protected:
 #if defined(MOD_SPECIALIST_RESOURCES)
 	LUAAPIEXTN(GetSpecialistResources, table, eSpecialist);
 #endif
+	LUAAPIEXTN(IsMarriageAccepted, bool);
+	LUAAPIEXTN(GetMarriageCounter, int);
+	LUAAPIEXTN(IsCanDiplomaticMarriage, bool);
+	LUAAPIEXTN(IsAbleToDualEmpire, bool);
 	LUAAPIEXTN(GetCivBuilding, int);
 	LUAAPIEXTN(GetCivUnit, int);
 	LUAAPIEXTN(GetCivBuildingWithDefault, int);
