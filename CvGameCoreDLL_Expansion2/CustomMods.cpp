@@ -611,6 +611,7 @@ int CustomMods::getOption(const string& sOption, int defValue) {
 		MOD_OPT_CACHE(SPECIALIST_RESOURCES);
 		MOD_OPT_CACHE(SP_SMART_AI);
 		MOD_OPT_CACHE(NO_TRAIN_CHECK_INIT_FREE_UNIT);
+		MOD_OPT_CACHE(EVENTS_PLAYER_SET_ERA);
 
 		m_bInit = true;
 	}
