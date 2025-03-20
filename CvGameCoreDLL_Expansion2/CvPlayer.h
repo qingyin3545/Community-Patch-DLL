@@ -2919,6 +2919,9 @@ public:
 	void UpdateResourceFromSpecialists();
 	bool MeetSpecialistResourceRequirement(const CvSpecialistInfo::ResourceInfo& info) const;
 #endif
+	std::vector<PolicyResourceInfo>& GetCityResourcesFromPolicy();
+	const std::vector<PolicyResourceInfo>& GetCityResourcesFromPolicy() const;
+
 	static void GetUCTypesFromPlayer(const CvPlayer& player,
 		std::tr1::unordered_set<UnitTypes>* m_sUU,
 		std::tr1::unordered_set<BuildingTypes>* m_sUB,
@@ -2926,6 +2929,7 @@ public:
 	std::tr1::unordered_set<UnitTypes>& GetUUFromDualEmpire();
 	std::tr1::unordered_set<BuildingTypes>& GetUBFromDualEmpire();
 	std::tr1::unordered_set<ImprovementTypes>& GetUIFromDualEmpire();
+
 	BuildingTypes GetCivBuilding(BuildingClassTypes eBuildingClass) const;
 	UnitTypes GetCivUnit(UnitClassTypes eUnitClass, int iFakeSeed = 0) const;
 	UnitTypes GetCivUnitWithDefault(UnitClassTypes eUnitClass) const;
@@ -3816,6 +3820,8 @@ protected:
 #ifdef MOD_SPECIALIST_RESOURCES
 	std::vector<int> m_paiResourcesFromSpecialists;
 #endif
+	std::vector<PolicyResourceInfo> m_vCityResourcesFromPolicy;
+
 	std::tr1::unordered_set<UnitTypes> m_sUUFromDualEmpire;
 	std::tr1::unordered_set<BuildingTypes> m_sUBFromDualEmpire;
 	std::tr1::unordered_set<ImprovementTypes> m_sUIFromDualEmpire;
