@@ -97,6 +97,8 @@ void CvLuaDeal::PushMethods(lua_State* L, int t)
 	Method(RemoveDiplomaticMarriage);
 	Method(RemoveDualEmpireTreaty);
 
+	Method(GetNumResource);
+
 	// DEPRECATED
 	Method(AddUnitTrade);
 	Method(AddTradeAgreement);
@@ -417,6 +419,45 @@ int CvLuaDeal::lRemoveVoteCommitment(lua_State* L)
 	pkDeal->RemoveVoteCommitment(eFromPlayer, iResolutionID, iVoteChoice, iNumVotes, bRepeal);
 	return 0;
 }
+
+//------------------------------------------------------------------------------
+int CvLuaDeal::lGetNumResource(lua_State* L)
+{
+	CvDeal* pkDeal = GetInstance(L);
+	const PlayerTypes ePlayer = (PlayerTypes) lua_tointeger(L, 2);
+	const PlayerTypes eOtherPlayer = pkDeal->GetOtherPlayer(ePlayer);
+	const ResourceTypes eResource = (ResourceTypes) lua_tointeger(L, 3);
+	
+	int iResult = 0;
+	int iNumAvailable = GET_PLAYER(ePlayer).getNumResourceAvailable(eResource, false);
+	int iNumInRenewDeal = 0;
+	int iNumInExistingDeal = 0;
+
+	// count any that are in the renew deal
+	std::vector<CvDeal*> pRenewDeals = GET_PLAYER(ePlayer).GetDiplomacyAI()->GetDealsToRenew(eOtherPlayer);
+	if (pRenewDeals.size() > 0)
+	{
+		for (uint i = 0; i < pRenewDeals.size(); i++)
+		{
+			if (pRenewDeals[i]->IsCheckedForRenewal()) continue;
+			iNumInRenewDeal += pRenewDeals[i]->GetNumResourcesInDeal(ePlayer, eResource);
+			iNumInRenewDeal -= pRenewDeals[i]->GetNumResourcesInDeal(eOtherPlayer, eResource);
+		}
+	}
+	// remove any that are in this deal
+	for (auto it = pkDeal->m_TradedItems.begin(); it != pkDeal->m_TradedItems.end(); ++it)
+	{
+		if (it->m_eItemType == TRADE_ITEM_RESOURCES && it->m_eFromPlayer == ePlayer && (ResourceTypes)it->m_iData1 == eResource)
+		{
+			iNumInExistingDeal += it->m_iData2;
+		}
+	}
+
+	iResult = iNumAvailable + iNumInRenewDeal - iNumInExistingDeal;
+	lua_pushinteger(L, iResult);
+	return 1;
+}
+
 
 //------------------------------------------------------------------------------
 // DEPRECATED
