@@ -37015,6 +37015,14 @@ void CvPlayer::changeNumResourceUsed(ResourceTypes eIndex, int iChange)
 	ASSERT_DEBUG(m_paiNumResourceUsed[eIndex] >= 0);
 }
 
+inline static bool MeetCityResourceRequirement(const PolicyResourceInfo& info,  const CvCity* city, const CvPlayer* player)
+{
+	bool okPolicy = (player->HasPolicy(info.ePolicy) && !player->GetPlayerPolicies()->IsPolicyBlocked(info.ePolicy));
+	bool okCoastal = (!info.bMustCoastal || city->isCoastal());
+	bool okCityScale = (info.eCityScale == NO_CITY_SCALE || city->GetScale() == info.eCityScale);
+	return okPolicy && okCoastal && okCityScale;
+}
+
 int CvPlayer::getNumResourcesFromOther(ResourceTypes eIndex) const
 {
 	ASSERT_DEBUG(eIndex >= 0, "eIndex is expected to be non-negative (invalid Index)");
@@ -37062,6 +37070,7 @@ int CvPlayer::getNumResourcesFromOther(ResourceTypes eIndex) const
 		const CvCity* pLoopCity = NULL;
 		int iLoop = 0;
 		int iCityPOPResource = 0;
+		int iCityResourceFromPolicy = 0;
 		for (pLoopCity = firstCity(&iLoop); pLoopCity != NULL; pLoopCity = nextCity(&iLoop))
 		{
 			if (pLoopCity != NULL)
@@ -37079,10 +37088,19 @@ int CvPlayer::getNumResourcesFromOther(ResourceTypes eIndex) const
 				{
 					iCityPOPResource += (pLoopCity->getPopulation() * pLoopCity->GetResourceQuantityFromPOP(eIndex));
 				}
+
+				for (const auto& info : GetCityResourcesFromPolicy())
+				{
+					if (info.eResource == eIndex && MeetCityResourceRequirement(info, pLoopCity, this))
+					{
+						iCityResourceFromPolicy += info.iQuantity;
+					}
+				}
 			}
 		}
 
 		iTotalNumResource += iCityPOPResource / 100;
+		iTotalNumResource += iCityResourceFromPolicy;
 
 		if (GetStrategicResourceMod() != 0)
 		{
@@ -37090,6 +37108,13 @@ int CvPlayer::getNumResourcesFromOther(ResourceTypes eIndex) const
 			iTotalNumResource /= 100;
 		}
 	}
+
+#ifdef MOD_SPECIALIST_RESOURCES
+	if (MOD_SPECIALIST_RESOURCES)
+	{
+		iTotalNumResource += getResourceFromSpecialists(eIndex);
+	}
+#endif
 
 	if (MOD_BALANCE_CORE)
 	{
@@ -37136,13 +37161,6 @@ int CvPlayer::getNumResourceTotal(ResourceTypes eIndex, bool bIncludeImport) con
 	}
 
 	iTotalNumResource -= getResourceExport(eIndex);
-
-#ifdef MOD_SPECIALIST_RESOURCES
-	if (MOD_SPECIALIST_RESOURCES)
-	{
-		iTotalNumResource += getResourceFromSpecialists(eIndex);
-	}
-#endif
 
 	return iTotalNumResource;
 }
@@ -41803,6 +41821,18 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	}
 	ChangeCorruptionScoreModifierFromPolicy(iChange * pkPolicyInfo->GetCorruptionScoreModifier());
 #endif
+	if (iChange < 0)
+	{
+		for (auto it = m_vCityResourcesFromPolicy.begin(); it != m_vCityResourcesFromPolicy.end();)
+		{
+			if (it->ePolicy == ePolicy) it = m_vCityResourcesFromPolicy.erase(it);
+			else it++;
+		}
+	}
+	else
+	{
+		for (const auto& info : pkPolicyInfo->GetCityResources()) m_vCityResourcesFromPolicy.push_back(info);
+	}
 
 	// Improvements
 	for (int iI = 0; iI < GC.getNumImprovementInfos(); iI++)
@@ -43628,6 +43658,7 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 #ifdef MOD_SPECIALIST_RESOURCES
 	visitor(player.m_paiResourcesFromSpecialists);
 #endif
+	visitor(player.m_vCityResourcesFromPolicy);
 	visitor(player.m_aiPolicyModifiers);
 	visitor(player.m_sUUFromDualEmpire);
 	visitor(player.m_sUBFromDualEmpire);
@@ -48929,8 +48960,17 @@ bool CvPlayer::MeetSpecialistResourceRequirement(const CvSpecialistInfo::Resourc
 	bool hasPolicy = resourceInfo.m_eRequiredPolicy == NO_POLICY || (HasPolicy(resourceInfo.m_eRequiredPolicy) && !GetPlayerPolicies()->IsPolicyBlocked(resourceInfo.m_eRequiredPolicy));
 	return hasTech && hasPolicy;
 }
-
 #endif
+
+//	--------------------------------------------------------------------------------
+std::vector<PolicyResourceInfo>& CvPlayer::GetCityResourcesFromPolicy()
+{
+	return m_vCityResourcesFromPolicy;
+}
+const std::vector<PolicyResourceInfo>& CvPlayer::GetCityResourcesFromPolicy() const
+{
+	return m_vCityResourcesFromPolicy;
+}
 
 //	--------------------------------------------------------------------------------
 void CvPlayer::GetUCTypesFromPlayer(const CvPlayer& player,
