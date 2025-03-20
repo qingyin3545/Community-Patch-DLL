@@ -193,6 +193,8 @@ protected:
 		return BasicLuaMethod(L, &CvDeal::RemoveDualEmpireTreaty);
 	}
 
+	static int lGetNumResource(lua_State* L);
+	
 	// DEPRECATED
 	static int lAddUnitTrade(lua_State* L);
 	static int lAddTradeAgreement(lua_State* L);
