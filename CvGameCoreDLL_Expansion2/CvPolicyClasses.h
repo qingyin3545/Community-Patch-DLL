@@ -504,6 +504,7 @@ public:
 	int GetImmigrationInModifier() const;
 	int GetImmigrationOutModifier() const;
 #endif
+	std::vector<PolicyResourceInfo>& GetCityResources();
 
 private:
 	int m_iTechPrereq;
@@ -923,6 +924,7 @@ private:
 	int m_iImmigrationInModifier = 0;
 	int m_iImmigrationOutModifier = 0;
 #endif
+	std::vector<PolicyResourceInfo> m_vCityResources;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
