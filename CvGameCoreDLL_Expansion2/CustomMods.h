@@ -1059,6 +1059,7 @@
 #define MOD_INTERNATIONAL_IMMIGRATION_FOR_SP        gCustomMods.isINTERNATIONAL_IMMIGRATION_FOR_SP()
 #define MOD_SPECIALIST_RESOURCES					gCustomMods.isSPECIALIST_RESOURCES()
 #define MOD_NO_TRAIN_CHECK_INIT_FREE_UNIT        	gCustomMods.isNO_TRAIN_CHECK_INIT_FREE_UNIT()
+#define MOD_EVENTS_PLAYER_SET_ERA        			gCustomMods.isEVENTS_PLAYER_SET_ERA()
 
 //
 // NOTHING BELOW HERE SHOULD NEED CHANGING
@@ -1400,9 +1401,8 @@ enum BattleTypeTypes
 #define GAMEEVENT_CityFlipRecipientChance	"CityFlipChance", "iii"
 #define GAMEEVENT_PlayerAnarchy				"PlayerAnarchyBegins", "iii"
 
-#ifdef MOD_EVENTS_CITY_SCALES
 #define GAMEEVENT_OnCityScaleChange			"OnCityScaleChange", "iiii"
-#endif
+#define GAMEEVENT_PlayerSetEra				"PlayerSetEra", "iib"
 
 // Serialization wrappers
 #define MOD_SERIALIZE
@@ -1808,6 +1808,7 @@ public:
 	MOD_OPT_DECL(INTERNATIONAL_IMMIGRATION_FOR_SP);
 	MOD_OPT_DECL(SPECIALIST_RESOURCES);
 	MOD_OPT_DECL(NO_TRAIN_CHECK_INIT_FREE_UNIT);
+	MOD_OPT_DECL(EVENTS_PLAYER_SET_ERA);
 
 protected:
 	bool m_bInit;
