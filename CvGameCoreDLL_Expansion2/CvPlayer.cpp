@@ -1659,6 +1659,7 @@ void CvPlayer::uninit()
 #ifdef MOD_SPECIALIST_RESOURCES
 	m_paiResourcesFromSpecialists.clear();
 #endif
+	m_vCityResourcesFromPolicy.clear();
 	m_sUUFromDualEmpire.clear();
 	m_sUBFromDualEmpire.clear();
 	m_sUIFromDualEmpire.clear();
@@ -37148,6 +37149,14 @@ void CvPlayer::changeNumResourceUsed(ResourceTypes eIndex, int iChange)
 	ASSERT(m_paiNumResourceUsed[eIndex] >= 0);
 }
 
+inline static bool MeetCityResourceRequirement(const PolicyResourceInfo& info,  const CvCity* city, const CvPlayer* player)
+{
+	bool okPolicy = (player->HasPolicy(info.ePolicy) && !player->GetPlayerPolicies()->IsPolicyBlocked(info.ePolicy));
+	bool okCoastal = (!info.bMustCoastal || city->isCoastal());
+	bool okCityScale = (info.eCityScale == NO_CITY_SCALE || city->GetScale() == info.eCityScale);
+	return okPolicy && okCoastal && okCityScale;
+}
+
 int CvPlayer::getNumResourcesFromOther(ResourceTypes eIndex) const
 {
 	PRECONDITION(eIndex >= 0, "eIndex is expected to be non-negative (invalid Index)");
@@ -37187,14 +37196,30 @@ int CvPlayer::getNumResourcesFromOther(ResourceTypes eIndex) const
 	int iLoop = 0;
 	int iCityPOPResource = 0;
 	fraction fCityFranchiseResource = 0;
+	int iCityResourceFromPolicy = 0;
 	for (const CvCity* pLoopCity = firstCity(&iLoop); pLoopCity != NULL; pLoopCity = nextCity(&iLoop))
 	{
 		fCityFranchiseResource += pLoopCity->GetResourceQuantityPerXFranchises(eIndex) * GetCorporations()->GetNumFranchises();
 		iCityPOPResource += pLoopCity->getPopulation() * pLoopCity->GetResourceQuantityFromPOP(eIndex);
+		for (const auto& info : GetCityResourcesFromPolicy())
+		{
+			if (info.eResource == eIndex && MeetCityResourceRequirement(info, pLoopCity, this))
+			{
+				iCityResourceFromPolicy += info.iQuantity;
+			}
+		}
 	}
 
 	iTotalNumResource += fCityFranchiseResource.Truncate();
 	iTotalNumResource += iCityPOPResource / 100;
+	iTotalNumResource += iCityResourceFromPolicy;
+
+#ifdef MOD_SPECIALIST_RESOURCES
+	if (MOD_SPECIALIST_RESOURCES)
+	{
+		iTotalNumResource += getResourceFromSpecialists(eIndex);
+	}
+#endif
 
 	if (pkResource->getResourceUsage() == RESOURCEUSAGE_STRATEGIC)
 	{
@@ -37239,13 +37264,6 @@ int CvPlayer::getNumResourceTotal(ResourceTypes eIndex, bool bIncludeImport) con
 	}
 
 	iTotalNumResource -= getResourceExport(eIndex);
-
-#ifdef MOD_SPECIALIST_RESOURCES
-	if (MOD_SPECIALIST_RESOURCES)
-	{
-		iTotalNumResource += getResourceFromSpecialists(eIndex);
-	}
-#endif
 
 	return iTotalNumResource;
 }
@@ -42191,6 +42209,18 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	}
 	ChangeCorruptionScoreModifierFromPolicy(iChange * pkPolicyInfo->GetCorruptionScoreModifier());
 #endif
+	if (iChange < 0)
+	{
+		for (auto it = m_vCityResourcesFromPolicy.begin(); it != m_vCityResourcesFromPolicy.end();)
+		{
+			if (it->ePolicy == ePolicy) it = m_vCityResourcesFromPolicy.erase(it);
+			else it++;
+		}
+	}
+	else
+	{
+		for (const auto& info : pkPolicyInfo->GetCityResources()) m_vCityResourcesFromPolicy.push_back(info);
+	}
 
 	// Improvements
 	for (int iI = 0; iI < GC.getNumImprovementInfos(); iI++)
@@ -43997,6 +44027,7 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 #ifdef MOD_SPECIALIST_RESOURCES
 	visitor(player.m_paiResourcesFromSpecialists);
 #endif
+	visitor(player.m_vCityResourcesFromPolicy);
 	visitor(player.m_sUUFromDualEmpire);
 	visitor(player.m_sUBFromDualEmpire);
 	visitor(player.m_sUIFromDualEmpire);
@@ -49531,6 +49562,16 @@ bool CvPlayer::MeetSpecialistResourceRequirement(const CvSpecialistInfo::Resourc
 }
 
 #endif
+
+//	--------------------------------------------------------------------------------
+std::vector<PolicyResourceInfo>& CvPlayer::GetCityResourcesFromPolicy()
+{
+	return m_vCityResourcesFromPolicy;
+}
+const std::vector<PolicyResourceInfo>& CvPlayer::GetCityResourcesFromPolicy() const
+{
+	return m_vCityResourcesFromPolicy;
+}
 
 //	--------------------------------------------------------------------------------
 void CvPlayer::GetUCTypesFromPlayer(const CvPlayer& player,
