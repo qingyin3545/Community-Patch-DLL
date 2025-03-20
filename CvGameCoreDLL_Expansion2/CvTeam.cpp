@@ -8814,6 +8814,10 @@ void CvTeam::SetCurrentEra(EraTypes eNewValue)
 			if(kPlayer.isAlive() && kPlayer.getTeam() == GetID())
 			{
 				gDLL->GameplayEraChanged(ePlayer, eNewValue);
+				if (MOD_EVENTS_NEW_ERA) 
+				{
+					GAMEEVENTINVOKE_HOOK(GAMEEVENT_PlayerSetEra, kPlayer.GetID(), eNewValue, !bAlreadyProvided);
+				}
 			}
 		}
 
