@@ -4301,6 +4301,19 @@ int CvHandicapInfo::isAIFreeTechs(int i) const
 }
 
 //------------------------------------------------------------------------------
+int CvHandicapInfo::getAIStrategicResourceMod() const
+{
+	return m_iAIStrategicResourceMod;
+}
+int CvHandicapInfo::getAIStrategicResourceModPerEra() const
+{
+	return m_iAIStrategicResourceModPerEra;
+}
+int CvHandicapInfo::getAIMinExpansionFlavor() const
+{
+	return m_iAIMinExpansionFlavor;
+}
+//------------------------------------------------------------------------------
 bool CvHandicapInfo::CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility)
 {
 	if (!CvBaseInfo::CacheResults(kResults, kUtility))
@@ -4623,6 +4636,10 @@ bool CvHandicapInfo::CacheResults(Database::Results& kResults, CvDatabaseUtility
 			m_pppiAIDifficultyBonus[index] = amount;
 		}
 	}
+
+	m_iAIStrategicResourceMod = kResults.GetInt("AIStrategicResourceMod");
+	m_iAIStrategicResourceModPerEra = kResults.GetInt("AIStrategicResourceModPerEra");
+	m_iAIMinExpansionFlavor = kResults.GetInt("AIMinExpansionFlavor");
 
 	return true;
 }

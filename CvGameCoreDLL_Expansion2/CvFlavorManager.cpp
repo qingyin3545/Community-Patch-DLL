@@ -370,6 +370,11 @@ void CvFlavorManager::AdjustWeightsForMap()
 			{
 				m_piPersonalityFlavor[iExpansionIndex] = iFlavorMaxValue;
 			}
+			int iHandicapMinValue = GC.getGame().getHandicapInfo().getAIMinExpansionFlavor();
+			if(iHandicapMinValue > 0 && m_piPersonalityFlavor[iExpansionIndex] < iHandicapMinValue)
+			{
+				m_piPersonalityFlavor[iExpansionIndex] = iHandicapMinValue;
+			}
 		}
 
 		// Reduce growth
