@@ -37391,6 +37391,13 @@ int CvPlayer::getNumResourcesFromOther(ResourceTypes eIndex) const
 	{
 		iTotalNumResource *= 100 + GetStrategicResourceMod();
 		iTotalNumResource /= 100;
+		if(!isHuman() && isMajorCiv() && !IsAITeammateOfHuman() && getNumCities() > 1 && GetDiplomacyAI()->GetStateAllWars() != STATE_ALL_WARS_LOSING)
+		{
+			int iHanHandicapMod = GC.getGame().getHandicapInfo().getAIStrategicResourceMod();
+			iHanHandicapMod += GC.getGame().getHandicapInfo().getAIStrategicResourceModPerEra() * GetCurrentEra();
+			iTotalNumResource *= iHanHandicapMod;
+			iTotalNumResource /= 100;
+		}
 	}
 
 	iTotalNumResource *= 100 + getResourceModFromReligion(eIndex);
