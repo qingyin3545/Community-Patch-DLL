@@ -1178,6 +1178,10 @@ public:
 	int isFreeTechs(int i) const;
 	int isAIFreeTechs(int i) const;
 
+	int getAIStrategicResourceMod() const;
+	int getAIStrategicResourceModPerEra() const;
+	int getAIMinExpansionFlavor() const;
+
 	virtual bool CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility);
 
 protected:
@@ -1407,6 +1411,11 @@ protected:
 	bool* m_pbAIFreeTechs;
 	int* m_pppiDifficultyBonus;
 	int* m_pppiAIDifficultyBonus;
+
+	// SP AI extra buff
+	int m_iAIStrategicResourceMod = 0;
+	int m_iAIStrategicResourceModPerEra = 0;
+	int m_iAIMinExpansionFlavor = 0;
 
 private:
 	CvHandicapInfo(const CvHandicapInfo&);
