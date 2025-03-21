@@ -45333,7 +45333,8 @@ CvPlot* CvPlayer::GetBestSettlePlot(CvUnit* pUnit, CvAIOperation* pOpToIgnore, b
 	int iTimeOffset = (17 * GC.getGame().getElapsedGameTurns()) / max(512, GC.getGame().getMaxTurns());
 
 	//theoretical maximum distance for onshore settling
-	int iMaxSettleDistance = /*8*/ GD_INT_GET(SETTLER_EVALUATION_DISTANCE) + iTimeOffset; //plot value at max distance or greater is scaled to zero
+	int iMaxSettleDistance = iTimeOffset; //plot value at max distance or greater is scaled to zero
+	if(!MOD_SP_SMART_AI) iMaxSettleDistance += /*8*/ GD_INT_GET(SETTLER_EVALUATION_DISTANCE);
 	if(IsCramped())
 		iMaxSettleDistance += iTimeOffset;
 
@@ -45390,15 +45391,19 @@ CvPlot* CvPlayer::GetBestSettlePlot(CvUnit* pUnit, CvAIOperation* pOpToIgnore, b
 			continue;
 		}
 
-		for (std::vector<PlayerTypes>::const_iterator it = m_playersWeAreAtWarWith.begin(); it != m_playersWeAreAtWarWith.end(); ++it)
+		// for SP, we not need this
+		if(!MOD_SP_SMART_AI)
 		{
-			if(pPlot->IsCloseToCity(*it))
+			for (std::vector<PlayerTypes>::const_iterator it = m_playersWeAreAtWarWith.begin(); it != m_playersWeAreAtWarWith.end(); ++it)
 			{
-				//--------------
-				if (bLogging)
-				dump << pPlot << ",1," << iDanger << "," << iFertility << ",-1" << ",-2" << std::endl;
-				//--------------
-				continue;
+				if(pPlot->IsCloseToCity(*it))
+				{
+					//--------------
+					if (bLogging)
+					dump << pPlot << ",1," << iDanger << "," << iFertility << ",-1" << ",-2" << std::endl;
+					//--------------
+					continue;
+				}
 			}
 		}
 
@@ -45481,8 +45486,15 @@ CvPlot* CvPlayer::GetBestSettlePlot(CvUnit* pUnit, CvAIOperation* pOpToIgnore, b
 		if ((getNumCities()==0 && iValue<0) || (getNumCities()>0 && iValue<=0))
 			continue;
 
-		//factor in the distance
-		iValue = (iValue*iScale)/100;
+		if(MOD_SP_SMART_AI && getCapitalCity())
+		{
+			iValue = iValue * std::max(100 / plotDistance(*pPlot, *getCapitalCity()->plot()), 1);
+		}
+		else if(!MOD_SP_SMART_AI)
+		{
+			//factor in the distance
+			iValue = (iValue*iScale)/100;
+		}
 
 		vSettlePlots.push_back( SPlotWithScore(pPlot,iValue) );
 	}
