@@ -1382,6 +1382,9 @@ bool CvPolicyEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility&
 	m_iImmigrationInModifier = kResults.GetInt("ImmigrationInModifier");
 	m_iImmigrationOutModifier = kResults.GetInt("ImmigrationOutModifier");
 #endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	m_iWarCasualtiesModifier = kResults.GetInt("WarCasualtiesModifier");
+#endif
 	{
 		m_vCityResources.clear();
 		std::string sqlKey = "m_vCityResources";
@@ -3764,6 +3767,12 @@ int CvPolicyEntry::GetImmigrationInModifier() const
 int CvPolicyEntry::GetImmigrationOutModifier() const
 {
 	return m_iImmigrationOutModifier;
+}
+#endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+int CvPolicyEntry::GetWarCasualtiesModifier() const
+{
+	return m_iWarCasualtiesModifier;
 }
 #endif
 std::vector<PolicyResourceInfo>& CvPolicyEntry::GetCityResources()
