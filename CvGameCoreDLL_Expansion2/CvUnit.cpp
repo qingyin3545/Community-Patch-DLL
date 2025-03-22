@@ -1643,6 +1643,9 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iNumEstablishCorps = 0;
 	m_iCannotBeEstablishedCorps = 0;
 #endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	m_iWarCasualtiesModifier = 0;
+#endif
 	m_iPromotionMaintenanceCost = 0;
 
 	if(!bConstructorCall)
@@ -28022,6 +28025,9 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 	ChangeNumEstablishCorps(thisPromotion.GetNumEstablishCorps() * iChange);
 	ChangeNumCannotBeEstablishedCorps(thisPromotion.IsCannotBeEstablishedCorps() ? iChange: 0);
 #endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	ChangeWarCasualtiesModifier(thisPromotion.GetWarCasualtiesModifier() * iChange);
+#endif
 	ChangePromotionMaintenanceCost(thisPromotion.GetMaintenanceCost() > 0 ? iChange: 0);
 
 	if (IsSelected())
@@ -28697,6 +28703,9 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iArmee);
 	visitor(unit.m_iNumEstablishCorps);
 	visitor(unit.m_iCannotBeEstablishedCorps);
+#endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	visitor(unit.m_iWarCasualtiesModifier);
 #endif
 	visitor(unit.m_iPromotionMaintenanceCost);
 }
@@ -34148,6 +34157,22 @@ bool CvUnit::IsCanBeEstablishedCorps() const
 		&& IsCombatUnit()
 		&& m_pUnitInfo->GetDomainType() == DOMAIN_LAND && !isEmbarked()
 		&& !m_pUnitInfo->IsCannotBeEstablishedCorps();
+}
+#endif
+
+//	--------------------------------------------------------------------------------
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+int CvUnit::GetWarCasualtiesModifier() const
+{
+	return m_iWarCasualtiesModifier;
+}
+void CvUnit::ChangeWarCasualtiesModifier(int iChange)
+{
+	m_iWarCasualtiesModifier += iChange;
+}
+void CvUnit::SetWarCasualtiesModifier(int iValue)
+{
+	m_iWarCasualtiesModifier = iValue;
 }
 #endif
 
