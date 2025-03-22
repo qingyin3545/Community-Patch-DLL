@@ -814,6 +814,7 @@
 #define MOD_EVENTS_CITY_SCALES						gCustomMods.isEVENTS_CITY_SCALES()
 #define MOD_NUCLEAR_WINTER_FOR_SP           		gCustomMods.isNUCLEAR_WINTER_FOR_SP()
 #define MOD_INTERNATIONAL_IMMIGRATION_FOR_SP        gCustomMods.isINTERNATIONAL_IMMIGRATION_FOR_SP()
+#define MOD_GLOBAL_WAR_CASUALTIES                   gCustomMods.isGLOBAL_WAR_CASUALTIES()
 #define MOD_SPECIALIST_RESOURCES					gCustomMods.isSPECIALIST_RESOURCES()
 #define MOD_SP_SMART_AI        						gCustomMods.isSP_SMART_AI()
 #define MOD_NO_TRAIN_CHECK_INIT_FREE_UNIT        	gCustomMods.isNO_TRAIN_CHECK_INIT_FREE_UNIT()
@@ -1184,6 +1185,7 @@ enum BattleTypeTypes
 #define GAMEEVENT_PlayerAnarchy				"PlayerAnarchyBegins", "iii"
 
 #define GAMEEVENT_OnCityScaleChange			"OnCityScaleChange", "iiii"
+#define GAMEEVENT_DoWarPopulationLoss		"DoWarPopulationLoss", "iii"
 #define GAMEEVENT_PlayerSetEra				"PlayerSetEra", "iib"
 
 // Serialization wrappers
@@ -1588,6 +1590,7 @@ public:
 	MOD_OPT_DECL(EVENTS_CITY_SCALES);
 	MOD_OPT_DECL(NUCLEAR_WINTER_FOR_SP);
 	MOD_OPT_DECL(INTERNATIONAL_IMMIGRATION_FOR_SP);
+	MOD_OPT_DECL(GLOBAL_WAR_CASUALTIES);
 	MOD_OPT_DECL(SPECIALIST_RESOURCES);
 	MOD_OPT_DECL(SP_SMART_AI);
 	MOD_OPT_DECL(NO_TRAIN_CHECK_INIT_FREE_UNIT);

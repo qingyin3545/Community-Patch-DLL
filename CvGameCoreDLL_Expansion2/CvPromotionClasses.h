@@ -402,6 +402,9 @@ public:
 	int GetNumEstablishCorps() const;
 	bool IsCannotBeEstablishedCorps() const;
 #endif
+ #ifdef MOD_GLOBAL_WAR_CASUALTIES
+	int GetWarCasualtiesModifier() const;
+ #endif
 	int GetMaintenanceCost() const;
 
 protected:
@@ -746,6 +749,9 @@ protected:
 	bool m_bArmee = false;
 	int m_iNumEstablishCorps = 0;
 	bool m_bCannotBeEstablishedCorps = false;
+#endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	int m_iWarCasualtiesModifier = 0;
 #endif
 	int m_iMaintenanceCost = 0;
 };

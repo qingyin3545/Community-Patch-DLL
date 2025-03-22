@@ -498,6 +498,9 @@ public:
 	int GetImmigrationInModifier() const;
 	int GetImmigrationOutModifier() const;
 #endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	int GetWarCasualtiesModifier() const;
+#endif
 	std::vector<PolicyResourceInfo>& GetCityResources();
 
 private:
@@ -912,6 +915,9 @@ private:
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	int m_iImmigrationInModifier = 0;
 	int m_iImmigrationOutModifier = 0;
+#endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	int m_iWarCasualtiesModifier = 0;
 #endif
 	std::vector<PolicyResourceInfo> m_vCityResources;
 };

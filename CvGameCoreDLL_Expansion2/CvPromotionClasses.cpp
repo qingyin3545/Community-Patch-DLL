@@ -1486,6 +1486,9 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iNumEstablishCorps = kResults.GetInt("NumEstablishCorps");
 	m_bCannotBeEstablishedCorps = kResults.GetBool("CannotBeEstablishedCorps");
 #endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	m_iWarCasualtiesModifier = kResults.GetInt("WarCasualtiesModifier");
+#endif
 	m_iMaintenanceCost = kResults.GetInt("MaintenanceCost");
 
 	return true;
@@ -3697,6 +3700,12 @@ int CvPromotionEntry::GetNumEstablishCorps() const
 bool CvPromotionEntry::IsCannotBeEstablishedCorps() const
 {
 	return m_bCannotBeEstablishedCorps;
+}
+#endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+int CvPromotionEntry::GetWarCasualtiesModifier() const
+{
+	return m_iWarCasualtiesModifier;
 }
 #endif
 int CvPromotionEntry::GetMaintenanceCost() const

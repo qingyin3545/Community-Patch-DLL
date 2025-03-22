@@ -2075,6 +2075,11 @@ public:
 	bool IsCanBeEstablishedCorps() const;
 	void ChangeNumCannotBeEstablishedCorps(int iValue);
 #endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	int GetWarCasualtiesModifier() const;
+	void ChangeWarCasualtiesModifier(int iChange);
+	void SetWarCasualtiesModifier(int iValue);
+#endif
 	int GetPromotionMaintenanceCost() const;
 	void ChangePromotionMaintenanceCost(int iValue);
 
@@ -2563,6 +2568,10 @@ private:
 	int m_iNumEstablishCorps = 0;
 	int m_iCannotBeEstablishedCorps = 0;
 #endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	int m_iWarCasualtiesModifier = 0;
+#endif
+
 	int m_iPromotionMaintenanceCost = 0;
 
 	friend class CvLuaUnit;

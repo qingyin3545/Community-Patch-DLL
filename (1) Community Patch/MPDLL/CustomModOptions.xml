@@ -7,6 +7,8 @@
     <Row Class="6" Name="EVENTS_CITY_SCALES" Value="0"/>
     <Row Class="6" Name="NUCLEAR_WINTER_FOR_SP" Value="0"/>
     <Row Class="6" Name="INTERNATIONAL_IMMIGRATION_FOR_SP" Value="0"/>
+    <!-- GameEvents.DoWarPopulationLoss(int iPlayer, int iCity, int iChange)-->
+    <Row Class="6" Name="GLOBAL_WAR_CASUALTIES" Value="0"/>
     <Row Class="6" Name="SPECIALIST_RESOURCES" Value="0"/>
     <Row Class="6" Name="SP_SMART_AI" Value="0"/>
     <Row Class="4" Name="NO_TRAIN_CHECK_INIT_FREE_UNIT" Value="0"/>
