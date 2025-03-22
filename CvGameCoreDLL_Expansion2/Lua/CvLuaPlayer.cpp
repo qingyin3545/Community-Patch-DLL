@@ -1561,6 +1561,12 @@ void CvLuaPlayer::PushMethods(lua_State* L, int t)
 	Method(GetImmigrationInRateFromPolicy);
 	Method(GetImmigrationOutRateFromPolicy);
 #endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	Method(GetWarCasualtiesCounter);
+	Method(ChangeWarCasualtiesCounter);
+	Method(SetWarCasualtiesCounter);
+	Method(CheckAndUpdateWarCasualtiesCounter);
+#endif
 #if defined(MOD_SPECIALIST_RESOURCES)
 	Method(GetSpecialistResources);
 #endif
@@ -19378,6 +19384,12 @@ int CvLuaPlayer::lGetImmigrationOutRateFromPolicy(lua_State* L)
 	lua_pushinteger(L, pkPlayer->GetPlayerPolicies()->GetNumericModifier(POLICYMOD_IMMIGRATION_OUT_MODIFIER));
 	return 1;
 }
+#endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+LUAAPIIMPL(Player, GetWarCasualtiesCounter)
+LUAAPIIMPL(Player, ChangeWarCasualtiesCounter)
+LUAAPIIMPL(Player, SetWarCasualtiesCounter)
+LUAAPIIMPL(Player, CheckAndUpdateWarCasualtiesCounter)
 #endif
 #ifdef MOD_SPECIALIST_RESOURCES
 int CvLuaPlayer::lGetSpecialistResources(lua_State* L)
