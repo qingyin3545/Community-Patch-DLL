@@ -1745,6 +1745,10 @@ void CvPlayer::uninit()
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	m_aiImmigrationCounter.clear();
 #endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	m_iWarCasualtiesCounter = 0;
+	m_iWarCasualtiesModifier = 0;
+#endif
 #ifdef MOD_SPECIALIST_RESOURCES
 	m_paiResourcesFromSpecialists.clear();
 #endif
@@ -25373,6 +25377,20 @@ void CvPlayer::DoUnitKilledCombat(CvUnit* pKillingUnit, PlayerTypes eKilledPlaye
 		bool bResult = false;
 		LuaSupport::CallHook(pkScriptSystem, "UnitKilledInCombat", args.get(), bResult);
 	}
+
+	CvPlayerAI &pKilledPlayer = GET_PLAYER(eKilledPlayer);
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	if (MOD_GLOBAL_WAR_CASUALTIES)
+	{
+		int iDelta = GC.getWAR_CASUALTIES_DELTA_BASE();
+		iDelta = (100 + pKillingUnit->GetWarCasualtiesModifier()) * iDelta / 100;
+		iDelta = iDelta < 0 ? 0 : iDelta;
+		iDelta = 100 + pKilledPlayer.GetWarCasualtiesModifier();
+		//iDelta += GC.getGame().GetGameLeagues()->GetGlobalWarCasualtiesChanges()) * iDelta / 100;
+		pKilledPlayer.ChangeWarCasualtiesCounter(iDelta < 0 ? 0 : iDelta);
+		pKilledPlayer.CheckAndUpdateWarCasualtiesCounter();
+	}
+#endif
 }
 #if defined(MOD_BALANCE_CORE)
 void CvPlayer::doInstantYield(InstantYieldType iType, bool bCityFaith, GreatPersonTypes eGreatPerson, BuildingTypes ePassBuilding, int iPassYield, bool bEraScale, PlayerTypes ePlayer, CvPlot* pPlot, bool bSuppress, CvCity* pCity, bool bDomainSea, bool bInternational, bool bEvent, YieldTypes ePassYield, CvUnit* pUnit, TerrainTypes ePassTerrain, CvMinorCivQuest* pQuestData, CvCity* pOtherCity, CvUnit* pAttackingUnit)
@@ -41817,6 +41835,9 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	changePolicyModifiers(POLICYMOD_IMMIGRATION_IN_MODIFIER, pkPolicyInfo->GetImmigrationInModifier()* iChange);
 	changePolicyModifiers(POLICYMOD_IMMIGRATION_OUT_MODIFIER, pkPolicyInfo->GetImmigrationOutModifier()* iChange);
 #endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	ChangeWarCasualtiesModifier(pkPolicyInfo->GetWarCasualtiesModifier() * iChange);
+#endif
 #ifdef MOD_GLOBAL_CORRUPTION
 	for (size_t i = 0; i < GC.getNumCorruptionLevel(); i++)
 	{
@@ -43661,6 +43682,10 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 #endif
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	visitor(player.m_aiImmigrationCounter);
+#endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	visitor(player.m_iWarCasualtiesCounter);
+	visitor(player.m_iWarCasualtiesModifier);
 #endif
 #ifdef MOD_SPECIALIST_RESOURCES
 	visitor(player.m_paiResourcesFromSpecialists);
@@ -48917,6 +48942,117 @@ int CvPlayer::GetImmigrationRate(PlayerTypes eTargetPlayer) const
 
 	return iRtnValue;
 }
+#endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+int CvPlayer::GetWarCasualtiesCounter() const
+{
+	return m_iWarCasualtiesCounter;
+}
+void CvPlayer::ChangeWarCasualtiesCounter(const int iChange)
+{
+	m_iWarCasualtiesCounter += iChange;
+}
+void CvPlayer::SetWarCasualtiesCounter(const int iValue)
+{
+	m_iWarCasualtiesCounter = iValue;
+}
+
+CvCity* CvPlayer::GetRandomCity()
+{
+	CvCity *pCity;
+	int iCityCount = this->getNumCities();
+	if (iCityCount == 0)
+	{
+		return nullptr;
+	}
+
+	int iRandCityIndex = GC.getGame().getJonRandNum(iCityCount, "Select one random city to lose population");
+	int iLoop = 0;
+	int iCustomLoop = 0;
+	for (pCity = firstCity(&iLoop); pCity != NULL; pCity = nextCity(&iLoop), iCustomLoop++)
+	{
+		if (iCustomLoop == iRandCityIndex)
+		{
+			break;
+		}
+	}
+
+	return pCity;
+}
+bool CvPlayer::CheckAndUpdateWarCasualtiesCounter()
+{
+	if (!MOD_GLOBAL_WAR_CASUALTIES)
+	{
+		return false;
+	}
+
+	if (this->GetWarCasualtiesCounter() < GC.getWAR_CASUALTIES_THRESHOLD())
+	{
+		return false;
+	}
+
+	this->SetWarCasualtiesCounter(0);
+
+	// do population loss
+	CvCity *pCity = GetRandomCity();
+	if (pCity == nullptr)
+	{
+		return true;
+	}
+
+	int iOldPop = pCity->getPopulation();
+	int iNewPop = std::max(1, iOldPop - GC.getWAR_CASUALTIES_POPULATION_LOSS());
+	int iChange = iNewPop - iOldPop;
+	if (iChange != 0)
+	{
+		pCity->changePopulation(iChange);
+		if (this->isHuman())
+		{
+			CvNotifications *pNotifications = this->GetNotifications();
+			if (pNotifications)
+			{
+				Localization::String strMessage = Localization::Lookup("TXT_KEY_NOTIFICATION_WAR_CASUALTIES_MESSAGE");
+				strMessage << pCity->getNameKey();
+				strMessage << -iChange;
+				Localization::String strSummary = Localization::Lookup("TXT_KEY_NOTIFICATION_WAR_CASUALTIES_SUMMARY");
+				pNotifications->Add(NOTIFICATION_STARVING, strMessage.toUTF8(), strSummary.toUTF8(), pCity->getX(), pCity->getY(), -1);
+			}
+		}
+	}
+	else
+	{
+		pCity->setFood(0);
+		pCity->ChangeResistanceTurns(2);
+		if (this->isHuman())
+		{
+			CvNotifications *pNotifications = this->GetNotifications();
+			if (pNotifications)
+			{
+				Localization::String strMessage = Localization::Lookup("TXT_KEY_NOTIFICATION_WAR_CASUALTIES_MESSAGE2");
+				strMessage << pCity->getNameKey();
+				Localization::String strSummary = Localization::Lookup("TXT_KEY_NOTIFICATION_WAR_CASUALTIES_SUMMARY");
+				pNotifications->Add(NOTIFICATION_STARVING, strMessage.toUTF8(), strSummary.toUTF8(), pCity->getX(), pCity->getY(), -1);
+			}
+		}
+	}
+
+	GAMEEVENTINVOKE_HOOK(GAMEEVENT_DoWarPopulationLoss, this->GetID(), pCity->GetID(), iChange);
+	return true;
+}
+
+int CvPlayer::GetWarCasualtiesModifier() const
+{
+	return this->m_iWarCasualtiesModifier;
+}
+void CvPlayer::SetWarCasualtiesModifier(const int iValue)
+{
+	this->m_iWarCasualtiesModifier = iValue;
+}
+void CvPlayer::ChangeWarCasualtiesModifier(const int iChange)
+{
+	this->m_iWarCasualtiesModifier += iChange;
+}
+
 #endif
 #ifdef MOD_SPECIALIST_RESOURCES
 int CvPlayer::getResourceFromSpecialists(ResourceTypes eIndex) const

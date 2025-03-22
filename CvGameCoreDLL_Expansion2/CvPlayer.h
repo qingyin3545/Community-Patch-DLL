@@ -2959,6 +2959,17 @@ public:
 	void SetImmigrationCounter(int iIndex, int iValue);
 	int GetImmigrationRate(PlayerTypes eTargetPlayer) const;
 #endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	int GetWarCasualtiesCounter() const;
+	void ChangeWarCasualtiesCounter(const int iChange);
+	void SetWarCasualtiesCounter(const int iValue);
+	CvCity* GetRandomCity();
+	bool CheckAndUpdateWarCasualtiesCounter();
+
+	int GetWarCasualtiesModifier() const;
+	void SetWarCasualtiesModifier(const int iValue);
+	void ChangeWarCasualtiesModifier(const int iChange);
+#endif
 #ifdef MOD_SPECIALIST_RESOURCES
 	int getResourceFromSpecialists(ResourceTypes eIndex) const;
 	void changeResourceFromSpecialists(ResourceTypes eIndex, int iChange);
@@ -3914,6 +3925,10 @@ protected:
 #endif
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	std::vector<int> m_aiImmigrationCounter;
+#endif
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
+	int m_iWarCasualtiesCounter = 0;
+	int m_iWarCasualtiesModifier = 0;
 #endif
 #ifdef MOD_SPECIALIST_RESOURCES
 	std::vector<int> m_paiResourcesFromSpecialists;
