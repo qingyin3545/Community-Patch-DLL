@@ -2783,6 +2783,9 @@ void CvGlobals::init()
 #ifdef MOD_SPECIALIST_RESOURCES
 	GC.initSpecialistResourcesDependencies();
 #endif
+	m_pLuaFormulaEntries = FNEW(CvLuaFormulaXMLEntries, c_eCiv5GameplayDLL, 0);
+	m_pLuaEvaluatorManager = FNEW(lua::EvaluatorManager, c_eCiv5GameplayDLL, 0);
+	m_pLuaEvaluatorManager->Init(this);
 
 	CvPlayerAI::initStatics();
 	CvTeam::initStatics();
@@ -2862,6 +2865,8 @@ void CvGlobals::uninit()
 #ifdef MOD_NUCLEAR_WINTER_FOR_SP
 	SAFE_DELETE(m_pNuclearWinterInfo);
 #endif
+	SAFE_DELETE(m_pLuaFormulaEntries);
+	SAFE_DELETE(m_pLuaEvaluatorManager);
 
 	// already deleted outside of the dll, set to null for safety
 	m_pathFinder=NULL;
@@ -5266,6 +5271,23 @@ std::tr1::unordered_set<TechTypes>& CvGlobals::getSpecialistResourcesTechnologie
 	return m_vSpecialistResourcesTechnologies;
 }
 #endif
+
+std::vector<CvLuaFormula*>& CvGlobals::GetLuaFormulaEntries()
+{
+	return m_pLuaFormulaEntries->GetEntries();
+}
+int CvGlobals::GetNumLuaFormulaEntries()
+{
+	return m_pLuaFormulaEntries->GetNumEntries();
+}
+CvLuaFormula* CvGlobals::GetLuaFormulaEntry(LuaFormulaTypes eFormula)
+{
+	return m_pLuaFormulaEntries->GetEntry(eFormula);
+}
+lua::EvaluatorManager* CvGlobals::GetLuaEvaluatorManager()
+{
+	return m_pLuaEvaluatorManager;
+}
 
 
 void CvGlobals::cacheGlobals()
