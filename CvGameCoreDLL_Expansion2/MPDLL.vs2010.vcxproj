@@ -191,6 +191,7 @@
     <ClCompile Include="CvGameCoreStructs.cpp" />
     <ClCompile Include="CvGreatPersonInfo.cpp" />
     <ClCompile Include="CvLoggerCSV.cpp" />
+    <ClCompile Include="CvLuaFormula.cpp" />
     <ClCompile Include="CvNuclearWinter.cpp" />
     <ClCompile Include="CvPlotInfo.cpp" />
     <ClCompile Include="CvSerialize.cpp" />
@@ -504,6 +505,7 @@
     <ClInclude Include="CvInfos.h" />
     <ClInclude Include="CvInfosSerializationHelper.h" />
     <ClInclude Include="CvInternalGameCoreUtils.h" />
+    <ClInclude Include="CvLuaFormula.h" />
     <ClInclude Include="CvMap.h" />
     <ClInclude Include="CvMapGenerator.h" />
     <ClInclude Include="CvMeta.h" />
