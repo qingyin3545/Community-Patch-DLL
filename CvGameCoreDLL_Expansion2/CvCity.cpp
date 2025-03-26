@@ -23480,6 +23480,17 @@ int CvCity::getBaseYieldRateModifier(YieldTypes eIndex, int iExtra, CvString* to
 		GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_FOLLOWERS", iTempMod);
 	}
 
+	auto& owner = GET_PLAYER(getOwner());
+#ifdef MOD_RESOURCE_EXTRA_BUFF
+	if (MOD_RESOURCE_EXTRA_BUFF)
+	{
+		iTempMod = owner.GetGlobalYieldModifierFromResource(eIndex);
+		iModifier += iTempMod;
+		if (iTempMod != 0 && toolTipSink)
+			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_RESOURCE_BUFF", iTempMod);
+	}
+#endif
+
 	// Puppet
 	if (IsPuppet())
 	{
