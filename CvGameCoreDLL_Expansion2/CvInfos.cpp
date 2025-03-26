@@ -6558,6 +6558,15 @@ const std::vector<CvResourceInfo::YieldInfo>& CvResourceInfo::GetGlobalYieldModi
 }
 #endif
 //------------------------------------------------------------------------------
+int CvResourceInfo::getNotificationTurn() const
+{
+	return m_iNotificationTurn;
+}
+bool CvResourceInfo::isNoDefaultNotification() const
+{
+	return m_bNoDefaultNotification;
+}
+//------------------------------------------------------------------------------
 int CvResourceInfo::GetCreateResouceWightModifier() const
 {
 	return m_iCreateResouceWightModifier;
@@ -6865,6 +6874,8 @@ bool CvResourceInfo::CacheResults(Database::Results& kResults, CvDatabaseUtility
 		pResults->Reset();
 	}
 #endif
+	m_iNotificationTurn = kResults.GetInt("NotificationTurn");
+	m_bNoDefaultNotification = kResults.GetBool("NoDefaultNotification");
 	m_iCreateResouceWightModifier = kResults.GetInt("CreateResouceWightModifier");
 
 	return true;
