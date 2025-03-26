@@ -3869,4 +3869,7 @@ enum NuclearWinterLevelTypes {
 	NO_NUCLEAR_WINTER = 0
 };
 #endif
+enum LuaFormulaTypes {
+	NO_LUA_FORMULA = -1
+};
 #endif
