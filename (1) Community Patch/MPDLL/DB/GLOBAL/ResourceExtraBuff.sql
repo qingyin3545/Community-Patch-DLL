@@ -1,6 +1,5 @@
 alter table Resources add column CreateResouceWightModifier integer not null default 0;
 
-
 alter table Resources add column UnHappinessModifierFormula text null references LuaFormula(Type);
 alter table Resources add column CityConnectionTradeRouteGoldModifierFormula text null references LuaFormula(Type);
 alter table Resources add column GoldHurryCostModifierFormula text null references LuaFormula(Type);
