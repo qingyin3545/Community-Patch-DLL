@@ -563,6 +563,9 @@
     <ClCompile Include="CvNuclearWinter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CvLuaFormula.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="banned.h">
@@ -1388,6 +1391,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CvNuclearWinter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CvLuaFormula.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
