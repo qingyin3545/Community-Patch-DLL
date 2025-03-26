@@ -417,6 +417,7 @@ bool CvDllDatabaseUtility::PrefetchGameData()
 	PrefetchCollection(GC.getNuclearWinterLevelInfo(), "NuclearWinterLevels");
 	GC.initGlobalNuclearWinterLevels();
 #endif
+	PrefetchCollection(GC.GetLuaFormulaEntries(), "LuaFormula");
 
 	//Copy flavors into string array
 	{
