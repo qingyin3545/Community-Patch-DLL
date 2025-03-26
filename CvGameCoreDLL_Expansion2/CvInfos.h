@@ -1928,6 +1928,8 @@ public:
 
 	const std::vector<YieldInfo>& GetGlobalYieldModifiers() const;
 #endif
+	int getNotificationTurn() const;
+	bool isNoDefaultNotification() const;
 	int GetCreateResouceWightModifier() const;
 
 	virtual bool CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility);
@@ -2005,6 +2007,8 @@ protected:
 
 	std::vector<YieldInfo> m_vGlobalYieldModifiers;
 #endif
+	int m_iNotificationTurn = 0;
+	bool m_bNoDefaultNotification = false;
 	int m_iCreateResouceWightModifier = 0;
 
 private:

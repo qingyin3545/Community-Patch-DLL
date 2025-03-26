@@ -10516,6 +10516,7 @@ void CvPlayer::doTurnPostDiplomacy()
 		bool bResult = false;
 		LuaSupport::CallHook(pkScriptSystem, "PlayerDoTurn", args.get(), bResult);
 	}
+	DoTestOverResourceNotificationAll();
 
 	if (isMajorCiv())
 	{
@@ -38569,9 +38570,10 @@ void CvPlayer::UpdateResourcesSiphoned()
 }
 
 /// Are we over our resource limit? If so, give out a notification
-void CvPlayer::DoTestOverResourceNotification(ResourceTypes eIndex)
+void CvPlayer::DoTestOverResourceNotification(ResourceTypes eIndex, bool bIsDoTurn)
 {
-	if((getNumResourceAvailable(eIndex, true) < 0) && (getNumResourceUsed(eIndex) > 0))
+	int iNumResource = getNumResourceAvailable(eIndex, true);
+	if((iNumResource < 0) && (getNumResourceUsed(eIndex) > 0))
 	{
 		//Flip the amount available as our drain pool - helper for cities to prevent empire wide drop.
 		setResourceShortageValue(eIndex, (getNumResourceAvailable(eIndex, true) * -1));
@@ -38600,20 +38602,54 @@ void CvPlayer::DoTestOverResourceNotification(ResourceTypes eIndex)
 			return;
 
 		const CvResourceInfo* pkResourceInfo = GC.getResourceInfo(eIndex);
-		if(pkResourceInfo != NULL && pkResourceInfo->getResourceUsage() == RESOURCEUSAGE_STRATEGIC)
+		if(pkResourceInfo == NULL) return;
+
+		int iNotificationTurn = pkResourceInfo->getNotificationTurn();
+		if(pkResourceInfo->getResourceUsage() == RESOURCEUSAGE_STRATEGIC || iNotificationTurn > 0)
 		{
-			CvNotifications* pNotifications = GetNotifications();
-			if(pNotifications)
+			//Special for SP: Block the Manpower, Consumer & Electricity Notification at StartTurn
+			if (GC.getGame().getElapsedGameTurns() < iNotificationTurn || (pkResourceInfo->isNoDefaultNotification() && !bIsDoTurn)) return;
+			CvString strText;
+			for (uint uiYield = 0; uiYield < NUM_YIELD_TYPES; uiYield++)
 			{
-				Localization::String strText = Localization::Lookup("TXT_KEY_NOTIFICATION_OVER_RESOURCE_LIMIT");
-				strText << pkResourceInfo->GetTextKey();
-				Localization::String strSummary = Localization::Lookup("TXT_KEY_NOTIFICATION_SUMMARY_OVER_RESOURCE_LIMIT");
+				YieldTypes eYield = (YieldTypes)uiYield;
+				int iYieldModifier =  CalculateGlobalYieldModifierFromResource(pkResourceInfo, iNumResource, eYield);
+				if(iYieldModifier != 0)
+				{
+					strText += GetLocalizedText("TXT_KEY_NOTIFICATION_OVER_RESOURCE_LIMIT_DEBUFF", GC.getYieldInfo(eYield)->getIconString(), GC.getYieldInfo(eYield)->GetDescription(), iYieldModifier);
+				}
+			}
+			int iUnhappinessMod = CalculateUnhappinessModFromResource(pkResourceInfo, iNumResource);
+			if(iUnhappinessMod > 0)
+			{
+				strText += GetLocalizedText("TXT_KEY_NOTIFICATION_OVER_RESOURCE_LIMIT_UNHAPPINESS", iUnhappinessMod);
+			}
+			if(!pkResourceInfo->isNoDefaultNotification())
+				strText += GetLocalizedText("TXT_KEY_NOTIFICATION_OVER_RESOURCE_LIMIT_COMBAT");
+			CvNotifications* pNotifications = GetNotifications();
+			if(pNotifications && strText.length() > 0)
+			{
+				strText = GetLocalizedText("TXT_KEY_NOTIFICATION_RESOURCE_LIMIT_GLOBAL_1", pkResourceInfo->GetTextKey()) + strText;
+				Localization::String strSummary;
+				strSummary = Localization::Lookup("TXT_KEY_NOTIFICATION_SUMMARY_OVER_RESOURCE_LIMIT");
 				strSummary << pkResourceInfo->GetTextKey();
-				pNotifications->Add(NOTIFICATION_DISCOVERED_STRATEGIC_RESOURCE, strText.toUTF8(), strSummary.toUTF8(), -1, -1, eIndex);
+				pNotifications->Add(NOTIFICATION_DEMAND_RESOURCE, strText, strSummary.toUTF8(), -1, -1, eIndex);
 			}
 		}
 	}
 }
+
+// Test All Resources to create turn Notification
+void CvPlayer::DoTestOverResourceNotificationAll()
+{
+	if(!isHuman()) return;
+	for(int i = 0; i < GC.getNumResourceInfos(); i++)
+	{
+		ResourceTypes eResource = (ResourceTypes)i;
+		DoTestOverResourceNotification(eResource, true);
+	}
+}
+//	--------------------------------------------------------------------------------
 
 /// Is our collection of Strategic Resources modified?
 int CvPlayer::GetStrategicResourceMod() const
@@ -49942,7 +49978,7 @@ int CvPlayer::GetUnhappinessModFromResource() const
 	return ret;
 }
 
-int CvPlayer::CalculateUnhappinessModFromResource(CvResourceInfo* info, int num) const
+int CvPlayer::CalculateUnhappinessModFromResource(const CvResourceInfo* info, int num) const
 {
 	auto* evaluator = GC.GetLuaEvaluatorManager()->GetEvaluator(info->GetUnHappinessModifierFormula());
 	if (evaluator == nullptr)
@@ -49974,7 +50010,7 @@ int CvPlayer::GetCityConnectionTradeRouteGoldModifierFromResource() const
 	return ret;
 }
 
-int CvPlayer::CalculateCityConnectionTradeRouteGoldModifierFromResource(CvResourceInfo* info, int num) const
+int CvPlayer::CalculateCityConnectionTradeRouteGoldModifierFromResource(const CvResourceInfo* info, int num) const
 {
 	auto* evaluator = GC.GetLuaEvaluatorManager()->GetEvaluator(info->GetCityConnectionTradeRouteGoldModifierFormula());
 	if (evaluator == nullptr)
@@ -50009,7 +50045,7 @@ int CvPlayer::GetHurryModifierFromResource(HurryTypes eIndex) const
 	return ret;
 }
 
-int CvPlayer::CalculateGoldHurryModFromResource(CvResourceInfo* pInfo, int num) const
+int CvPlayer::CalculateGoldHurryModFromResource(const CvResourceInfo* pInfo, int num) const
 {
 	if (pInfo == nullptr || pInfo->GetGoldHurryCostModifierFormula() == NO_LUA_FORMULA)
 	{
@@ -50043,7 +50079,7 @@ int CvPlayer::GetGlobalYieldModifierFromResource(YieldTypes eYield) const
 	return ret;
 }
 
-int CvPlayer::CalculateGlobalYieldModifierFromResource(CvResourceInfo* pInfo, int num, YieldTypes eYield) const
+int CvPlayer::CalculateGlobalYieldModifierFromResource(const CvResourceInfo* pInfo, int num, YieldTypes eYield) const
 {
 	if (pInfo == nullptr || pInfo->GetGlobalYieldModifiers().empty())
 	{
