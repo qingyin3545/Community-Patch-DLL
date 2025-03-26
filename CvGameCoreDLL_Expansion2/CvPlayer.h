@@ -2112,7 +2112,8 @@ public:
 	
 	void UpdateResourcesSiphoned();
 
-	void DoTestOverResourceNotification(ResourceTypes eIndex);
+	void DoTestOverResourceNotification(ResourceTypes eIndex, bool bIsDoTurn = false);
+	void DoTestOverResourceNotificationAll();
 
 	int GetStrategicResourceMod() const;
 	void ChangeStrategicResourceMod(int iChange);
@@ -2932,16 +2933,16 @@ public:
 #endif
 #ifdef MOD_RESOURCE_EXTRA_BUFF
 	int GetUnhappinessModFromResource() const;
-	int CalculateUnhappinessModFromResource(CvResourceInfo* pInfo, int num) const;
+	int CalculateUnhappinessModFromResource(const CvResourceInfo* pInfo, int num) const;
 
 	int GetCityConnectionTradeRouteGoldModifierFromResource() const;
-	int CalculateCityConnectionTradeRouteGoldModifierFromResource(CvResourceInfo* pInfo, int num) const;
+	int CalculateCityConnectionTradeRouteGoldModifierFromResource(const CvResourceInfo* pInfo, int num) const;
 
 	int GetHurryModifierFromResource(HurryTypes eIndex) const;
-	int CalculateGoldHurryModFromResource(CvResourceInfo* pInfo, int num) const;
+	int CalculateGoldHurryModFromResource(const CvResourceInfo* pInfo, int num) const;
 
 	int GetGlobalYieldModifierFromResource(YieldTypes eYield) const;
-	int CalculateGlobalYieldModifierFromResource(CvResourceInfo* pInfo, int num, YieldTypes eYield) const;
+	int CalculateGlobalYieldModifierFromResource(const CvResourceInfo* pInfo, int num, YieldTypes eYield) const;
 
 	// modifiers from policies ...
 	int GetResourceUnhappinessModifier() const;
