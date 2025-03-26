@@ -166,6 +166,7 @@ class ICvUnit1;
 #ifdef MOD_NUCLEAR_WINTER_FOR_SP
 #include "CvNuclearWinter.h"
 #endif
+#include "CvLuaFormula.h"
 
 class CvGlobals
 {
@@ -677,6 +678,10 @@ public:
 	std::tr1::unordered_set<TechTypes>& getSpecialistResourcesTechnologies();
 	void initSpecialistResourcesDependencies();
 #endif
+	std::vector<CvLuaFormula*>& GetLuaFormulaEntries();
+	int GetNumLuaFormulaEntries();
+	CvLuaFormula* GetLuaFormulaEntry(LuaFormulaTypes eFormula);
+	lua::EvaluatorManager* GetLuaEvaluatorManager();
 
 	//
 	// Global Types
@@ -3221,6 +3226,8 @@ protected:
 	std::tr1::unordered_set<PolicyTypes> m_vSpecialistResourcesPolicies;
 	std::tr1::unordered_set<TechTypes> m_vSpecialistResourcesTechnologies;
 #endif
+	CvLuaFormulaXMLEntries* m_pLuaFormulaEntries;
+	lua::EvaluatorManager* m_pLuaEvaluatorManager;
 
 	//////////////////////////////////////////////////////////////////////////
 	// GLOBAL TYPES
