@@ -1684,6 +1684,7 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iSiegeKillCitizensFixed = 0;
 #endif
 	m_iNumRangeBackWhenDefense = 0;
+	m_iNumCanSplashDefender = 0;
 
 	m_iHeavyChargeAddMoves = 0;
 	m_iHeavyChargeExtraDamage = 0;
@@ -28190,6 +28191,7 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 	ChangeSiegeKillCitizensPercent(thisPromotion.GetSiegeKillCitizensPercent() * iChange);
 #endif
 	ChangeNumRangeBackWhenDefense(thisPromotion.IsRangeBackWhenDefense() ? iChange : 0);
+	ChangeNumCanSplashDefender(thisPromotion.IsCanSplashDefender() ? iChange : 0);
 	ChangeHeavyChargeAddMoves(iChange * thisPromotion.GetHeavyChargeAddMoves());
 	ChangeHeavyChargeExtraDamage(iChange * thisPromotion.GetHeavyChargeExtraDamage());
 	ChangeHeavyChargeCollateralFixed(iChange * thisPromotion.GetHeavyChargeCollateralFixed());
@@ -28900,6 +28902,7 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iSiegeKillCitizensFixed);
 #endif
 	visitor(unit.m_iNumRangeBackWhenDefense);
+	visitor(unit.m_iNumCanSplashDefender);
 	visitor(unit.m_iHeavyChargeAddMoves);
 	visitor(unit.m_iHeavyChargeExtraDamage);
 	visitor(unit.m_iHeavyChargeCollateralFixed);
@@ -34642,6 +34645,15 @@ bool CvUnit::IsRangeBackWhenDefense() const
 void CvUnit::ChangeNumRangeBackWhenDefense(int iChange)
 {
 	m_iNumRangeBackWhenDefense += iChange;
+}
+
+bool CvUnit::IsCanSplashDefender() const
+{
+	return m_iNumCanSplashDefender > 0;
+}
+void CvUnit::ChangeNumCanSplashDefender(int iChange)
+{
+	m_iNumCanSplashDefender += iChange;
 }
 
 int CvUnit::GetHeavyChargeAddMoves() const
