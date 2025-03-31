@@ -1057,7 +1057,16 @@
 #define MOD_EVENTS_CITY_SCALES						gCustomMods.isEVENTS_CITY_SCALES()
 #define MOD_NUCLEAR_WINTER_FOR_SP           		gCustomMods.isNUCLEAR_WINTER_FOR_SP()
 #define MOD_INTERNATIONAL_IMMIGRATION_FOR_SP        gCustomMods.isINTERNATIONAL_IMMIGRATION_FOR_SP()
+#define MOD_PROMOTION_COLLECTIONS
+#define MOD_BUILDINGCLASS_COLLECTIONS
 #define MOD_GLOBAL_WAR_CASUALTIES                   gCustomMods.isGLOBAL_WAR_CASUALTIES()
+#define MOD_PROMOTION_SPLASH_DAMAGE             	gCustomMods.isPROMOTION_SPLASH_DAMAGE()
+#define MOD_PROMOTION_COLLATERAL_DAMAGE             gCustomMods.isPROMOTION_COLLATERAL_DAMAGE()
+#define MOD_PROMOTION_ADD_ENEMY_PROMOTIONS          gCustomMods.isPROMOTION_ADD_ENEMY_PROMOTIONS()
+#define MOD_GLOBAL_PROMOTIONS_REMOVAL 		   		gCustomMods.isGLOBAL_PROMOTIONS_REMOVAL()
+#define MOD_PROMOTION_CITY_DESTROYER             	gCustomMods.isPROMOTION_CITY_DESTROYER()
+#define MOD_NEW_BATTLE_EFFECTS						1
+
 #define MOD_SPECIALIST_RESOURCES					gCustomMods.isSPECIALIST_RESOURCES()
 #define MOD_RESOURCE_EXTRA_BUFF						gCustomMods.isRESOURCE_EXTRA_BUFF()
 #define MOD_SP_SMART_AI        						gCustomMods.isSP_SMART_AI()
@@ -1103,7 +1112,7 @@ enum BattleTypeTypes
 
 #define BATTLE_STARTED(iType, pPlot)              if (MOD_EVENTS_BATTLES) { GAMEEVENTINVOKE_HOOK(GAMEEVENT_BattleStarted, iType, (pPlot).getX(), (pPlot).getY()); }
 #define BATTLE_JOINED(pCombatant, iRole, bIsCity) if (MOD_EVENTS_BATTLES && (pCombatant)) { GAMEEVENTINVOKE_HOOK(GAMEEVENT_BattleJoined, (pCombatant)->getOwner(), (pCombatant)->GetID(), iRole, bIsCity); }
-#define BATTLE_FINISHED()                         if (MOD_EVENTS_BATTLES) { GAMEEVENTINVOKE_HOOK(GAMEEVENT_BattleFinished); }
+#define BATTLE_FINISHED(bIsCaptured)			  if (MOD_EVENTS_BATTLES) { GAMEEVENTINVOKE_HOOK(GAMEEVENT_BattleFinished, bIsCaptured); }
 
 // Custom mod logger
 #if defined(CUSTOMLOGDEBUG)
@@ -1204,7 +1213,7 @@ enum BattleTypeTypes
 #define GAMEEVENT_BarbariansCampGetSpawnUnit	"BarbariansCampGetSpawnUnit",	"iii"
 #define GAMEEVENT_BarbariansSpawnedUnit			"BarbariansSpawnedUnit",		"iii"
 #define GAMEEVENT_BattleDamageDelta				"BattleDamageDelta",			"ii"
-#define GAMEEVENT_BattleFinished				"BattleFinished",				""
+#define GAMEEVENT_BattleFinished				"BattleFinished",				"b"
 #define GAMEEVENT_BattleJoined					"BattleJoined",					"iiib"
 #define GAMEEVENT_BattleStarted					"BattleStarted",				"iii"
 #define GAMEEVENT_CanAirliftFrom				"CanAirliftFrom",				"iiii"
@@ -1405,9 +1414,13 @@ enum BattleTypeTypes
 #define GAMEEVENT_CityFlipRecipientChance	"CityFlipChance", "iii"
 #define GAMEEVENT_PlayerAnarchy				"PlayerAnarchyBegins", "iii"
 
-#define GAMEEVENT_OnCityScaleChange			"OnCityScaleChange", "iiii"
-#define GAMEEVENT_DoWarPopulationLoss		"DoWarPopulationLoss", "iii"
-#define GAMEEVENT_PlayerSetEra				"PlayerSetEra", "iib"
+#define GAMEEVENT_OnCityScaleChange				"OnCityScaleChange", "iiii"
+#define GAMEEVENT_DoWarPopulationLoss			"DoWarPopulationLoss", "iii"
+#define GAMEEVENT_OnTriggerSplashFinish			"OnTriggerSplashFinish",		"iiiib"
+#define GAMEEVENT_CanAddEnemyPromotion			"CanAddEnemyPromotion", "iiiiiii"
+#define GAMEEVENT_OnTriggerAddEnemyPromotion	"OnTriggerAddEnemyPromotion", "iiiiiiiiiii"
+#define GAMEEVENT_CanRemovePromotion			"CanRemovePromotion", "iii"
+#define GAMEEVENT_PlayerSetEra					"PlayerSetEra", "iib"
 
 // Serialization wrappers
 #define MOD_SERIALIZE
@@ -1812,6 +1825,11 @@ public:
 	MOD_OPT_DECL(NUCLEAR_WINTER_FOR_SP);
 	MOD_OPT_DECL(INTERNATIONAL_IMMIGRATION_FOR_SP);
 	MOD_OPT_DECL(GLOBAL_WAR_CASUALTIES);
+	MOD_OPT_DECL(PROMOTION_SPLASH_DAMAGE);
+	MOD_OPT_DECL(PROMOTION_COLLATERAL_DAMAGE);
+	MOD_OPT_DECL(PROMOTION_ADD_ENEMY_PROMOTIONS);
+	MOD_OPT_DECL(GLOBAL_PROMOTIONS_REMOVAL);
+	MOD_OPT_DECL(PROMOTION_CITY_DESTROYER);
 	MOD_OPT_DECL(SPECIALIST_RESOURCES);
 	MOD_OPT_DECL(RESOURCE_EXTRA_BUFF);
 	MOD_OPT_DECL(SP_SMART_AI);
