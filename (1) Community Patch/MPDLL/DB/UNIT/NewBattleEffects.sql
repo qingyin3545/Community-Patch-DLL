@@ -31,7 +31,10 @@ alter table Buildings add column 'SiegeKillCitizensModifier' integer default 0 n
 
 alter table PromotionCollections add column 'StackingFightBack' boolean not null default 0;
 alter table PromotionCollections add column 'StopAttacker' boolean not null default 0;
+
 alter table UnitPromotions add column 'RangeBackWhenDefense' boolean not null default 0;
+-- Splash Damage donnot include defender unless attacker has this, TODO: should be named CanSplashDefender
+ALTER TABLE UnitPromotions ADD COLUMN CanDoFallBackDamage BOOLEAN DEFAULT 0;
 
 alter table UnitPromotions add column 'HeavyChargeAddMoves' integer not null default 0;
 alter table UnitPromotions add column 'HeavyChargeExtraDamage' integer not null default 0;
