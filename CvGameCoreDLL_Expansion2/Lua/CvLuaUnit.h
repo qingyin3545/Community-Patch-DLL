@@ -664,6 +664,13 @@ protected:
 	static int lOtherPromotionDefenseModifier(lua_State* L);
 #endif
 	LUAAPIEXTN(GetPromotionMaintenanceCost, int);
+
+	static int lGetCombatStrengthChangeFromKilledUnits(lua_State* L);
+	static int lChangeCombatStrengthChangeFromKilledUnits(lua_State* L);
+	static int lSetCombatStrengthChangeFromKilledUnits(lua_State* L);
+	static int lGetRangedCombatStrengthChangeFromKilledUnits(lua_State* L);
+	static int lChangeRangedCombatStrengthChangeFromKilledUnits(lua_State* L);
+	static int lSetRangedCombatStrengthChangeFromKilledUnits(lua_State* L);
 };
 
 namespace CvLuaArgs
