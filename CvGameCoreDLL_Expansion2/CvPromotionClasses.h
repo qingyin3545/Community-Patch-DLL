@@ -371,10 +371,48 @@ public:
 	int GetNumEstablishCorps() const;
 	bool IsCannotBeEstablishedCorps() const;
 #endif
- #ifdef MOD_GLOBAL_WAR_CASUALTIES
+#ifdef MOD_GLOBAL_WAR_CASUALTIES
 	int GetWarCasualtiesModifier() const;
- #endif
- #if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
+#endif
+#ifdef MOD_PROMOTION_SPLASH_DAMAGE
+	int GetSplashDamageRadius() const;
+	int GetSplashDamagePercent() const;
+	int GetSplashDamageFixed() const;
+	int GetSplashDamagePlotUnitLimit() const;
+	bool GetSplashDamageImmune() const;
+	int GetSplashXP() const;
+	bool IsTriggerSplashFinish() const;
+#endif
+#ifdef MOD_PROMOTION_COLLATERAL_DAMAGE
+	int GetCollateralDamagePercent() const;
+	int GetCollateralDamageFixed() const;
+	int GetCollateralDamagePlotUnitLimit() const;
+	bool GetCollateralDamageImmune() const;
+	int GetCollateralXP() const;
+	bool GetCollateralOnlyCity() const;
+	bool GetCollateralOnlyUnit() const;
+#endif
+#ifdef MOD_PROMOTION_ADD_ENEMY_PROMOTIONS
+	bool GetAddEnemyPromotionImmune() const;
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	bool CanAutoRemove() const;
+	int GetRemoveAfterXTurns() const;
+	bool GetRemoveAfterFullyHeal() const;
+	bool GetRemoveWithLuaCheck() const;
+	bool GetCanActionClear() const;
+	bool CanAutoRemoveDoneTurn() const;
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	BuildingClassCollectionsTypes GetDestroyBuildingCollection() const;
+	int GetDestroyBuildingProbability() const;
+	int GetDestroyBuildingNumLimit() const;
+	bool CanDestroyBuildings() const;
+
+	int GetSiegeKillCitizensPercent() const;
+	int GetSiegeKillCitizensFixed() const;
+#endif
+#if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
 	int GetOtherPromotionModifier(PromotionTypes other) const;
 	int GetOtherPromotionAttackModifier(PromotionTypes other) const;
 	int GetOtherPromotionDefenseModifier(PromotionTypes other) const;
@@ -383,6 +421,11 @@ public:
 	std::tr1::unordered_map<PromotionTypes, int>& GetOtherPromotionAttackModifierMap();
 	std::tr1::unordered_map<PromotionTypes, int>& GetOtherPromotionDefenseModifierMap();
 #endif
+	bool IsRangeBackWhenDefense() const;
+	int GetHeavyChargeAddMoves() const;
+	int GetHeavyChargeExtraDamage() const;
+	int GetHeavyChargeCollateralFixed() const;
+	int GetHeavyChargeCollateralPercent() const;
 	int GetMaintenanceCost() const;
 
 protected:
@@ -718,11 +761,52 @@ protected:
 #ifdef MOD_GLOBAL_WAR_CASUALTIES
 	int m_iWarCasualtiesModifier = 0;
 #endif
+#ifdef MOD_PROMOTION_SPLASH_DAMAGE
+	int m_iSplashDamagePercent = 0;
+	int m_iSplashDamageRadius = 0;
+	int m_iSplashDamageFixed = 0;
+	int m_iSplashDamagePlotUnitLimit = 0;
+	bool m_iSplashDamageImmune = 0;
+	int m_iSplashXP = 0;
+	bool m_bTriggerSplashFinish = false;
+#endif
+#ifdef MOD_PROMOTION_COLLATERAL_DAMAGE
+	int m_iCollateralDamagePercent = 0;
+	int m_iCollateralDamageFixed = 0;
+	int m_iCollateralDamagePlotUnitLimit = 0;
+	bool m_iCollateralDamageImmune = 0;
+	int m_iCollateralXP = 0;
+	bool m_bCollateralOnlyCity = false;
+	bool m_bCollateralOnlyUnit = true;
+#endif
+#ifdef MOD_PROMOTION_ADD_ENEMY_PROMOTIONS
+	bool m_bAddEnemyPromotionImmune = 0;
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	int m_iRemoveAfterXTurns = 0;
+	bool m_bRemoveAfterFullyHeal = 0;
+	bool m_bRemoveWithLuaCheck = 0;
+	bool m_bCanActionClear = 0;
+	bool m_bAutoRemoveDoneTurn = false;
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	BuildingClassCollectionsTypes m_iDestroyBuildingCollection = NO_BUILDINGCLASS_COLLECTION;
+	int m_iDestroyBuildingProbability = 0;
+	int m_iDestroyBuildingNumLimit = 0;
+
+	int m_iSiegeKillCitizensPercent = 0;
+	int m_iSiegeKillCitizensFixed = 0;
+#endif
 #if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
 	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionModifiers; // key: other promotion type, value: modifier * 100
 	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionAttackModifiers; // key: other promotion type, value: attack modifier * 100
 	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionDefenseModifiers; // key: other promotion type, value: defense modifier * 100
 #endif
+	bool m_bRangeBackWhenDefense = 0;
+	int m_iHeavyChargeAddMoves = 0;
+	int m_iHeavyChargeExtraDamage = 0;
+	int m_iHeavyChargeCollateralFixed = 0;
+	int m_iHeavyChargeCollateralPercent = 0;
 	int m_iMaintenanceCost = 0;
 };
 
@@ -831,5 +915,161 @@ void ReadV3(FDataStream& kStream, CvBitfield& kPromotions);
 void Read(FDataStream& kStream, CvBitfield& kPromotions);
 void Write(FDataStream& kStream, const CvBitfield& kPromotions, int iArraySize);
 }
+
+#ifdef MOD_PROMOTION_SPLASH_DAMAGE
+struct SplashInfo {
+	PromotionTypes ePromotion;
+
+	int iRadius;
+	int iPercent;
+	int iFixed;
+	int iPlotUnitLimit;
+
+	SplashInfo() = default;
+
+	SplashInfo(const CvPromotionEntry& promotion) :
+		ePromotion{ (PromotionTypes)promotion.GetID()}, 
+		iRadius{promotion.GetSplashDamageRadius()}, 
+		iPercent{ promotion.GetSplashDamagePercent() }, 
+		iFixed{ promotion.GetSplashDamageFixed() }, 
+		iPlotUnitLimit{ promotion.GetSplashDamagePlotUnitLimit() } {}
+};
+inline FDataStream& operator<<(FDataStream& os, const SplashInfo& info) {
+	int iPromotion = (int)info.ePromotion;
+	os << iPromotion;
+	os << info.iRadius;
+	os << info.iPercent;
+	os << info.iFixed;
+	os << info.iPlotUnitLimit;
+
+	return os;
+}
+inline FDataStream& operator>>(FDataStream& is, SplashInfo& info) {
+	int iPromotion;
+	is >> iPromotion;
+	info.ePromotion = (PromotionTypes)iPromotion;
+	is >> info.iRadius;
+	is >> info.iPercent;
+	is >> info.iFixed;
+	is >> info.iPlotUnitLimit;
+
+	return is;
+}
+#endif
+#ifdef MOD_PROMOTION_COLLATERAL_DAMAGE
+struct CollateralInfo {
+	PromotionTypes ePromotion;
+
+	int iPercent = 0;
+	int iFixed = 0;
+	int iPlotUnitLimit = 0;
+	bool bOnlyUnit = true;
+	bool bOnlyCity = false;
+
+	CollateralInfo() = default;
+
+	CollateralInfo(const CvPromotionEntry& promotion) :
+		ePromotion{ (PromotionTypes)promotion.GetID() },
+		iPercent{ promotion.GetCollateralDamagePercent() },
+		iFixed{ promotion.GetCollateralDamageFixed() },
+		iPlotUnitLimit{ promotion.GetCollateralDamagePlotUnitLimit() },
+		bOnlyCity {promotion.GetCollateralOnlyCity()},
+		bOnlyUnit {promotion.GetCollateralOnlyUnit()} {}
+};
+inline FDataStream& operator<<(FDataStream& os, const CollateralInfo& info) {
+	int iPromotion = (int)info.ePromotion;
+	os << iPromotion;
+	os << info.iPercent;
+	os << info.iFixed;
+	os << info.iPlotUnitLimit;
+	os << info.bOnlyUnit;
+	os << info.bOnlyCity;
+
+	return os;
+}
+inline FDataStream& operator>>(FDataStream& is, CollateralInfo& info) {
+	int iPromotion;
+	is >> iPromotion;
+	info.ePromotion = (PromotionTypes)iPromotion;
+	is >> info.iPercent;
+	is >> info.iFixed;
+	is >> info.iPlotUnitLimit;
+	is >> info.bOnlyUnit;
+	is >> info.bOnlyCity;
+
+	return is;
+}
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+struct AutoRemoveInfo {
+	PromotionTypes m_ePromotion = NO_PROMOTION;
+
+	int m_iTurnToRemove = -1;
+	bool m_bRemoveAfterFullyHeal = false;
+	bool m_bRemoveLuaCheck = false;
+
+	AutoRemoveInfo() = default;
+
+	AutoRemoveInfo(const CvPromotionEntry& entry, int iTurnToRemove):
+		m_ePromotion((PromotionTypes)entry.GetID()),
+		m_iTurnToRemove(iTurnToRemove),
+		m_bRemoveAfterFullyHeal(entry.GetRemoveAfterFullyHeal()),
+		m_bRemoveLuaCheck(entry.GetRemoveWithLuaCheck()) {}
+};
+inline FDataStream& operator<<(FDataStream& os, const AutoRemoveInfo& info) {
+	os << (int)info.m_ePromotion;
+	os << info.m_iTurnToRemove;
+	os << info.m_bRemoveAfterFullyHeal;
+	os << info.m_bRemoveLuaCheck;
+
+	return os;
+}
+inline FDataStream& operator>>(FDataStream& is, AutoRemoveInfo& info) {
+	int iPromotion = -1;
+	is >> iPromotion;
+	info.m_ePromotion = (PromotionTypes)iPromotion;
+	is >> info.m_iTurnToRemove;
+	is >> info.m_bRemoveAfterFullyHeal;
+	is >> info.m_bRemoveLuaCheck;
+
+	return is;
+}
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+struct DestroyBuildingsInfo {
+	PromotionTypes ePromotion;
+
+	BuildingClassCollectionsTypes m_iDestroyBuildingCollection = NO_BUILDINGCLASS_COLLECTION;
+	int m_iDestroyBuildingProbability = 0;
+	int m_iDestroyBuildingNumLimit = 0;
+
+	DestroyBuildingsInfo() = default;
+	DestroyBuildingsInfo(const CvPromotionEntry& entry):
+		ePromotion{ (PromotionTypes)entry.GetID() },
+		m_iDestroyBuildingCollection{ entry.GetDestroyBuildingCollection() },
+		m_iDestroyBuildingProbability{ entry.GetDestroyBuildingProbability() },
+		m_iDestroyBuildingNumLimit{ entry.GetDestroyBuildingNumLimit() } {}
+};
+inline FDataStream& operator<<(FDataStream& os, const DestroyBuildingsInfo& info) {
+	os << (int)info.ePromotion;
+	os << (int)info.m_iDestroyBuildingCollection;
+	os << info.m_iDestroyBuildingProbability;
+	os << info.m_iDestroyBuildingNumLimit;
+
+	return os;
+}
+inline FDataStream& operator>>(FDataStream& is, DestroyBuildingsInfo& info) {
+	int iPromotion = -1;
+	int iBuildingClassType = -1;
+	is >> iPromotion;
+	info.ePromotion = (PromotionTypes)iPromotion;
+	is >> iBuildingClassType;
+	info.m_iDestroyBuildingCollection = (BuildingClassCollectionsTypes)iBuildingClassType;
+	is >> info.m_iDestroyBuildingProbability;
+	is >> info.m_iDestroyBuildingNumLimit;
+
+	return is;
+}
+#endif
 
 #endif //CIV5_PROMOTION_CLASSES_H
