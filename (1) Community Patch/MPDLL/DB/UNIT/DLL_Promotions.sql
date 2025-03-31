@@ -1,4 +1,11 @@
 ALTER TABLE UnitPromotions ADD COLUMN 'MaintenanceCost' INTEGER DEFAULT 0;
+CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionModifiers (
+    `PromotionType` TEXT DEFAULT '',
+    `OtherPromotionType` TEXT DEFAULT '',
+    `Modifier` INTEGER DEFAULT 0 NOT NULL,
+    `Attack` INTEGER DEFAULT 0 NOT NULL,
+    `Defense` INTEGER DEFAULT 0 NOT NULL
+);
 
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr10' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr11' TEXT DEFAULT NULL;
@@ -99,14 +106,6 @@ CREATE TABLE IF NOT EXISTS UnitPromotions_InstantYieldPerReligionFollowerConvert
     `PromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
     `YieldType` TEXT DEFAULT '' references Yields(Type),
     `Yield` INTEGER DEFAULT 0
-);
-
-CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionModifiers (
-    `PromotionType` TEXT DEFAULT '',
-    `OtherPromotionType` TEXT DEFAULT '',
-    `Modifier` INTEGER DEFAULT 0 NOT NULL,
-    `Attack` INTEGER DEFAULT 0 NOT NULL,
-    `Defense` INTEGER DEFAULT 0 NOT NULL
 );
 
 -- Add Promotion to other Units in Range, need CustomModOptions PROMOTION_AURA_PROMOTION to make it valid
