@@ -3949,6 +3949,16 @@ enum NuclearWinterLevelTypes {
 	NO_NUCLEAR_WINTER = 0
 };
 #endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+enum PromotionCollectionsTypes {
+	NO_PROMOTION_COLLECTION = -1
+};
+#endif
+#ifdef MOD_BUILDINGCLASS_COLLECTIONS
+enum BuildingClassCollectionsTypes {
+	NO_BUILDINGCLASS_COLLECTION = -1
+};
+#endif
 enum LuaFormulaTypes {
 	NO_LUA_FORMULA = -1
 };

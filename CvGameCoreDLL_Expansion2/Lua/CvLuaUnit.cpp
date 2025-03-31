@@ -684,6 +684,12 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(OtherPromotionAttackModifier);
 	Method(OtherPromotionDefenseModifier);
 #endif
+#ifdef MOD_PROMOTION_ADD_ENEMY_PROMOTIONS
+	Method(IsImmuneNegtivePromotions);
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	Method(ClearSamePlotPromotions);
+#endif
 	Method(GetPromotionMaintenanceCost);
 
 	Method(GetCombatStrengthChangeFromKilledUnits);
@@ -6775,6 +6781,13 @@ int CvLuaUnit::lOtherPromotionDefenseModifier(lua_State* L)
 	return 1;
 }
 #endif
+#ifdef MOD_PROMOTION_ADD_ENEMY_PROMOTIONS
+LUAAPIIMPL(Unit, IsImmuneNegtivePromotions)
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+LUAAPIIMPL(Unit, ClearSamePlotPromotions)
+#endif
+//------------------------------------------------------------------------------
 LUAAPIIMPL(Unit, GetPromotionMaintenanceCost)
 //------------------------------------------------------------------------------
 int CvLuaUnit::lGetCombatStrengthChangeFromKilledUnits(lua_State* L)

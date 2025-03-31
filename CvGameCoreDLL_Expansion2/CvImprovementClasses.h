@@ -235,6 +235,10 @@ public:
 	int GetDomainProductionModifier(int i) const;
 	int GetDomainFreeExperience(int i) const;
 
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	bool IsClearNegativePromotions() const;
+#endif
+
 	//---------------------------------------PROTECTED MEMBER VARIABLES---------------------------------
 protected:
 	int m_iGoldMaintenance;
@@ -384,6 +388,10 @@ protected:
 	CvImprovementResourceInfo* m_paImprovementResource;
 
 	ResourceTypes m_eSpawnsAdjacentResource;
+
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	bool m_bClearNegativePromotions = false;
+#endif
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
