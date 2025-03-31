@@ -2089,6 +2089,9 @@ void CvUnit::convert(CvUnit* pUnit, bool bIsUpgrade)
 	setLeaderUnitType(pUnit->getLeaderUnitType());
 	SetNumGoodyHutsPopped(pUnit->GetNumGoodyHutsPopped());
 
+	SetCombatStrengthChangeFromKilledUnits(pUnit->GetCombatStrengthChangeFromKilledUnits());
+	SetRangedCombatStrengthChangeFromKilledUnits(pUnit->GetRangedCombatStrengthChangeFromKilledUnits());
+
 	pTransportUnit = pUnit->getTransportUnit();
 
 	if (pTransportUnit != NULL)
@@ -15928,7 +15931,7 @@ int CvUnit::GetUnhappinessCombatPenalty() const
 void CvUnit::SetBaseCombatStrength(int iCombat)
 {
 	VALIDATE_OBJECT();
-	m_iBaseCombat = iCombat;
+	m_iBaseCombat = iCombat + m_iCombatStrengthChangeFromKilledUnits;
 }
 
 //	--------------------------------------------------------------------------------
@@ -16767,7 +16770,7 @@ bool CvUnit::canSiege(TeamTypes eTeam) const
 int CvUnit::GetBaseRangedCombatStrength() const
 {
 	VALIDATE_OBJECT();
-	return m_iBaseRangedCombat;
+	return m_iBaseRangedCombat + m_iRangedCombatStrengthChangeFromKilledUnits;
 }
 
 
@@ -20078,6 +20081,7 @@ void CvUnit::setXY(int iX, int iY, bool bGroup, bool bUpdate, bool bShow, bool b
 									}
 									else
 									{
+										kPlayer.DoCombatStrengthChangeFromKill(this, pLoopUnit, iX, iY);
 										kPlayer.DoYieldsFromKill(this, pLoopUnit);
 										pLoopUnit->kill(false, getOwner());
 									}
@@ -20160,6 +20164,8 @@ void CvUnit::setXY(int iX, int iY, bool bGroup, bool bUpdate, bool bShow, bool b
 													MILITARYLOG(getOwner(), strBuffer.c_str(), plot(), pLoopUnit->getOwner());
 											}
 
+											//kill or capture a noncombat unit should not trigger it
+											if(pLoopUnit->IsCombatUnit()) kPlayer.DoCombatStrengthChangeFromKill(this, pLoopUnit, iX, iY);
 											kPlayer.DoYieldsFromKill(this, pLoopUnit);
 											kPlayer.DoUnitKilledCombat(this, pLoopUnit->getOwner(), pLoopUnit->getUnitType());
 											CvNotifications* pNotification = GET_PLAYER(pLoopUnit->getOwner()).GetNotifications();
@@ -22020,6 +22026,7 @@ int CvUnit::DoAdjacentPlotDamage(CvPlot* pWhere, int iValue, const char* chTextK
 				{
 					// Earn bonuses for kills?
 					CvPlayer& kAttackingPlayer = GET_PLAYER(getOwner());
+					kAttackingPlayer.DoCombatStrengthChangeFromKill(this, pEnemyUnit, pEnemyUnit->getX(), pEnemyUnit->getY());
 					kAttackingPlayer.DoYieldsFromKill(this, pEnemyUnit);
 				}
 
@@ -28717,6 +28724,8 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iWarCasualtiesModifier);
 #endif
 	visitor(unit.m_iPromotionMaintenanceCost);
+	visitor(unit.m_iCombatStrengthChangeFromKilledUnits);
+	visitor(unit.m_iRangedCombatStrengthChangeFromKilledUnits);
 }
 
 //	--------------------------------------------------------------------------------
@@ -34280,6 +34289,37 @@ void CvUnit::ChangePromotionMaintenanceCost(int iValue)
 		m_iPromotionMaintenanceCost += iValue;
 		GET_PLAYER(getOwner()).changeExtraUnitCost(iValue);
 	}
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetCombatStrengthChangeFromKilledUnits() const
+{
+	return m_iCombatStrengthChangeFromKilledUnits;
+}
+
+void CvUnit::ChangeCombatStrengthChangeFromKilledUnits(int iChange)
+{
+	m_iCombatStrengthChangeFromKilledUnits += iChange;
+}
+
+void CvUnit::SetCombatStrengthChangeFromKilledUnits(int iValue)
+{
+	m_iCombatStrengthChangeFromKilledUnits = iValue;
+}
+
+int CvUnit::GetRangedCombatStrengthChangeFromKilledUnits() const
+{
+	return m_iRangedCombatStrengthChangeFromKilledUnits;
+}
+
+void CvUnit::ChangeRangedCombatStrengthChangeFromKilledUnits(int iChange)
+{
+	m_iRangedCombatStrengthChangeFromKilledUnits += iChange;
+}
+
+void CvUnit::SetRangedCombatStrengthChangeFromKilledUnits(int iValue)
+{
+	m_iRangedCombatStrengthChangeFromKilledUnits = iValue;
 }
 
 //	--------------------------------------------------------------------------------
