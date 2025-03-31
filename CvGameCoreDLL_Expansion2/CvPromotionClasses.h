@@ -421,6 +421,7 @@ public:
 	std::tr1::unordered_map<PromotionTypes, int>& GetOtherPromotionDefenseModifierMap();
 #endif
 	bool IsRangeBackWhenDefense() const;
+	bool IsCanSplashDefender() const;
 	int GetHeavyChargeAddMoves() const;
 	int GetHeavyChargeExtraDamage() const;
 	int GetHeavyChargeCollateralFixed() const;
@@ -801,6 +802,7 @@ protected:
 	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionDefenseModifiers; // key: other promotion type, value: defense modifier * 100
 #endif
 	bool m_bRangeBackWhenDefense = 0;
+	bool m_bCanSplashDefender = 0;
 	int m_iHeavyChargeAddMoves = 0;
 	int m_iHeavyChargeExtraDamage = 0;
 	int m_iHeavyChargeCollateralFixed = 0;
