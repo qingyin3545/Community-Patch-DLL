@@ -1311,6 +1311,7 @@ void CvUnitCombat::ResolveRangedCityVsUnitCombat(const CvCombatInfo& kCombatInfo
 
 						// Earn bonuses for kills?
 						CvPlayer& kAttackingPlayer = GET_PLAYER(pkAttacker->getOwner());
+						kAttackingPlayer.DoCombatStrengthChangeFromKill(NULL, pkDefender, pkDefender->getX(), pkDefender->getY());
 						kAttackingPlayer.DoYieldsFromKill(NULL, pkDefender, pkAttacker);
 
 						if (bBarbarian)
@@ -4546,6 +4547,7 @@ void CvUnitCombat::ApplyPostKillTraitEffects(CvUnit* pkWinner, CvUnit* pkLoser)
 	CvPlayer& kPlayer = GET_PLAYER(pkWinner->getOwner());
 
 	// Earn bonuses for kills?
+	kPlayer.DoCombatStrengthChangeFromKill(pkWinner, pkLoser, pkLoser->getX(), pkLoser->getY());
 	kPlayer.DoYieldsFromKill(pkWinner, pkLoser);
 #if defined(MOD_BALANCE_CORE)
 	if(pkLoser->getOwner() == BARBARIAN_PLAYER && pkLoser->plot()->getImprovementType() == GD_INT_GET(BARBARIAN_CAMP_IMPROVEMENT))

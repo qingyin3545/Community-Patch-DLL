@@ -3014,6 +3014,8 @@ public:
 	int getPolicyModifiers(PolicyModifierType eIndex) const;
 	void changePolicyModifiers(PolicyModifierType eIndex, int iChange);
 
+	void DoCombatStrengthChangeFromKill(CvUnit* pAttackingUnit, CvUnit* pDefendingUnit, int iX, int iY);
+
 protected:
 	class ConqueredByBoolField
 	{

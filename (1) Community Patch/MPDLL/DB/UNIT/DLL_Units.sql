@@ -1,13 +1,8 @@
 ALTER TABLE Units ADD 'BoundLandImprovement' TEXT DEFAULT NULL;
 ALTER TABLE Units ADD 'BoundWaterImprovement' TEXT DEFAULT NULL;
-
-create table UnitPromotions_Promotions (
-    FreePromotionType text references UnitPromotions(Type),
-    PrePromotionType text references UnitPromotions(Type)
-);
-
 ALTER TABLE Units ADD 'CombatStrengthChangeAfterKilling' INTEGER DEFAULT 0;
 ALTER TABLE Units ADD 'RangedCombatStrengthChangeAfterKilling' INTEGER DEFAULT 0;
+
 
 ALTER TABLE Units ADD 'ExtraXPValueAttack' INTEGER DEFAULT 0;
 ALTER TABLE Units ADD 'ExtraXPValueDefense' INTEGER DEFAULT 0;
@@ -29,9 +24,6 @@ ALTER TABLE Units ADD COLUMN 'NoAggressive' BOOLEAN DEFAULT 0;
 --default Great People class is always true, for new Great People, enter a positive value to make it valid(for example: 1), for other Unit, Increase fixed value.
 ALTER TABLE Units ADD COLUMN 'FaithCostIncrease' INTEGER DEFAULT 0;
 
-ALTER TABLE Units ADD COLUMN 'BarbarianCanTrait' BOOLEAN DEFAULT false;
-ALTER TABLE Units ADD COLUMN 'BarbarianTraitTechObsolete' BOOLEAN DEFAULT false;
-
 ALTER TABLE Units ADD COLUMN 'UnitTechUpgrade' BOOLEAN DEFAULT 0;
 create table Unit_TechCombatStrength (
     UnitType text references Units(Type),
@@ -44,5 +36,9 @@ create table Unit_TechRangedCombatStrength (
     RangedCombatStrength integer default 0
 );
 
-ALTER TABLE Units ADD COLUMN 'NoFallout' BOOLEAN DEFAULT false;
+ALTER TABLE Units ADD COLUMN 'NoFallout' BOOLEAN DEFAULT 0;
 ALTER TABLE Units ADD COLUMN 'ExtraNukeBlastRadius' INTEGER DEFAULT 0;
+
+-- Deprecated
+ALTER TABLE Units ADD COLUMN 'BarbarianCanTrait' BOOLEAN DEFAULT 0;
+ALTER TABLE Units ADD COLUMN 'BarbarianTraitTechObsolete' BOOLEAN DEFAULT 0;
