@@ -7,8 +7,16 @@
     <Row Class="6" Name="EVENTS_CITY_SCALES" Value="0"/>
     <Row Class="6" Name="NUCLEAR_WINTER_FOR_SP" Value="0"/>
     <Row Class="6" Name="INTERNATIONAL_IMMIGRATION_FOR_SP" Value="0"/>
+
+    <!-- SuperPower: NEW_BATTLE_EFFECTS -->
     <!-- GameEvents.DoWarPopulationLoss(int iPlayer, int iCity, int iChange)-->
     <Row Class="6" Name="GLOBAL_WAR_CASUALTIES" Value="0"/>
+    <Row Class="6" Name="PROMOTION_SPLASH_DAMAGE" Value="0"/>
+    <Row Class="6" Name="PROMOTION_COLLATERAL_DAMAGE" Value="0"/>
+    <Row Class="6" Name="PROMOTION_ADD_ENEMY_PROMOTIONS" Value="0"/>
+    <Row Class="6" Name="PROMOTION_CITY_DESTROYER" Value="0"/>
+    <Row Class="6" Name="GLOBAL_PROMOTIONS_REMOVAL" Value="0"/>
+
     <Row Class="6" Name="RESOURCE_EXTRA_BUFF" Value="0"/>
     <Row Class="6" Name="SPECIALIST_RESOURCES" Value="0"/>
     <Row Class="6" Name="SP_SMART_AI" Value="0"/>

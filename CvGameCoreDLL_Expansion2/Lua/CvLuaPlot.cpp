@@ -372,6 +372,10 @@ void CvLuaPlot::PushMethods(lua_State* L, int t)
 	Method(IsWithinDistanceOfTerrain);
 	Method(GetEffectiveFlankingBonus);
 	Method(GetEffectiveFlankingBonusAtRange);
+
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	Method(ClearUnitPromotions);
+#endif
 }
 //------------------------------------------------------------------------------
 void CvLuaPlot::HandleMissingInstance(lua_State* L)
@@ -2426,3 +2430,7 @@ LUAAPIIMPL(Plot, IsAdjacentToResource)
 LUAAPIIMPL(Plot, IsWithinDistanceOfResource)
 LUAAPIIMPL(Plot, IsAdjacentToTerrain)
 LUAAPIIMPL(Plot, IsWithinDistanceOfTerrain)
+
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+LUAAPIIMPL(Plot, ClearUnitPromotions)
+#endif

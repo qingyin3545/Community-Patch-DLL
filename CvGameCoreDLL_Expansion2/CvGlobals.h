@@ -171,6 +171,12 @@ class ICvUnit1;
 #ifdef MOD_NUCLEAR_WINTER_FOR_SP
 #include "CvNuclearWinter.h"
 #endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+#include "CvPromotionCollectionClasses.h"
+#endif
+#ifdef MOD_BUILDINGCLASS_COLLECTIONS
+#include "CvBuildingClassCollectionsClasses.h"
+#endif
 #include "CvLuaFormula.h"
 
 class CvGlobals
@@ -683,6 +689,18 @@ public:
 	CvNuclearWinterLevel* getNuclearWinterLevelInfo(NuclearWinterLevelTypes eLevel);
 	void initGlobalNuclearWinterLevels();
 	std::vector<CvNuclearWinterLevel*>& CvGlobals::getOrderedNuclearWinterLevels();
+#endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+	std::vector<CvPromotionCollectionEntry*>& GetPromotionCollections();
+	CvPromotionCollectionEntry* GetPromotionCollection(PromotionCollectionsTypes ePromotionCollection);
+	int GetNumPromotionCollections();
+	void InitPromotion2CollectionMapping();
+	std::tr1::unordered_map<PromotionTypes, std::tr1::unordered_set<PromotionCollectionsTypes> >& GetPromotion2CollectionsMapping();
+#endif
+#ifdef MOD_BUILDINGCLASS_COLLECTIONS
+	std::vector<CvBuildingClassCollectionsEntry*>& GetBuildingClassCollections();
+	CvBuildingClassCollectionsEntry* GetBuildingClassCollection(BuildingClassCollectionsTypes eBuildingClassCollection);
+	int GetNumBuildingClassCollections();
 #endif
 #ifdef MOD_SPECIALIST_RESOURCES
 	std::tr1::unordered_set<PolicyTypes>& getSpecialistResourcesPolicies();
@@ -3259,6 +3277,13 @@ protected:
 #ifdef MOD_NUCLEAR_WINTER_FOR_SP
 	CvNuclearWinterLevelXMLEntries* m_pNuclearWinterInfo;
 	std::vector<CvNuclearWinterLevel*> m_vOrderedNuclearWinterLevels; // order by Trigger Threshold lower bound.
+#endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+	CvPromotionCollectionEntries* m_pPromotionCollections;
+	std::tr1::unordered_map<PromotionTypes, std::tr1::unordered_set<PromotionCollectionsTypes> > m_mPromotion2CollectionsMapping;
+#endif
+#ifdef MOD_BUILDINGCLASS_COLLECTIONS
+	CvBuildingClassCollectionsXMLEntries* m_pBuildingClassCollections;
 #endif
 #ifdef MOD_SPECIALIST_RESOURCES
 	std::tr1::unordered_set<PolicyTypes> m_vSpecialistResourcesPolicies;

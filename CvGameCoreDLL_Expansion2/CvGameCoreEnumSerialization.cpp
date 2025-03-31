@@ -179,6 +179,37 @@ FDataStream& operator>>(FDataStream& loadFrom, FaithPurchaseTypes& writeTo)
 	return ReadBasicEnum<int>(loadFrom, writeTo);
 }
 
+#ifdef MOD_GLOBAL_CORRUPTION
+FDataStream& operator<<(FDataStream& saveTo, const CorruptionLevelTypes& readFrom)
+{
+	return WriteBasicEnum<int>(saveTo, readFrom);
+}
+FDataStream& operator>>(FDataStream& loadFrom, CorruptionLevelTypes& writeTo)
+{
+	return ReadBasicEnum<int>(loadFrom, writeTo);
+}
+#endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+FDataStream& operator<<(FDataStream& saveTo, const CityScaleTypes& readFrom)
+{
+	return WriteBasicEnum<int>(saveTo, readFrom);
+}
+FDataStream& operator>>(FDataStream& loadFrom, CityScaleTypes& writeTo)
+{
+	return ReadBasicEnum<int>(loadFrom, writeTo);
+}
+#endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+FDataStream& operator<<(FDataStream& saveTo, const PromotionCollectionsTypes& readFrom)
+{
+	return WriteBasicEnum<int>(saveTo, readFrom);
+}
+FDataStream& operator>>(FDataStream& loadFrom, PromotionCollectionsTypes& writeTo)
+{
+	return ReadBasicEnum<int>(loadFrom, writeTo);
+}
+#endif
+
 //------------------------------------------------------------------------------
 namespace FSerialization
 {

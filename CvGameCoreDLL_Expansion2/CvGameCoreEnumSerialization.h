@@ -74,6 +74,19 @@ FDataStream& operator>>(FDataStream&, GreatWorkArtifactClass&);
 FDataStream& operator<<(FDataStream&, const FaithPurchaseTypes&);
 FDataStream& operator>>(FDataStream&, FaithPurchaseTypes&);
 
+#ifdef MOD_GLOBAL_CORRUPTION
+FDataStream& operator<<(FDataStream&, const CorruptionLevelTypes&);
+FDataStream& operator>>(FDataStream&, CorruptionLevelTypes&);
+#endif
+#ifdef MOD_GLOBAL_CITY_SCALES
+FDataStream& operator<<(FDataStream&, const CityScaleTypes&);
+FDataStream& operator>>(FDataStream&, CityScaleTypes&);
+#endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+FDataStream& operator<<(FDataStream&, const PromotionCollectionsTypes&);
+FDataStream& operator>>(FDataStream&, PromotionCollectionsTypes&);
+#endif
+
 template<typename Enum, typename T>
 inline FDataStream& operator<<(FDataStream& saveTo, const CvEnum<Enum, T>& readFrom)
 {
