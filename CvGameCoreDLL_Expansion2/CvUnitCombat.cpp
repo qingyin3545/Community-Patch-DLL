@@ -4642,7 +4642,7 @@ void CvUnitCombat::DoSplashDamage(const CvCombatInfo& kCombatInfo)
 
 					if (bAOEImmune) continue;
 					if (pAOEUnit->getDomainType() != DOMAIN_LAND && pAOEUnit->getDomainType() != DOMAIN_SEA) continue;
-					if (pAOEUnit == pDefenderUnit) continue;
+					if (pAOEUnit == pDefenderUnit && !pAttackerUnit->IsCanSplashDefender()) continue;
 					if (!kAttackPlayer.IsAtWarWith(pAOEUnit->getOwner())) continue;
 					if (dedupSet.count(pAOEUnit) > 0) continue;
 					dedupSet.insert(pAOEUnit);

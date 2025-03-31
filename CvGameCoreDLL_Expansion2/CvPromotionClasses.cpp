@@ -1588,6 +1588,7 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	}
 #endif
 	m_bRangeBackWhenDefense = kResults.GetBool("RangeBackWhenDefense");
+	m_bCanSplashDefender = kResults.GetBool("CanDoFallBackDamage");
 	m_iHeavyChargeAddMoves = kResults.GetInt("HeavyChargeAddMoves");
 	m_iHeavyChargeExtraDamage = kResults.GetInt("HeavyChargeExtraDamage");
 	m_iHeavyChargeCollateralFixed = kResults.GetInt("HeavyChargeCollateralFixed");
@@ -4004,6 +4005,10 @@ std::tr1::unordered_map<PromotionTypes, int>& CvPromotionEntry::GetOtherPromotio
 bool CvPromotionEntry::IsRangeBackWhenDefense() const
 {
 	return m_bRangeBackWhenDefense;
+}
+bool CvPromotionEntry::IsCanSplashDefender() const
+{
+	return m_bCanSplashDefender;
 }
 int CvPromotionEntry::GetHeavyChargeAddMoves() const
 {
