@@ -10736,6 +10736,10 @@ void CvPlayer::DoUnitReset()
 				pLoopUnit->SetFortified(true);
 		}
 
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+		pLoopUnit->RemoveDebuffWhenDoneTurn();
+#endif
+
 		// Finally (now that healing is done), restore movement points
 		pLoopUnit->restoreFullMoves();
 		pLoopUnit->setHasWithdrawnThisTurn(false);
