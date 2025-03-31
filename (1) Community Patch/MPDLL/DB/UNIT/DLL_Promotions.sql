@@ -138,6 +138,10 @@ CREATE TABLE Promotion_Builds (
 	BuildType text REFERENCES Builds(Type)
 );
 
+create table UnitPromotions_Promotions (
+    FreePromotionType text references UnitPromotions(Type),
+    PrePromotionType text references UnitPromotions(Type)
+);
 --Must have all needed promotions to unlock Promotion
 CREATE TABLE Promotion_PromotionPrereqAnds (
 	PromotionType text REFERENCES UnitPromotions(Type),

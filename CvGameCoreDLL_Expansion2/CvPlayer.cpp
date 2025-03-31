@@ -49492,6 +49492,21 @@ void CvPlayer::changePolicyModifiers(PolicyModifierType eIndex, int iChange)
 }
 
 //	--------------------------------------------------------------------------------
+void CvPlayer::DoCombatStrengthChangeFromKill(CvUnit* pAttackingUnit, CvUnit* pDefendingUnit, int iX, int iY)
+{
+	if (pAttackingUnit)
+	{
+		CvUnitEntry& pInfo = pAttackingUnit->getUnitInfo();
+		if (pInfo.GetCombatStrengthChangeAfterKilling() != 0) {
+			pAttackingUnit->ChangeCombatStrengthChangeFromKilledUnits(pInfo.GetCombatStrengthChangeAfterKilling());
+		}
+		if (pInfo.GetRangedCombatStrengthChangeAfterKilling() != 0) {
+			pAttackingUnit->ChangeRangedCombatStrengthChangeFromKilledUnits(pInfo.GetRangedCombatStrengthChangeAfterKilling());
+		}
+	}
+}
+
+//	--------------------------------------------------------------------------------
 
 FDataStream& operator<<(FDataStream& saveTo, const SPlayerActiveEspionageEvent& readFrom)
 {
