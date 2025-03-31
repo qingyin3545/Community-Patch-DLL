@@ -254,6 +254,9 @@ public:
 	int GetBoundLandImprovement() const;
 	int GetBoundWaterImprovement() const;
 
+	int GetCombatStrengthChangeAfterKilling() const;
+	int GetRangedCombatStrengthChangeAfterKilling() const;
+
 private:
 
 	int m_iProductionCost;
@@ -472,6 +475,9 @@ private:
 #endif
 	int m_iBoundLandImprovement = NO_IMPROVEMENT;
 	int m_iBoundWaterImprovement = NO_IMPROVEMENT;
+
+	int m_iCombatStrengthChangeAfterKilling = 0;
+	int m_iRangedCombatStrengthChangeAfterKilling = 0;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
