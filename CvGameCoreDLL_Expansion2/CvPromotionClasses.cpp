@@ -1427,6 +1427,63 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 #ifdef MOD_GLOBAL_WAR_CASUALTIES
 	m_iWarCasualtiesModifier = kResults.GetInt("WarCasualtiesModifier");
 #endif
+#ifdef MOD_PROMOTION_SPLASH_DAMAGE
+	m_iSplashDamageRadius = kResults.GetInt("SplashDamageRadius");
+	m_iSplashDamagePercent = kResults.GetInt("SplashDamagePercent");
+	m_iSplashDamageFixed = kResults.GetInt("SplashDamageFixed");
+	m_iSplashDamagePlotUnitLimit = kResults.GetInt("SplashDamagePlotUnitLimit");
+	m_iSplashDamageImmune = kResults.GetBool("SplashDamageImmune");
+	m_iSplashXP = kResults.GetInt("SplashXP");
+	m_bTriggerSplashFinish = kResults.GetBool("TriggerSplashFinish");
+#endif
+#ifdef MOD_PROMOTION_COLLATERAL_DAMAGE
+	m_iCollateralDamagePercent = kResults.GetInt("CollateralDamagePercent");
+	m_iCollateralDamageFixed = kResults.GetInt("CollateralDamageFixed");
+	m_iCollateralDamagePlotUnitLimit = kResults.GetInt("CollateralDamagePlotUnitLimit");
+	m_iCollateralDamageImmune = kResults.GetBool("CollateralDamageImmune");
+	m_iCollateralXP = kResults.GetInt("CollateralXP");
+	m_bCollateralOnlyCity = kResults.GetBool("CollateralOnlyCity");
+	m_bCollateralOnlyUnit = kResults.GetBool("CollateralOnlyUnit");
+#endif
+#ifdef MOD_PROMOTION_ADD_ENEMY_PROMOTIONS
+	m_bAddEnemyPromotionImmune = kResults.GetBool("AddEnemyPromotionImmune");
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	m_iRemoveAfterXTurns = kResults.GetInt("RemoveAfterXTurns");
+	m_bRemoveAfterFullyHeal = kResults.GetBool("RemoveAfterFullyHeal");
+	m_bRemoveWithLuaCheck = kResults.GetBool("RemoveWithLuaCheck");
+	m_bCanActionClear = kResults.GetBool("CanActionClear");
+	m_bAutoRemoveDoneTurn = kResults.GetBool("AutoRemoveDoneTurn");
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	m_iDestroyBuildingProbability =  kResults.GetInt("DestroyBuildingProbability");
+	m_iDestroyBuildingNumLimit = kResults.GetInt("DestroyBuildingNumLimit");
+	const char* strDestroyBuildingCollection = kResults.GetText("DestroyBuildingCollection");
+	if (strDestroyBuildingCollection != nullptr)
+	{
+		int iLen = strlen(strDestroyBuildingCollection);
+		if (iLen > 0)
+		{
+			std::string sqlKey = "UnitPromotions_DestroyBuildingCollection";
+			Database::Results* pResults = kUtility.GetResults(sqlKey);
+			if (pResults == NULL)
+			{
+				const char* szSQL = "select ID from BuildingClassCollections where Type = ?;";
+				pResults = kUtility.PrepareResults(sqlKey, szSQL);
+			}
+
+			pResults->Bind(1, strDestroyBuildingCollection, iLen, false);
+			if (pResults->Step())
+			{
+				int id = pResults->GetInt(0);
+				m_iDestroyBuildingCollection = (BuildingClassCollectionsTypes)id;
+			}
+		}
+	}
+
+	m_iSiegeKillCitizensFixed = kResults.GetInt("SiegeKillCitizensFixed");
+	m_iSiegeKillCitizensPercent = kResults.GetInt("SiegeKillCitizensPercent");
+#endif
 #if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
 	if (MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
 	{
@@ -1468,6 +1525,11 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 		pResults->Reset();
 	}
 #endif
+	m_bRangeBackWhenDefense = kResults.GetBool("RangeBackWhenDefense");
+	m_iHeavyChargeAddMoves = kResults.GetInt("HeavyChargeAddMoves");
+	m_iHeavyChargeExtraDamage = kResults.GetInt("HeavyChargeExtraDamage");
+	m_iHeavyChargeCollateralFixed = kResults.GetInt("HeavyChargeCollateralFixed");
+	m_iHeavyChargeCollateralPercent = kResults.GetInt("HeavyChargeCollateralPercent");
 	m_iMaintenanceCost = kResults.GetInt("MaintenanceCost");
 
 	return true;
@@ -3655,6 +3717,124 @@ int CvPromotionEntry::GetWarCasualtiesModifier() const
 	return m_iWarCasualtiesModifier;
 }
 #endif
+#ifdef MOD_PROMOTION_SPLASH_DAMAGE
+int CvPromotionEntry::GetSplashDamageRadius() const
+{
+	return m_iSplashDamageRadius;
+}
+int CvPromotionEntry::GetSplashDamagePercent() const
+{
+	return m_iSplashDamagePercent;
+}
+int CvPromotionEntry::GetSplashDamageFixed() const
+{
+	return m_iSplashDamageFixed;
+}
+int CvPromotionEntry::GetSplashDamagePlotUnitLimit() const
+{
+	return m_iSplashDamagePlotUnitLimit;
+}
+bool CvPromotionEntry::GetSplashDamageImmune() const
+{
+	return m_iSplashDamageImmune;
+}
+int CvPromotionEntry::GetSplashXP() const
+{
+	return m_iSplashXP;
+}
+bool CvPromotionEntry::IsTriggerSplashFinish() const
+{
+	return m_bTriggerSplashFinish;
+}
+#endif
+#ifdef MOD_PROMOTION_COLLATERAL_DAMAGE
+int CvPromotionEntry::GetCollateralDamagePercent() const
+{
+	return m_iCollateralDamagePercent;
+}
+int CvPromotionEntry::GetCollateralDamageFixed() const
+{
+	return m_iCollateralDamageFixed;
+}
+int CvPromotionEntry::GetCollateralDamagePlotUnitLimit() const
+{
+	return m_iCollateralDamagePlotUnitLimit;
+}
+bool CvPromotionEntry::GetCollateralDamageImmune() const
+{
+	return m_iCollateralDamageImmune;
+}
+int CvPromotionEntry::GetCollateralXP() const
+{
+	return m_iCollateralXP;
+}
+bool CvPromotionEntry::GetCollateralOnlyCity() const
+{
+	return m_bCollateralOnlyCity;
+}
+bool CvPromotionEntry::GetCollateralOnlyUnit() const
+{
+	return m_bCollateralOnlyUnit;
+}
+#endif
+#ifdef MOD_PROMOTION_ADD_ENEMY_PROMOTIONS
+bool CvPromotionEntry::GetAddEnemyPromotionImmune() const
+{
+	return m_bAddEnemyPromotionImmune;
+}
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+bool CvPromotionEntry::CanAutoRemove() const{
+	return m_iRemoveAfterXTurns > 0 || m_bRemoveAfterFullyHeal || m_bRemoveWithLuaCheck;
+}
+
+int CvPromotionEntry::GetRemoveAfterXTurns() const{
+	return m_iRemoveAfterXTurns;
+}
+
+bool CvPromotionEntry::GetRemoveAfterFullyHeal() const{
+	return m_bRemoveAfterFullyHeal;
+}
+
+bool CvPromotionEntry::GetRemoveWithLuaCheck() const{
+	return m_bRemoveWithLuaCheck;
+}
+
+bool CvPromotionEntry::GetCanActionClear() const{
+	return m_bCanActionClear;
+}
+
+bool CvPromotionEntry::CanAutoRemoveDoneTurn() const{
+	return m_bAutoRemoveDoneTurn;
+}
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+BuildingClassCollectionsTypes CvPromotionEntry::GetDestroyBuildingCollection() const
+{
+	return m_iDestroyBuildingCollection;
+}
+int CvPromotionEntry::GetDestroyBuildingProbability() const
+{
+	return m_iDestroyBuildingProbability;
+}
+int CvPromotionEntry::GetDestroyBuildingNumLimit() const
+{
+	return m_iDestroyBuildingNumLimit;
+}
+bool CvPromotionEntry::CanDestroyBuildings() const
+{
+	return m_iDestroyBuildingCollection != NO_BUILDINGCLASS_COLLECTION && m_iDestroyBuildingProbability > 0 && m_iDestroyBuildingNumLimit > 0;
+}
+
+int CvPromotionEntry::GetSiegeKillCitizensPercent() const
+{
+	return m_iSiegeKillCitizensPercent;
+}
+int CvPromotionEntry::GetSiegeKillCitizensFixed() const
+{
+	return m_iSiegeKillCitizensFixed;
+}
+#endif
 #if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
 int CvPromotionEntry::GetOtherPromotionModifier(PromotionTypes other) const
 {
@@ -3727,6 +3907,26 @@ std::tr1::unordered_map<PromotionTypes, int>& CvPromotionEntry::GetOtherPromotio
 	return m_pPromotionDefenseModifiers;
 }
 #endif
+bool CvPromotionEntry::IsRangeBackWhenDefense() const
+{
+	return m_bRangeBackWhenDefense;
+}
+int CvPromotionEntry::GetHeavyChargeAddMoves() const
+{
+	return m_iHeavyChargeAddMoves;
+}
+int CvPromotionEntry::GetHeavyChargeExtraDamage() const
+{
+	return m_iHeavyChargeExtraDamage;
+}
+int CvPromotionEntry::GetHeavyChargeCollateralFixed() const
+{
+	return m_iHeavyChargeCollateralFixed;
+}
+int CvPromotionEntry::GetHeavyChargeCollateralPercent() const
+{
+	return m_iHeavyChargeCollateralPercent;
+}
 int CvPromotionEntry::GetMaintenanceCost() const
 {
 	return m_iMaintenanceCost;

@@ -1654,6 +1654,42 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 #ifdef MOD_GLOBAL_WAR_CASUALTIES
 	m_iWarCasualtiesModifier = 0;
 #endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+	m_sPromotionCollections.clear();
+#endif
+#ifdef MOD_PROMOTION_SPLASH_DAMAGE
+	m_asSplashInfoVec.clear();
+
+	m_iSplashImmuneRC = 0;
+	m_iSplashXP = 0;
+	m_iNumTriggerSplashFinish = 0;
+#endif
+#ifdef MOD_PROMOTION_COLLATERAL_DAMAGE
+	m_asCollateralInfoVec.clear();
+
+	m_iCollateralImmuneRC = 0;
+	m_iCollateralXP = 0;
+#endif
+#ifdef MOD_PROMOTION_ADD_ENEMY_PROMOTIONS
+	m_iAddEnemyPromotionImmuneRC = 0;
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	m_mapAutoRemovePromotions.clear();
+	m_sPromotionsThatCanBeActionCleared.clear();
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	m_mapDestroyBuildings.clear();
+
+	m_iSiegeKillCitizensPercent = 0;
+	m_iSiegeKillCitizensFixed = 0;
+#endif
+	m_iNumRangeBackWhenDefense = 0;
+
+	m_iHeavyChargeAddMoves = 0;
+	m_iHeavyChargeExtraDamage = 0;
+	m_iHeavyChargeCollateralFixed = 0;
+	m_iHeavyChargeCollateralPercent = 0;
+
 	m_iPromotionMaintenanceCost = 0;
 
 	if(!bConstructorCall)
@@ -3211,6 +3247,10 @@ void CvUnit::doTurn()
 	}
 
 	testPromotionReady();
+
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	RemoveDebuffWhenDoTurn();
+#endif
 
 	// Only increase our Fortification level if we've actually been told to Fortify
 	if(IsFortified() && GetDamageAoEFortified() > 0)
@@ -28107,6 +28147,120 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 #ifdef MOD_GLOBAL_WAR_CASUALTIES
 	ChangeWarCasualtiesModifier(thisPromotion.GetWarCasualtiesModifier() * iChange);
 #endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+	auto promotionCollectionIter = GC.GetPromotion2CollectionsMapping().find((PromotionTypes)thisPromotion.GetID());
+	if (promotionCollectionIter != GC.GetPromotion2CollectionsMapping().end())
+	{
+		auto& newSet = promotionCollectionIter->second;
+		for (auto elem : newSet)
+		{
+			m_sPromotionCollections[elem] += iChange;
+			if (m_sPromotionCollections[elem] == 0)
+			{
+				m_sPromotionCollections.erase(elem);
+			}
+		}
+	}
+#endif
+#ifdef MOD_PROMOTION_SPLASH_DAMAGE
+	if (thisPromotion.GetSplashDamageRadius() > 0 && thisPromotion.GetSplashDamagePlotUnitLimit() > 0)
+	{
+		if (iChange == 1)
+		{
+			m_asSplashInfoVec.push_back({thisPromotion});
+		}
+		else if (iChange == -1)
+		{
+			for (auto iter = m_asSplashInfoVec.begin(); iter != m_asSplashInfoVec.end(); iter++)
+			{
+				if (iter->ePromotion == (PromotionTypes) thisPromotion.GetID())
+				{
+					iter = m_asSplashInfoVec.erase(iter);
+					break;
+				}
+			}
+		}
+	}
+	
+	ChangeSplashImmuneRC(thisPromotion.GetSplashDamageImmune() ? iChange : 0);
+	ChangeSplashXP(thisPromotion.GetSplashXP() * iChange);
+	ChangeNumTriggerSplashFinish(thisPromotion.IsTriggerSplashFinish() ? iChange : 0);
+#endif
+#ifdef MOD_PROMOTION_COLLATERAL_DAMAGE
+	if (thisPromotion.GetCollateralDamagePlotUnitLimit() > 0)
+	{
+		if (iChange == 1)
+		{
+			m_asCollateralInfoVec.push_back({thisPromotion});
+		}
+		else if (iChange == -1)
+		{
+			for (auto iter = m_asCollateralInfoVec.begin(); iter != m_asCollateralInfoVec.end(); iter++)
+			{
+				if (iter->ePromotion == (PromotionTypes) thisPromotion.GetID())
+				{
+					iter = m_asCollateralInfoVec.erase(iter);
+					break;
+				}
+			}
+		}
+	}
+	
+	ChangeCollateralImmuneRC(thisPromotion.GetCollateralDamageImmune() ? iChange : 0);
+	ChangeCollateralXP(thisPromotion.GetCollateralXP() * iChange);
+#endif
+#ifdef MOD_PROMOTION_ADD_ENEMY_PROMOTIONS
+	ChangeAddEnemyPromotionImmuneRC(thisPromotion.GetAddEnemyPromotionImmune() ? iChange : 0);
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	if (thisPromotion.CanAutoRemove())
+	{
+		if (iChange == 1)
+		{
+			int iTurnToRemove = thisPromotion.GetRemoveAfterXTurns();
+			iTurnToRemove = iTurnToRemove > 0 ? iTurnToRemove : -1;
+			AutoRemoveInfo info(thisPromotion, iTurnToRemove);
+			m_mapAutoRemovePromotions[info.m_ePromotion] = info;
+		}
+		else if (iChange == -1)
+		{
+			m_mapAutoRemovePromotions.erase((PromotionTypes)thisPromotion.GetID());
+		}
+	}
+
+	if (thisPromotion.GetCanActionClear())
+	{
+		if (iChange == 1)
+		{
+			m_sPromotionsThatCanBeActionCleared.insert((PromotionTypes)thisPromotion.GetID());
+		}
+		else if (iChange == -1)
+		{
+			m_sPromotionsThatCanBeActionCleared.erase((PromotionTypes)thisPromotion.GetID());
+		}
+	}
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	if (thisPromotion.CanDestroyBuildings())
+	{
+		if (iChange == 1)
+		{
+			m_mapDestroyBuildings[PromotionTypes(thisPromotion.GetID())] = {thisPromotion};
+		}
+		else if (iChange == -1)
+		{
+			m_mapDestroyBuildings.erase(PromotionTypes(thisPromotion.GetID()));
+		}
+	}
+
+	ChangeSiegeKillCitizensFixed(thisPromotion.GetSiegeKillCitizensFixed() * iChange);
+	ChangeSiegeKillCitizensPercent(thisPromotion.GetSiegeKillCitizensPercent() * iChange);
+#endif
+	ChangeNumRangeBackWhenDefense(thisPromotion.IsRangeBackWhenDefense() ? iChange : 0);
+	ChangeHeavyChargeAddMoves(iChange * thisPromotion.GetHeavyChargeAddMoves());
+	ChangeHeavyChargeExtraDamage(iChange * thisPromotion.GetHeavyChargeExtraDamage());
+	ChangeHeavyChargeCollateralFixed(iChange * thisPromotion.GetHeavyChargeCollateralFixed());
+	ChangeHeavyChargeCollateralPercent(iChange * thisPromotion.GetHeavyChargeCollateralPercent());
 	ChangePromotionMaintenanceCost(thisPromotion.GetMaintenanceCost() > 0 ? iChange: 0);
 
 	if (IsSelected())
@@ -28786,6 +28940,37 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 #ifdef MOD_GLOBAL_WAR_CASUALTIES
 	visitor(unit.m_iWarCasualtiesModifier);
 #endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+	visitor(unit.m_sPromotionCollections);
+#endif
+#ifdef MOD_PROMOTION_SPLASH_DAMAGE
+	visitor(unit.m_asSplashInfoVec);
+	visitor(unit.m_iSplashImmuneRC);
+	visitor(unit.m_iSplashXP);
+	visitor(unit.m_iNumTriggerSplashFinish);
+#endif
+#ifdef MOD_PROMOTION_COLLATERAL_DAMAGE
+	visitor(unit.m_asCollateralInfoVec);
+	visitor(unit.m_iCollateralImmuneRC);
+	visitor(unit.m_iCollateralXP);
+#endif
+#ifdef MOD_PROMOTION_ADD_ENEMY_PROMOTIONS
+	visitor(unit.m_iAddEnemyPromotionImmuneRC);
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	visitor(unit.m_mapAutoRemovePromotions);
+	visitor(unit.m_sPromotionsThatCanBeActionCleared);
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	visitor(unit.m_mapDestroyBuildings);
+	visitor(unit.m_iSiegeKillCitizensPercent);
+	visitor(unit.m_iSiegeKillCitizensFixed);
+#endif
+	visitor(unit.m_iNumRangeBackWhenDefense);
+	visitor(unit.m_iHeavyChargeAddMoves);
+	visitor(unit.m_iHeavyChargeExtraDamage);
+	visitor(unit.m_iHeavyChargeCollateralFixed);
+	visitor(unit.m_iHeavyChargeCollateralPercent);
 	visitor(unit.m_iPromotionMaintenanceCost);
 	visitor(unit.m_iCombatStrengthChangeFromKilledUnits);
 	visitor(unit.m_iRangedCombatStrengthChangeFromKilledUnits);
@@ -34256,6 +34441,184 @@ void CvUnit::SetWarCasualtiesModifier(int iValue)
 	m_iWarCasualtiesModifier = iValue;
 }
 #endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+std::tr1::unordered_map<PromotionCollectionsTypes, int>& CvUnit::GetPromotionCollections()
+{
+	return m_sPromotionCollections;
+}
+#endif
+#ifdef MOD_PROMOTION_SPLASH_DAMAGE
+std::vector<SplashInfo>& CvUnit::GetSplashInfoVec()
+{
+	return this->m_asSplashInfoVec;
+}
+
+int CvUnit::GetSplashImmuneRC() const {
+	return this->m_iSplashImmuneRC;
+}
+void CvUnit::ChangeSplashImmuneRC(int iChange) {
+	this->m_iSplashImmuneRC += iChange;
+}
+void CvUnit::SetSplashImmuneRC(int iValue) {
+	this->m_iSplashImmuneRC = iValue;
+}
+
+int CvUnit::GetSplashXP() const {
+	return this->m_iSplashXP;
+}
+void CvUnit::ChangeSplashXP(int iChange) {
+	this->m_iSplashXP += iChange;
+}
+void CvUnit::SetSplashXP(int iValue) {
+	this->m_iSplashXP = iValue;
+}
+bool CvUnit::IsTriggerSplashFinish() const
+{
+	return m_iNumTriggerSplashFinish > 0;
+}
+void CvUnit::ChangeNumTriggerSplashFinish(int iChange)
+{
+	m_iNumTriggerSplashFinish += iChange;
+}
+#endif
+#ifdef MOD_PROMOTION_COLLATERAL_DAMAGE
+std::vector<CollateralInfo>& CvUnit::GetCollateralInfoVec()
+{
+	return this->m_asCollateralInfoVec;
+}
+
+int CvUnit::GetCollateralImmuneRC() const {
+	return this->m_iCollateralImmuneRC;
+}
+void CvUnit::ChangeCollateralImmuneRC(int iChange) {
+	this->m_iCollateralImmuneRC += iChange;
+}
+void CvUnit::SetCollateralImmuneRC(int iValue) {
+	this->m_iCollateralImmuneRC = iValue;
+}
+
+int CvUnit::GetCollateralXP() const {
+	return this->m_iCollateralXP;
+}
+void CvUnit::ChangeCollateralXP(int iChange) {
+	this->m_iCollateralXP += iChange;
+}
+void CvUnit::SetCollateralXP(int iValue) {
+	this->m_iCollateralXP = iValue;
+}
+#endif
+#ifdef MOD_PROMOTION_ADD_ENEMY_PROMOTIONS
+int CvUnit::GetAddEnemyPromotionImmuneRC() const
+{
+	return m_iAddEnemyPromotionImmuneRC;
+}
+bool CvUnit::IsImmuneNegtivePromotions() const
+{
+	return GetAddEnemyPromotionImmuneRC() > 0;
+}
+void CvUnit::ChangeAddEnemyPromotionImmuneRC(int iChange)
+{
+	m_iAddEnemyPromotionImmuneRC += iChange;
+}
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+void CvUnit::ClearSamePlotPromotions()
+{
+	if (plot())
+		plot()->ClearUnitPromotions();
+}
+std::tr1::unordered_set<PromotionTypes>& CvUnit::GetPromotionsThatCanBeActionCleared()
+{
+	return m_sPromotionsThatCanBeActionCleared;
+}
+bool CvUnit::CanRemoveDebuff(AutoRemoveInfo& kAutoRemoveInfo) const
+{
+	if (kAutoRemoveInfo.m_iTurnToRemove > 0) kAutoRemoveInfo.m_iTurnToRemove--;
+	if (kAutoRemoveInfo.m_iTurnToRemove == 0)
+	{
+		return true;
+	}
+	if (kAutoRemoveInfo.m_bRemoveAfterFullyHeal && getDamage() <= 0)
+	{
+		return true;
+	}
+	if (kAutoRemoveInfo.m_bRemoveLuaCheck && GAMEEVENTINVOKE_TESTANY(GAMEEVENT_CanRemovePromotion, kAutoRemoveInfo.m_ePromotion, getOwner(), GetID()) == GAMEEVENTRETURN_TRUE)
+	{
+		return true;
+	}
+
+	return false;
+}
+void CvUnit::RemoveDebuffWhenDoTurn()
+{
+	if (!MOD_GLOBAL_PROMOTIONS_REMOVAL)
+		return;
+
+	if (m_mapAutoRemovePromotions.empty())
+		return;
+
+	std::vector<PromotionTypes> vPromotionsToRemove;
+	for (auto iter = m_mapAutoRemovePromotions.begin(); iter != m_mapAutoRemovePromotions.end(); iter++)
+	{
+		if (GC.getPromotionInfo(iter->first)->CanAutoRemoveDoneTurn()) continue;
+		if (!CanRemoveDebuff(iter->second)) continue;
+		vPromotionsToRemove.push_back(iter->first);
+	}
+
+	for (auto promotion : vPromotionsToRemove)
+	{
+		setHasPromotion(promotion, false);
+	}
+}
+void CvUnit::RemoveDebuffWhenDoneTurn()
+{
+	if (!MOD_GLOBAL_PROMOTIONS_REMOVAL)
+		return;
+
+	if (m_mapAutoRemovePromotions.empty())
+		return;
+
+	std::vector<PromotionTypes> vPromotionsToRemove;
+	for (auto iter = m_mapAutoRemovePromotions.begin(); iter != m_mapAutoRemovePromotions.end(); iter++)
+	{
+		if (!GC.getPromotionInfo(iter->first)->CanAutoRemoveDoneTurn()) continue;
+		if (!CanRemoveDebuff(iter->second)) continue;
+		vPromotionsToRemove.push_back(iter->first);
+	}
+
+	for (auto promotion : vPromotionsToRemove)
+	{
+		setHasPromotion(promotion, false);
+	}
+}
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+std::tr1::unordered_map<PromotionTypes, DestroyBuildingsInfo>& CvUnit::GetDestroyBuildings()
+{
+	return m_mapDestroyBuildings;
+}
+
+int CvUnit::GetSiegeKillCitizensPercent() const
+{
+	return m_iSiegeKillCitizensPercent;
+}
+int CvUnit::GetSiegeKillCitizensFixed() const
+{
+	return m_iSiegeKillCitizensFixed;
+}
+void CvUnit::ChangeSiegeKillCitizensPercent(int iChange)
+{
+	m_iSiegeKillCitizensPercent += iChange;
+}
+void CvUnit::ChangeSiegeKillCitizensFixed(int iChange)
+{
+	m_iSiegeKillCitizensFixed += iChange;
+}
+bool CvUnit::CanSiegeKillCitizens() const
+{
+	return (m_iSiegeKillCitizensPercent > 0 || m_iSiegeKillCitizensFixed > 0);
+}
+#endif
 
 //	--------------------------------------------------------------------------------
 #if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
@@ -34337,6 +34700,49 @@ int CvUnit::otherPromotionDefenseModifierByUnit(const CvUnit* otherUnit) const
 	return iSum;
 }
 #endif
+
+//	--------------------------------------------------------------------------------
+bool CvUnit::IsRangeBackWhenDefense() const
+{
+	return m_iNumRangeBackWhenDefense > 0;
+}
+void CvUnit::ChangeNumRangeBackWhenDefense(int iChange)
+{
+	m_iNumRangeBackWhenDefense += iChange;
+}
+
+int CvUnit::GetHeavyChargeAddMoves() const
+{
+	return m_iHeavyChargeAddMoves;
+}
+int CvUnit::GetHeavyChargeExtraDamage() const
+{
+	return m_iHeavyChargeExtraDamage;
+}
+int CvUnit::GetHeavyChargeCollateralFixed() const
+{
+	return m_iHeavyChargeCollateralFixed;
+}
+int CvUnit::GetHeavyChargeCollateralPercent() const
+{
+	return m_iHeavyChargeCollateralPercent;
+}
+void CvUnit::ChangeHeavyChargeAddMoves(int iChange)
+{
+	m_iHeavyChargeAddMoves += iChange;
+}
+void CvUnit::ChangeHeavyChargeExtraDamage(int iChange)
+{
+	m_iHeavyChargeExtraDamage += iChange;
+}
+void CvUnit::ChangeHeavyChargeCollateralFixed(int iChange)
+{
+	m_iHeavyChargeCollateralFixed += iChange;
+}
+void CvUnit::ChangeHeavyChargeCollateralPercent(int iChange)
+{
+	m_iHeavyChargeCollateralPercent += iChange;
+}
 
 //	--------------------------------------------------------------------------------
 /// Get extra cost for unit maintenance in Gold from promotions

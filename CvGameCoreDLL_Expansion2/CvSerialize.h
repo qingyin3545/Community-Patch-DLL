@@ -35,18 +35,6 @@ public:
 	{
 		m_stream << value;
 	}
-#ifdef MOD_GLOBAL_CORRUPTION
-	inline void operator()(const CorruptionLevelTypes& value)
-	{
-		m_stream << (int)value;
-	}
-#endif
-#ifdef MOD_GLOBAL_CITY_SCALES
-	inline void operator()(const CityScaleTypes& value)
-	{
-		m_stream << (int)value;
-	}
-#endif
 
 	template<typename To, typename From>
 	inline void as(const From& value)
@@ -116,18 +104,6 @@ public:
 	{
 		m_stream >> value;
 	}
-#ifdef MOD_GLOBAL_CORRUPTION
-	inline void operator()(CorruptionLevelTypes& value)
-	{
-		m_stream >> (int&)value;
-	}
-#endif
-#ifdef MOD_GLOBAL_CITY_SCALES
-	inline void operator()(CityScaleTypes& value)
-	{
-		m_stream >> (int&)value;
-	}
-#endif
 
 	template<typename To, typename From>
 	inline void as(From& value)

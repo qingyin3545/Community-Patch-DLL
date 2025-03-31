@@ -2754,6 +2754,12 @@ void CvGlobals::init()
 #ifdef MOD_NUCLEAR_WINTER_FOR_SP
 	m_pNuclearWinterInfo= FNEW(CvNuclearWinterLevelXMLEntries, c_eCiv5GameplayDLL, 0);
 #endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+	m_pPromotionCollections = FNEW(CvPromotionCollectionEntries, c_eCiv5GameplayDLL, 0);
+#endif
+#ifdef MOD_BUILDINGCLASS_COLLECTIONS
+	m_pBuildingClassCollections = FNEW(CvBuildingClassCollectionsXMLEntries, c_eCiv5GameplayDLL, 0);
+#endif
 #ifdef MOD_SPECIALIST_RESOURCES
 	GC.initSpecialistResourcesDependencies();
 #endif
@@ -2836,6 +2842,12 @@ void CvGlobals::uninit()
 #endif
 #ifdef MOD_NUCLEAR_WINTER_FOR_SP
 	SAFE_DELETE(m_pNuclearWinterInfo);
+#endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+	SAFE_DELETE(m_pPromotionCollections);
+#endif
+#ifdef MOD_BUILDINGCLASS_COLLECTIONS
+	SAFE_DELETE(m_pBuildingClassCollections);
 #endif
 	SAFE_DELETE(m_pLuaFormulaEntries);
 	SAFE_DELETE(m_pLuaEvaluatorManager);
@@ -5219,6 +5231,31 @@ std::vector<CvNuclearWinterLevel*>& CvGlobals::getOrderedNuclearWinterLevels()
 {
 	return m_vOrderedNuclearWinterLevels;
 }
+#endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+std::vector<CvPromotionCollectionEntry*>& CvGlobals::GetPromotionCollections() { return m_pPromotionCollections->GetEntries(); }
+CvPromotionCollectionEntry* CvGlobals::GetPromotionCollection(PromotionCollectionsTypes ePromotionCollection) { return m_pPromotionCollections->GetEntry(ePromotionCollection); }
+int CvGlobals::GetNumPromotionCollections() { return m_pPromotionCollections->GetNumEntries(); }
+std::tr1::unordered_map<PromotionTypes, std::tr1::unordered_set<PromotionCollectionsTypes> >& CvGlobals::GetPromotion2CollectionsMapping() { return m_mPromotion2CollectionsMapping; }
+void CvGlobals::InitPromotion2CollectionMapping()
+{
+	auto& vPromotionCollections = GetPromotionCollections();
+	for (auto* pPromotionCollection : vPromotionCollections)
+	{
+		if (pPromotionCollection == nullptr) continue;
+
+		auto& vPromotions = pPromotionCollection->GetPromotions();
+		for (auto& sPromotion : vPromotions)
+		{
+			m_mPromotion2CollectionsMapping[sPromotion.m_ePromotionType].insert((PromotionCollectionsTypes)pPromotionCollection->GetID());
+		}
+	}
+}
+#endif
+#ifdef MOD_BUILDINGCLASS_COLLECTIONS
+std::vector<CvBuildingClassCollectionsEntry*>& CvGlobals::GetBuildingClassCollections() { return m_pBuildingClassCollections->GetEntries(); }
+CvBuildingClassCollectionsEntry* CvGlobals::GetBuildingClassCollection(BuildingClassCollectionsTypes eBuildingClassCollection) { return m_pBuildingClassCollections->GetEntry((int)eBuildingClassCollection); }
+int CvGlobals::GetNumBuildingClassCollections() {return m_pBuildingClassCollections->GetNumEntries(); }
 #endif
 #ifdef MOD_SPECIALIST_RESOURCES
 std::tr1::unordered_set<PolicyTypes>& CvGlobals::getSpecialistResourcesPolicies()

@@ -358,6 +358,13 @@ void CvPlot::doTurn()
 	// Clear world anchor
 	SetWorldAnchor(NO_WORLD_ANCHOR);
 
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	if(MOD_GLOBAL_PROMOTIONS_REMOVAL && getImprovementType() != NO_IMPROVEMENT && GC.getImprovementInfo(getImprovementType())->IsClearNegativePromotions() && !IsImprovementPillaged())
+	{
+		ClearUnitPromotions(true);
+	}
+#endif
+
 	// XXX
 #ifdef _DEBUG
 	{
@@ -16017,6 +16024,26 @@ int CvPlot::CalculateCorruptionScoreModifierFromTrait(PlayerTypes ePlayer) const
 		}
 	}
 	return 0;
+}
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+void CvPlot::ClearUnitPromotions(bool bOnlyFriendUnit)
+{
+	if (!MOD_GLOBAL_PROMOTIONS_REMOVAL) return;
+
+	int iUnitCount = getNumUnits();
+	for (int i = 0; i < iUnitCount; i++)
+	{
+		CvUnit* pLoopUnit = getUnitByIndex(i);
+		if (!pLoopUnit || (bOnlyFriendUnit && getOwner() != pLoopUnit->getOwner())) continue;
+
+		std::vector<PromotionTypes> candidatePromotionToClear(pLoopUnit->GetPromotionsThatCanBeActionCleared().begin(), pLoopUnit->GetPromotionsThatCanBeActionCleared().end());
+		if (candidatePromotionToClear.empty()) continue;
+		for (auto it = candidatePromotionToClear.begin(); it != candidatePromotionToClear.end(); ++it)
+		{
+			pLoopUnit->setHasPromotion(*it, false);
+		}
+	}
 }
 #endif
 bool CvPlot::CheckCanChangeBuildProgress(BuildTypes eBuild, bool bNewBuild)
