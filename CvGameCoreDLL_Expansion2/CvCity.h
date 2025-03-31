@@ -1895,6 +1895,10 @@ public:
 	bool CanAllScaleImmigrantIn() const;
 	void ChangeNumAllScaleImmigrantIn(int iChange);
 #endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	int GetSiegeKillCitizensModifier() const;
+	void ChangeSiegeKillCitizensModifier(int iChange);
+#endif
 
 protected:
 	SYNC_ARCHIVE_MEMBER(CvCity)
@@ -2342,6 +2346,9 @@ private:
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	bool m_bCanDoImmigration = true;
 	int m_iNumAllScaleImmigrantIn = 0;
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	int m_iSiegeKillCitizensModifier = 0;
 #endif
 };
 

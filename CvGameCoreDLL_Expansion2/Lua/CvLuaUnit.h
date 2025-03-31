@@ -688,6 +688,12 @@ protected:
 	static int lOtherPromotionAttackModifier(lua_State* L);
 	static int lOtherPromotionDefenseModifier(lua_State* L);
 #endif
+#ifdef MOD_PROMOTION_ADD_ENEMY_PROMOTIONS
+	LUAAPIEXTN(IsImmuneNegtivePromotions, bool);
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	LUAAPIEXTN(ClearSamePlotPromotions, void);
+#endif
 	LUAAPIEXTN(GetPromotionMaintenanceCost, int);
 
 	static int lGetCombatStrengthChangeFromKilledUnits(lua_State* L);

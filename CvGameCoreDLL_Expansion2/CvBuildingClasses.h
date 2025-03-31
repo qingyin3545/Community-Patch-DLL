@@ -723,6 +723,9 @@ public:
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	bool CanAllScaleImmigrantIn() const;
 #endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	int GetSiegeKillCitizensModifier() const;
+#endif
 
 private:
 	int m_iBuildingClassType;
@@ -1183,6 +1186,9 @@ private:
 #endif
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	bool m_bCanAllScaleImmigrantIn = false;
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	int m_iSiegeKillCitizensModifier = 0;
 #endif
 };
 

@@ -845,6 +845,10 @@ bool CvImprovementEntry::CacheResults(Database::Results& kResults, CvDatabaseUti
 
 	}
 
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	m_bClearNegativePromotions = kResults.GetBool("ClearNegativePromotions");
+#endif
+
 	return true;
 }
 
@@ -1789,6 +1793,13 @@ int CvImprovementEntry::GetDomainFreeExperience(int i) const
 	ASSERT_DEBUG(i > -1, "Index out of bounds");
 	return m_piDomainFreeExperience[i];
 }
+
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+bool CvImprovementEntry::IsClearNegativePromotions() const
+{
+	return m_bClearNegativePromotions;
+}
+#endif
 
 //=====================================
 // CvPromotionEntryXMLEntries

@@ -2080,6 +2080,55 @@ public:
 	void ChangeWarCasualtiesModifier(int iChange);
 	void SetWarCasualtiesModifier(int iValue);
 #endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+	std::tr1::unordered_map<PromotionCollectionsTypes, int>& GetPromotionCollections();
+#endif
+#ifdef MOD_PROMOTION_SPLASH_DAMAGE
+	std::vector<SplashInfo>& GetSplashInfoVec();
+
+	int GetSplashImmuneRC() const;
+	void ChangeSplashImmuneRC(int iChange);
+	void SetSplashImmuneRC(int iValue);
+
+	int GetSplashXP() const;
+	void ChangeSplashXP(int iChange);
+	void SetSplashXP(int iValue);
+
+	bool IsTriggerSplashFinish() const;
+	void ChangeNumTriggerSplashFinish(int iChange);
+#endif
+#ifdef MOD_PROMOTION_COLLATERAL_DAMAGE
+	std::vector<CollateralInfo>& GetCollateralInfoVec();
+
+	int GetCollateralImmuneRC() const;
+	void ChangeCollateralImmuneRC(int iChange);
+	void SetCollateralImmuneRC(int iValue);
+
+	int GetCollateralXP() const;
+	void ChangeCollateralXP(int iChange);
+	void SetCollateralXP(int iValue);
+#endif
+#ifdef MOD_PROMOTION_ADD_ENEMY_PROMOTIONS
+	int GetAddEnemyPromotionImmuneRC() const;
+	bool IsImmuneNegtivePromotions() const;
+	void ChangeAddEnemyPromotionImmuneRC(int iChange);
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	void ClearSamePlotPromotions();
+	std::tr1::unordered_set<PromotionTypes>& GetPromotionsThatCanBeActionCleared();
+	bool CanRemoveDebuff(AutoRemoveInfo& kAutoRemoveInfo) const;
+	void RemoveDebuffWhenDoTurn();
+	void RemoveDebuffWhenDoneTurn();
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	std::tr1::unordered_map<PromotionTypes, DestroyBuildingsInfo>& GetDestroyBuildings();
+
+	int GetSiegeKillCitizensPercent() const;
+	int GetSiegeKillCitizensFixed() const;
+	void ChangeSiegeKillCitizensPercent(int iChange);
+	void ChangeSiegeKillCitizensFixed(int iChange);
+	bool CanSiegeKillCitizens() const;
+#endif
 #if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
 	int otherPromotionModifier(PromotionTypes other) const;
 	int otherPromotionAttackModifier(PromotionTypes other) const;
@@ -2089,6 +2138,18 @@ public:
 	int otherPromotionAttackModifierByUnit(const CvUnit* otherUnit) const;
 	int otherPromotionDefenseModifierByUnit(const CvUnit* otherUnit) const;
 #endif
+	bool IsRangeBackWhenDefense() const;
+	void ChangeNumRangeBackWhenDefense(int iChange);
+
+	int GetHeavyChargeAddMoves() const;
+	int GetHeavyChargeExtraDamage() const;
+	int GetHeavyChargeCollateralFixed() const;
+	int GetHeavyChargeCollateralPercent() const;
+	void ChangeHeavyChargeAddMoves(int iChange);
+	void ChangeHeavyChargeExtraDamage(int iChange);
+	void ChangeHeavyChargeCollateralFixed(int iChange);
+	void ChangeHeavyChargeCollateralPercent(int iChange);
+
 	int GetPromotionMaintenanceCost() const;
 	void ChangePromotionMaintenanceCost(int iValue);
 
@@ -2588,6 +2649,41 @@ private:
 #ifdef MOD_GLOBAL_WAR_CASUALTIES
 	int m_iWarCasualtiesModifier = 0;
 #endif
+#ifdef MOD_PROMOTION_COLLECTIONS
+	std::tr1::unordered_map<PromotionCollectionsTypes, int> m_sPromotionCollections;
+#endif
+#ifdef MOD_PROMOTION_SPLASH_DAMAGE
+	std::vector<SplashInfo> m_asSplashInfoVec = {};
+
+	int m_iSplashImmuneRC = 0;
+	int m_iSplashXP = 0;
+	int m_iNumTriggerSplashFinish = 0;
+#endif
+#ifdef MOD_PROMOTION_COLLATERAL_DAMAGE
+	std::vector<CollateralInfo> m_asCollateralInfoVec = {};
+
+	int m_iCollateralImmuneRC = 0;
+	int m_iCollateralXP = 0;
+#endif
+#ifdef MOD_PROMOTION_ADD_ENEMY_PROMOTIONS
+	int m_iAddEnemyPromotionImmuneRC = 0;
+#endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	std::tr1::unordered_map<PromotionTypes, AutoRemoveInfo> m_mapAutoRemovePromotions;
+	std::tr1::unordered_set<PromotionTypes> m_sPromotionsThatCanBeActionCleared;
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	std::tr1::unordered_map<PromotionTypes, DestroyBuildingsInfo> m_mapDestroyBuildings;
+
+	int m_iSiegeKillCitizensPercent = 0;
+	int m_iSiegeKillCitizensFixed = 0;
+#endif
+	int m_iNumRangeBackWhenDefense = 0;
+
+	int m_iHeavyChargeAddMoves = 0;
+	int m_iHeavyChargeExtraDamage = 0;
+	int m_iHeavyChargeCollateralFixed = 0;
+	int m_iHeavyChargeCollateralPercent = 0;
 
 	int m_iPromotionMaintenanceCost = 0;
 

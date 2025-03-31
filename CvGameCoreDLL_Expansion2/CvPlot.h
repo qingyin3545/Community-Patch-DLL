@@ -868,6 +868,9 @@ public:
 	int CalculateCorruptionScoreFromTrait(PlayerTypes ePlayer) const;
 	int CalculateCorruptionScoreModifierFromTrait(PlayerTypes ePlayer) const;
 #endif
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	void ClearUnitPromotions(bool bOnlyFriendUnit = false);
+#endif
 	bool CheckCanChangeBuildProgress(BuildTypes eBuild, bool bNewBuild);
 	bool CheckCanChangeBuildProgressConst(BuildTypes eBuild, bool bNewBuild) const;
 
