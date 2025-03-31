@@ -1824,6 +1824,9 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 	m_bCanDoImmigration = true;
 	m_iNumAllScaleImmigrantIn = 0;
 #endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	m_iSiegeKillCitizensModifier = 0;
+#endif
 }
 
 
@@ -14891,6 +14894,9 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 #endif
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 		ChangeNumAllScaleImmigrantIn(pBuildingInfo->CanAllScaleImmigrantIn() ? iChange : 0);
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+		ChangeSiegeKillCitizensModifier(pBuildingInfo->GetSiegeKillCitizensModifier() * iChange);
 #endif
 
 		// Process for our player
@@ -32178,6 +32184,9 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 	visitor(city.m_bCanDoImmigration);
 	visitor(city.m_iNumAllScaleImmigrantIn);
 #endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	visitor(city.m_iSiegeKillCitizensModifier);
+#endif
 }
 
 //	--------------------------------------------------------------------------------
@@ -35992,6 +36001,26 @@ bool CvCity::CanAllScaleImmigrantIn() const
 void CvCity::ChangeNumAllScaleImmigrantIn(int iChange)
 {
 	m_iNumAllScaleImmigrantIn += iChange;
+}
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+int CvCity::GetSiegeKillCitizensModifier() const
+{
+	return m_iSiegeKillCitizensModifier;
+}
+void CvCity::ChangeSiegeKillCitizensModifier(int iChange)
+{
+	m_iSiegeKillCitizensModifier += iChange;
+}
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+int CvCity::GetSiegeKillCitizensModifier() const
+{
+	return m_iSiegeKillCitizensModifier;
+}
+void CvCity::ChangeSiegeKillCitizensModifier(int iChange)
+{
+	m_iSiegeKillCitizensModifier += iChange;
 }
 #endif
 

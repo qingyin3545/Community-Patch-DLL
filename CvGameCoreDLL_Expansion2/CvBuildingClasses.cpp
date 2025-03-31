@@ -1961,6 +1961,9 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	m_bCanAllScaleImmigrantIn = kResults.GetBool("EnableAlwaysImmigrantIn");
 #endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+	m_iSiegeKillCitizensModifier = kResults.GetInt("SiegeKillCitizensModifier");
+#endif
 
 	return true;
 }
@@ -5195,6 +5198,12 @@ bool CvBuildingEntry::IsNoNuclearWinterLocal() const
 bool CvBuildingEntry::CanAllScaleImmigrantIn() const
 {
 	return m_bCanAllScaleImmigrantIn;
+}
+#endif
+#ifdef MOD_PROMOTION_CITY_DESTROYER
+int CvBuildingEntry::GetSiegeKillCitizensModifier() const
+{
+	return m_iSiegeKillCitizensModifier;
 }
 #endif
 
