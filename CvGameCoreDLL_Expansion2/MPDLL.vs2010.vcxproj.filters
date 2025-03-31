@@ -566,6 +566,12 @@
     <ClCompile Include="CvLuaFormula.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CvBuildingClassCollectionsClasses.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CvPromotionCollectionClasses.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="banned.h">
@@ -1394,6 +1400,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CvLuaFormula.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CvBuildingClassCollectionsClasses.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CvPromotionCollectionClasses.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

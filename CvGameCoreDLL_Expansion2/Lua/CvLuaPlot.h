@@ -385,6 +385,10 @@ protected:
 	LUAAPIEXTN(IsWithinDistanceOfTerrain, bool, iTerrainType, iDistance);
 	LUAAPIEXTN(GetEffectiveFlankingBonus, int, CvUnit*, CvUnit*, CvPlot*);
 	LUAAPIEXTN(GetEffectiveFlankingBonusAtRange, int, CvUnit*, CvUnit*);
+
+#ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
+	LUAAPIEXTN(ClearUnitPromotions, void);
+#endif
 };
 
 namespace CvLuaArgs
