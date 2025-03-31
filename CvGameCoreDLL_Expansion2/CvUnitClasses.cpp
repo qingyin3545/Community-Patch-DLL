@@ -668,6 +668,9 @@ bool CvUnitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& k
 	szTextVal = kResults.GetText("BoundWaterImprovement");
 	m_iBoundWaterImprovement = GC.getInfoTypeForString(szTextVal, true);
 
+	m_iCombatStrengthChangeAfterKilling = kResults.GetInt("CombatStrengthChangeAfterKilling");
+	m_iRangedCombatStrengthChangeAfterKilling = kResults.GetInt("RangedCombatStrengthChangeAfterKilling");
+
 	// Calculate military Power and cache it
 	DoUpdatePower();
 
@@ -2038,6 +2041,7 @@ int CvUnitEntry::GetNuclearWinterProcess() const
 {
 	return m_iNuclearWinterProcess;
 }
+#endif
 
 int CvUnitEntry::GetBoundLandImprovement() const
 {
@@ -2047,7 +2051,15 @@ int CvUnitEntry::GetBoundWaterImprovement() const
 {
 	return m_iBoundWaterImprovement;
 }
-#endif
+
+int CvUnitEntry::GetCombatStrengthChangeAfterKilling() const
+{
+	return m_iCombatStrengthChangeAfterKilling;
+}
+int CvUnitEntry::GetRangedCombatStrengthChangeAfterKilling() const
+{
+	return m_iRangedCombatStrengthChangeAfterKilling;
+}
 
 //=====================================
 // CvUnitXMLEntries
