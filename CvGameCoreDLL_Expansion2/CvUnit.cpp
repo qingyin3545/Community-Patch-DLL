@@ -1248,6 +1248,14 @@ void CvUnit::initWithNameOffset(int iID, UnitTypes eUnit, int iNameOffset, UnitA
 		kPlayer.ChangeDomainTroopsUsed(1);
 	}
 #endif
+	if(plot()->isWater() && getUnitInfo().GetBoundWaterImprovement() != NO_IMPROVEMENT)
+	{
+		plot()->setImprovementType((ImprovementTypes)getUnitInfo().GetBoundWaterImprovement(), getOwner());
+	}
+	else if(!plot()->isWater() && getUnitInfo().GetBoundLandImprovement() != NO_IMPROVEMENT)
+	{
+		plot()->setImprovementType((ImprovementTypes)getUnitInfo().GetBoundLandImprovement(), getOwner());
+	}
 		
 	if (MOD_EVENTS_UNIT_CREATED)
 		GAMEEVENTINVOKE_HOOK(GAMEEVENT_UnitCreated, getOwner(), GetID(), getUnitType(), getX(), getY());
@@ -2737,6 +2745,22 @@ void CvUnit::kill(bool bDelay, PlayerTypes ePlayer /*= NO_PLAYER*/)
 		GET_PLAYER(getOwner()).ChangeNumArmeeUsed(-1);
 	}
 #endif
+	// Remove Bound Improvement
+	if(pPlot && (getUnitInfo().GetBoundLandImprovement() != NO_IMPROVEMENT || getUnitInfo().GetBoundWaterImprovement() != NO_IMPROVEMENT))
+	{
+		bool hasBoundUnit = false;
+		for(int iUnitLoop = 0; iUnitLoop < pPlot->getNumUnits(); iUnitLoop++)
+		{
+			CvUnit* pLoopUnit = pPlot->getUnitByIndex(iUnitLoop);
+			if(pLoopUnit->getUnitInfo().GetBoundLandImprovement() != NO_IMPROVEMENT || pLoopUnit->getUnitInfo().GetBoundWaterImprovement() != NO_IMPROVEMENT)
+			{
+				hasBoundUnit = true;
+				break;
+			}	
+		}
+		if(!hasBoundUnit)
+			pPlot->setImprovementType(NO_IMPROVEMENT);
+	}
 
 	//////////////////////////////////////////////////////////////////////////
 	// WARNING: This next statement will delete 'this'
