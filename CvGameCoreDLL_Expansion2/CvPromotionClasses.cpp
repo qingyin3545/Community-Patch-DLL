@@ -1489,6 +1489,47 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 #ifdef MOD_GLOBAL_WAR_CASUALTIES
 	m_iWarCasualtiesModifier = kResults.GetInt("WarCasualtiesModifier");
 #endif
+#if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
+	if (MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
+	{
+		// UnitPromotions_PromotionModifiers
+		std::string sqlKey = "UnitPromotions_PromotionModifiers";
+		Database::Results* pResults = kUtility.GetResults(sqlKey);
+		if (pResults == nullptr)
+		{
+			const char* sql = "select t2.ID, t1.Modifier, t1.Attack, t1.Defense from UnitPromotions_PromotionModifiers as t1 left join UnitPromotions t2 on t1.OtherPromotionType = t2.`Type` where t1.PromotionType = ?";
+			pResults = kUtility.PrepareResults(sqlKey, sql);
+		}
+
+		ASSERT_DEBUG(pResults);
+		if (pResults == nullptr)
+		{
+			return false;
+		}
+
+		pResults->Bind(1, szPromotionType);
+
+		while (pResults->Step())
+		{
+			const PromotionTypes iOtherPromotionType = static_cast<PromotionTypes>(pResults->GetInt(0));
+			ASSERT_DEBUG(iOtherPromotionType > -1 && iOtherPromotionType < GC.getNumPromotionInfos());
+
+			const int iModifier = pResults->GetInt("Modifier");
+			if (iModifier != 0)
+				m_pPromotionModifiers[iOtherPromotionType] += iModifier;
+
+			const int iAttack = pResults->GetInt("Attack");
+			if (iAttack != 0)
+				m_pPromotionAttackModifiers[iOtherPromotionType] += iAttack;
+
+			const int iDefense = pResults->GetInt("Defense");
+			if (iDefense != 0)
+				m_pPromotionDefenseModifiers[iOtherPromotionType] += iDefense;
+		}
+
+		pResults->Reset();
+	}
+#endif
 	m_iMaintenanceCost = kResults.GetInt("MaintenanceCost");
 
 	return true;
@@ -3708,6 +3749,78 @@ int CvPromotionEntry::GetWarCasualtiesModifier() const
 	return m_iWarCasualtiesModifier;
 }
 #endif
+#if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
+int CvPromotionEntry::GetOtherPromotionModifier(PromotionTypes other) const
+{
+	ASSERT_DEBUG(other < GC.getNumPromotionInfos(), "GetOtherPromotionModifier: upper bound");
+	ASSERT_DEBUG(other > -1, "GetOtherPromotionModifier: lower bound");
+
+	if (other <= -1 || other >= GC.getNumPromotionInfos())
+	{
+		return -1;
+	}
+
+	auto iterator = m_pPromotionModifiers.find(other);
+	if (iterator == m_pPromotionModifiers.end())
+	{
+		return 0;
+	}
+
+	return iterator->second;
+}
+int CvPromotionEntry::GetOtherPromotionAttackModifier(PromotionTypes other) const
+{
+	ASSERT_DEBUG(other < GC.getNumPromotionInfos(), "GetOtherPromotionAttackModifier: upper bound");
+	ASSERT_DEBUG(other > -1, "GetOtherPromotionAttackModifier: lower bound");
+
+	if (other <= -1 || other >= GC.getNumPromotionInfos())
+	{
+		return -1;
+	}
+
+	auto iterator = m_pPromotionAttackModifiers.find(other);
+	if (iterator == m_pPromotionAttackModifiers.end())
+	{
+		return 0;
+	}
+
+	return iterator->second;
+}
+int CvPromotionEntry::GetOtherPromotionDefenseModifier(PromotionTypes other) const
+{
+	ASSERT_DEBUG(other < GC.getNumPromotionInfos(), "GetOtherPromotionDefenseModifier: upper bound");
+	ASSERT_DEBUG(other > -1, "GetOtherPromotionDefenseModifier: lower bound");
+
+	if (other <= -1 || other >= GC.getNumPromotionInfos())
+	{
+		return -1;
+	}
+
+	auto iterator = m_pPromotionDefenseModifiers.find(other);
+	if (iterator == m_pPromotionDefenseModifiers.end())
+	{
+		return 0;
+	}
+
+	return iterator->second;
+}
+bool CvPromotionEntry::HasOtherPromotionModifier() const
+{
+	return !m_pPromotionModifiers.empty() || !m_pPromotionAttackModifiers.empty() || !m_pPromotionDefenseModifiers.empty();
+}
+std::tr1::unordered_map<PromotionTypes, int>& CvPromotionEntry::GetOtherPromotionModifierMap()
+{
+	return m_pPromotionModifiers;
+}
+std::tr1::unordered_map<PromotionTypes, int>& CvPromotionEntry::GetOtherPromotionAttackModifierMap()
+{
+	return m_pPromotionAttackModifiers;
+}
+std::tr1::unordered_map<PromotionTypes, int>& CvPromotionEntry::GetOtherPromotionDefenseModifierMap()
+{
+	return m_pPromotionDefenseModifiers;
+}
+#endif
 int CvPromotionEntry::GetMaintenanceCost() const
 {
 	return m_iMaintenanceCost;
@@ -3794,6 +3907,12 @@ void CvUnitPromotions::Reset()
 	m_bTerrainPassable = false;
 	m_featurePassableCache.clear();
 	m_bFeaturePassable = false;
+
+#if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
+	m_pPromotionModifiers.clear();
+	m_pPromotionAttackModifiers.clear();
+	m_pPromotionDefenseModifiers.clear();
+#endif
 }
 
 ///
@@ -3802,6 +3921,11 @@ void CvUnitPromotions::Serialize(UnitPromotions& unitPromotions, Visitor& visito
 {
 	visitor(unitPromotions.m_kHasPromotion);
 	visitor(unitPromotions.m_kPromotionActive);
+#if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
+	visitor(unitPromotions.m_pPromotionModifiers);
+	visitor(unitPromotions.m_pPromotionAttackModifiers);
+	visitor(unitPromotions.m_pPromotionDefenseModifiers);
+#endif
 }
 
 /// Serialization read
@@ -3833,6 +3957,21 @@ FDataStream& operator<<(FDataStream& stream, const CvUnitPromotions& unitPromoti
 	return stream;
 }
 
+#ifdef MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS
+static void UpdatePromotionToPromotionModifierMap(std::tr1::unordered_map<PromotionTypes, int>& dest, std::tr1::unordered_map<PromotionTypes, int>& src, int iChange)
+{
+	for (auto iter = src.begin(); iter != src.end(); iter++)
+	{
+		PromotionTypes eOtherPromotion = (PromotionTypes)iter->first;
+		int iModifier = iter->second;
+		dest[eOtherPromotion] += iModifier * iChange;
+		if (dest[eOtherPromotion] == 0)
+		{
+			dest.erase(eOtherPromotion);
+		}
+	}
+}
+#endif
 /// Accessor: Does the unit have a certain promotion
 bool CvUnitPromotions::HasPromotion(PromotionTypes eIndex) const
 {
@@ -3856,6 +3995,19 @@ void CvUnitPromotions::SetPromotion(PromotionTypes eIndex, bool bValue)
 	if(eIndex >= 0 && eIndex < GC.getNumPromotionInfos())
 	{
 		m_kHasPromotion.SetBit(eIndex, bValue);
+
+#ifdef MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS
+		CvPromotionEntry* thisPromotion = GC.getPromotionInfo(eIndex);
+		if (MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS && thisPromotion->HasOtherPromotionModifier())
+		{
+			if (!thisPromotion->GetOtherPromotionModifierMap().empty())
+				UpdatePromotionToPromotionModifierMap(m_pPromotionModifiers, thisPromotion->GetOtherPromotionModifierMap(), bValue ? 1 : -1);
+			if (!thisPromotion->GetOtherPromotionAttackModifierMap().empty())
+				UpdatePromotionToPromotionModifierMap(m_pPromotionAttackModifiers, thisPromotion->GetOtherPromotionAttackModifierMap(), bValue ? 1 : -1);
+			if (!thisPromotion->GetOtherPromotionDefenseModifierMap().empty())
+				UpdatePromotionToPromotionModifierMap(m_pPromotionDefenseModifiers, thisPromotion->GetOtherPromotionDefenseModifierMap(), bValue ? 1 : -1);
+		}
+#endif
 	}
 
 	UpdateCache();
@@ -4086,6 +4238,33 @@ bool CvUnitPromotions::IsInUseByPlayer(PromotionTypes eIndex, PlayerTypes ePlaye
 
 	return false;
 }
+
+#if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
+int CvUnitPromotions::GetOtherPromotionModifier(PromotionTypes other)
+{
+	return m_pPromotionModifiers[other];
+}
+int CvUnitPromotions::GetOtherPromotionAttackModifier(PromotionTypes other)
+{
+	return m_pPromotionAttackModifiers[other];
+}
+int CvUnitPromotions::GetOtherPromotionDefenseModifier(PromotionTypes other)
+{
+	return m_pPromotionDefenseModifiers[other];
+}
+std::tr1::unordered_map<PromotionTypes, int>& CvUnitPromotions::GetOtherPromotionModifierMap()
+{
+	return m_pPromotionModifiers;
+}
+std::tr1::unordered_map<PromotionTypes, int>& CvUnitPromotions::GetOtherPromotionAttackModifierMap()
+{
+	return m_pPromotionAttackModifiers;
+}
+std::tr1::unordered_map<PromotionTypes, int>& CvUnitPromotions::GetOtherPromotionDefenseModifierMap()
+{
+	return m_pPromotionDefenseModifiers;
+}
+#endif
 
 // Read the saved promotions.  Entries are saved as string values, all entries are saved.
 void PromotionArrayHelpers::ReadV3(FDataStream& kStream, CvBitfield& kPromotions)

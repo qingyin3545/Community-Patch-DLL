@@ -682,6 +682,11 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	Method(GetNuclearWinterProcess);
 #endif
+#if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
+	Method(OtherPromotionModifier);
+	Method(OtherPromotionAttackModifier);
+	Method(OtherPromotionDefenseModifier);
+#endif
 	Method(GetPromotionMaintenanceCost);
 }
 //------------------------------------------------------------------------------
@@ -6783,6 +6788,32 @@ int CvLuaUnit::lGetNuclearWinterProcess(lua_State* L)
 {
 	CvUnit* pkUnit = GetInstance(L);
 	lua_pushinteger(L, pkUnit->getUnitInfo().GetNuclearWinterProcess());
+	return 1;
+}
+#endif
+#if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
+int CvLuaUnit::lOtherPromotionModifier(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const PromotionTypes otherPromotion = (PromotionTypes)lua_tointeger(L, 2);
+	const int result = pkUnit->otherPromotionModifier(otherPromotion);
+	lua_pushinteger(L, result);
+	return 1;
+}
+int CvLuaUnit::lOtherPromotionAttackModifier(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const PromotionTypes otherPromotion = (PromotionTypes)lua_tointeger(L, 2);
+	const int result = pkUnit->otherPromotionAttackModifier(otherPromotion);
+	lua_pushinteger(L, result);
+	return 1;
+}
+int CvLuaUnit::lOtherPromotionDefenseModifier(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const PromotionTypes otherPromotion = (PromotionTypes)lua_tointeger(L, 2);
+	const int result = pkUnit->otherPromotionDefenseModifier(otherPromotion);
+	lua_pushinteger(L, result);
 	return 1;
 }
 #endif

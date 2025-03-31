@@ -405,6 +405,15 @@ public:
  #ifdef MOD_GLOBAL_WAR_CASUALTIES
 	int GetWarCasualtiesModifier() const;
  #endif
+ #if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
+	int GetOtherPromotionModifier(PromotionTypes other) const;
+	int GetOtherPromotionAttackModifier(PromotionTypes other) const;
+	int GetOtherPromotionDefenseModifier(PromotionTypes other) const;
+	bool HasOtherPromotionModifier() const;
+	std::tr1::unordered_map<PromotionTypes, int>& GetOtherPromotionModifierMap();
+	std::tr1::unordered_map<PromotionTypes, int>& GetOtherPromotionAttackModifierMap();
+	std::tr1::unordered_map<PromotionTypes, int>& GetOtherPromotionDefenseModifierMap();
+#endif
 	int GetMaintenanceCost() const;
 
 protected:
@@ -753,6 +762,11 @@ protected:
 #ifdef MOD_GLOBAL_WAR_CASUALTIES
 	int m_iWarCasualtiesModifier = 0;
 #endif
+#if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
+	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionModifiers; // key: other promotion type, value: modifier * 100
+	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionAttackModifiers; // key: other promotion type, value: attack modifier * 100
+	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionDefenseModifiers; // key: other promotion type, value: defense modifier * 100
+#endif
 	int m_iMaintenanceCost = 0;
 };
 
@@ -823,6 +837,15 @@ public:
 
 	PromotionTypes ChangePromotionAfterCombat(PromotionTypes eIndex, CvUnit* pThisUnit);
 
+#if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
+	int GetOtherPromotionModifier(PromotionTypes other);
+	int GetOtherPromotionAttackModifier(PromotionTypes other);
+	int GetOtherPromotionDefenseModifier(PromotionTypes other);
+	std::tr1::unordered_map<PromotionTypes, int>& CvUnitPromotions::GetOtherPromotionModifierMap();
+	std::tr1::unordered_map<PromotionTypes, int>& CvUnitPromotions::GetOtherPromotionAttackModifierMap();
+	std::tr1::unordered_map<PromotionTypes, int>& CvUnitPromotions::GetOtherPromotionDefenseModifierMap();
+#endif
+
 private:
 	bool IsInUseByPlayer(PromotionTypes eIndex, PlayerTypes ePlayer); 
 
@@ -836,6 +859,12 @@ private:
 
 	CvBitfield m_kHasPromotion;
 	CvBitfield m_kPromotionActive;
+
+#if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
+	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionModifiers; // key: other promotion type, value: modifier * 100
+	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionAttackModifiers; // key: other promotion type, value: attack modifier * 100
+	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionDefenseModifiers; // key: other promotion type, value: defense modifier * 100
+#endif
 };
 
 FDataStream& operator>>(FDataStream&, CvUnitPromotions&);
