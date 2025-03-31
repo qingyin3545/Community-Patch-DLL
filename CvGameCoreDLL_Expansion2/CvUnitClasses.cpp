@@ -689,6 +689,10 @@ bool CvUnitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& k
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	m_iNuclearWinterProcess = kResults.GetInt("NuclearWinterProcess");
 #endif
+	szTextVal = kResults.GetText("BoundLandImprovement");
+	m_iBoundLandImprovement = GC.getInfoTypeForString(szTextVal, true);
+	szTextVal = kResults.GetText("BoundWaterImprovement");
+	m_iBoundWaterImprovement = GC.getInfoTypeForString(szTextVal, true);
 
 	// Calculate military Power and cache it
 	DoUpdatePower();
@@ -2077,6 +2081,15 @@ bool CvUnitEntry::IsCannotBeEstablishedCorps() const
 int CvUnitEntry::GetNuclearWinterProcess() const
 {
 	return m_iNuclearWinterProcess;
+}
+
+int CvUnitEntry::GetBoundLandImprovement() const
+{
+	return m_iBoundLandImprovement;
+}
+int CvUnitEntry::GetBoundWaterImprovement() const
+{
+	return m_iBoundWaterImprovement;
 }
 #endif
 

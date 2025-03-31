@@ -251,6 +251,8 @@ public:
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	int GetNuclearWinterProcess() const;
 #endif
+	int GetBoundLandImprovement() const;
+	int GetBoundWaterImprovement() const;
 
 private:
 
@@ -468,6 +470,8 @@ private:
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	int m_iNuclearWinterProcess = 0;
 #endif
+	int m_iBoundLandImprovement = NO_IMPROVEMENT;
+	int m_iBoundWaterImprovement = NO_IMPROVEMENT;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
