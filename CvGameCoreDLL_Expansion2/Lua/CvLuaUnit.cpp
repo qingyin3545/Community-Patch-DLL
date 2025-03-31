@@ -664,6 +664,13 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(OtherPromotionDefenseModifier);
 #endif
 	Method(GetPromotionMaintenanceCost);
+
+	Method(GetCombatStrengthChangeFromKilledUnits);
+	Method(ChangeCombatStrengthChangeFromKilledUnits);
+	Method(SetCombatStrengthChangeFromKilledUnits);
+	Method(GetRangedCombatStrengthChangeFromKilledUnits);
+	Method(ChangeRangedCombatStrengthChangeFromKilledUnits);
+	Method(SetRangedCombatStrengthChangeFromKilledUnits);
 }
 //------------------------------------------------------------------------------
 const char* CvLuaUnit::GetTypeName()
@@ -6793,3 +6800,50 @@ int CvLuaUnit::lOtherPromotionDefenseModifier(lua_State* L)
 }
 #endif
 LUAAPIIMPL(Unit, GetPromotionMaintenanceCost)
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetCombatStrengthChangeFromKilledUnits(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	lua_pushinteger(L, pkUnit->GetCombatStrengthChangeFromKilledUnits());
+	return 1;
+}
+int CvLuaUnit::lChangeCombatStrengthChangeFromKilledUnits(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int iValue = lua_tointeger(L, 2);
+
+	pkUnit->ChangeCombatStrengthChangeFromKilledUnits(iValue);
+	return 0;
+}
+int CvLuaUnit::lSetCombatStrengthChangeFromKilledUnits(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int iValue = lua_tointeger(L, 2);
+
+	pkUnit->SetCombatStrengthChangeFromKilledUnits(iValue);
+	return 0;
+}
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetRangedCombatStrengthChangeFromKilledUnits(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	lua_pushinteger(L, pkUnit->GetRangedCombatStrengthChangeFromKilledUnits());
+	return 1;
+}
+int CvLuaUnit::lChangeRangedCombatStrengthChangeFromKilledUnits(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int iValue = lua_tointeger(L, 2);
+
+	pkUnit->ChangeRangedCombatStrengthChangeFromKilledUnits(iValue);
+	return 0;
+}
+int CvLuaUnit::lSetRangedCombatStrengthChangeFromKilledUnits(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int iValue = lua_tointeger(L, 2);
+
+	pkUnit->SetRangedCombatStrengthChangeFromKilledUnits(iValue);
+	return 0;
+}
+//------------------------------------------------------------------------------
