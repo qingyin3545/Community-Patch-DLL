@@ -2074,6 +2074,14 @@ public:
 	int GetPromotionMaintenanceCost() const;
 	void ChangePromotionMaintenanceCost(int iValue);
 
+	int GetCombatStrengthChangeFromKilledUnits() const;
+	void ChangeCombatStrengthChangeFromKilledUnits(int iChange);
+	void SetCombatStrengthChangeFromKilledUnits(int iValue);
+
+	int GetRangedCombatStrengthChangeFromKilledUnits() const;
+	void ChangeRangedCombatStrengthChangeFromKilledUnits(int iChange);
+	void SetRangedCombatStrengthChangeFromKilledUnits(int iValue);
+
 protected:
 	const MissionData* HeadMissionData() const;
 	MissionData* HeadMissionData();
@@ -2545,6 +2553,9 @@ private:
 #endif
 
 	int m_iPromotionMaintenanceCost = 0;
+
+	int m_iCombatStrengthChangeFromKilledUnits = 0;
+	int m_iRangedCombatStrengthChangeFromKilledUnits = 0;
 
 	friend class CvLuaUnit;
 };
