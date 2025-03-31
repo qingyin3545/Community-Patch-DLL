@@ -67,6 +67,20 @@ protected:
 	static int GenerateNuclearExplosionDamage(CvPlot* pkTargetPlot, int iDamageLevel, CvUnit* pkAttacker, CvCombatMemberEntry* pkDamageArray, const int iMaxDamageMembers);
 	static uint ApplyNuclearExplosionDamage(const CvCombatMemberEntry* pkDamageArray, int iDamageMembers, CvUnit* pkAttacker, CvPlot* pkTargetPlot, int iDamageLevel);
 
+#ifdef MOD_NEW_BATTLE_EFFECTS
+	static void DoNewBattleEffects(const CvCombatInfo& kInfo, int iAttackDamage = 0);
+	static bool ShouldDoNewBattleEffects(const CvCombatInfo& kInfo);
+	//static void DoNukeDamage(const CvCombatInfo& kInfo);
+	static void DoSplashDamage(const CvCombatInfo& kInfo);
+	static void DoCollateralDamage(const CvCombatInfo& kInfo);
+	static void DoAddEnemyPromotions(const CvCombatInfo& kInfo);
+	static void DoDestroyBuildings(const CvCombatInfo& kInfo);
+	static void DoKillCitizens(const CvCombatInfo& kInfo);
+	static void DoStackingFightBack(const CvCombatInfo& kInfo);
+	static void DoStopAttacker(const CvCombatInfo& kInfo);
+	static void DoHeavyChargeEffects(CvUnit* attacker, CvUnit* defender, CvPlot* battlePlot);
+#endif
+
 public:
 	static void ApplyPostKillTraitEffects(CvUnit* pkWinner, CvUnit* pkLoser);
 	static void ApplyPostCityCombatEffects(CvUnit* pkAttacker, CvCity* pkDefender, int iAttackerDamageInflicted);
