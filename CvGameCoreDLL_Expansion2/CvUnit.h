@@ -2094,6 +2094,9 @@ public:
 	bool IsRangeBackWhenDefense() const;
 	void ChangeNumRangeBackWhenDefense(int iChange);
 
+	bool IsCanSplashDefender() const;
+	void ChangeNumCanSplashDefender(int iChange);
+
 	int GetHeavyChargeAddMoves() const;
 	int GetHeavyChargeExtraDamage() const;
 	int GetHeavyChargeCollateralFixed() const;
@@ -2626,6 +2629,7 @@ private:
 	int m_iSiegeKillCitizensFixed = 0;
 #endif
 	int m_iNumRangeBackWhenDefense = 0;
+	int m_iNumCanSplashDefender = 0;
 
 	int m_iHeavyChargeAddMoves = 0;
 	int m_iHeavyChargeExtraDamage = 0;
