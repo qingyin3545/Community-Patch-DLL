@@ -2033,6 +2033,15 @@ public:
 	void ChangeWarCasualtiesModifier(int iChange);
 	void SetWarCasualtiesModifier(int iValue);
 #endif
+#if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
+	int otherPromotionModifier(PromotionTypes other) const;
+	int otherPromotionAttackModifier(PromotionTypes other) const;
+	int otherPromotionDefenseModifier(PromotionTypes other) const;
+
+	int otherPromotionModifierByUnit(const CvUnit* otherUnit) const;
+	int otherPromotionAttackModifierByUnit(const CvUnit* otherUnit) const;
+	int otherPromotionDefenseModifierByUnit(const CvUnit* otherUnit) const;
+#endif
 	int GetPromotionMaintenanceCost() const;
 	void ChangePromotionMaintenanceCost(int iValue);
 
