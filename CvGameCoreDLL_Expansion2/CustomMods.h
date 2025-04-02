@@ -879,6 +879,7 @@ enum TerraformingEventTypes {
 // Battle event macros
 enum BattleTypeTypes
 {
+	NO_BATTLE_TYPE = -1,
 	BATTLE_TYPE_MELEE,
 	BATTLE_TYPE_RANGED,
 	BATTLE_TYPE_AIR,

@@ -1895,6 +1895,9 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	m_iSiegeKillCitizensModifier = 0;
 #endif
+	m_iForcedDamageValue = 0;
+	m_iChangeDamageValue = 0;
+
 	m_aiBaseYieldRateFromBuildingsPolicies.clear();
 	m_aiBaseYieldRateFromBuildingsPolicies.resize(NUM_YIELD_TYPES, 0);
 }
@@ -15138,6 +15141,8 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 		ChangeSiegeKillCitizensModifier(pBuildingInfo->GetSiegeKillCitizensModifier() * iChange);
 #endif
+		changeForcedDamageValue(pBuildingInfo->GetForcedDamageValue()* iChange);
+		changeChangeDamageValue(pBuildingInfo->GetChangeDamageValue()* iChange);
 
 		// Process for our player
 		for (int iI = 0; iI < MAX_PLAYERS; iI++)
@@ -32429,6 +32434,9 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	visitor(city.m_iSiegeKillCitizensModifier);
 #endif
+	visitor(city.m_iForcedDamageValue);
+	visitor(city.m_iChangeDamageValue);
+	visitor(city.m_aiBaseYieldRateFromBuildingsPolicies);
 }
 
 //	--------------------------------------------------------------------------------
@@ -36207,6 +36215,30 @@ void CvCity::ChangeSiegeKillCitizensModifier(int iChange)
 	m_iSiegeKillCitizensModifier += iChange;
 }
 #endif
+
+//	--------------------------------------------------------------------------------
+int CvCity::getForcedDamageValue() const
+{
+	return m_iForcedDamageValue;
+}
+void CvCity::changeForcedDamageValue(int iChange)
+{
+	if (iChange != 0)
+	{
+		m_iForcedDamageValue += iChange;
+	}
+}
+int CvCity::getChangeDamageValue() const
+{
+	return m_iChangeDamageValue;
+}
+void CvCity::changeChangeDamageValue(int iChange)
+{
+	if (iChange != 0)
+	{
+		m_iChangeDamageValue += iChange;
+	}
+}
 
 //	--------------------------------------------------------------------------------
 /// Base yield rate from Buildings with Policy bonus
