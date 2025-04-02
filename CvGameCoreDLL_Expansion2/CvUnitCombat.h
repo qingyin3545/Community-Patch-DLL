@@ -13,6 +13,28 @@
 #include "CvUnit.h"
 #include "CvPlot.h"
 
+// Super Power Fix Damage Struct
+struct InflictDamageContext
+{
+	InflictDamageContext(CvUnit *pAttackerUnit, CvUnit *pDefenderUnit, CvCombatInfo *pCombatInfo, int *piAttackInflictDamage, int *piDefenseInflictDamage)
+		: pAttackerUnit(pAttackerUnit), pDefenderUnit(pDefenderUnit), pCombatInfo(pCombatInfo), piAttackInflictDamage(piAttackInflictDamage), piDefenseInflictDamage(piDefenseInflictDamage){}
+	InflictDamageContext(CvUnit *pAttackerUnit, CvCity *pDefenderCity, CvCombatInfo *pCombatInfo, int *piAttackInflictDamage, int *piDefenseInflictDamage)
+		: pAttackerUnit(pAttackerUnit), pDefenderCity(pDefenderCity), pCombatInfo(pCombatInfo), piAttackInflictDamage(piAttackInflictDamage), piDefenseInflictDamage(piDefenseInflictDamage){}
+	InflictDamageContext(CvCity *pAttackerCity, CvUnit *pDefenderUnit, CvCombatInfo *pCombatInfo, int *piAttackInflictDamage, int *piDefenseInflictDamage)
+		: pAttackerCity(pAttackerCity), pDefenderUnit(pDefenderUnit), pCombatInfo(pCombatInfo), piAttackInflictDamage(piAttackInflictDamage), piDefenseInflictDamage(piDefenseInflictDamage){}
+	
+	CvUnit *pAttackerUnit = nullptr;
+	CvCity *pAttackerCity = nullptr;
+	CvUnit *pDefenderUnit = nullptr;
+	CvCity *pDefenderCity = nullptr;
+
+	CvCombatInfo *pCombatInfo = nullptr;
+
+	// output
+	int *piAttackInflictDamage = nullptr;
+	int *piDefenseInflictDamage = nullptr;
+};
+
 // Combat controller for CvUnits
 class CvUnitCombat
 {
@@ -82,6 +104,7 @@ protected:
 	static void DoStopAttacker(const CvCombatInfo& kInfo);
 	static void DoHeavyChargeEffects(CvUnit* attacker, CvUnit* defender, CvPlot* battlePlot);
 #endif
+	static void InterveneInflictDamage(InflictDamageContext* ctx);
 
 public:
 	static void ApplyPostKillTraitEffects(CvUnit* pkWinner, CvUnit* pkLoser);
