@@ -1859,6 +1859,8 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	m_iSiegeKillCitizensModifier = kResults.GetInt("SiegeKillCitizensModifier");
 #endif
+	m_iForcedDamageValue = kResults.GetInt("ResetDamageValue");
+	m_iChangeDamageValue = kResults.GetInt("ReduceDamageValue");
 
 	return true;
 }
@@ -5058,6 +5060,14 @@ int CvBuildingEntry::GetSiegeKillCitizensModifier() const
 	return m_iSiegeKillCitizensModifier;
 }
 #endif
+int CvBuildingEntry::GetForcedDamageValue() const
+{
+	return m_iForcedDamageValue;
+}
+int CvBuildingEntry::GetChangeDamageValue() const
+{
+	return m_iChangeDamageValue;
+}
 
 //=====================================
 // CvBuildingXMLEntries

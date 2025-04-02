@@ -690,6 +690,8 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 #ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
 	Method(ClearSamePlotPromotions);
 #endif
+	Method(GetDamageFixValueToUnit);
+	Method(GetDamageFixValueToCity);
 	Method(GetPromotionMaintenanceCost);
 
 	Method(GetCombatStrengthChangeFromKilledUnits);
@@ -6789,6 +6791,61 @@ LUAAPIIMPL(Unit, ClearSamePlotPromotions)
 #endif
 //------------------------------------------------------------------------------
 LUAAPIIMPL(Unit, GetPromotionMaintenanceCost)
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetDamageFixValueToUnit(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	CvUnit* pkOtherUnit = CvLuaUnit::GetInstance(L, 2);
+	const bool bIsAttack = luaL_optbool(L, 3, true);
+	if(!pkOtherUnit)
+	{
+		lua_pushinteger(L, 0);
+		return 1;
+	}
+	CvPlayerAI& kAttacker = GET_PLAYER(pkUnit->getOwner());
+
+	int iResult = 0;
+	if(bIsAttack)
+	{
+		iResult += pkUnit->GetAttackInflictDamageChange();
+		iResult += pkUnit->GetAttackInflictDamageChangeMaxHPPercent() * pkOtherUnit->GetMaxHitPoints() / 100;
+	}
+	else
+	{
+		iResult += pkUnit->GetDefenseInflictDamageChange();
+		iResult += pkUnit->GetDefenseInflictDamageChangeMaxHPPercent() * pkOtherUnit->GetMaxHitPoints() / 100;
+	}
+
+	auto* targetPlot = bIsAttack ? pkOtherUnit->plot() : pkUnit->plot();
+	if (!targetPlot->IsFriendlyTerritory(pkUnit->getOwner()))
+	{
+		iResult += pkUnit->GetOutsideFriendlyLandsInflictDamageChange();
+	}
+
+	lua_pushinteger(L, iResult);
+	return 1;
+}
+int CvLuaUnit::lGetDamageFixValueToCity(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	CvCity* pkOtherCity = CvLuaCity::GetInstance(L, 2, false);
+	if(!pkOtherCity)
+	{
+		lua_pushinteger(L, 0);
+		return 1;
+	}
+	CvPlayerAI& kAttacker = GET_PLAYER(pkUnit->getOwner());
+
+	int iResult = 0;
+	iResult += pkUnit->GetSiegeInflictDamageChange();
+	iResult += pkUnit->GetSiegeInflictDamageChangeMaxHPPercent() * pkOtherCity->GetMaxHitPoints() / 100;
+
+	// When Attacking City, target Plot must be Outside?
+	iResult += pkUnit->GetOutsideFriendlyLandsInflictDamageChange();
+
+	lua_pushinteger(L, iResult);
+	return 1;
+}
 //------------------------------------------------------------------------------
 int CvLuaUnit::lGetCombatStrengthChangeFromKilledUnits(lua_State* L)
 {

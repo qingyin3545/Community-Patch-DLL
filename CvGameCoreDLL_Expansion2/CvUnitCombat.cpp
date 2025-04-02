@@ -101,6 +101,7 @@ static CvCombatMemberEntry* AddCombatMember(CvCombatMemberEntry* pkArray, int* p
 void CvUnitCombat::GenerateMeleeCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender, CvPlot& plot, CvCombatInfo* pkCombatInfo)
 {
 	BATTLE_STARTED(BATTLE_TYPE_MELEE, plot);
+	pkCombatInfo->SetBattleType(BATTLE_TYPE_MELEE);
 
 	int iAttackerMaxHP = kAttacker.GetMaxHitPoints();
 
@@ -137,17 +138,11 @@ void CvUnitCombat::GenerateMeleeCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender
 		}
 		if(kAttacker.getForcedDamageValue() != 0)
 		{
-			iDefenderDamageInflicted = kAttacker.getForcedDamageValue();
+			// for Super Power, do it in InterveneInflictDamage() later, so skip
 		}
 		else if (iAttackerDamageInflicted - iGarrisonShare - pkCity->getDamageReductionFlat() > pkCity->GetMaxHitPoints() - pkCity->getDamage())
 		{
 			iDefenderDamageInflicted = (iDefenderDamageInflicted * (pkCity->GetMaxHitPoints() - pkCity->getDamage())) / (iAttackerDamageInflicted - iGarrisonShare);
-		}
-		if(kAttacker.getChangeDamageValue() != 0)
-		{
-			iDefenderDamageInflicted += kAttacker.getChangeDamageValue();
-			if (iDefenderDamageInflicted <= 0)
-				iDefenderDamageInflicted = 0;
 		}
 
 		if (MOD_BALANCE_CORE_MILITARY && iGarrisonShare > 0)
@@ -169,10 +164,8 @@ void CvUnitCombat::GenerateMeleeCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender
 			}
 		}
 
-		// City can have flat damage reduction
-		if (pkCity->getDamageReductionFlat() != 0) {
-			iAttackerDamageInflicted = std::max(0, iAttackerDamageInflicted - pkCity->getDamageReductionFlat());
-		}
+		InflictDamageContext ctx(&kAttacker, pkCity, pkCombatInfo, &iAttackerDamageInflicted, &iDefenderDamageInflicted);
+		InterveneInflictDamage(&ctx);
 
 		int iAttackerTotalDamageInflicted = iAttackerDamageInflicted + pkCity->getDamage();
 		int iDefenderTotalDamageInflicted = iDefenderDamageInflicted + kAttacker.getDamage();
@@ -248,33 +241,10 @@ void CvUnitCombat::GenerateMeleeCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender
 		int iAttackerDamageInflicted = kAttacker.getCombatDamage(iAttackerStrength, iDefenderStrength, /*bIncludeRand*/ bIncludeRand, /*bAttackerIsCity*/ false, /*bDefenderIsCity*/ false);
 		int iDefenderDamageInflicted = pkDefender->isEmbarked() ? 0 : pkDefender->getCombatDamage(iDefenderStrength, iAttackerStrength, /*bIncludeRand*/ bIncludeRand, /*bAttackerIsCity*/ false, /*bDefenderIsCity*/ false);
 
+		InflictDamageContext ctx(&kAttacker, pkDefender, pkCombatInfo, &iAttackerDamageInflicted, &iDefenderDamageInflicted);
+		InterveneInflictDamage(&ctx);
+
 #if defined(MOD_BALANCE_CORE)
-		if(kAttacker.getForcedDamageValue() != 0)
-		{
-			iDefenderDamageInflicted   = kAttacker.getForcedDamageValue();
-		}
-		else if (iAttackerDamageInflicted > pkDefender->GetCurrHitPoints())
-		{
-			iDefenderDamageInflicted = (iDefenderDamageInflicted * pkDefender->GetCurrHitPoints()) / iAttackerDamageInflicted;
-		}
-
-		if(pkDefender->getForcedDamageValue() != 0)
-		{
-			iAttackerDamageInflicted= pkDefender->getForcedDamageValue();
-		}
-		if(kAttacker.getChangeDamageValue() != 0)
-		{
-			iDefenderDamageInflicted += kAttacker.getChangeDamageValue();
-			if (iDefenderDamageInflicted <= 0)
-				iDefenderDamageInflicted = 0;
-		}
-		if(pkDefender->getChangeDamageValue() != 0)
-		{
-			iAttackerDamageInflicted += pkDefender->getChangeDamageValue();
-			if (iAttackerDamageInflicted <= 0)
-				iAttackerDamageInflicted = 0;
-		}
-
 		//Chance to spread promotion?
 		kAttacker.DoPlagueTransfer(*pkDefender);
 		if (!pkDefender->IsCanAttackRanged())
@@ -710,6 +680,7 @@ void CvUnitCombat::ResolveMeleeCombat(const CvCombatInfo& kCombatInfo, uint uiPa
 void CvUnitCombat::GenerateRangedCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender, CvPlot& plot, CvCombatInfo* pkCombatInfo)
 {
 	BATTLE_STARTED(BATTLE_TYPE_RANGED, plot);
+	pkCombatInfo->SetBattleType(BATTLE_TYPE_RANGED);
 	pkCombatInfo->setUnit(BATTLE_UNIT_ATTACKER, &kAttacker);
 	pkCombatInfo->setUnit(BATTLE_UNIT_DEFENDER, pkDefender);
 	pkCombatInfo->setPlot(&plot);
@@ -738,18 +709,9 @@ void CvUnitCombat::GenerateRangedCombatInfo(CvUnit& kAttacker, CvUnit* pkDefende
 		//ASSERT_DEBUG(pkDefender->IsCanDefend());
 		iDamage = kAttacker.GetRangeCombatDamage(pkDefender, /*pCity*/ NULL, /*bIncludeRand*/ bIncludeRand);
 
-#if defined(MOD_BALANCE_CORE)
-		if(pkDefender->getForcedDamageValue() != 0)
-		{
-			iDamage = pkDefender->getForcedDamageValue();
-		}
-		if(pkDefender->getChangeDamageValue() != 0)
-		{
-			iDamage += pkDefender->getChangeDamageValue();
-			if (iDamage <= 0)
-				iDamage = 0;
-		}
-#endif
+		InflictDamageContext ctx(&kAttacker, pkDefender, pkCombatInfo, &iDamage, nullptr);
+		InterveneInflictDamage(&ctx);
+
 		if (iDamage + pkDefender->getDamage() > pkDefender->GetMaxHitPoints())
 		{
 			iDamage = pkDefender->GetMaxHitPoints() - pkDefender->getDamage();
@@ -812,10 +774,8 @@ void CvUnitCombat::GenerateRangedCombatInfo(CvUnit& kAttacker, CvUnit* pkDefende
 		}
 #endif
 
-		// City can have flat damage reduction
-		if (pCity->getDamageReductionFlat() != 0) {
-			iDamage = std::max(0, iDamage - pCity->getDamageReductionFlat());
-		}
+		InflictDamageContext ctx(&kAttacker, pCity, pkCombatInfo, &iDamage, nullptr);
+		InterveneInflictDamage(&ctx);
 
 		// Cities can't be knocked to less than 1 HP
 		if(iDamage + pCity->getDamage() >= pCity->GetMaxHitPoints())
@@ -902,6 +862,7 @@ void CvUnitCombat::GenerateRangedCombatInfo(CvUnit& kAttacker, CvUnit* pkDefende
 void CvUnitCombat::GenerateRangedCombatInfo(CvCity& kAttacker, CvUnit* pkDefender, CvPlot& plot, CvCombatInfo* pkCombatInfo)
 {
 	BATTLE_STARTED(BATTLE_TYPE_RANGED, plot);
+	pkCombatInfo->SetBattleType(BATTLE_TYPE_RANGED);
 	pkCombatInfo->setCity(BATTLE_UNIT_ATTACKER, &kAttacker);
 	pkCombatInfo->setUnit(BATTLE_UNIT_DEFENDER, pkDefender);
 	pkCombatInfo->setPlot(&plot);
@@ -925,18 +886,9 @@ void CvUnitCombat::GenerateRangedCombatInfo(CvCity& kAttacker, CvUnit* pkDefende
 		//ASSERT_DEBUG(pkDefender->IsCanDefend());
 		iDamage = kAttacker.rangeCombatDamage(pkDefender,bIncludeRand);
 
-#if defined(MOD_BALANCE_CORE)
-		if(pkDefender->getForcedDamageValue() != 0)
-		{
-			iDamage = pkDefender->getForcedDamageValue();
-		}
-		if(pkDefender->getChangeDamageValue() != 0)
-		{
-			iDamage += pkDefender->getChangeDamageValue();
-			if (iDamage <= 0)
-				iDamage = 0;
-		}
-#endif
+		InflictDamageContext ctx(&kAttacker, pkDefender, pkCombatInfo, &iDamage, nullptr);
+		InterveneInflictDamage(&ctx);
+
 		if(iDamage + pkDefender->getDamage() > pkDefender->GetMaxHitPoints())
 		{
 			iDamage = pkDefender->GetMaxHitPoints() - pkDefender->getDamage();
@@ -1550,6 +1502,7 @@ void CvUnitCombat::ResolveCityMeleeCombat(const CvCombatInfo& kCombatInfo, uint 
 void CvUnitCombat::GenerateAirCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender, CvPlot& plot, CvCombatInfo* pkCombatInfo)
 {
 	BATTLE_STARTED(BATTLE_TYPE_AIR, plot);
+	pkCombatInfo->SetBattleType(BATTLE_TYPE_AIR);
 	int iExperience = 0;
 
 	pkCombatInfo->setUnit(BATTLE_UNIT_ATTACKER, &kAttacker);
@@ -1647,19 +1600,12 @@ void CvUnitCombat::GenerateAirCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender, 
 		// Calculate attacker damage
 		bool bIncludeRand = !GC.getGame().isGameMultiPlayer();
 		iAttackerDamageInflicted = kAttacker.GetAirCombatDamage(pkDefender, /*pCity*/ NULL, /*bIncludeRand*/ bIncludeRand);
+		// Calculate defense damage
+		iDefenderDamageInflicted = pkDefender->GetAirStrikeDefenseDamage(&kAttacker);
 
-#if defined(MOD_BALANCE_CORE)
-		if(pkDefender->getForcedDamageValue() != 0)
-		{
-			iAttackerDamageInflicted = pkDefender->getForcedDamageValue();
-		}
-		if(pkDefender->getChangeDamageValue() != 0)
-		{
-			iAttackerDamageInflicted += pkDefender->getChangeDamageValue();
-			if (iAttackerDamageInflicted <= 0)
-				iAttackerDamageInflicted = 0;
-		}
-#endif
+		InflictDamageContext ctx(&kAttacker, pkDefender, pkCombatInfo, &iAttackerDamageInflicted, &iDefenderDamageInflicted);
+		InterveneInflictDamage(&ctx);
+
 		if(iAttackerDamageInflicted + pkDefender->getDamage() > pkDefender->GetMaxHitPoints())
 		{
 			iAttackerDamageInflicted = pkDefender->GetMaxHitPoints() - pkDefender->getDamage();
@@ -1667,21 +1613,6 @@ void CvUnitCombat::GenerateAirCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender, 
 
 		iAttackerTotalDamageInflicted = std::max(pkDefender->getDamage(), pkDefender->getDamage() + iAttackerDamageInflicted);
 
-		// Calculate defense damage
-		iDefenderDamageInflicted = pkDefender->GetAirStrikeDefenseDamage(&kAttacker);
-
-#if defined(MOD_BALANCE_CORE)
-		if(kAttacker.getForcedDamageValue() != 0)
-		{
-			iDefenderDamageInflicted = kAttacker.getForcedDamageValue();
-		}
-		if(kAttacker.getChangeDamageValue() != 0)
-		{
-			iDefenderDamageInflicted += kAttacker.getChangeDamageValue();
-			if (iDefenderDamageInflicted <= 0)
-				iDefenderDamageInflicted = 0;
-		}
-#endif
 		if(iDefenderDamageInflicted + kAttacker.getDamage() > kAttacker.GetMaxHitPoints())
 		{
 			iDefenderDamageInflicted = kAttacker.GetMaxHitPoints() - kAttacker.getDamage();
@@ -1705,6 +1636,11 @@ void CvUnitCombat::GenerateAirCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender, 
 		iMaxXP = pCity->maxXPValue();
 
 		iAttackerDamageInflicted = kAttacker.GetAirCombatDamage(/*pUnit*/ NULL, pCity, /*bIncludeRand*/ true);
+		// Calculate defense damage
+		iDefenderDamageInflicted = pCity->GetAirStrikeDefenseDamage(&kAttacker);
+
+		InflictDamageContext ctx(&kAttacker, pCity, pkCombatInfo, &iAttackerDamageInflicted, &iDefenderDamageInflicted);
+		InterveneInflictDamage(&ctx);
 
 #if defined(MOD_BALANCE_CORE_MILITARY)
 		//if there is a garrison, the unit absorbs part of the damage!
@@ -1748,10 +1684,7 @@ void CvUnitCombat::GenerateAirCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender, 
 
 		iAttackerTotalDamageInflicted = std::max(pCity->getDamage(), pCity->getDamage() + iAttackerDamageInflicted);
 
-		// Calculate defense damage
-		iDefenderDamageInflicted = pCity->GetAirStrikeDefenseDamage(&kAttacker);
-
-		if(iDefenderDamageInflicted + kAttacker.getDamage() > kAttacker.GetMaxHitPoints())
+		if(iDefenderDamageInflicted + kAttacker.getDamage() > pCity->GetMaxHitPoints())
 		{
 			// Surely!!!
 			iDefenderDamageInflicted = kAttacker.GetMaxHitPoints() - kAttacker.getDamage();
@@ -2219,6 +2152,7 @@ void CvUnitCombat::ResolveAirUnitVsCombat(const CvCombatInfo& kCombatInfo, uint 
 void CvUnitCombat::GenerateAirSweepCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender, CvPlot& plot, CvCombatInfo* pkCombatInfo)
 {
 	BATTLE_STARTED(BATTLE_TYPE_SWEEP, plot);
+	pkCombatInfo->SetBattleType(BATTLE_TYPE_SWEEP);
 
 	int iAttackerMaxHP = kAttacker.GetMaxHitPoints();
 
@@ -2545,6 +2479,7 @@ void CvUnitCombat::ResolveAirSweep(const CvCombatInfo& kCombatInfo, uint uiParen
 void CvUnitCombat::GenerateNuclearCombatInfo(CvUnit& kAttacker, CvPlot& plot, CvCombatInfo* pkCombatInfo)
 {
 	BATTLE_STARTED(BATTLE_TYPE_NUKE, plot);
+	pkCombatInfo->SetBattleType(BATTLE_TYPE_NUKE);
 	pkCombatInfo->setUnit(BATTLE_UNIT_ATTACKER, &kAttacker);
 	pkCombatInfo->setUnit(BATTLE_UNIT_DEFENDER, NULL);
 	pkCombatInfo->setPlot(&plot);
@@ -5473,3 +5408,113 @@ void CvUnitCombat::DoHeavyChargeEffects(CvUnit* attacker, CvUnit* defender, CvPl
 	}
 }
 #endif
+// Reduce Combat Damage
+static void UnitDamageChangeInterveneNoCondition(CvUnit* thisUnit, int* enemyInflictDamage)
+{
+	if (!thisUnit || !enemyInflictDamage) return;
+	if (thisUnit->getForcedDamageValue() != 0)
+	{
+		*enemyInflictDamage = thisUnit->getForcedDamageValue();
+	}
+	if (thisUnit->getChangeDamageValue() != 0)
+	{
+		*enemyInflictDamage += thisUnit->getChangeDamageValue();
+	}
+}
+static void UnitDamageChangeIntervene(InflictDamageContext* ctx)
+{
+	UnitDamageChangeInterveneNoCondition(ctx->pAttackerUnit, ctx->piDefenseInflictDamage);
+	UnitDamageChangeInterveneNoCondition(ctx->pDefenderUnit, ctx->piAttackInflictDamage);
+}
+static void CityDamageChangeInterveneNoCondition(CvCity* thisCity, int* enemyInflictDamage)
+{
+	if (!thisCity || !enemyInflictDamage) return;
+
+	// City can have flat damage reduction
+	if (thisCity->getForcedDamageValue() != 0)
+	{
+		*enemyInflictDamage = thisCity->getForcedDamageValue();
+	}
+	if (thisCity->getChangeDamageValue() != 0)
+	{
+		*enemyInflictDamage += thisCity->getChangeDamageValue();
+	}
+	if (thisCity->getDamageReductionFlat() != 0)
+	{
+		*enemyInflictDamage -= thisCity->getDamageReductionFlat();
+	}
+}
+static void CityDamageChangeIntervene(InflictDamageContext* ctx)
+{
+	CityDamageChangeInterveneNoCondition(ctx->pDefenderCity, ctx->piAttackInflictDamage);
+}
+// Increase Combat Damage
+// Unit VS Unit
+static void UnitAttackInflictDamageIntervene(InflictDamageContext* ctx)
+{
+	if (ctx->pAttackerUnit && ctx->pDefenderUnit && ctx->piAttackInflictDamage)
+	{
+		*ctx->piAttackInflictDamage += ctx->pAttackerUnit->GetAttackInflictDamageChange();
+		*ctx->piAttackInflictDamage += ctx->pAttackerUnit->GetAttackInflictDamageChangeMaxHPPercent() * ctx->pDefenderUnit->GetMaxHitPoints() / 100;
+	}
+}
+static void UnitDefenseInflictDamageIntervene(InflictDamageContext* ctx)
+{
+	if (ctx->pDefenderUnit && ctx->pAttackerUnit && ctx->piDefenseInflictDamage)
+	{
+		*ctx->piDefenseInflictDamage += ctx->pDefenderUnit->GetDefenseInflictDamageChange();
+		*ctx->piDefenseInflictDamage += ctx->pDefenderUnit->GetDefenseInflictDamageChangeMaxHPPercent() * ctx->pAttackerUnit->GetMaxHitPoints() / 100;
+	}
+}
+// Unit VS City
+static void SiegeInflictDamageIntervene(InflictDamageContext* ctx)
+{
+	if (ctx->pAttackerUnit && ctx->pDefenderCity && ctx->piAttackInflictDamage)
+	{
+		*ctx->piAttackInflictDamage += ctx->pAttackerUnit->GetSiegeInflictDamageChange();
+		*ctx->piAttackInflictDamage += ctx->pAttackerUnit->GetSiegeInflictDamageChangeMaxHPPercent() * ctx->pDefenderCity->GetMaxHitPoints() / 100;
+	}
+}
+// Unit VS Unit And City
+static void OutsideFriendlyLandsDamageIntervene(InflictDamageContext* ctx)
+{
+	auto* targetPlot = ctx->pCombatInfo ? ctx->pCombatInfo->getPlot() : nullptr;
+	if (!targetPlot) return;
+
+	if (ctx->pAttackerUnit && ctx->piAttackInflictDamage)
+	{
+		if (!targetPlot->IsFriendlyTerritory(ctx->pAttackerUnit->getOwner()))
+		{
+			*ctx->piAttackInflictDamage += ctx->pAttackerUnit->GetOutsideFriendlyLandsInflictDamageChange();
+		}
+	}
+	if (ctx->pDefenderUnit && ctx->piDefenseInflictDamage)
+	{
+		if (!targetPlot->IsFriendlyTerritory(ctx->pDefenderUnit->getOwner()))
+		{
+			*ctx->piDefenseInflictDamage += ctx->pDefenderUnit->GetOutsideFriendlyLandsInflictDamageChange();
+		}
+	}
+}
+
+void CvUnitCombat::InterveneInflictDamage(InflictDamageContext* ctx)
+{
+	if (ctx == nullptr) return;
+	// Reduce Combat Damage
+	UnitDamageChangeIntervene(ctx);
+	CityDamageChangeIntervene(ctx);
+	// Increase Combat Damage
+	UnitAttackInflictDamageIntervene(ctx);
+	UnitDefenseInflictDamageIntervene(ctx);
+	SiegeInflictDamageIntervene(ctx);
+	OutsideFriendlyLandsDamageIntervene(ctx);
+
+	if (ctx->piAttackInflictDamage && *ctx->piAttackInflictDamage <= 0)
+	{
+		*ctx->piAttackInflictDamage = 0;
+	}
+	if (ctx->piDefenseInflictDamage && *ctx->piDefenseInflictDamage <= 0)
+	{
+		*ctx->piDefenseInflictDamage = 0;
+	}
+}
