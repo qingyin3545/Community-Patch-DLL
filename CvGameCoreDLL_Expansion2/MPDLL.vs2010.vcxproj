@@ -119,6 +119,9 @@
     <ResourceCompile>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>..\update_commit_id.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -169,6 +172,9 @@
     <ResourceCompile>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </ResourceCompile>
+    <PreBuildEvent>
+      <Command>..\update_commit_id.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CustomMods.cpp" />
