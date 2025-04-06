@@ -20265,7 +20265,7 @@ void CvUnit::setXY(int iX, int iY, bool bGroup, bool bUpdate, bool bShow, bool b
 											//kill or capture a noncombat unit should not trigger it
 											if(pLoopUnit->IsCombatUnit()) kPlayer.DoCombatStrengthChangeFromKill(this, pLoopUnit, iX, iY);
 											kPlayer.DoYieldsFromKill(this, pLoopUnit);
-											kPlayer.DoUnitKilledCombat(this, pLoopUnit->getOwner(), pLoopUnit->getUnitType());
+											kPlayer.DoUnitKilledCombat(this, pLoopUnit->getOwner(), pLoopUnit->getUnitType(), pLoopUnit);
 											CvNotifications* pNotification = GET_PLAYER(pLoopUnit->getOwner()).GetNotifications();
 											if (pNotification)
 											{
@@ -21439,10 +21439,6 @@ int CvUnit::setDamage(int iNewValue, PlayerTypes ePlayer, float fAdditionalTextD
 		szMsg.Format("KilledInCombat %s, Domain %d, LastMove %s, KilledBy %d", unitName.c_str(), getDomainType(), lastMission.c_str(), ePlayer);
 		GET_PLAYER(m_eOwner).GetTacticalAI()->LogTacticalMessage(szMsg);
 
-		//--- finally ----------------------------
-		kill(true, ePlayer);
-		//----------------------------------------
-
 		if(ePlayer != NO_PLAYER)
 		{
 			//for barbarian conversion trait
@@ -21451,8 +21447,12 @@ int CvUnit::setDamage(int iNewValue, PlayerTypes ePlayer, float fAdditionalTextD
 				GET_PLAYER(ePlayer).GetPlayerTraits()->SetDefeatedBarbarianCampGuardType(getUnitType());
 			}
 
-			GET_PLAYER(ePlayer).DoUnitKilledCombat(NULL, getOwner(), getUnitType());
+			GET_PLAYER(ePlayer).DoUnitKilledCombat(NULL, getOwner(), getUnitType(), this);
 		}
+
+		//--- finally ----------------------------
+		kill(true, ePlayer);
+		//----------------------------------------
 	}
 
 	return iDiff;

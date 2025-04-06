@@ -3047,8 +3047,8 @@ CvCity* CvPlayer::acquireCity(CvCity* pCity, bool bConquest, bool bGift, bool bO
 		{
 			if (pLoopUnit->IsImmobile() && !pLoopUnit->isCargo())
 			{
+				DoUnitKilledCombat(NULL, pLoopUnit->getOwner(), pLoopUnit->getUnitType(), pLoopUnit);
 				pLoopUnit->kill(false, GetID());
-				DoUnitKilledCombat(NULL, pLoopUnit->getOwner(), pLoopUnit->getUnitType());
 			}
 		}
 	}
@@ -25367,7 +25367,7 @@ void CvPlayer::changeGreatGeneralRateModFromBldgs(int ichange)
 }
 
 /// Do effects when a unit is killed in combat
-void CvPlayer::DoUnitKilledCombat(CvUnit* pKillingUnit, PlayerTypes eKilledPlayer, UnitTypes eUnitType)
+void CvPlayer::DoUnitKilledCombat(CvUnit* pKillingUnit, PlayerTypes eKilledPlayer, UnitTypes eUnitType, CvUnit* pKilledUnit)
 {
 	ICvEngineScriptSystem1* pkScriptSystem = gDLL->GetScriptSystem();
 	if(pkScriptSystem)
@@ -25377,6 +25377,7 @@ void CvPlayer::DoUnitKilledCombat(CvUnit* pKillingUnit, PlayerTypes eKilledPlaye
 		args->Push(eKilledPlayer);
 		args->Push(eUnitType);
 		args->Push(pKillingUnit ? pKillingUnit->GetID() : -1);
+		args->Push(pKilledUnit ? pKilledUnit->GetID() : -1);
 
 		bool bResult = false;
 		LuaSupport::CallHook(pkScriptSystem, "UnitKilledInCombat", args.get(), bResult);
@@ -25387,7 +25388,7 @@ void CvPlayer::DoUnitKilledCombat(CvUnit* pKillingUnit, PlayerTypes eKilledPlaye
 	if (MOD_GLOBAL_WAR_CASUALTIES)
 	{
 		int iDelta = GC.getWAR_CASUALTIES_DELTA_BASE();
-		iDelta = (100 + pKillingUnit->GetWarCasualtiesModifier()) * iDelta / 100;
+		iDelta = (100 + pKilledUnit->GetWarCasualtiesModifier()) * iDelta / 100;
 		iDelta = iDelta < 0 ? 0 : iDelta;
 		iDelta = 100 + pKilledPlayer.GetWarCasualtiesModifier();
 		//iDelta += GC.getGame().GetGameLeagues()->GetGlobalWarCasualtiesChanges()) * iDelta / 100;
