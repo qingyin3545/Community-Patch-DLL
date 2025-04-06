@@ -166,3 +166,9 @@ CREATE TABLE IF NOT EXISTS UnitPromotions_UnitType (
 ALTER TABLE UnitPromotions ADD COLUMN 'InterceptionDamageMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'AirSweepDamageMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD MutuallyExclusiveGroup INTEGER DEFAULT -1;
+
+CREATE TABLE "Promotion_RouteMovementChanges" (
+	'PromotionType'	text no null references UnitPromotions(Type),
+	'RouteType'	text no null references Routes(Type),
+	'MovementChange' int default 0 not null
+);

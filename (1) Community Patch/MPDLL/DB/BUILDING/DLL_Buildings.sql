@@ -188,3 +188,71 @@ CREATE TABLE Building_SpecialistYieldModifiersGlobal (
 	'YieldType' text references Yields(Type),
 	'Yield' int default 0 not null
 );
+
+CREATE TABLE "Building_TradeRouteFromTheCityYieldsPerEra" (
+	"BuildingType"	text references Buildings(Type),
+	"YieldType"	text references Yields(Type),
+	"YieldValue" int default 0 not null
+);
+CREATE TABLE "Building_YieldChangesPerEra" (
+	"BuildingType"	text references Buildings(Type),
+	"YieldType"	text references Yields(Type),
+	"Yield" int default 0 not null
+);
+CREATE TABLE Building_RiverPlotYieldChangesGlobal (
+	'BuildingType' text no null references Buildings(Type),
+	'YieldType' text references Yields(Type),
+	'Yield' int default 0 not null
+);
+
+CREATE TABLE "Building_LocalPlotAnds" (
+	'BuildingType' text no null references Buildings(Type),
+	'PlotType' text references Plots(Type)
+);
+
+CREATE TABLE "Building_DomainFreeExperiencesPerPop" (
+	'BuildingType'	text no null references Buildings(Type),
+	'DomainType'	text no null references Domains(Type),
+	'Modifier'		int default 0 not null
+);
+
+CREATE TABLE "Building_DomainFreeExperiencesPerPopGlobal" (
+	'BuildingType'	text no null references Buildings(Type),
+	'DomainType'	text no null references Domains(Type),
+	'Modifier'		int default 0 not null
+);
+
+CREATE TABLE "Building_DomainFreeExperiencesPerTurn" (
+	'BuildingType'	text no null references Buildings(Type),
+	'DomainType'	text no null references Domains(Type),
+	'Value'			int default 0 not null
+);
+
+CREATE TABLE "Building_DomainFreeExperiencesPerTurnGlobal" (
+	'BuildingType'	text no null references Buildings(Type),
+	'DomainType'	text no null references Domains(Type),
+	'Value'			int default 0 not null
+);
+CREATE TABLE "Building_YieldModifiersChangesPerEra" (
+	"BuildingType"	text references Buildings(Type),
+	"YieldType"		text references Yields(Type),
+	"Yield"			int default 0 not null
+);
+
+CREATE TABLE "Building_DomainEnemyCombatModifier" (
+	'BuildingType'	text no null references Buildings(Type),
+	'DomainType'	text no null references Domains(Type),
+	'Modifier'		int default 0 not null
+);
+
+CREATE TABLE "Building_DomainEnemyCombatModifierGlobal" (
+	'BuildingType'	text no null references Buildings(Type),
+	'DomainType'	text no null references Domains(Type),
+	'Modifier'		int default 0 not null
+);
+
+CREATE TABLE "Building_DomainFriendsCombatModifierLocal" (
+	'BuildingType'	text no null references Buildings(Type),
+	'DomainType'	text no null references Domains(Type),
+	'Modifier'		int default 0 not null
+);
