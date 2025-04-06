@@ -692,6 +692,8 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 #endif
 	Method(GetDamageFixValueToUnit);
 	Method(GetDamageFixValueToCity);
+	Method(GetForcedDamageValue);
+	Method(GetChangeDamageValue);
 	Method(GetPromotionMaintenanceCost);
 
 	Method(GetCombatStrengthChangeFromKilledUnits);
@@ -6843,6 +6845,22 @@ int CvLuaUnit::lGetDamageFixValueToCity(lua_State* L)
 	// When Attacking City, target Plot must be Outside?
 	iResult += pkUnit->GetOutsideFriendlyLandsInflictDamageChange();
 
+	lua_pushinteger(L, iResult);
+	return 1;
+}
+int CvLuaUnit::lGetForcedDamageValue(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+
+	const int iResult = pkUnit->getForcedDamageValue();
+	lua_pushinteger(L, iResult);
+	return 1;
+}
+int CvLuaUnit::lGetChangeDamageValue(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+
+	const int iResult = pkUnit->getChangeDamageValue();
 	lua_pushinteger(L, iResult);
 	return 1;
 }
