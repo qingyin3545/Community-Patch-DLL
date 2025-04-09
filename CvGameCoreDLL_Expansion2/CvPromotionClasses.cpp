@@ -1547,6 +1547,7 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iOutsideFriendlyLandsInflictDamageChange = kResults.GetInt("OutsideFriendlyLandsInflictDamageChange");
 
 	m_iMaintenanceCost = kResults.GetInt("MaintenanceCost");
+	m_bNoResourcePunishment = kResults.GetBool("NoResourcePunishment");
 
 	return true;
 }
@@ -3992,9 +3993,14 @@ int CvPromotionEntry::GetOutsideFriendlyLandsInflictDamageChange() const
 {
 	return m_iOutsideFriendlyLandsInflictDamageChange;
 }
+
 int CvPromotionEntry::GetMaintenanceCost() const
 {
 	return m_iMaintenanceCost;
+}
+bool CvPromotionEntry::IsNoResourcePunishment() const
+{
+	return m_bNoResourcePunishment;
 }
 
 //=====================================

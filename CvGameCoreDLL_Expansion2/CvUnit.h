@@ -2156,6 +2156,9 @@ public:
 	int GetPromotionMaintenanceCost() const;
 	void ChangePromotionMaintenanceCost(int iValue);
 
+	bool IsNoResourcePunishment() const;
+	void ChangeIsNoResourcePunishment(int iChange);
+
 	int GetCombatStrengthChangeFromKilledUnits() const;
 	void ChangeCombatStrengthChangeFromKilledUnits(int iChange);
 	void SetCombatStrengthChangeFromKilledUnits(int iValue);
@@ -2679,6 +2682,7 @@ private:
 	int m_iOutsideFriendlyLandsInflictDamageChange = 0;
 
 	int m_iPromotionMaintenanceCost = 0;
+	int m_iNoResourcePunishment = 0;
 
 	int m_iCombatStrengthChangeFromKilledUnits = 0;
 	int m_iRangedCombatStrengthChangeFromKilledUnits = 0;
