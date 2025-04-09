@@ -696,7 +696,10 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(GetChangeDamageValue);
 	Method(GetPromotionMaintenanceCost);
 	Method(IsNoResourcePunishment);
-
+	Method(GetMoveLeftAttackMod);
+	Method(GetMoveUsedAttackMod);
+	Method(GetMoveLeftDefenseMod);
+	Method(GetMoveUsedDefenseMod);
 	Method(GetCombatStrengthChangeFromKilledUnits);
 	Method(ChangeCombatStrengthChangeFromKilledUnits);
 	Method(SetCombatStrengthChangeFromKilledUnits);
@@ -6801,6 +6804,38 @@ int CvLuaUnit::lIsNoResourcePunishment(lua_State* L)
 	const bool bResult = pkUnit->IsNoResourcePunishment();
 
 	lua_pushboolean(L, bResult);
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetMoveLeftDefenseMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int bResult = pkUnit->GetMoveLeftDefenseMod();
+	lua_pushinteger(L, bResult);
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetMoveUsedDefenseMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int bResult = pkUnit->GetMoveUsedDefenseMod();
+	lua_pushinteger(L, bResult);
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetMoveLeftAttackMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int bResult = pkUnit->GetMoveLeftAttackMod();
+	lua_pushinteger(L, bResult);
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetMoveUsedAttackMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int bResult = pkUnit->GetMoveUsedAttackMod();
+	lua_pushinteger(L, bResult);
 	return 1;
 }
 //------------------------------------------------------------------------------

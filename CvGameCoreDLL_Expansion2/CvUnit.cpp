@@ -1800,6 +1800,10 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 
 	m_iPromotionMaintenanceCost = 0;
 	m_iNoResourcePunishment = 0;
+	m_iMoveLeftAttackMod = 0;
+	m_iMoveUsedAttackMod = 0;
+	m_iMoveLeftDefenseMod = 0;
+	m_iMoveUsedDefenseMod = 0;
 
 	if(!bConstructorCall)
 	{
@@ -16569,6 +16573,22 @@ int CvUnit::GetMaxAttackStrength(const CvPlot* pFromPlot, const CvPlot* pToPlot,
 		}
 	}
 
+	// Move Lfet modifier always applies for melee attack
+	if (movesLeft() > 0)
+	{
+		int iMovesLeft = movesLeft() / GC.getMOVE_DENOMINATOR();
+		int iMoveLeftAttackModValue = GetMoveLeftAttackMod();
+		iModifier += iMovesLeft * iMoveLeftAttackModValue;
+	}
+
+	// Move Lfet modifier always applies for melee attack
+	if (maxMoves() > movesLeft())
+	{
+		int iMovesUsed = (maxMoves() - movesLeft()) / GC.getMOVE_DENOMINATOR();
+		int iMoveUsedAttackModValue = GetMoveUsedAttackMod();
+		iModifier += iMovesUsed * iMoveUsedAttackModValue;
+	}
+
 	////////////////////////
 	// KNOWN DESTINATION PLOT
 	////////////////////////
@@ -16774,6 +16794,22 @@ int CvUnit::GetMaxDefenseStrength(const CvPlot* pInPlot, const CvUnit* pAttacker
 		}
 	}
 #endif
+
+	// Generic Move Left modifier
+	if (movesLeft() > 0)
+	{
+		int iMovesLeft = movesLeft() / GC.getMOVE_DENOMINATOR();
+		int iMoveLeftDefenseModValue = GetMoveLeftDefenseMod();
+		iModifier += iMovesLeft * iMoveLeftDefenseModValue;
+	}
+
+	// Generic Move Used modifier
+	if (maxMoves() > movesLeft())
+	{
+		int iMovesUsed = (maxMoves() - movesLeft()) / GC.getMOVE_DENOMINATOR();
+		int iMoveUsedDefenseModValue = GetMoveUsedDefenseMod();
+		iModifier += iMovesUsed * iMoveUsedDefenseModValue;
+	}
 
 	////////////////////////
 	// KNOWN DEFENSE PLOT
@@ -17467,6 +17503,22 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 			CvCity* pMyCity = pMyPlot->getPlotCity();
 			iModifier += pMyCity->getGarrisonRangedAttackModifier();
 		}
+
+		// Move Lfet modifier always applies for Ranged attack
+		if (movesLeft() > 0)
+		{
+			int iMovesLeft = movesLeft() / GC.getMOVE_DENOMINATOR();
+			int iMoveLeftAttackModValue = GetMoveLeftAttackMod();
+			iModifier += iMovesLeft * iMoveLeftAttackModValue;
+		}
+
+		// Move Lfet modifier always applies for Ranged attack
+		if (maxMoves() > movesLeft())
+		{
+			int iMovesUsed = (maxMoves() - movesLeft()) / GC.getMOVE_DENOMINATOR();
+			int iMoveUsedAttackModValue = GetMoveUsedAttackMod();
+			iModifier += iMovesUsed * iMoveUsedAttackModValue;
+		}
 	}
 	else
 	{
@@ -17487,6 +17539,22 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 			iTempModifier -= pMyPlot->defenseModifier(getTeam(), true, false);
 
 		iModifier += iTempModifier;
+
+			// Generic Move Left modifier
+		if (movesLeft() > 0)
+		{
+			int iMovesLeft = movesLeft() / GC.getMOVE_DENOMINATOR();
+			int iMoveLeftDefenseModValue = GetMoveLeftDefenseMod();
+			iModifier += iMovesLeft * iMoveLeftDefenseModValue;
+		}
+
+		// Generic Move Used modifier
+		if (maxMoves() > movesLeft())
+		{
+			int iMovesUsed = (maxMoves() - movesLeft()) / GC.getMOVE_DENOMINATOR();
+			int iMoveUsedDefenseModValue = GetMoveUsedDefenseMod();
+			iModifier += iMovesUsed * iMoveUsedDefenseModValue;
+		}
 	}
 
 	//this may be always zero when defending (on defense -> fewer targets, harder to hit)
@@ -27693,6 +27761,10 @@ void CvUnit::setHasPromotion(PromotionTypes eIndex, bool bNewValue)
 
 		ChangePromotionMaintenanceCost(thisPromotion.GetMaintenanceCost() > 0 ? iChange: 0);
 		ChangeIsNoResourcePunishment(thisPromotion.IsNoResourcePunishment() ? iChange : 0);
+		ChangeMoveLeftAttackMod(thisPromotion.GetMoveLeftAttackMod() * iChange);
+		ChangeMoveUsedAttackMod(thisPromotion.GetMoveUsedAttackMod() * iChange);
+		ChangeMoveLeftDefenseMod(thisPromotion.GetMoveLeftDefenseMod() * iChange);
+		ChangeMoveUsedDefenseMod(thisPromotion.GetMoveUsedDefenseMod() * iChange);
 
 		if(IsSelected())
 		{
@@ -28399,6 +28471,10 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 
 	visitor(unit.m_iPromotionMaintenanceCost);
 	visitor(unit.m_iNoResourcePunishment);
+	visitor(unit.m_iMoveLeftAttackMod);
+	visitor(unit.m_iMoveUsedAttackMod);
+	visitor(unit.m_iMoveLeftDefenseMod);
+	visitor(unit.m_iMoveUsedDefenseMod);
 	visitor(unit.m_iCombatStrengthChangeFromKilledUnits);
 	visitor(unit.m_iRangedCombatStrengthChangeFromKilledUnits);
 }
@@ -31504,6 +31580,23 @@ int CvUnit::AI_promotionValue(PromotionTypes ePromotion)
 		iValue += iExtra;
 	}
 
+	iTemp = pkPromotionInfo->GetMoveLeftAttackMod();
+	if(iTemp != 0)
+	{
+		iExtra = GetMoveLeftAttackMod() * 2;
+		iTemp *= (100 + iExtra);
+		iTemp /= 100;
+		iValue += iTemp + iFlavorOffense * 2;
+	}
+
+	iTemp = pkPromotionInfo->GetMoveUsedAttackMod();
+	if(iTemp != 0)
+	{
+		iExtra = GetMoveUsedAttackMod() * 2;
+		iTemp *= (100 + iExtra);
+		iTemp /= 100;
+		iValue += iTemp + iFlavorOffense * 2;
+	}
 
 			// General Defense
 
@@ -31567,6 +31660,24 @@ int CvUnit::AI_promotionValue(PromotionTypes ePromotion)
 			iExtra /= max(1,GetRange());
 		}
 		iValue += iExtra;
+	}
+
+	iTemp = pkPromotionInfo->GetMoveLeftDefenseMod();
+	if(iTemp != 0)
+	{
+		iExtra = GetMoveLeftDefenseMod() * 2;
+		iTemp *= (100 + iExtra);
+		iTemp /= 100;
+		iValue += iTemp + iFlavorDefense * 2;
+	}
+
+	iTemp = pkPromotionInfo->GetMoveUsedDefenseMod();
+	if(iTemp != 0)
+	{
+		iExtra = GetMoveUsedDefenseMod() * 2;
+		iTemp *= (100 + iExtra);
+		iTemp /= 100;
+		iValue += iTemp + iFlavorDefense * 2;
 	}
 
 			// Terrain modifiers
@@ -34115,6 +34226,47 @@ void CvUnit::ChangeIsNoResourcePunishment(int iChange)
 {
 	m_iNoResourcePunishment += iChange;
 }
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeMoveLeftDefenseMod(int iValue)
+{
+	m_iMoveLeftDefenseMod += iValue;
+}
+int CvUnit::GetMoveLeftDefenseMod() const
+{
+	return m_iMoveLeftDefenseMod;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeMoveUsedDefenseMod(int iValue)
+{
+	m_iMoveUsedDefenseMod += iValue;
+}
+int CvUnit::GetMoveUsedDefenseMod() const
+{	
+	return m_iMoveUsedDefenseMod;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeMoveLeftAttackMod(int iValue)
+{
+	m_iMoveLeftAttackMod += iValue;
+}
+int CvUnit::GetMoveLeftAttackMod() const
+{
+	return m_iMoveLeftAttackMod;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeMoveUsedAttackMod(int iValue)
+{
+	m_iMoveUsedAttackMod += iValue;
+}
+int CvUnit::GetMoveUsedAttackMod() const
+{
+	return m_iMoveUsedAttackMod;
+}
+
 
 //	--------------------------------------------------------------------------------
 int CvUnit::GetCombatStrengthChangeFromKilledUnits() const

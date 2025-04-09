@@ -1,5 +1,10 @@
 ALTER TABLE UnitPromotions ADD COLUMN 'MaintenanceCost' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'NoResourcePunishment' BOOLEAN DEFAULT 0;
+-- SP-TODO: Error Spell Name MoveLfetAttackMod -> MoveLeftAttackMod
+ALTER TABLE UnitPromotions ADD COLUMN 'MoveLeftAttackMod' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD COLUMN 'MoveUsedAttackMod' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD COLUMN 'MoveLeftDefenseMod' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD COLUMN 'MoveUsedDefenseMod' INTEGER DEFAULT 0;
 CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionModifiers (
     `PromotionType` TEXT DEFAULT '',
     `OtherPromotionType` TEXT DEFAULT '',
@@ -17,8 +22,6 @@ ALTER TABLE UnitPromotions ADD 'IsCanParadropUnLimit' BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NumAttacksMadeThisTurnAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'AllyCityStateCombatModifier' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'AllyCityStateCombatModifierMax' INTEGER DEFAULT -1;
-ALTER TABLE UnitPromotions ADD COLUMN 'MoveLeftDefenseMod' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'MoveUsedDefenseMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'CanDoNukeDamage' BOOLEAN DEFAULT 0; 
 ALTER TABLE UnitPromotions ADD 'CanPlunderWithoutWar' BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'ExtraResourceType' TEXT DEFAULT NULL;;
@@ -35,8 +38,6 @@ ALTER TABLE UnitPromotions ADD COLUMN 'CombatBonusFromNearbyUnitPromotion' INTEG
 ALTER TABLE UnitPromotions ADD COLUMN 'GoldenAgeMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'RangedSupportFireMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'MeleeDefenseMod' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'MoveLfetAttackMod' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'MoveUsedAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'HPHealedIfDestroyEnemyGlobal' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NumOriginalCapitalAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NumOriginalCapitalDefenseMod' INTEGER DEFAULT 0;
