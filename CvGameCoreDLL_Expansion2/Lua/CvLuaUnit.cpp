@@ -674,6 +674,7 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(GetForcedDamageValue);
 	Method(GetChangeDamageValue);
 	Method(GetPromotionMaintenanceCost);
+	Method(IsNoResourcePunishment);
 
 	Method(GetCombatStrengthChangeFromKilledUnits);
 	Method(ChangeCombatStrengthChangeFromKilledUnits);
@@ -6817,6 +6818,15 @@ LUAAPIIMPL(Unit, ClearSamePlotPromotions)
 #endif
 //------------------------------------------------------------------------------
 LUAAPIIMPL(Unit, GetPromotionMaintenanceCost)
+//------------------------------------------------------------------------------
+int CvLuaUnit::lIsNoResourcePunishment(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const bool bResult = pkUnit->IsNoResourcePunishment();
+
+	lua_pushboolean(L, bResult);
+	return 1;
+}
 //------------------------------------------------------------------------------
 int CvLuaUnit::lGetDamageFixValueToUnit(lua_State* L)
 {
