@@ -446,6 +446,7 @@ public:
 	int GetOutsideFriendlyLandsInflictDamageChange() const;
 
 	int GetMaintenanceCost() const;
+	bool IsNoResourcePunishment() const;
 
 protected:
 	int m_iLayerAnimationPath;
@@ -828,6 +829,7 @@ protected:
 	int m_iOutsideFriendlyLandsInflictDamageChange = 0;
 
 	int m_iMaintenanceCost = 0;
+	bool m_bNoResourcePunishment = false;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
