@@ -33,8 +33,8 @@ alter table PromotionCollections add column 'StackingFightBack' boolean not null
 alter table PromotionCollections add column 'StopAttacker' boolean not null default 0;
 
 alter table UnitPromotions add column 'RangeBackWhenDefense' boolean not null default 0;
--- Splash Damage donnot include defender unless attacker has this, TODO: should be named CanSplashDefender
-ALTER TABLE UnitPromotions ADD COLUMN CanDoFallBackDamage BOOLEAN DEFAULT 0;
+-- Splash Damage donnot include defender unless attacker has this, SP-TODO: Error Name CanDoFallBackDamage -> CanSplashDefender
+ALTER TABLE UnitPromotions ADD COLUMN CanSplashDefender BOOLEAN DEFAULT 0;
 
 alter table UnitPromotions add column 'HeavyChargeAddMoves' integer not null default 0;
 alter table UnitPromotions add column 'HeavyChargeExtraDamage' integer not null default 0;

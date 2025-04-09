@@ -697,7 +697,10 @@ protected:
 	static int lGetChangeDamageValue(lua_State* L);
 	LUAAPIEXTN(GetPromotionMaintenanceCost, int);
 	static int lIsNoResourcePunishment(lua_State* L);
-
+	static int lGetMoveUsedAttackMod(lua_State* L);
+	static int lGetMoveLeftAttackMod(lua_State* L);
+	static int lGetMoveLeftDefenseMod(lua_State* L);
+	static int lGetMoveUsedDefenseMod(lua_State* L);
 	static int lGetCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lChangeCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lSetCombatStrengthChangeFromKilledUnits(lua_State* L);
