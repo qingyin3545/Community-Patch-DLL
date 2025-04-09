@@ -1526,7 +1526,7 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	}
 #endif
 	m_bRangeBackWhenDefense = kResults.GetBool("RangeBackWhenDefense");
-	m_bCanSplashDefender = kResults.GetBool("CanDoFallBackDamage");
+	m_bCanSplashDefender = kResults.GetBool("CanSplashDefender");
 	m_iHeavyChargeAddMoves = kResults.GetInt("HeavyChargeAddMoves");
 	m_iHeavyChargeExtraDamage = kResults.GetInt("HeavyChargeExtraDamage");
 	m_iHeavyChargeCollateralFixed = kResults.GetInt("HeavyChargeCollateralFixed");
@@ -1542,6 +1542,10 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 
 	m_iMaintenanceCost = kResults.GetInt("MaintenanceCost");
 	m_bNoResourcePunishment = kResults.GetBool("NoResourcePunishment");
+	m_iMoveLeftAttackMod = kResults.GetInt("MoveLeftAttackMod");
+	m_iMoveUsedAttackMod = kResults.GetInt("MoveUsedAttackMod");
+	m_iMoveLeftDefenseMod = kResults.GetInt("MoveLeftDefenseMod");
+	m_iMoveUsedDefenseMod = kResults.GetInt("MoveUsedDefenseMod");
 
 	return true;
 }
@@ -3978,6 +3982,22 @@ int CvPromotionEntry::GetMaintenanceCost() const
 bool CvPromotionEntry::IsNoResourcePunishment() const
 {
 	return m_bNoResourcePunishment;
+}
+int CvPromotionEntry::GetMoveLeftAttackMod() const
+{
+	return m_iMoveLeftAttackMod;
+}
+int CvPromotionEntry::GetMoveUsedAttackMod() const
+{
+	return m_iMoveUsedAttackMod;
+}
+int CvPromotionEntry::GetMoveLeftDefenseMod() const
+{
+	return m_iMoveLeftDefenseMod;
+}
+int CvPromotionEntry::GetMoveUsedDefenseMod() const
+{
+	return m_iMoveUsedDefenseMod;
 }
 
 //=====================================
