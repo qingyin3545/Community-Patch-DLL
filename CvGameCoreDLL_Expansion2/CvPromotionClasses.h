@@ -450,6 +450,10 @@ public:
 
 	int GetMaintenanceCost() const;
 	bool IsNoResourcePunishment() const;
+	int GetMoveLeftAttackMod() const;
+	int GetMoveUsedAttackMod() const;
+	int GetMoveLeftDefenseMod() const;
+	int GetMoveUsedDefenseMod() const;
 
 protected:
 	int m_iLayerAnimationPath;
@@ -836,6 +840,10 @@ protected:
 
 	int m_iMaintenanceCost = 0;
 	bool m_bNoResourcePunishment = false;
+	int m_iMoveLeftAttackMod = 0;
+	int m_iMoveUsedAttackMod = 0;
+	int m_iMoveLeftDefenseMod = 0;
+	int m_iMoveUsedDefenseMod = 0;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
