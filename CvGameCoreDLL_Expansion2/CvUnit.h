@@ -2144,6 +2144,18 @@ public:
 	bool IsNoResourcePunishment() const;
 	void ChangeIsNoResourcePunishment(int iChange);
 
+	void ChangeMoveLeftAttackMod(int iValue);
+	int GetMoveLeftAttackMod() const;
+
+	void ChangeMoveUsedAttackMod(int iValue);
+	int GetMoveUsedAttackMod() const;
+
+	void ChangeMoveLeftDefenseMod(int iValue);
+	int GetMoveLeftDefenseMod() const;
+
+	void ChangeMoveUsedDefenseMod(int iValue);
+	int GetMoveUsedDefenseMod() const;
+
 	int GetCombatStrengthChangeFromKilledUnits() const;
 	void ChangeCombatStrengthChangeFromKilledUnits(int iChange);
 	void SetCombatStrengthChangeFromKilledUnits(int iValue);
@@ -2663,6 +2675,10 @@ private:
 
 	int m_iPromotionMaintenanceCost = 0;
 	int m_iNoResourcePunishment = 0;
+	int m_iMoveLeftAttackMod = 0;
+	int m_iMoveUsedAttackMod = 0;
+	int m_iMoveLeftDefenseMod = 0;
+	int m_iMoveUsedDefenseMod = 0;
 
 	int m_iCombatStrengthChangeFromKilledUnits = 0;
 	int m_iRangedCombatStrengthChangeFromKilledUnits = 0;
