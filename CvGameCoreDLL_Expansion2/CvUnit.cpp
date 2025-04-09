@@ -1799,6 +1799,7 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iOutsideFriendlyLandsInflictDamageChange = 0;
 
 	m_iPromotionMaintenanceCost = 0;
+	m_iNoResourcePunishment = 0;
 
 	if(!bConstructorCall)
 	{
@@ -16101,6 +16102,9 @@ int CvUnit::GetStrategicResourceCombatPenalty() const
 	if (isBarbarian() || GET_PLAYER(getOwner()).isMinorCiv())
 		return iPenalty;
 
+	if (IsNoResourcePunishment())
+		return iPenalty;
+
 	CvPlayerAI& kPlayer = GET_PLAYER(getOwner());
 
 	// Loop through all resources
@@ -27688,6 +27692,7 @@ void CvUnit::setHasPromotion(PromotionTypes eIndex, bool bNewValue)
 		ChangeOutsideFriendlyLandsInflictDamageChange(iChange * thisPromotion.GetOutsideFriendlyLandsInflictDamageChange());
 
 		ChangePromotionMaintenanceCost(thisPromotion.GetMaintenanceCost() > 0 ? iChange: 0);
+		ChangeIsNoResourcePunishment(thisPromotion.IsNoResourcePunishment() ? iChange : 0);
 
 		if(IsSelected())
 		{
@@ -28393,6 +28398,7 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iOutsideFriendlyLandsInflictDamageChange);
 
 	visitor(unit.m_iPromotionMaintenanceCost);
+	visitor(unit.m_iNoResourcePunishment);
 	visitor(unit.m_iCombatStrengthChangeFromKilledUnits);
 	visitor(unit.m_iRangedCombatStrengthChangeFromKilledUnits);
 }
@@ -34098,6 +34104,16 @@ void CvUnit::ChangePromotionMaintenanceCost(int iValue)
 		m_iPromotionMaintenanceCost += iValue;
 		GET_PLAYER(getOwner()).changeExtraUnitCost(iValue);
 	}
+}
+
+//	--------------------------------------------------------------------------------
+bool CvUnit::IsNoResourcePunishment() const
+{
+	return m_iNoResourcePunishment > 0;
+}
+void CvUnit::ChangeIsNoResourcePunishment(int iChange)
+{
+	m_iNoResourcePunishment += iChange;
 }
 
 //	--------------------------------------------------------------------------------
