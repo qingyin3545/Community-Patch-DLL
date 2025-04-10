@@ -49483,6 +49483,21 @@ UnitTypes CvPlayer::GetCivUnitWithDefault(UnitClassTypes eUnitClass) const
 }
 
 //	--------------------------------------------------------------------------------
+int CvPlayer::GetNumWorldWonders()
+{
+	int iCount = 0;
+	int iLoop;
+	for (CvCity* pLoopCity = firstCity(&iLoop); pLoopCity != NULL; pLoopCity = nextCity(&iLoop))
+	{
+		if (pLoopCity->getNumWorldWonders() > 0)
+		{
+			iCount += pLoopCity->getNumWorldWonders();
+		}
+	}
+	return iCount;
+}
+
+//	--------------------------------------------------------------------------------
 int CvPlayer::getPolicyModifiers(PolicyModifierType eIndex) const
 {
 	ASSERT_DEBUG(eIndex >= 0, "eIndex expected to be >= 0");

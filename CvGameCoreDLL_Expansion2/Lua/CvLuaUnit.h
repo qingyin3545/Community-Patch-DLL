@@ -701,6 +701,17 @@ protected:
 	static int lGetMoveLeftAttackMod(lua_State* L);
 	static int lGetMoveLeftDefenseMod(lua_State* L);
 	static int lGetMoveUsedDefenseMod(lua_State* L);
+	static int lGoldenAgeModTotal(lua_State* L);
+	static int lGetAntiHigherPopMod(lua_State* L);
+	static int lGetNumAttacksMadeThisTurnAttackMod(lua_State* L);
+	static int lGetNumSpyDefenseMod(lua_State* L);
+	static int lGetNumSpyAttackMod(lua_State* L);
+	static int lGetNumWonderDefenseMod(lua_State* L);
+	static int lGetNumWonderAttackMod(lua_State* L);
+	static int lGetNumWorkDefenseMod(lua_State* L);
+	static int lGetNumWorkAttackMod(lua_State* L);
+	static int lGetNumSpyStayDefenseMod(lua_State* L);
+	static int lGetNumSpyStayAttackMod(lua_State* L);
 	static int lGetCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lChangeCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lSetCombatStrengthChangeFromKilledUnits(lua_State* L);

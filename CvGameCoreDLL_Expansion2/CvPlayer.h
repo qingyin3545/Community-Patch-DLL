@@ -3011,6 +3011,8 @@ public:
 	UnitTypes GetCivUnit(UnitClassTypes eUnitClass, int iFakeSeed = 0) const;
 	UnitTypes GetCivUnitWithDefault(UnitClassTypes eUnitClass) const;
 
+	int GetNumWorldWonders();
+
 	int getPolicyModifiers(PolicyModifierType eIndex) const;
 	void changePolicyModifiers(PolicyModifierType eIndex, int iChange);
 
