@@ -1804,6 +1804,17 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iMoveUsedAttackMod = 0;
 	m_iMoveLeftDefenseMod = 0;
 	m_iMoveUsedDefenseMod = 0;
+	m_iGoldenAgeMod = 0;
+	m_iAntiHigherPopMod = 0;
+	m_iNumAttacksMadeThisTurnAttackMod = 0;
+	m_iNumSpyDefenseMod = 0;
+	m_iNumSpyAttackMod = 0;
+	m_iNumWonderDefenseMod = 0;
+	m_iNumWonderAttackMod = 0;
+	m_iNumWorkDefenseMod = 0;
+	m_iNumWorkAttackMod = 0;
+	m_iNumSpyStayDefenseMod = 0;
+	m_iNumSpyStayAttackMod = 0;
 
 	if(!bConstructorCall)
 	{
@@ -16312,7 +16323,10 @@ int CvUnit::GetGenericMeleeStrengthModifier(const CvUnit* pOtherUnit, const CvPl
 
 	// Our empire fights well in Golden Ages?
 	if(kPlayer.isGoldenAge())
+	{
 		iModifier += kPlayer.GetPlayerTraits()->GetGoldenAgeCombatModifier();
+		iModifier += GetGoldenAgeMod();
+	}
 
 	// Anti-Warmonger Fervor
 	if (pOtherUnit != NULL)
@@ -16526,6 +16540,7 @@ int CvUnit::GetGenericMeleeStrengthModifier(const CvUnit* pOtherUnit, const CvPl
 		if (GET_PLAYER(pOtherUnit->getOwner()).getTotalPopulation() > GET_PLAYER(getOwner()).getTotalPopulation())
 		{
 			iModifier += GET_PLAYER(getOwner()).GetPlayerTraits()->GetCombatBonusVsHigherPop();
+			iModifier += GetAntiHigherPopMod();
 		}
 	}
 
@@ -16573,7 +16588,8 @@ int CvUnit::GetMaxAttackStrength(const CvPlot* pFromPlot, const CvPlot* pToPlot,
 		}
 	}
 
-	// Move Lfet modifier always applies for melee attack
+	CvPlayerAI& kPlayer = GET_PLAYER(getOwner());
+	// Move Left modifier always applies for melee attack
 	if (movesLeft() > 0)
 	{
 		int iMovesLeft = movesLeft() / GC.getMOVE_DENOMINATOR();
@@ -16581,12 +16597,35 @@ int CvUnit::GetMaxAttackStrength(const CvPlot* pFromPlot, const CvPlot* pToPlot,
 		iModifier += iMovesLeft * iMoveLeftAttackModValue;
 	}
 
-	// Move Lfet modifier always applies for melee attack
+	// Move Used modifier always applies for melee attack
 	if (maxMoves() > movesLeft())
 	{
 		int iMovesUsed = (maxMoves() - movesLeft()) / GC.getMOVE_DENOMINATOR();
 		int iMoveUsedAttackModValue = GetMoveUsedAttackMod();
 		iModifier += iMovesUsed * iMoveUsedAttackModValue;
+	}
+
+	iModifier += GetNumAttacksMadeThisTurnAttackMod()* getNumAttacksMadeThisTurn();
+
+	int iNumSpyAttackMod = GetNumSpyAttackMod();
+	if (iNumSpyAttackMod > 0)
+	{
+		int iSpy = kPlayer.GetEspionage()->GetNumSpies();
+		iModifier += iSpy * iNumSpyAttackMod;
+	}
+
+	int iNumWorkAttackMod = GetNumWorkAttackMod();
+	if (iNumWorkAttackMod > 0)
+	{
+		int iWork = kPlayer.GetCulture()->GetNumGreatWorks();
+		iModifier += iWork * iNumWorkAttackMod;
+	}
+
+	int iNumWonderAttackMod = GetNumWonderAttackMod();
+	if (iNumWonderAttackMod > 0)
+	{
+		int iWonder = kPlayer.GetNumWorldWonders();
+		iModifier += iWonder * iNumWonderAttackMod;
 	}
 
 	////////////////////////
@@ -16697,9 +16736,14 @@ int CvUnit::GetMaxAttackStrength(const CvPlot* pFromPlot, const CvPlot* pToPlot,
 #if defined(MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
 		if (MOD_API_PROMOTION_TO_PROMOTION_MODIFIERS)
 		{
-			iModifier += otherPromotionAttackModifierByUnit(pDefender);
+			iModifier += otherPromotionModifierByUnit(pDefender);
 		}
 #endif
+		int iNumSpyStayAttackMod = GetNumSpyStayAttackMod();
+		if (iNumSpyStayAttackMod != 0 && GET_TEAM(getTeam()).HasSpyAtTeam(pDefender->getTeam()))
+		{
+			iModifier += iNumSpyStayAttackMod;
+		}
 
 		// Bonus VS fortified
 		if(pDefender->IsFortified())
@@ -16795,6 +16839,7 @@ int CvUnit::GetMaxDefenseStrength(const CvPlot* pInPlot, const CvUnit* pAttacker
 	}
 #endif
 
+	CvPlayerAI& kPlayer = GET_PLAYER(getOwner());
 	// Generic Move Left modifier
 	if (movesLeft() > 0)
 	{
@@ -16809,6 +16854,27 @@ int CvUnit::GetMaxDefenseStrength(const CvPlot* pInPlot, const CvUnit* pAttacker
 		int iMovesUsed = (maxMoves() - movesLeft()) / GC.getMOVE_DENOMINATOR();
 		int iMoveUsedDefenseModValue = GetMoveUsedDefenseMod();
 		iModifier += iMovesUsed * iMoveUsedDefenseModValue;
+	}
+
+	int iNumSpyDefenseMod = GetNumSpyDefenseMod();
+	if (iNumSpyDefenseMod > 0)
+	{
+		int iSpy = kPlayer.GetEspionage()->GetNumSpies();
+		iModifier += iSpy * iNumSpyDefenseMod;
+	}
+
+	int iNumWorkDefenseMod = GetNumWorkDefenseMod();
+	if (iNumWorkDefenseMod > 0)
+	{
+		int iWork = kPlayer.GetCulture()->GetNumGreatWorks();
+		iModifier += iWork * iNumWorkDefenseMod;
+	}
+
+	int iNumWonderDefenseMod = GetNumWonderDefenseMod();
+	if (iNumWonderDefenseMod > 0)
+	{
+		int iWonder = kPlayer.GetNumWorldWonders();
+		iModifier += iWonder * iNumWonderDefenseMod;
 	}
 
 	////////////////////////
@@ -16877,6 +16943,11 @@ int CvUnit::GetMaxDefenseStrength(const CvPlot* pInPlot, const CvUnit* pAttacker
 			iModifier += otherPromotionDefenseModifierByUnit(pAttacker);
 		}
 #endif
+		int iNumSpyStayDefenseMod = GetNumSpyStayDefenseMod();
+		if (iNumSpyStayDefenseMod != 0 && GET_TEAM(getTeam()).HasSpyAtTeam(pAttacker->getTeam()))
+		{
+			iModifier += iNumSpyStayDefenseMod;
+		}
 	}
 
 	// Unit can't drop below 10% strength
@@ -17075,7 +17146,10 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 
 	// Our empire fights well in Golden Ages?
 	if(kPlayer.isGoldenAge())
+	{
 		iModifier += pTraits->GetGoldenAgeCombatModifier();
+		iModifier += GetGoldenAgeMod();
+	}
 
 	// Anti-Warmonger Fervor
 	if (pOtherUnit != NULL)
@@ -17358,6 +17432,7 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 		if (GET_PLAYER(pOtherUnit->getOwner()).getTotalPopulation() > GET_PLAYER(getOwner()).getTotalPopulation())
 		{
 			iModifier += GET_PLAYER(getOwner()).GetPlayerTraits()->GetCombatBonusVsHigherPop();
+			iModifier += GetAntiHigherPopMod();
 		}
 
 		// ATTACKING
@@ -17400,6 +17475,11 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 				iModifier += otherPromotionAttackModifierByUnit(pOtherUnit);
 			}
 #endif
+			int iNumSpyStayAttackMod = GetNumSpyStayAttackMod();
+			if (iNumSpyStayAttackMod != 0 && GET_TEAM(getTeam()).HasSpyAtTeam(pOtherUnit->getTeam()))
+			{
+				iModifier += iNumSpyStayAttackMod;
+			}
 		}
 
 		// Ranged DEFENSE
@@ -17418,6 +17498,11 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 				iModifier += otherPromotionDefenseModifierByUnit(pOtherUnit);
 			}
 #endif
+			int iNumSpyStayDefenseMod = GetNumSpyStayDefenseMod();
+			if (iNumSpyStayDefenseMod != 0 && GET_TEAM(getTeam()).HasSpyAtTeam(pOtherUnit->getTeam()))
+			{
+				iModifier += iNumSpyStayDefenseMod;
+			}
 		}
 	}
 
@@ -17504,7 +17589,7 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 			iModifier += pMyCity->getGarrisonRangedAttackModifier();
 		}
 
-		// Move Lfet modifier always applies for Ranged attack
+		// Move Left modifier always applies for Ranged attack
 		if (movesLeft() > 0)
 		{
 			int iMovesLeft = movesLeft() / GC.getMOVE_DENOMINATOR();
@@ -17512,12 +17597,35 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 			iModifier += iMovesLeft * iMoveLeftAttackModValue;
 		}
 
-		// Move Lfet modifier always applies for Ranged attack
+		// Move Used modifier always applies for Ranged attack
 		if (maxMoves() > movesLeft())
 		{
 			int iMovesUsed = (maxMoves() - movesLeft()) / GC.getMOVE_DENOMINATOR();
 			int iMoveUsedAttackModValue = GetMoveUsedAttackMod();
 			iModifier += iMovesUsed * iMoveUsedAttackModValue;
+		}
+
+		iModifier += GetNumAttacksMadeThisTurnAttackMod() * getNumAttacksMadeThisTurn();
+
+		int iNumSpyAttackMod = GetNumSpyAttackMod();
+		if (iNumSpyAttackMod > 0)
+		{
+			int iSpy = kPlayer.GetEspionage()->GetNumSpies();
+			iModifier += iSpy * iNumSpyAttackMod;
+		}
+	
+		int iNumWorkAttackMod = GetNumWorkAttackMod();
+		if (iNumWorkAttackMod > 0)
+		{
+			int iWork = kPlayer.GetCulture()->GetNumGreatWorks();
+			iModifier += iWork * iNumWorkAttackMod;
+		}
+
+		int iNumWonderAttackMod = GetNumWonderAttackMod();
+		if (iNumWonderAttackMod > 0)
+		{
+			int iWonder = kPlayer.GetNumWorldWonders();
+			iModifier += iWonder * iNumWonderAttackMod;
 		}
 	}
 	else
@@ -17554,6 +17662,27 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 			int iMovesUsed = (maxMoves() - movesLeft()) / GC.getMOVE_DENOMINATOR();
 			int iMoveUsedDefenseModValue = GetMoveUsedDefenseMod();
 			iModifier += iMovesUsed * iMoveUsedDefenseModValue;
+		}
+
+		int iNumSpyDefenseMod = GetNumSpyDefenseMod();
+		if (iNumSpyDefenseMod > 0)
+		{
+			int iSpy = kPlayer.GetEspionage()->GetNumSpies();
+			iModifier += iSpy * iNumSpyDefenseMod;
+		}
+
+		int iNumWorkDefenseMod = GetNumWorkDefenseMod();
+		if (iNumWorkDefenseMod > 0)
+		{
+			int iWork = kPlayer.GetCulture()->GetNumGreatWorks();
+			iModifier += iWork * iNumWorkDefenseMod;
+		}
+
+		int iNumWonderDefenseMod = GetNumWonderDefenseMod();
+		if (iNumWonderDefenseMod > 0)
+		{
+			int iWonder = kPlayer.GetNumWorldWonders();
+			iModifier += iWonder * iNumWonderDefenseMod;
 		}
 	}
 
@@ -27765,6 +27894,17 @@ void CvUnit::setHasPromotion(PromotionTypes eIndex, bool bNewValue)
 		ChangeMoveUsedAttackMod(thisPromotion.GetMoveUsedAttackMod() * iChange);
 		ChangeMoveLeftDefenseMod(thisPromotion.GetMoveLeftDefenseMod() * iChange);
 		ChangeMoveUsedDefenseMod(thisPromotion.GetMoveUsedDefenseMod() * iChange);
+		ChangeGoldenAgeMod(thisPromotion.GetGoldenAgeMod()* iChange);
+		ChangeAntiHigherPopMod(thisPromotion.GetAntiHigherPopMod()* iChange);
+		ChangeNumAttacksMadeThisTurnAttackMod(thisPromotion.GetNumAttacksMadeThisTurnAttackMod()* iChange);
+		ChangeNumSpyAttackMod(thisPromotion.GetNumSpyAttackMod() * iChange);
+		ChangeNumSpyDefenseMod(thisPromotion.GetNumSpyDefenseMod() * iChange);
+		ChangeNumWonderAttackMod(thisPromotion.GetNumWonderAttackMod()* iChange);
+		ChangeNumWonderDefenseMod(thisPromotion.GetNumWonderDefenseMod()* iChange);
+		ChangeNumWorkAttackMod(thisPromotion.GetNumWorkAttackMod()* iChange);
+		ChangeNumWorkDefenseMod(thisPromotion.GetNumWorkDefenseMod()* iChange);
+		ChangeNumSpyStayAttackMod(thisPromotion.GetNumSpyStayAttackMod()* iChange);
+		ChangeNumSpyStayDefenseMod(thisPromotion.GetNumSpyStayDefenseMod()* iChange);
 
 		if(IsSelected())
 		{
@@ -31598,6 +31738,15 @@ int CvUnit::AI_promotionValue(PromotionTypes ePromotion)
 		iValue += iTemp + iFlavorOffense * 2;
 	}
 
+	iTemp = pkPromotionInfo->GetNumAttacksMadeThisTurnAttackMod();
+	if(iTemp != 0)
+	{
+		iExtra = GetNumAttacksMadeThisTurnAttackMod() * 2;
+		iTemp *= (100 + iExtra);
+		iTemp /= 100;
+		iValue += iTemp + iFlavorOffense * 2;
+	}
+
 			// General Defense
 
 	
@@ -34228,6 +34377,26 @@ void CvUnit::ChangeIsNoResourcePunishment(int iChange)
 }
 
 //	--------------------------------------------------------------------------------
+void CvUnit::ChangeMoveLeftAttackMod(int iValue)
+{
+	m_iMoveLeftAttackMod += iValue;
+}
+int CvUnit::GetMoveLeftAttackMod() const
+{
+	return m_iMoveLeftAttackMod;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeMoveUsedAttackMod(int iValue)
+{
+	m_iMoveUsedAttackMod += iValue;
+}
+int CvUnit::GetMoveUsedAttackMod() const
+{
+	return m_iMoveUsedAttackMod;
+}
+
+//	--------------------------------------------------------------------------------
 void CvUnit::ChangeMoveLeftDefenseMod(int iValue)
 {
 	m_iMoveLeftDefenseMod += iValue;
@@ -34248,25 +34417,114 @@ int CvUnit::GetMoveUsedDefenseMod() const
 }
 
 //	--------------------------------------------------------------------------------
-void CvUnit::ChangeMoveLeftAttackMod(int iValue)
+void CvUnit::ChangeGoldenAgeMod(int iValue)
 {
-	m_iMoveLeftAttackMod += iValue;
+	m_iGoldenAgeMod += iValue;
 }
-int CvUnit::GetMoveLeftAttackMod() const
+int CvUnit::GetGoldenAgeMod() const
 {
-	return m_iMoveLeftAttackMod;
+	return m_iGoldenAgeMod;
 }
 
 //	--------------------------------------------------------------------------------
-void CvUnit::ChangeMoveUsedAttackMod(int iValue)
+void CvUnit::ChangeAntiHigherPopMod(int iValue)
 {
-	m_iMoveUsedAttackMod += iValue;
+	m_iAntiHigherPopMod += iValue;
 }
-int CvUnit::GetMoveUsedAttackMod() const
+int CvUnit::GetAntiHigherPopMod() const
 {
-	return m_iMoveUsedAttackMod;
+	return m_iAntiHigherPopMod;
 }
 
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeNumAttacksMadeThisTurnAttackMod(int iValue)
+{
+	m_iNumAttacksMadeThisTurnAttackMod += iValue;
+}
+int CvUnit::GetNumAttacksMadeThisTurnAttackMod() const
+{
+	return m_iNumAttacksMadeThisTurnAttackMod;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeNumSpyAttackMod(int iValue)
+{
+	m_iNumSpyAttackMod += iValue;
+}
+int CvUnit::GetNumSpyAttackMod() const
+{
+	return m_iNumSpyAttackMod;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeNumSpyDefenseMod(int iValue)
+{
+	m_iNumSpyDefenseMod += iValue;
+}
+int CvUnit::GetNumSpyDefenseMod() const
+{
+	return m_iNumSpyDefenseMod;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeNumWonderAttackMod(int iValue)
+{
+	m_iNumWonderAttackMod += iValue;
+}
+int CvUnit::GetNumWonderAttackMod() const
+{
+	return m_iNumWonderAttackMod;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeNumWonderDefenseMod(int iValue)
+{
+	m_iNumWonderDefenseMod += iValue;
+}
+int CvUnit::GetNumWonderDefenseMod() const
+{
+	return m_iNumWonderDefenseMod;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeNumWorkAttackMod(int iValue)
+{
+	m_iNumWorkAttackMod += iValue;
+}
+int CvUnit::GetNumWorkAttackMod() const
+{
+	return m_iNumWorkAttackMod;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeNumWorkDefenseMod(int iValue)
+{
+	m_iNumWorkDefenseMod += iValue;
+}
+int CvUnit::GetNumWorkDefenseMod() const
+{
+	return m_iNumWorkDefenseMod;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeNumSpyStayAttackMod(int iValue)
+{
+	m_iNumSpyStayAttackMod += iValue;
+}
+int CvUnit::GetNumSpyStayAttackMod() const
+{
+	return m_iNumSpyStayAttackMod;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeNumSpyStayDefenseMod(int iValue)
+{
+	m_iNumSpyStayDefenseMod += iValue;
+}
+int CvUnit::GetNumSpyStayDefenseMod() const
+{
+	return m_iNumSpyStayDefenseMod;
+}
 
 //	--------------------------------------------------------------------------------
 int CvUnit::GetCombatStrengthChangeFromKilledUnits() const
