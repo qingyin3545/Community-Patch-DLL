@@ -2156,6 +2156,39 @@ public:
 	void ChangeMoveUsedDefenseMod(int iValue);
 	int GetMoveUsedDefenseMod() const;
 
+	void ChangeGoldenAgeMod(int iValue);
+	int GetGoldenAgeMod() const;
+
+	void ChangeAntiHigherPopMod(int iValue);
+	int GetAntiHigherPopMod() const;
+
+	void ChangeNumAttacksMadeThisTurnAttackMod(int iValue);
+	int GetNumAttacksMadeThisTurnAttackMod() const;
+
+	void ChangeNumSpyDefenseMod(int iValue);
+	int GetNumSpyDefenseMod() const;
+
+	void ChangeNumSpyAttackMod(int iValue);
+	int GetNumSpyAttackMod() const;
+
+	void ChangeNumWonderAttackMod(int iValue);
+	int GetNumWonderAttackMod() const;
+
+	void ChangeNumWorkAttackMod(int iValue);
+	int GetNumWorkAttackMod() const;
+
+	void ChangeNumWonderDefenseMod(int iValue);
+	int GetNumWonderDefenseMod() const;
+
+	void ChangeNumWorkDefenseMod(int iValue);
+	int GetNumWorkDefenseMod() const;
+
+	void ChangeNumSpyStayAttackMod(int iValue);
+	int GetNumSpyStayAttackMod() const;
+
+	void ChangeNumSpyStayDefenseMod(int iValue);
+	int GetNumSpyStayDefenseMod() const;
+
 	int GetCombatStrengthChangeFromKilledUnits() const;
 	void ChangeCombatStrengthChangeFromKilledUnits(int iChange);
 	void SetCombatStrengthChangeFromKilledUnits(int iValue);
@@ -2679,6 +2712,17 @@ private:
 	int m_iMoveUsedAttackMod = 0;
 	int m_iMoveLeftDefenseMod = 0;
 	int m_iMoveUsedDefenseMod = 0;
+	int m_iGoldenAgeMod = 0;
+	int m_iAntiHigherPopMod = 0;
+	int m_iNumAttacksMadeThisTurnAttackMod = 0;
+	int m_iNumSpyDefenseMod = 0;
+	int m_iNumSpyAttackMod = 0;
+	int m_iNumWonderDefenseMod = 0;
+	int m_iNumWonderAttackMod = 0;
+	int m_iNumWorkDefenseMod = 0;
+	int m_iNumWorkAttackMod = 0;
+	int m_iNumSpyStayDefenseMod = 0;
+	int m_iNumSpyStayAttackMod = 0;
 
 	int m_iCombatStrengthChangeFromKilledUnits = 0;
 	int m_iRangedCombatStrengthChangeFromKilledUnits = 0;

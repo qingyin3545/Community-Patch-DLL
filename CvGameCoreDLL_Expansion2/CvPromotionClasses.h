@@ -451,6 +451,17 @@ public:
 	int GetMoveUsedAttackMod() const;
 	int GetMoveLeftDefenseMod() const;
 	int GetMoveUsedDefenseMod() const;
+	int GetGoldenAgeMod() const;
+	int GetAntiHigherPopMod() const;
+	int GetNumAttacksMadeThisTurnAttackMod() const;
+	int GetNumSpyDefenseMod() const;
+	int GetNumSpyAttackMod() const;
+	int GetNumWonderDefenseMod() const;
+	int GetNumWonderAttackMod() const;
+	int GetNumWorkDefenseMod() const;
+	int GetNumWorkAttackMod() const;
+	int GetNumSpyStayDefenseMod() const;
+	int GetNumSpyStayAttackMod() const;
 
 protected:
 	int m_iLayerAnimationPath;
@@ -838,6 +849,17 @@ protected:
 	int m_iMoveUsedAttackMod = 0;
 	int m_iMoveLeftDefenseMod = 0;
 	int m_iMoveUsedDefenseMod = 0;
+	int m_iGoldenAgeMod = 0;
+	int m_iAntiHigherPopMod = 0;
+	int m_iNumAttacksMadeThisTurnAttackMod = 0;
+	int m_iNumSpyDefenseMod = 0;
+	int m_iNumSpyAttackMod = 0;
+	int m_iNumWonderDefenseMod = 0;
+	int m_iNumWonderAttackMod = 0;
+	int m_iNumWorkDefenseMod = 0;
+	int m_iNumWorkAttackMod = 0;
+	int m_iNumSpyStayDefenseMod = 0;
+	int m_iNumSpyStayAttackMod = 0;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
