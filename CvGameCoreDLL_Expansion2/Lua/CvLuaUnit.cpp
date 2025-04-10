@@ -679,6 +679,17 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(GetMoveUsedAttackMod);
 	Method(GetMoveLeftDefenseMod);
 	Method(GetMoveUsedDefenseMod);
+	Method(GoldenAgeModTotal);
+	Method(GetAntiHigherPopMod);
+	Method(GetNumAttacksMadeThisTurnAttackMod);
+	Method(GetNumSpyDefenseMod);
+	Method(GetNumSpyAttackMod);
+	Method(GetNumWonderDefenseMod);
+	Method(GetNumWonderAttackMod);
+	Method(GetNumWorkDefenseMod);
+	Method(GetNumWorkAttackMod);
+	Method(GetNumSpyStayDefenseMod);
+	Method(GetNumSpyStayAttackMod);
 	Method(GetCombatStrengthChangeFromKilledUnits);
 	Method(ChangeCombatStrengthChangeFromKilledUnits);
 	Method(SetCombatStrengthChangeFromKilledUnits);
@@ -6831,6 +6842,22 @@ int CvLuaUnit::lIsNoResourcePunishment(lua_State* L)
 	return 1;
 }
 //------------------------------------------------------------------------------
+int CvLuaUnit::lGetMoveLeftAttackMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int bResult = pkUnit->GetMoveLeftAttackMod();
+	lua_pushinteger(L, bResult);
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetMoveUsedAttackMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int bResult = pkUnit->GetMoveUsedAttackMod();
+	lua_pushinteger(L, bResult);
+	return 1;
+}
+//------------------------------------------------------------------------------
 int CvLuaUnit::lGetMoveLeftDefenseMod(lua_State* L)
 {
 	CvUnit* pkUnit = GetInstance(L);
@@ -6847,18 +6874,96 @@ int CvLuaUnit::lGetMoveUsedDefenseMod(lua_State* L)
 	return 1;
 }
 //------------------------------------------------------------------------------
-int CvLuaUnit::lGetMoveLeftAttackMod(lua_State* L)
+int CvLuaUnit::lGoldenAgeModTotal(lua_State* L)
 {
 	CvUnit* pkUnit = GetInstance(L);
-	const int bResult = pkUnit->GetMoveLeftAttackMod();
+	int iResult = pkUnit->GetGoldenAgeMod();
+	if(pkUnit->getOwner() != NO_PLAYER)
+	{
+		iResult += GET_PLAYER(pkUnit->getOwner()).GetPlayerTraits()->GetGoldenAgeCombatModifier();
+	}
+	lua_pushinteger(L, iResult);
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetAntiHigherPopMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	CvUnit* pkOtherUnit = CvLuaUnit::GetInstance(L, 2);
+	int iResult = 0;
+	if(GET_PLAYER(pkOtherUnit->getOwner()).getTotalPopulation() > GET_PLAYER(pkUnit->getOwner()).getTotalPopulation())
+	{
+		iResult += pkUnit->GetAntiHigherPopMod();
+		iResult += GET_PLAYER(pkUnit->getOwner()).GetPlayerTraits()->GetCombatBonusVsHigherPop();
+	}
+	lua_pushinteger(L, iResult);
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetNumAttacksMadeThisTurnAttackMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int iResult = pkUnit->GetNumAttacksMadeThisTurnAttackMod();
+	lua_pushinteger(L, iResult);
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetNumSpyDefenseMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int bResult = pkUnit->GetNumSpyDefenseMod();
+	lua_pushinteger(L, bResult);
+	return 1;
+}
+int CvLuaUnit::lGetNumSpyAttackMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int bResult = pkUnit->GetNumSpyAttackMod();
 	lua_pushinteger(L, bResult);
 	return 1;
 }
 //------------------------------------------------------------------------------
-int CvLuaUnit::lGetMoveUsedAttackMod(lua_State* L)
+int CvLuaUnit::lGetNumWonderDefenseMod(lua_State* L)
 {
 	CvUnit* pkUnit = GetInstance(L);
-	const int bResult = pkUnit->GetMoveUsedAttackMod();
+	const int bResult = pkUnit->GetNumWonderDefenseMod();
+	lua_pushinteger(L, bResult);
+	return 1;
+}
+int CvLuaUnit::lGetNumWonderAttackMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int bResult = pkUnit->GetNumWonderAttackMod();
+	lua_pushinteger(L, bResult);
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetNumWorkDefenseMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int bResult = pkUnit->GetNumWorkDefenseMod();
+	lua_pushinteger(L, bResult);
+	return 1;
+}
+int CvLuaUnit::lGetNumWorkAttackMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int bResult = pkUnit->GetNumWorkAttackMod();
+	lua_pushinteger(L, bResult);
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetNumSpyStayDefenseMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int bResult = pkUnit->GetNumSpyStayDefenseMod();
+	lua_pushinteger(L, bResult);
+	return 1;
+}
+int CvLuaUnit::lGetNumSpyStayAttackMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const int bResult = pkUnit->GetNumSpyStayAttackMod();
 	lua_pushinteger(L, bResult);
 	return 1;
 }
