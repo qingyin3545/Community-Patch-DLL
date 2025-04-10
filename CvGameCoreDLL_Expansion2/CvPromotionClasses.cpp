@@ -1546,6 +1546,17 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iMoveUsedAttackMod = kResults.GetInt("MoveUsedAttackMod");
 	m_iMoveLeftDefenseMod = kResults.GetInt("MoveLeftDefenseMod");
 	m_iMoveUsedDefenseMod = kResults.GetInt("MoveUsedDefenseMod");
+	m_iGoldenAgeMod = kResults.GetInt("GoldenAgeMod");
+	m_iAntiHigherPopMod = kResults.GetInt("AntiHigherPopMod");
+	m_iNumAttacksMadeThisTurnAttackMod = kResults.GetInt("NumAttacksMadeThisTurnAttackMod");
+	m_iNumSpyDefenseMod = kResults.GetInt("NumSpyDefenseMod");
+	m_iNumSpyAttackMod = kResults.GetInt("NumSpyAttackMod");
+	m_iNumWonderDefenseMod = kResults.GetInt("NumWonderDefenseMod");
+	m_iNumWonderAttackMod = kResults.GetInt("NumWonderAttackMod");
+	m_iNumWorkDefenseMod = kResults.GetInt("NumWorkDefenseMod");
+	m_iNumWorkAttackMod = kResults.GetInt("NumWorkAttackMod");
+	m_iNumSpyStayDefenseMod = kResults.GetInt("NumSpyStayDefenseMod");
+	m_iNumSpyStayAttackMod = kResults.GetInt("NumSpyStayAttackMod");
 
 	return true;
 }
@@ -3998,6 +4009,50 @@ int CvPromotionEntry::GetMoveLeftDefenseMod() const
 int CvPromotionEntry::GetMoveUsedDefenseMod() const
 {
 	return m_iMoveUsedDefenseMod;
+}
+int CvPromotionEntry::GetGoldenAgeMod() const
+{
+	return m_iGoldenAgeMod;
+}
+int CvPromotionEntry::GetAntiHigherPopMod() const
+{
+	return m_iAntiHigherPopMod;
+}
+int CvPromotionEntry::GetNumAttacksMadeThisTurnAttackMod() const
+{
+	return m_iNumAttacksMadeThisTurnAttackMod;
+}
+int CvPromotionEntry::GetNumSpyAttackMod() const
+{
+	return m_iNumSpyAttackMod;
+}
+int CvPromotionEntry::GetNumSpyDefenseMod() const
+{
+	return m_iNumSpyDefenseMod;
+}
+int CvPromotionEntry::GetNumWonderAttackMod() const
+{
+	return m_iNumWonderAttackMod;
+}
+int CvPromotionEntry::GetNumWonderDefenseMod() const
+{
+	return m_iNumWonderDefenseMod;
+}
+int CvPromotionEntry::GetNumWorkAttackMod() const
+{
+	return m_iNumWorkAttackMod;
+}
+int CvPromotionEntry::GetNumWorkDefenseMod() const
+{
+	return m_iNumWorkDefenseMod;
+}
+int CvPromotionEntry::GetNumSpyStayAttackMod() const
+{
+	return m_iNumSpyStayAttackMod;
+}
+int CvPromotionEntry::GetNumSpyStayDefenseMod() const
+{
+	return m_iNumSpyStayDefenseMod;
 }
 
 //=====================================
