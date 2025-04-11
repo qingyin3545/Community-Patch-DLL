@@ -2188,6 +2188,15 @@ public:
 	void ChangeNumSpyStayDefenseMod(int iValue);
 	int GetNumSpyStayDefenseMod() const;
 
+	void ChangeRangedSupportFireMod(int iValue);
+	int GetRangedSupportFireMod() const;
+
+	int GetMeleeAttackModifier() const;
+	void ChangeMeleeAttackModifier(int iValue);
+
+	int GetMeleeDefenseModifier() const;
+	void ChangeMeleeDefenseModifier(int iValue);
+
 	int GetCombatStrengthChangeFromKilledUnits() const;
 	void ChangeCombatStrengthChangeFromKilledUnits(int iChange);
 	void SetCombatStrengthChangeFromKilledUnits(int iValue);
@@ -2722,6 +2731,9 @@ private:
 	int m_iNumWorkAttackMod = 0;
 	int m_iNumSpyStayDefenseMod = 0;
 	int m_iNumSpyStayAttackMod = 0;
+	int m_iRangedSupportFireMod = 0;
+	int m_iMeleeAttackModifier = 0;
+	int m_iMeleeDefenseModifier = 0;
 
 	int m_iCombatStrengthChangeFromKilledUnits = 0;
 	int m_iRangedCombatStrengthChangeFromKilledUnits = 0;
