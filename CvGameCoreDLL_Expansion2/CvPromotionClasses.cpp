@@ -1563,6 +1563,9 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iNumWorkAttackMod = kResults.GetInt("NumWorkAttackMod");
 	m_iNumSpyStayDefenseMod = kResults.GetInt("NumSpyStayDefenseMod");
 	m_iNumSpyStayAttackMod = kResults.GetInt("NumSpyStayAttackMod");
+	m_iRangedSupportFireMod = kResults.GetInt("RangedSupportFireMod");
+	m_iMeleeAttackModifier = kResults.GetInt("MeleeAttackModifier");
+	m_iMeleeDefenseMod = kResults.GetInt("MeleeDefenseMod");
 
 	return true;
 }
@@ -4076,6 +4079,18 @@ int CvPromotionEntry::GetNumSpyStayAttackMod() const
 int CvPromotionEntry::GetNumSpyStayDefenseMod() const
 {
 	return m_iNumSpyStayDefenseMod;
+}
+int CvPromotionEntry::GetRangedSupportFireMod() const
+{
+	return m_iRangedSupportFireMod;
+}
+int CvPromotionEntry::GetMeleeAttackModifier() const
+{
+	return m_iMeleeAttackModifier;
+}
+int CvPromotionEntry::GetMeleeDefenseMod() const
+{
+	return m_iMeleeDefenseMod;
 }
 
 //=====================================
