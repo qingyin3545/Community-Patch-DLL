@@ -1716,6 +1716,12 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iNumWorkAttackMod = 0;
 	m_iNumSpyStayDefenseMod = 0;
 	m_iNumSpyStayAttackMod = 0;
+	m_iRangedSupportFireMod = 0;
+	m_iMeleeAttackModifier = 0;
+	m_iMeleeDefenseModifier = 0;
+
+	m_iCombatStrengthChangeFromKilledUnits = 0;
+	m_iRangedCombatStrengthChangeFromKilledUnits = 0;
 
 	if(!bConstructorCall)
 	{
@@ -16483,6 +16489,7 @@ int CvUnit::GetMaxAttackStrength(const CvPlot* pFromPlot, const CvPlot* pToPlot,
 		iModifier += iMovesUsed * iMoveUsedAttackModValue;
 	}
 
+	iModifier += GetMeleeAttackModifier();
 	iModifier += GetNumAttacksMadeThisTurnAttackMod()* getNumAttacksMadeThisTurn();
 
 	int iNumSpyAttackMod = GetNumSpyAttackMod();
@@ -16736,6 +16743,8 @@ int CvUnit::GetMaxDefenseStrength(const CvPlot* pInPlot, const CvUnit* pAttacker
 	}
 
 	CvPlayerAI& kPlayer = GET_PLAYER(getOwner());
+	if (!bFromRangedAttack) iModifier += GetMeleeDefenseModifier();
+
 	// Generic Move Left modifier
 	if (movesLeft() > 0)
 	{
@@ -16990,11 +16999,18 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 	CvGameReligions* pReligions = GC.getGame().GetGameReligions();
 	ReligionTypes eStateReligion = kPlayer.GetReligions()->GetStateReligion();
 
-	int iBaseStrength = GetBaseRangedCombatStrength();
+	int iBaseStrength = 0;
 
 	//fake ranged unit (impi)
 	if (isRangedSupportFire())
+	{
 		iBaseStrength = GetBaseCombatStrength() / 2;
+		iBaseStrength *= (100 + GetRangedSupportFireMod()) / 100;
+	}
+	else
+	{
+		iBaseStrength = GetBaseRangedCombatStrength();
+	}
 
 	if (iBaseStrength == 0)
 	{
@@ -28479,6 +28495,9 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 	ChangeNumWorkDefenseMod(thisPromotion.GetNumWorkDefenseMod()* iChange);
 	ChangeNumSpyStayAttackMod(thisPromotion.GetNumSpyStayAttackMod()* iChange);
 	ChangeNumSpyStayDefenseMod(thisPromotion.GetNumSpyStayDefenseMod()* iChange);
+	ChangeRangedSupportFireMod(thisPromotion.GetRangedSupportFireMod() * iChange);
+	ChangeMeleeAttackModifier((thisPromotion.GetMeleeAttackModifier()) * iChange);
+	ChangeMeleeDefenseModifier(thisPromotion.GetMeleeDefenseMod() * iChange);
 
 	if (IsSelected())
 	{
@@ -29204,6 +29223,20 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iMoveUsedAttackMod);
 	visitor(unit.m_iMoveLeftDefenseMod);
 	visitor(unit.m_iMoveUsedDefenseMod);
+	visitor(unit.m_iGoldenAgeMod);
+	visitor(unit.m_iAntiHigherPopMod);
+	visitor(unit.m_iNumAttacksMadeThisTurnAttackMod);
+	visitor(unit.m_iNumSpyDefenseMod);
+	visitor(unit.m_iNumSpyAttackMod);
+	visitor(unit.m_iNumWonderDefenseMod);
+	visitor(unit.m_iNumWonderAttackMod);
+	visitor(unit.m_iNumWorkDefenseMod);
+	visitor(unit.m_iNumWorkAttackMod);
+	visitor(unit.m_iNumSpyStayDefenseMod);
+	visitor(unit.m_iNumSpyStayAttackMod);
+	visitor(unit.m_iRangedSupportFireMod);
+	visitor(unit.m_iMeleeAttackModifier);
+	visitor(unit.m_iMeleeDefenseModifier);
 	visitor(unit.m_iCombatStrengthChangeFromKilledUnits);
 	visitor(unit.m_iRangedCombatStrengthChangeFromKilledUnits);
 }
@@ -32409,6 +32442,15 @@ int CvUnit::AI_promotionValue(PromotionTypes ePromotion)
 		iValue += iTemp + iFlavorOffense * 2;
 	}
 
+	iTemp = pkPromotionInfo->GetMeleeAttackModifier();
+	if(iTemp != 0 && IsCanAttackWithMove())
+	{
+		iExtra = GetMeleeAttackModifier() * 2;
+		iTemp *= (100 + iExtra);
+		iTemp /= 100;
+		iValue += iTemp + iFlavorOffense * 2;
+	}
+
 			// General Defense
 
 	
@@ -32504,6 +32546,25 @@ int CvUnit::AI_promotionValue(PromotionTypes ePromotion)
 		iExtra = GetMoveUsedDefenseMod() * 2;
 		iTemp *= (100 + iExtra);
 		iTemp /= 100;
+		iValue += iTemp + iFlavorDefense * 2;
+	}
+
+	iTemp = pkPromotionInfo->GetMeleeDefenseMod();
+	if (iTemp != 0)
+	{
+		iExtra = GetMeleeDefenseModifier() * 2;
+		iTemp *= (100 + iExtra);
+		iTemp /= 100;
+		// likely not a ranged unit
+		if ((AI_getUnitAIType() == UNITAI_DEFENSE) || (AI_getUnitAIType() == UNITAI_RANGED) || (AI_getUnitAIType() == UNITAI_ATTACK))
+		{
+			iTemp *= 2;
+		}
+		// a slow unit
+		if (maxMoves() / GC.getMOVE_DENOMINATOR() <= 2)
+		{
+			iTemp *= 2;
+		}
 		iValue += iTemp + iFlavorDefense * 2;
 	}
 
@@ -35266,6 +35327,36 @@ void CvUnit::ChangeNumSpyStayDefenseMod(int iValue)
 int CvUnit::GetNumSpyStayDefenseMod() const
 {
 	return m_iNumSpyStayDefenseMod;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeRangedSupportFireMod(int iValue)
+{
+	m_iRangedSupportFireMod += iValue;
+}
+int CvUnit::GetRangedSupportFireMod() const
+{
+	return m_iRangedSupportFireMod;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeMeleeAttackModifier(int iValue)
+{
+	m_iMeleeAttackModifier += iValue;
+}
+int CvUnit::GetMeleeAttackModifier() const
+{
+	return m_iMeleeAttackModifier;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetMeleeDefenseModifier() const
+{
+	return m_iMeleeDefenseModifier;
+}
+void CvUnit::ChangeMeleeDefenseModifier(int iValue)
+{
+	m_iMeleeDefenseModifier += iValue;
 }
 
 //	--------------------------------------------------------------------------------
