@@ -690,6 +690,8 @@ protected:
 	static int lGetNumWorkAttackMod(lua_State* L);
 	static int lGetNumSpyStayDefenseMod(lua_State* L);
 	static int lGetNumSpyStayAttackMod(lua_State* L);
+	LUAAPIEXTN(GetMeleeAttackModifier, int);
+	LUAAPIEXTN(GetMeleeDefenseModifier, int);
 	static int lGetCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lChangeCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lSetCombatStrengthChangeFromKilledUnits(lua_State* L);
