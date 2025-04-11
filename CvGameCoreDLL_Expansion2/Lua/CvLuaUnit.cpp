@@ -711,6 +711,8 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(GetNumWorkAttackMod);
 	Method(GetNumSpyStayDefenseMod);
 	Method(GetNumSpyStayAttackMod);
+	Method(GetMeleeAttackModifier);
+	Method(GetMeleeDefenseModifier);
 	Method(GetCombatStrengthChangeFromKilledUnits);
 	Method(ChangeCombatStrengthChangeFromKilledUnits);
 	Method(SetCombatStrengthChangeFromKilledUnits);
@@ -6943,6 +6945,9 @@ int CvLuaUnit::lGetNumSpyStayAttackMod(lua_State* L)
 	lua_pushinteger(L, bResult);
 	return 1;
 }
+//------------------------------------------------------------------------------
+LUAAPIIMPL(Unit, GetMeleeAttackModifier)
+LUAAPIIMPL(Unit, GetMeleeDefenseModifier)
 //------------------------------------------------------------------------------
 int CvLuaUnit::lGetDamageFixValueToUnit(lua_State* L)
 {
