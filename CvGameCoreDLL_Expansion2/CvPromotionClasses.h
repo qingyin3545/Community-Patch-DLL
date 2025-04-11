@@ -453,6 +453,9 @@ public:
 	int GetNumWorkAttackMod() const;
 	int GetNumSpyStayDefenseMod() const;
 	int GetNumSpyStayAttackMod() const;
+	int GetRangedSupportFireMod() const;
+	int GetMeleeAttackModifier() const;
+	int GetMeleeDefenseMod() const;
 
 protected:
 	int m_iLayerAnimationPath;
@@ -860,6 +863,9 @@ protected:
 	int m_iNumWorkAttackMod = 0;
 	int m_iNumSpyStayDefenseMod = 0;
 	int m_iNumSpyStayAttackMod = 0;
+	int m_iRangedSupportFireMod = 0;
+	int m_iMeleeAttackModifier = 0;
+	int m_iMeleeDefenseMod = 0;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
