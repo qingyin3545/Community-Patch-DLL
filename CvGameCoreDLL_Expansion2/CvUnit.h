@@ -2198,6 +2198,48 @@ public:
 	int GetMeleeDefenseModifier() const;
 	void ChangeMeleeDefenseModifier(int iValue);
 
+	int GetDoFallBackAttackMod() const;
+	void ChangeDoFallBackAttackMod(int iValue);
+	int GetNumDoFallBackThisTurn() const;
+	void ChangeNumDoFallBackThisTurn(int iChange);
+	void ClearNumDoFallBackThisTurn();
+
+	int GetBeFallBackDefenseMod() const;
+	void ChangeBeFallBackDefenseMod(int iValue);
+	int GetNumBeFallBackThisTurn() const;
+	void ChangeNumBeFallBackThisTurn(int iChange);
+	void ClearNumBeFallBackThisTurn();
+
+	int GetNumOriginalCapitalAttackMod() const;
+	void ChangeNumOriginalCapitalAttackMod(int iValue);
+
+	int GetNumOriginalCapitalDefenseMod() const;
+	void ChangeNumOriginalCapitalDefenseMod(int iValue);
+
+	int GetOnCapitalLandAttackMod() const;
+	void ChangeOnCapitalLandAttackMod(int iValue);
+
+	int GetOutsideCapitalLandAttackMod() const;
+	void ChangeOutsideCapitalLandAttackMod(int iValue);
+
+	int GetOnCapitalLandDefenseMod() const;
+	void ChangeOnCapitalLandDefenseMod(int iValue);
+	
+	int GetOutsideCapitalLandDefenseMod() const;
+	void ChangeOutsideCapitalLandDefenseMod(int iValue);
+
+	int GetLostHitPointAttackMod() const;
+	void ChangeLostHitPointAttackMod(int iValue);
+
+	int GetLostHitPointDefenseMod() const;
+	void ChangeLostHitPointDefenseMod(int iValue);
+
+	int GetNearNumEnemyAttackMod() const;
+	void ChangeNearNumEnemyAttackMod(int iValue);
+
+	int GetNearNumEnemyDefenseMod() const;
+	void ChangeNearNumEnemyDefenseMod(int iValue);
+
 	int GetCombatStrengthChangeFromKilledUnits() const;
 	void ChangeCombatStrengthChangeFromKilledUnits(int iChange);
 	void SetCombatStrengthChangeFromKilledUnits(int iValue);
@@ -2735,6 +2777,20 @@ private:
 	int m_iRangedSupportFireMod = 0;
 	int m_iMeleeAttackModifier = 0;
 	int m_iMeleeDefenseModifier = 0;
+	int m_iDoFallBackAttackMod = 0;
+	int m_iNumDoFallBackThisTurn = 0;
+	int m_iBeFallBackDefenseMod = 0;
+	int m_iNumBeFallBackThisTurn = 0;
+	int m_iNumOriginalCapitalAttackMod = 0;
+	int m_iNumOriginalCapitalDefenseMod = 0;
+	int m_iOnCapitalLandAttackMod = 0;
+	int m_iOutsideCapitalLandAttackMod = 0;
+	int m_iOnCapitalLandDefenseMod = 0;
+	int m_iOutsideCapitalLandDefenseMod = 0;
+	int m_iLostHitPointAttackMod = 0;
+	int m_iLostHitPointDefenseMod = 0;
+	int m_iNearNumEnemyAttackMod = 0;
+	int m_iNearNumEnemyDefenseMod = 0;
 
 	int m_iCombatStrengthChangeFromKilledUnits = 0;
 	int m_iRangedCombatStrengthChangeFromKilledUnits = 0;
