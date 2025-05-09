@@ -1582,6 +1582,7 @@ protected:
 	LUAAPIEXTN(GetCivUnitNowTech, int);
 	LUAAPIEXTN(GetUnitCountFromHasPromotion, int, ePromotionType);
 	LUAAPIEXTN(GetUnitsListFromHasPromotion, table, ePromotionType);
+	LUAAPIEXTN(GetNumOtherMajorCapitals, int);
 };
 
 namespace CvLuaArgs
