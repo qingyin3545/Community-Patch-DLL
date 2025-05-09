@@ -692,6 +692,20 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(GetNumSpyStayAttackMod);
 	Method(GetMeleeAttackModifier);
 	Method(GetMeleeDefenseModifier);
+	Method(GetDoFallBackAttackMod);
+	Method(GetBeFallBackDefenseMod);
+	Method(GetNumDoFallBackThisTurn);
+	Method(GetNumBeFallBackThisTurn);
+	Method(GetNumOriginalCapitalAttackMod);
+	Method(GetNumOriginalCapitalDefenseMod);
+	Method(GetOnCapitalLandAttackMod);
+	Method(GetOutsideCapitalLandAttackMod);
+	Method(GetOnCapitalLandDefenseMod);
+	Method(GetOutsideCapitalLandDefenseMod);
+	Method(GetLostHitPointAttackMod);
+	Method(GetLostHitPointDefenseMod);
+	Method(GetNearNumEnemyAttackMod);
+	Method(GetNearNumEnemyDefenseMod);
 	Method(GetCombatStrengthChangeFromKilledUnits);
 	Method(ChangeCombatStrengthChangeFromKilledUnits);
 	Method(SetCombatStrengthChangeFromKilledUnits);
@@ -6972,6 +6986,20 @@ int CvLuaUnit::lGetNumSpyStayAttackMod(lua_State* L)
 //------------------------------------------------------------------------------
 LUAAPIIMPL(Unit, GetMeleeAttackModifier)
 LUAAPIIMPL(Unit, GetMeleeDefenseModifier)
+LUAAPIIMPL(Unit, GetDoFallBackAttackMod)
+LUAAPIIMPL(Unit, GetBeFallBackDefenseMod)
+LUAAPIIMPL(Unit, GetNumDoFallBackThisTurn)
+LUAAPIIMPL(Unit, GetNumBeFallBackThisTurn)
+LUAAPIIMPL(Unit, GetNumOriginalCapitalAttackMod)
+LUAAPIIMPL(Unit, GetNumOriginalCapitalDefenseMod)
+LUAAPIIMPL(Unit, GetOnCapitalLandAttackMod)
+LUAAPIIMPL(Unit, GetOutsideCapitalLandAttackMod)
+LUAAPIIMPL(Unit, GetOnCapitalLandDefenseMod)
+LUAAPIIMPL(Unit, GetOutsideCapitalLandDefenseMod)
+LUAAPIIMPL(Unit, GetLostHitPointAttackMod)
+LUAAPIIMPL(Unit, GetLostHitPointDefenseMod)
+LUAAPIIMPL(Unit, GetNearNumEnemyAttackMod)
+LUAAPIIMPL(Unit, GetNearNumEnemyDefenseMod)
 //------------------------------------------------------------------------------
 int CvLuaUnit::lGetDamageFixValueToUnit(lua_State* L)
 {
