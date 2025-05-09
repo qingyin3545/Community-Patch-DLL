@@ -20,19 +20,23 @@ ALTER TABLE UnitPromotions ADD 'NumSpyStayAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'RangedSupportFireMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'MeleeAttackModifier' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'MeleeDefenseMod' INTEGER DEFAULT 0;
-
+-- SP-TODO: Lua Interface Changed
 ALTER TABLE UnitPromotions ADD 'DoFallBackAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'BeFallBackDefenseMod' INTEGER DEFAULT 0;
+-- SP_TODO: Lua Interface Changed && Content Changed
 ALTER TABLE UnitPromotions ADD 'NumOriginalCapitalAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NumOriginalCapitalDefenseMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'OnCapitalLandAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'OutsideCapitalLandAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'OnCapitalLandDefenseMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'OutsideCapitalLandDefenseMod' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'CurrentHitPointAttackMod' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'CurrentHitPointDefenseMod' INTEGER DEFAULT 0;
+-- SP-TODO: Interface Name CurrentHitPoint -> LostHitPoint
+ALTER TABLE UnitPromotions ADD 'LostHitPointAttackMod' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'LostHitPointDefenseMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NearNumEnemyAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NearNumEnemyDefenseMod' INTEGER DEFAULT 0;
+
+
 CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionModifiers (
     `PromotionType` TEXT DEFAULT '',
     `OtherPromotionType` TEXT DEFAULT '',
@@ -61,6 +65,7 @@ ALTER TABLE UnitPromotions ADD COLUMN 'ExtraHappinessCombatModifierMax' INTEGER 
 ALTER TABLE UnitPromotions ADD COLUMN 'GetGroundAttackRange' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'NearbyUnitPromotionBonus' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'NearbyUnitPromotionBonusRange' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD COLUMN 'NearbyUnitPromotionBonusMax' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'CombatBonusFromNearbyUnitPromotion' TEXT NOT NULL REFERENCES UnitPromotions(Type);
 ALTER TABLE UnitPromotions ADD 'HPHealedIfDestroyEnemyGlobal' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'CanParadropAnyWhere' BOOLEAN DEFAULT 0;
@@ -103,6 +108,7 @@ ALTER TABLE UnitPromotions ADD COLUMN 'WoundedMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'RangeSuppressModifier' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'Immobile' BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'MilitaryMightMod' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD COLUMN 'FreeExpPerTurn' INTEGER DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS UnitPromotions_InstantYieldPerReligionFollowerConverted (
     `PromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
