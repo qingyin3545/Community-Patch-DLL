@@ -1719,6 +1719,20 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iRangedSupportFireMod = 0;
 	m_iMeleeAttackModifier = 0;
 	m_iMeleeDefenseModifier = 0;
+	m_iDoFallBackAttackMod = 0;
+	m_iNumDoFallBackThisTurn = 0;
+	m_iBeFallBackDefenseMod = 0;
+	m_iNumBeFallBackThisTurn = 0;
+	m_iNumOriginalCapitalAttackMod = 0;
+	m_iNumOriginalCapitalDefenseMod = 0;
+	m_iOnCapitalLandAttackMod = 0;
+	m_iOutsideCapitalLandAttackMod = 0;
+	m_iOnCapitalLandDefenseMod = 0;
+	m_iOutsideCapitalLandDefenseMod = 0;
+	m_iLostHitPointAttackMod = 0;
+	m_iLostHitPointDefenseMod = 0;
+	m_iNearNumEnemyAttackMod = 0;
+	m_iNearNumEnemyDefenseMod = 0;
 
 	m_iCombatStrengthChangeFromKilledUnits = 0;
 	m_iRangedCombatStrengthChangeFromKilledUnits = 0;
@@ -3282,6 +3296,8 @@ void CvUnit::doTurn()
 #ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
 	RemoveDebuffWhenDoTurn();
 #endif
+	ClearNumDoFallBackThisTurn();
+	ClearNumBeFallBackThisTurn();
 
 	// Only increase our Fortification level if we've actually been told to Fortify
 	if(IsFortified() && GetDamageAoEFortified() > 0)
@@ -16495,6 +16511,25 @@ int CvUnit::GetMaxAttackStrength(const CvPlot* pFromPlot, const CvPlot* pToPlot,
 
 	iModifier += GetMeleeAttackModifier();
 	iModifier += GetNumAttacksMadeThisTurnAttackMod()* getNumAttacksMadeThisTurn();
+	iModifier += GetNumDoFallBackThisTurn() * GetDoFallBackAttackMod();
+
+	int iNumOriginalCapitalAttackMod = GetNumOriginalCapitalAttackMod();
+	if(iNumOriginalCapitalAttackMod != 0)
+	{
+		iModifier += iNumOriginalCapitalAttackMod * kPlayer.GetNumCapitalCities();
+	}
+
+	int iLostHitPointAttackMod = GetLostHitPointAttackMod();
+	if(iLostHitPointAttackMod != 0)
+	{
+		iModifier = iLostHitPointAttackMod * std::min(100, getDamage());
+	}
+
+	int iNearNumEnemyMod = GetNearNumEnemyAttackMod();
+	if (iNearNumEnemyMod != 0)
+	{
+		iModifier += iNearNumEnemyMod * GetNumEnemyUnitsAdjacent();
+	}
 
 	int iNumSpyAttackMod = GetNumSpyAttackMod();
 	if (iNumSpyAttackMod > 0)
@@ -16574,6 +16609,15 @@ int CvUnit::GetMaxAttackStrength(const CvPlot* pFromPlot, const CvPlot* pToPlot,
 				if(pToPlot->isHills())
 					iModifier += terrainAttackModifier(TERRAIN_HILL);
 			}
+		}
+
+		CvCity* pCapital = kPlayer.getCapitalCity();
+		if(pCapital)
+		{
+			if (pToPlot->area() == pCapital->plot()->area())
+				iModifier += GetOnCapitalLandAttackMod();
+			else
+				iModifier += GetOutsideCapitalLandAttackMod();
 		}
 
 		// VP Terrain Attack Mod
@@ -16765,6 +16809,26 @@ int CvUnit::GetMaxDefenseStrength(const CvPlot* pInPlot, const CvUnit* pAttacker
 		iModifier += iMovesUsed * iMoveUsedDefenseModValue;
 	}
 
+	iModifier += GetNumBeFallBackThisTurn() * GetBeFallBackDefenseMod();
+
+	int iNumOriginalCapitalDefenseMod = GetNumOriginalCapitalDefenseMod();
+	if(iNumOriginalCapitalDefenseMod != 0)
+	{
+		iModifier += iNumOriginalCapitalDefenseMod * kPlayer.GetNumCapitalCities();
+	}
+
+	int iLostHitPointDefenseMod = GetLostHitPointDefenseMod();
+	if(iLostHitPointDefenseMod != 0)
+	{
+		iModifier = iLostHitPointDefenseMod * std::min(100, getDamage());
+	}
+
+	int iNearNumEnemyMod = GetNearNumEnemyDefenseMod();
+	if (iNearNumEnemyMod != 0)
+	{
+		iModifier += iNearNumEnemyMod * GetNumEnemyUnitsAdjacent();
+	}
+
 	int iNumSpyDefenseMod = GetNumSpyDefenseMod();
 	if (iNumSpyDefenseMod > 0)
 	{
@@ -16836,6 +16900,15 @@ int CvUnit::GetMaxDefenseStrength(const CvPlot* pInPlot, const CvUnit* pAttacker
 		// Flanking
 		if (pFromPlot && !bFromRangedAttack && !bQuickAndDirty)
 			iModifier += pInPlot->GetEffectiveFlankingBonus(this, pAttacker, pFromPlot);
+		
+		CvCity* pCapital = GET_PLAYER(getOwner()).getCapitalCity();
+		if(pCapital)
+		{
+			if (pInPlot->area() == pCapital->plot()->area())
+				iModifier += GetOnCapitalLandDefenseMod();
+			else
+				iModifier += GetOutsideCapitalLandDefenseMod();
+		}
 	}
 
 	////////////////////////
@@ -17589,6 +17662,34 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 		}
 
 		iModifier += GetNumAttacksMadeThisTurnAttackMod() * getNumAttacksMadeThisTurn();
+		iModifier += GetNumDoFallBackThisTurn() * GetDoFallBackAttackMod();
+
+		int iNumOriginalCapitalAttackMod = GetNumOriginalCapitalAttackMod();
+		if(iNumOriginalCapitalAttackMod != 0)
+		{
+			iModifier += iNumOriginalCapitalAttackMod * kPlayer.GetNumCapitalCities();
+		}
+
+		int iLostHitPointAttackMod = GetLostHitPointAttackMod();
+		if(iLostHitPointAttackMod != 0)
+		{
+			iModifier = iLostHitPointAttackMod * std::min(100, getDamage());
+		}
+
+		int iNearNumEnemyMod = GetNearNumEnemyAttackMod();
+		if (iNearNumEnemyMod != 0)
+		{
+			iModifier += iNearNumEnemyMod * GetNumEnemyUnitsAdjacent();
+		}
+
+		CvCity* pCapital = kPlayer.getCapitalCity();
+		if(pCapital && pTargetPlot)
+		{
+			if (pTargetPlot->area() == pCapital->plot()->area())
+				iModifier += GetOnCapitalLandAttackMod();
+			else
+				iModifier += GetOutsideCapitalLandAttackMod();
+		}
 
 		int iNumSpyAttackMod = GetNumSpyAttackMod();
 		if (iNumSpyAttackMod > 0)
@@ -17645,6 +17746,35 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 			int iMovesUsed = (maxMoves() - movesLeft()) / GC.getMOVE_DENOMINATOR();
 			int iMoveUsedDefenseModValue = GetMoveUsedDefenseMod();
 			iModifier += iMovesUsed * iMoveUsedDefenseModValue;
+		}
+
+		iModifier += GetNumBeFallBackThisTurn() * GetBeFallBackDefenseMod();
+
+		int iNumOriginalCapitalDefenseMod = GetNumOriginalCapitalDefenseMod();
+		if(iNumOriginalCapitalDefenseMod != 0)
+		{
+			iModifier += iNumOriginalCapitalDefenseMod * kPlayer.GetNumCapitalCities();
+		}
+
+		int iLostHitPointDefenseMod = GetLostHitPointDefenseMod();
+		if(iLostHitPointDefenseMod != 0)
+		{
+			iModifier = iLostHitPointDefenseMod * std::min(100, getDamage());
+		}
+
+		int iNearNumEnemyMod = GetNearNumEnemyDefenseMod();
+		if (iNearNumEnemyMod != 0)
+		{
+			iModifier += iNearNumEnemyMod * GetNumEnemyUnitsAdjacent();
+		}
+
+		CvCity* pCapital = kPlayer.getCapitalCity();
+		if(pCapital && pTargetPlot)
+		{
+			if (pTargetPlot->area() == pCapital->plot()->area())
+				iModifier += GetOnCapitalLandDefenseMod();
+			else
+				iModifier += GetOutsideCapitalLandDefenseMod();
 		}
 
 		int iNumSpyDefenseMod = GetNumSpyDefenseMod();
@@ -28502,6 +28632,18 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 	ChangeRangedSupportFireMod(thisPromotion.GetRangedSupportFireMod() * iChange);
 	ChangeMeleeAttackModifier((thisPromotion.GetMeleeAttackModifier()) * iChange);
 	ChangeMeleeDefenseModifier(thisPromotion.GetMeleeDefenseMod() * iChange);
+	ChangeDoFallBackAttackMod(thisPromotion.GetDoFallBackAttackMod()* iChange);
+	ChangeBeFallBackDefenseMod(thisPromotion.GetBeFallBackDefenseMod()* iChange);
+	ChangeNumOriginalCapitalAttackMod(thisPromotion.GetNumOriginalCapitalAttackMod() * iChange);
+	ChangeNumOriginalCapitalDefenseMod(thisPromotion.GetNumOriginalCapitalDefenseMod() * iChange);
+	ChangeOnCapitalLandAttackMod(thisPromotion.GetOnCapitalLandAttackMod()* iChange);
+	ChangeOutsideCapitalLandAttackMod(thisPromotion.GetOutsideCapitalLandAttackMod()* iChange);
+	ChangeOnCapitalLandDefenseMod(thisPromotion.GetOnCapitalLandDefenseMod()* iChange);
+	ChangeOutsideCapitalLandDefenseMod(thisPromotion.GetOutsideCapitalLandDefenseMod() * iChange);
+	ChangeLostHitPointAttackMod(thisPromotion.GetLostHitPointAttackMod() * iChange);
+	ChangeLostHitPointDefenseMod(thisPromotion.GetLostHitPointDefenseMod() * iChange);
+	ChangeNearNumEnemyAttackMod(thisPromotion.GetNearNumEnemyAttackMod() * iChange);
+	ChangeNearNumEnemyDefenseMod(thisPromotion.GetNearNumEnemyDefenseMod() * iChange);
 
 	if (IsSelected())
 	{
@@ -29241,6 +29383,20 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iRangedSupportFireMod);
 	visitor(unit.m_iMeleeAttackModifier);
 	visitor(unit.m_iMeleeDefenseModifier);
+	visitor(unit.m_iDoFallBackAttackMod);
+	visitor(unit.m_iNumDoFallBackThisTurn);
+	visitor(unit.m_iBeFallBackDefenseMod);
+	visitor(unit.m_iNumBeFallBackThisTurn);
+	visitor(unit.m_iNumOriginalCapitalAttackMod);
+	visitor(unit.m_iNumOriginalCapitalDefenseMod);
+	visitor(unit.m_iOnCapitalLandAttackMod);
+	visitor(unit.m_iOutsideCapitalLandAttackMod);
+	visitor(unit.m_iOnCapitalLandDefenseMod);
+	visitor(unit.m_iOutsideCapitalLandDefenseMod);
+	visitor(unit.m_iLostHitPointAttackMod);
+	visitor(unit.m_iLostHitPointDefenseMod);
+	visitor(unit.m_iNearNumEnemyAttackMod);
+	visitor(unit.m_iNearNumEnemyDefenseMod);
 	visitor(unit.m_iCombatStrengthChangeFromKilledUnits);
 	visitor(unit.m_iRangedCombatStrengthChangeFromKilledUnits);
 }
@@ -32159,6 +32315,9 @@ bool CvUnit::DoFallBack(const CvUnit& attacker, bool bWithdraw, bool bCaptured)
 		if (bWithdraw)
 			m_bHasWithdrawnThisTurn = true;
 	}
+
+	const_cast<CvUnit*>(&attacker)->ChangeNumDoFallBackThisTurn(1);
+	ChangeNumBeFallBackThisTurn(1);
 
 	return true;
 }
@@ -35361,6 +35520,150 @@ int CvUnit::GetMeleeDefenseModifier() const
 void CvUnit::ChangeMeleeDefenseModifier(int iValue)
 {
 	m_iMeleeDefenseModifier += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetDoFallBackAttackMod() const
+{
+	return m_iDoFallBackAttackMod;
+}
+void CvUnit::ChangeDoFallBackAttackMod(int iValue)
+{
+	m_iDoFallBackAttackMod += iValue;
+}
+int CvUnit::GetNumDoFallBackThisTurn() const
+{
+	return m_iNumDoFallBackThisTurn;
+}
+void CvUnit::ChangeNumDoFallBackThisTurn(int iChange)
+{
+	m_iNumDoFallBackThisTurn += iChange;
+}
+void CvUnit::ClearNumDoFallBackThisTurn()
+{
+	m_iNumDoFallBackThisTurn = 0;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetBeFallBackDefenseMod() const
+{
+	return m_iBeFallBackDefenseMod;
+}
+void CvUnit::ChangeBeFallBackDefenseMod(int iValue)
+{
+	m_iBeFallBackDefenseMod += iValue;
+}
+int CvUnit::GetNumBeFallBackThisTurn() const
+{
+	return m_iNumBeFallBackThisTurn;
+}
+void CvUnit::ChangeNumBeFallBackThisTurn(int iChange)
+{
+	m_iNumBeFallBackThisTurn += iChange;
+}
+void CvUnit::ClearNumBeFallBackThisTurn()
+{
+	m_iNumBeFallBackThisTurn = 0;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetNumOriginalCapitalAttackMod() const
+{
+	return m_iNumOriginalCapitalAttackMod;
+}
+void CvUnit::ChangeNumOriginalCapitalAttackMod(int iValue)
+{
+	m_iNumOriginalCapitalAttackMod += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetNumOriginalCapitalDefenseMod() const
+{
+	return m_iNumOriginalCapitalDefenseMod;
+}
+void CvUnit::ChangeNumOriginalCapitalDefenseMod(int iValue)
+{
+	m_iNumOriginalCapitalDefenseMod += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetOnCapitalLandAttackMod() const
+{
+	return m_iOnCapitalLandAttackMod;
+}
+void CvUnit::ChangeOnCapitalLandAttackMod(int iValue)
+{
+	m_iOnCapitalLandAttackMod += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetOutsideCapitalLandAttackMod() const
+{
+	return m_iOutsideCapitalLandAttackMod;
+}
+void CvUnit::ChangeOutsideCapitalLandAttackMod(int iValue)
+{
+	m_iOutsideCapitalLandAttackMod += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetOnCapitalLandDefenseMod() const
+{
+	return m_iOnCapitalLandDefenseMod;
+}
+void CvUnit::ChangeOnCapitalLandDefenseMod(int iValue)
+{
+	m_iOnCapitalLandDefenseMod += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetOutsideCapitalLandDefenseMod() const
+{
+	return m_iOutsideCapitalLandDefenseMod;
+}
+void CvUnit::ChangeOutsideCapitalLandDefenseMod(int iValue)
+{
+	m_iOutsideCapitalLandDefenseMod += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetLostHitPointAttackMod() const
+{
+	return m_iLostHitPointAttackMod;
+}
+void CvUnit::ChangeLostHitPointAttackMod(int iValue)
+{
+	m_iLostHitPointAttackMod += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetLostHitPointDefenseMod() const
+{
+	return m_iLostHitPointDefenseMod;
+}
+void CvUnit::ChangeLostHitPointDefenseMod(int iValue)
+{
+	m_iLostHitPointDefenseMod += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetNearNumEnemyAttackMod() const
+{
+	return m_iNearNumEnemyAttackMod;
+}
+void CvUnit::ChangeNearNumEnemyAttackMod(int iValue)
+{
+	m_iNearNumEnemyAttackMod += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetNearNumEnemyDefenseMod() const
+{
+	return m_iNearNumEnemyDefenseMod;
+}
+void CvUnit::ChangeNearNumEnemyDefenseMod(int iValue)
+{
+	m_iNearNumEnemyDefenseMod += iValue;
 }
 
 //	--------------------------------------------------------------------------------
