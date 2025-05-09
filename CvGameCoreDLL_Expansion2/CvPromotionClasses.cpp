@@ -1436,6 +1436,18 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iRangedSupportFireMod = kResults.GetInt("RangedSupportFireMod");
 	m_iMeleeAttackModifier = kResults.GetInt("MeleeAttackModifier");
 	m_iMeleeDefenseMod = kResults.GetInt("MeleeDefenseMod");
+	m_iDoFallBackAttackMod = kResults.GetInt("DoFallBackAttackMod");
+	m_iBeFallBackDefenseMod = kResults.GetInt("BeFallBackDefenseMod");
+	m_iNumOriginalCapitalAttackMod = kResults.GetInt("NumOriginalCapitalAttackMod");
+	m_iNumOriginalCapitalDefenseMod = kResults.GetInt("NumOriginalCapitalDefenseMod");
+	m_iOnCapitalLandAttackMod = kResults.GetInt("OnCapitalLandAttackMod");
+	m_iOutsideCapitalLandAttackMod = kResults.GetInt("OutsideCapitalLandAttackMod");
+	m_iOnCapitalLandDefenseMod = kResults.GetInt("OnCapitalLandDefenseMod");
+	m_iOutsideCapitalLandDefenseMod = kResults.GetInt("OutsideCapitalLandDefenseMod");
+	m_iLostHitPointAttackMod = kResults.GetInt("LostHitPointAttackMod");
+	m_iLostHitPointDefenseMod = kResults.GetInt("LostHitPointDefenseMod");
+	m_iNearNumEnemyAttackMod = kResults.GetInt("NearNumEnemyAttackMod");
+	m_iNearNumEnemyDefenseMod = kResults.GetInt("NearNumEnemyDefenseMod");
 
 	return true;
 }
@@ -3774,6 +3786,54 @@ int CvPromotionEntry::GetMeleeAttackModifier() const
 int CvPromotionEntry::GetMeleeDefenseMod() const
 {
 	return m_iMeleeDefenseMod;
+}
+int CvPromotionEntry::GetDoFallBackAttackMod() const
+{
+	return m_iDoFallBackAttackMod;
+}
+int CvPromotionEntry::GetBeFallBackDefenseMod() const
+{
+	return m_iBeFallBackDefenseMod;
+}
+int CvPromotionEntry::GetNumOriginalCapitalAttackMod() const
+{
+	return m_iNumOriginalCapitalAttackMod;
+}
+int CvPromotionEntry::GetNumOriginalCapitalDefenseMod() const
+{
+	return m_iNumOriginalCapitalDefenseMod;
+}
+int CvPromotionEntry::GetOnCapitalLandAttackMod() const
+{
+	return m_iOnCapitalLandAttackMod;
+}
+int CvPromotionEntry::GetOutsideCapitalLandAttackMod() const
+{
+	return m_iOutsideCapitalLandAttackMod;
+}
+int CvPromotionEntry::GetOnCapitalLandDefenseMod() const
+{
+	return m_iOnCapitalLandDefenseMod;
+}
+int CvPromotionEntry::GetOutsideCapitalLandDefenseMod() const
+{
+	return m_iOutsideCapitalLandDefenseMod;
+}
+int CvPromotionEntry::GetLostHitPointAttackMod() const
+{
+	return m_iLostHitPointAttackMod;
+}
+int CvPromotionEntry::GetLostHitPointDefenseMod() const
+{
+	return m_iLostHitPointDefenseMod;
+}
+int CvPromotionEntry::GetNearNumEnemyAttackMod() const
+{
+	return m_iNearNumEnemyAttackMod;
+}
+int CvPromotionEntry::GetNearNumEnemyDefenseMod() const
+{
+	return m_iNearNumEnemyDefenseMod;
 }
 
 //=====================================

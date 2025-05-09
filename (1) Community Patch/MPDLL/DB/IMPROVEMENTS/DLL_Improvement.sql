@@ -23,10 +23,18 @@ create table Improvement_AdjacentImprovementYieldChanges (
   YieldType text references Yields(Type),
   Yield integer not null default 0
 );
+create table Improvement_TerrainYieldChanges (
+  ImprovementType text references Improvements(Type),
+  TerrainType text references Terrains(Type),
+  YieldType text references Yields(Type),
+  Yield integer not null default 0
+);
 
 -- Additional units allowed by improvements
 ALTER TABLE Improvements ADD AdditionalUnits INTEGER DEFAULT 0;
 ALTER TABLE Improvements ADD COLUMN 'NoLake' BOOLEAN DEFAULT 0;
+ALTER TABLE Improvements ADD COLUMN 'NoFeature' BOOLEAN DEFAULT 0;
+ALTER TABLE Improvements ADD COLUMN 'NoRemove' BOOLEAN DEFAULT 0;
 
 ALTER TABLE Improvements ADD NegatesTerrainDamage INTEGER DEFAULT 0;
 ALTER TABLE Improvements ADD NegatesFeatureDamage INTEGER DEFAULT 0;
