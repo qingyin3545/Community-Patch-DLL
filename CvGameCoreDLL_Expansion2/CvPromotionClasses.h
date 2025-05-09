@@ -468,6 +468,18 @@ public:
 	int GetRangedSupportFireMod() const;
 	int GetMeleeAttackModifier() const;
 	int GetMeleeDefenseMod() const;
+	int GetDoFallBackAttackMod() const;
+	int GetBeFallBackDefenseMod() const;
+	int GetNumOriginalCapitalAttackMod() const;
+	int GetNumOriginalCapitalDefenseMod() const;
+	int GetOnCapitalLandAttackMod() const;
+	int GetOutsideCapitalLandAttackMod() const;
+	int GetOnCapitalLandDefenseMod() const;
+	int GetOutsideCapitalLandDefenseMod() const;
+	int GetLostHitPointAttackMod() const;
+	int GetLostHitPointDefenseMod() const;
+	int GetNearNumEnemyAttackMod() const;
+	int GetNearNumEnemyDefenseMod() const;
 
 protected:
 	int m_iLayerAnimationPath;
@@ -872,6 +884,18 @@ protected:
 	int m_iRangedSupportFireMod = 0;
 	int m_iMeleeAttackModifier = 0;
 	int m_iMeleeDefenseMod = 0;
+	int m_iDoFallBackAttackMod = 0;
+	int m_iBeFallBackDefenseMod = 0;
+	int m_iNumOriginalCapitalAttackMod = 0;
+	int m_iNumOriginalCapitalDefenseMod = 0;
+	int m_iOnCapitalLandAttackMod = 0;
+	int m_iOutsideCapitalLandAttackMod = 0;
+	int m_iOnCapitalLandDefenseMod = 0;
+	int m_iOutsideCapitalLandDefenseMod = 0;
+	int m_iLostHitPointAttackMod = 0;
+	int m_iLostHitPointDefenseMod = 0;
+	int m_iNearNumEnemyAttackMod = 0;
+	int m_iNearNumEnemyDefenseMod = 0;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
