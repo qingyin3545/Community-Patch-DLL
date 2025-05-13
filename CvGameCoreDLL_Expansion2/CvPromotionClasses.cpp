@@ -1417,7 +1417,18 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iOutsideFriendlyLandsInflictDamageChange = kResults.GetInt("OutsideFriendlyLandsInflictDamageChange");
 
 	m_iMaintenanceCost = kResults.GetInt("MaintenanceCost");
+	m_iMultipleInitExperience = kResults.GetInt("MultipleInitExperience");
+	m_iRangeAttackCostModifier = kResults.GetInt("RangeAttackCostModifier");
+	m_iMovePercentCaptureCity = kResults.GetInt("MovePercentCaptureCity");
+	m_iHealPercentCaptureCity = kResults.GetInt("HealPercentCaptureCity");
+	m_iLostAllMovesAttackCity = kResults.GetInt("LostAllMovesAttackCity");
 	m_bNoResourcePunishment = kResults.GetBool("NoResourcePunishment");
+	m_bImmueMeleeAttack = kResults.GetBool("ImmueMeleeAttack");
+	m_bImmueRangedAttack = kResults.GetBool("ImmueRangedAttack");
+	m_bCanParadropMoved = kResults.GetBool("CanParadropMoved");
+	m_bCanParadropAnyWhere = kResults.GetBool("CanParadropAnyWhere");
+	m_bCanPillageWithoutWar = kResults.GetBool("CanPillageWithoutWar");
+	m_bImmobile = kResults.GetBool("Immobile");
 	m_iMoveLeftAttackMod = kResults.GetInt("MoveLeftAttackMod");
 	m_iMoveUsedAttackMod = kResults.GetInt("MoveUsedAttackMod");
 	m_iMoveLeftDefenseMod = kResults.GetInt("MoveLeftDefenseMod");
@@ -1434,7 +1445,7 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iNumSpyStayDefenseMod = kResults.GetInt("NumSpyStayDefenseMod");
 	m_iNumSpyStayAttackMod = kResults.GetInt("NumSpyStayAttackMod");
 	m_iRangedSupportFireMod = kResults.GetInt("RangedSupportFireMod");
-	m_iMeleeAttackModifier = kResults.GetInt("MeleeAttackModifier");
+	m_iMeleeAttackMod = kResults.GetInt("MeleeAttackMod");
 	m_iMeleeDefenseMod = kResults.GetInt("MeleeDefenseMod");
 	m_iDoFallBackAttackMod = kResults.GetInt("DoFallBackAttackMod");
 	m_iBeFallBackDefenseMod = kResults.GetInt("BeFallBackDefenseMod");
@@ -3711,9 +3722,53 @@ int CvPromotionEntry::GetMaintenanceCost() const
 {
 	return m_iMaintenanceCost;
 }
+int CvPromotionEntry::GetMultipleInitExperience() const
+{
+	return m_iMultipleInitExperience;
+}
+int CvPromotionEntry::GetRangeAttackCostModifier() const
+{
+	return m_iRangeAttackCostModifier;
+}
+int CvPromotionEntry::GetMovePercentCaptureCity() const
+{
+	return m_iMovePercentCaptureCity;
+}
+int CvPromotionEntry::GetHealPercentCaptureCity() const
+{
+	return m_iHealPercentCaptureCity;
+}
+int CvPromotionEntry::GetLostAllMovesAttackCity() const
+{
+	return m_iLostAllMovesAttackCity;
+}
 bool CvPromotionEntry::IsNoResourcePunishment() const
 {
 	return m_bNoResourcePunishment;
+}
+bool CvPromotionEntry::IsImmueMeleeAttack() const
+{
+	return m_bImmueMeleeAttack;
+}
+bool CvPromotionEntry::IsImmueRangedAttack() const
+{
+	return m_bImmueRangedAttack;
+}
+bool CvPromotionEntry::IsCanParadropMoved() const
+{
+	return m_bCanParadropMoved;
+}
+bool CvPromotionEntry::IsCanParadropAnyWhere() const
+{
+	return m_bCanParadropAnyWhere;
+}
+bool CvPromotionEntry::IsCanPillageWithoutWar() const
+{
+	return m_bCanPillageWithoutWar;
+}
+bool CvPromotionEntry::IsImmobile() const
+{
+	return m_bImmobile;
 }
 int CvPromotionEntry::GetMoveLeftAttackMod() const
 {
@@ -3779,9 +3834,9 @@ int CvPromotionEntry::GetRangedSupportFireMod() const
 {
 	return m_iRangedSupportFireMod;
 }
-int CvPromotionEntry::GetMeleeAttackModifier() const
+int CvPromotionEntry::GetMeleeAttackMod() const
 {
-	return m_iMeleeAttackModifier;
+	return m_iMeleeAttackMod;
 }
 int CvPromotionEntry::GetMeleeDefenseMod() const
 {

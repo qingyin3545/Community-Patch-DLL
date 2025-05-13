@@ -1,10 +1,28 @@
-ALTER TABLE UnitPromotions ADD COLUMN 'MaintenanceCost' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'NoResourcePunishment' BOOLEAN DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'MaintenanceCost' INTEGER DEFAULT 0;
+-- SP-TODO: Column Name MultipleInitExperence -> MultipleInitExperience
+ALTER TABLE UnitPromotions ADD 'MultipleInitExperience' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'RangeAttackCostModifier' INTEGER DEFAULT 0;
+-- Implemented by CP
+ALTER TABLE UnitPromotions ADD 'CaptureDefeatedEnemyChance' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'MovePercentCaptureCity' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'HealPercentCaptureCity' INTEGER DEFAULT 0;
+-- Is a Counter, it is valid when LostAllMovesAttackCity > 0
+ALTER TABLE UnitPromotions ADD 'LostAllMovesAttackCity' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'NoResourcePunishment' BOOLEAN DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'ImmueMeleeAttack' BOOLEAN DEFAULT 0;
+-- SP-TODO: Column Name CannotBeRangedAttacked -> ImmueRangedAttack
+ALTER TABLE UnitPromotions ADD 'ImmueRangedAttack' BOOLEAN DEFAULT 0 NOT NULL; 
+-- SP-TODO: Column Name IsCanParadropUnLimit -> CanParadropMoved
+ALTER TABLE UnitPromotions ADD 'CanParadropMoved' BOOLEAN DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'CanParadropAnyWhere' BOOLEAN DEFAULT 0;
+-- SP-TODO: Column Name CanPlunderWithoutWar -> CanPillageWithoutWar
+ALTER TABLE UnitPromotions ADD 'CanPillageWithoutWar' BOOLEAN DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'Immobile' BOOLEAN DEFAULT 0;
 -- SP-TODO: Error Spell Name MoveLfetAttackMod -> MoveLeftAttackMod
-ALTER TABLE UnitPromotions ADD COLUMN 'MoveLeftAttackMod' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'MoveUsedAttackMod' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'MoveLeftDefenseMod' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'MoveUsedDefenseMod' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'MoveLeftAttackMod' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'MoveUsedAttackMod' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'MoveLeftDefenseMod' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'MoveUsedDefenseMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'GoldenAgeMod' INTEGER DEFAULT 0;
 -- SP-TODO: Lua Interface Changed
 ALTER TABLE UnitPromotions ADD 'AntiHigherPopMod' INTEGER DEFAULT 0;
@@ -18,7 +36,8 @@ ALTER TABLE UnitPromotions ADD 'NumWorkAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NumSpyStayDefenseMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NumSpyStayAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'RangedSupportFireMod' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'MeleeAttackModifier' INTEGER DEFAULT 0;
+-- SP-TODO: Column Name MeleeAttackModfier -> MeleeAttackMod
+ALTER TABLE UnitPromotions ADD 'MeleeAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'MeleeDefenseMod' INTEGER DEFAULT 0;
 -- SP-TODO: Lua Interface Changed
 ALTER TABLE UnitPromotions ADD 'DoFallBackAttackMod' INTEGER DEFAULT 0;
@@ -30,12 +49,11 @@ ALTER TABLE UnitPromotions ADD 'OnCapitalLandAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'OutsideCapitalLandAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'OnCapitalLandDefenseMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'OutsideCapitalLandDefenseMod' INTEGER DEFAULT 0;
--- SP-TODO: Interface Name CurrentHitPoint -> LostHitPoint
+-- SP-TODO: Column Name CurrentHitPoint -> LostHitPoint
 ALTER TABLE UnitPromotions ADD 'LostHitPointAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'LostHitPointDefenseMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NearNumEnemyAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NearNumEnemyDefenseMod' INTEGER DEFAULT 0;
-
 
 CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionModifiers (
     `PromotionType` TEXT DEFAULT '',
@@ -49,14 +67,10 @@ ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr10' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr11' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr12' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr13' TEXT DEFAULT NULL;
-ALTER TABLE UnitPromotions ADD 'ImmueMeleeAttack' BOOLEAN DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'CannotBeRangedAttacked' BOOLEAN DEFAULT 0 NOT NULL; 
 ALTER TABLE UnitPromotions ADD COLUMN 'IgnoreDamageChance' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'IsCanParadropUnLimit' BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'AllyCityStateCombatModifier' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'AllyCityStateCombatModifierMax' INTEGER DEFAULT -1;
 ALTER TABLE UnitPromotions ADD COLUMN 'CanDoNukeDamage' BOOLEAN DEFAULT 0; 
-ALTER TABLE UnitPromotions ADD 'CanPlunderWithoutWar' BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'ExtraResourceType' TEXT DEFAULT NULL;;
 ALTER TABLE UnitPromotions ADD COLUMN 'ExtraResourceCombatModifier' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'ExtraResourceCombatModifierMax' INTEGER DEFAULT -1;
@@ -68,22 +82,16 @@ ALTER TABLE UnitPromotions ADD COLUMN 'NearbyUnitPromotionBonusRange' INTEGER DE
 ALTER TABLE UnitPromotions ADD COLUMN 'NearbyUnitPromotionBonusMax' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'CombatBonusFromNearbyUnitPromotion' TEXT NOT NULL REFERENCES UnitPromotions(Type);
 ALTER TABLE UnitPromotions ADD 'HPHealedIfDestroyEnemyGlobal' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'CanParadropAnyWhere' BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'RangedFlankAttackModifierPercent' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'FeatureInvisible' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD 'FeatureInvisible2' TEXT DEFAULT NULL;
-ALTER TABLE UnitPromotions ADD 'MultipleInitExperence' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'LostAllMovesAttackCity'  INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'CarrierEXPGivenModifier' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'UnitAttackFaithBonus' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'CityAttackFaithBonus' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'RemovePromotionUpgrade' TEXT DEFAULT NULL;
-ALTER TABLE UnitPromotions ADD 'ExtraMoveTimesXX' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'RangeAttackCostModifier' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'AttackChanceFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
 ALTER TABLE UnitPromotions ADD 'MovementFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
 ALTER TABLE UnitPromotions ADD 'HealPercentFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
-ALTER TABLE UnitPromotions ADD 'CaptureDefeatedEnemyChance' BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'OriginalCapitalDamageFix' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'OriginalCapitalSpecialDamageFix' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'TurnDamagePercent' INTEGER DEFAULT 0;
@@ -91,8 +99,6 @@ ALTER TABLE UnitPromotions ADD COLUMN 'TurnDamage' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'AdjacentFriendlySapMovement' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'AdjacentSapExperience' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'RangedFlankAttackModifier' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'ShowInTooltip' INTEGER DEFAULT 1;
-ALTER TABLE UnitPromotions ADD COLUMN 'ShowInPedia' INTEGER DEFAULT 1;
 ALTER TABLE UnitPromotions ADD COLUMN 'PillageReplenishMoves' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'PillageReplenishAttck'  BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'PillageReplenishHealth' INTEGER DEFAULT 0;
@@ -100,13 +106,10 @@ ALTER TABLE UnitPromotions ADD COLUMN 'PlagueImmune' BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'HeightModPerX' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'HeightModLimited' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'InsightEnemyDamageModifier' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'MovePercentCaptureCity' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'HealPercentCaptureCity' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'CaptureEmenyPercent' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'CaptureEmenyExtraMax' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'WoundedMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'RangeSuppressModifier' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'Immobile' BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'MilitaryMightMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'FreeExpPerTurn' INTEGER DEFAULT 0;
 
@@ -181,3 +184,9 @@ CREATE TABLE "Promotion_RouteMovementChanges" (
 	'RouteType'	text no null references Routes(Type),
 	'MovementChange' int default 0 not null
 );
+
+-- Only UI
+ALTER TABLE UnitPromotions ADD COLUMN 'ShowInTooltip' INTEGER DEFAULT 1;
+ALTER TABLE UnitPromotions ADD COLUMN 'ShowInPedia' INTEGER DEFAULT 1;
+-- Deprecated
+ALTER TABLE UnitPromotions ADD 'ExtraMoveTimesXX' INTEGER DEFAULT 0;
