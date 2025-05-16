@@ -247,6 +247,17 @@ CREATE TABLE "Building_YieldModifiersChangesPerEra" (
 	"Yield"			int default 0 not null
 );
 
+CREATE TABLE Building_CityStateTradeRouteYieldModifiers (
+	'BuildingType' text references Buildings(Type),
+	'YieldType' text references Yields(Type),
+	'Yield' integer default 0
+);
+CREATE TABLE Building_CityStateTradeRouteYieldModifiersGlobal (
+	'BuildingType' text references Buildings(Type),
+	'YieldType' text references Yields(Type),
+	'Yield' integer default 0
+);
+
 CREATE TABLE "Building_DomainEnemyCombatModifier" (
 	'BuildingType'	text no null references Buildings(Type),
 	'DomainType'	text no null references Domains(Type),

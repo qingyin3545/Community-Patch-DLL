@@ -479,6 +479,17 @@ public:
 	int GetLostHitPointDefenseMod() const;
 	int GetNearNumEnemyAttackMod() const;
 	int GetNearNumEnemyDefenseMod() const;
+	int GetAllyCityStateCombatModifier() const;
+	int GetAllyCityStateCombatModifierMax() const;
+	int GetExtraHappinessCombatModifier() const;
+	int GetExtraHappinessCombatModifierMax() const;
+	ResourceTypes GetExtraResourceType() const;
+	int GetExtraResourceCombatModifier() const;
+	int GetExtraResourceCombatModifierMax() const;
+	PromotionTypes GetCombatBonusFromNearbyUnitPromotion() const;
+	int GetNearbyUnitPromotionBonusRange() const;
+	int GetNearbyUnitPromotionBonusMax() const;
+	int GetNearbyUnitPromotionBonus() const;
 
 protected:
 	int m_iLayerAnimationPath;
@@ -912,6 +923,17 @@ protected:
 	int m_iLostHitPointDefenseMod = 0;
 	int m_iNearNumEnemyAttackMod = 0;
 	int m_iNearNumEnemyDefenseMod = 0;
+	int m_iAllyCityStateCombatModifier = 0;
+	int m_iAllyCityStateCombatModifierMax = -1;
+	int m_iExtraHappinessCombatModifier = 0;
+	int m_iExtraHappinessCombatModifierMax = -1;
+	ResourceTypes m_eExtraResourceType = NO_RESOURCE;
+	int m_iExtraResourceCombatModifier = 0;
+	int m_iExtraResourceCombatModifierMax = -1;
+	PromotionTypes m_iCombatBonusFromNearbyUnitPromotion;
+	int m_iNearbyUnitPromotionBonus;
+	int m_iNearbyUnitPromotionBonusRange;
+	int m_iNearbyUnitPromotionBonusMax;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

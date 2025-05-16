@@ -727,6 +727,10 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(GetLostHitPointDefenseMod);
 	Method(GetNearNumEnemyAttackMod);
 	Method(GetNearNumEnemyDefenseMod);
+	Method(GetAllyCityStateCombatModifier);
+	Method(GetHappinessCombatModifier);
+	Method(GetResourceCombatModifier);
+	Method(GetNearbyUnitPromotionBonus);
 	Method(GetCombatStrengthChangeFromKilledUnits);
 	Method(ChangeCombatStrengthChangeFromKilledUnits);
 	Method(SetCombatStrengthChangeFromKilledUnits);
@@ -6976,6 +6980,31 @@ LUAAPIIMPL(Unit, GetLostHitPointAttackMod)
 LUAAPIIMPL(Unit, GetLostHitPointDefenseMod)
 LUAAPIIMPL(Unit, GetNearNumEnemyAttackMod)
 LUAAPIIMPL(Unit, GetNearNumEnemyDefenseMod)
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetAllyCityStateCombatModifier(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	lua_pushinteger(L, GC.GetIndependentPromotion()->GetAllyCityStateCombatModifier(*pkUnit));
+	return 1;
+}
+int CvLuaUnit::lGetHappinessCombatModifier(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	lua_pushinteger(L, GC.GetIndependentPromotion()->GetHappinessCombatModifier(*pkUnit));
+	return 1;
+}
+int CvLuaUnit::lGetResourceCombatModifier(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	lua_pushinteger(L, GC.GetIndependentPromotion()->GetResourceCombatModifier(*pkUnit));
+	return 1;
+}
+int CvLuaUnit::lGetNearbyUnitPromotionBonus(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	lua_pushinteger(L, GC.GetIndependentPromotion()->GetNearbyUnitPromotionBonus(*pkUnit));
+	return 1;
+}
 //------------------------------------------------------------------------------
 int CvLuaUnit::lGetDamageFixValueToUnit(lua_State* L)
 {
