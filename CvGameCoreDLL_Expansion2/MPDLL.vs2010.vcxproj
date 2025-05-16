@@ -191,6 +191,7 @@
     <ClCompile Include="CvEventLog.cpp" />
     <ClCompile Include="CvGameCoreStructs.cpp" />
     <ClCompile Include="CvGreatPersonInfo.cpp" />
+    <ClCompile Include="CvIndependentPromotionInfo.cpp" />
     <ClCompile Include="CvLoggerCSV.cpp" />
     <ClCompile Include="CvLuaFormula.cpp" />
     <ClCompile Include="CvNuclearWinter.cpp" />
@@ -473,6 +474,7 @@
     <ClInclude Include="CvEnumMapSerialization.h" />
     <ClInclude Include="CvEnumsUtil.h" />
     <ClInclude Include="CvGameCoreStructs.h" />
+    <ClInclude Include="CvIndependentPromotionInfo.h" />
     <ClInclude Include="CvLoggerCSV.h" />
     <ClInclude Include="CvCitySpecializationAI.h" />
     <ClInclude Include="CvCityStrategyAI.h" />
