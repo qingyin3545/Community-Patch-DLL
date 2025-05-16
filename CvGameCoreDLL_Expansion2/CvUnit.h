@@ -2152,6 +2152,12 @@ public:
 	int GetLostAllMovesAttackCity() const;
 	void ChangeLostAllMovesAttackCity(int iValue);
 
+	int GetCaptureEmenyPercent() const;
+	void ChangeCaptureEmenyPercent(int iValue);
+
+	int GetCaptureEmenyExtraMax() const;
+	void ChangeCaptureEmenyExtraMax(int iValue);
+
 	bool IsNoResourcePunishment() const;
 	void ChangeNumNoResourcePunishment(int iChange);
 
@@ -2268,6 +2274,19 @@ public:
 
 	int GetNearNumEnemyDefenseMod() const;
 	void ChangeNearNumEnemyDefenseMod(int iValue);
+
+	int GetHeightAdvantageAttckMod() const;
+	void ChangeHeightAdvantageAttckMod(int iValue);
+	int GetHeightAdvantageAttckMod(const CvPlot& TargetPlot) const;
+
+	int GetExtraWoundedMod() const;
+	void ChangeExtraWoundedMod(int iValue);
+
+	int GetInterceptionDamageMod() const;
+	void ChangeInterceptionDamageMod(int iValue);
+
+	int GetAirSweepDamageMod() const;
+	void ChangeAirSweepDamageMod(int iValue);
 
 	int GetCombatStrengthChangeFromKilledUnits() const;
 	void ChangeCombatStrengthChangeFromKilledUnits(int iChange);
@@ -2791,6 +2810,8 @@ private:
 	int m_iMovePercentCaptureCity = 0;
 	int m_iHealPercentCaptureCity = 0;
 	int m_iLostAllMovesAttackCity = 0;
+	int m_iCaptureEmenyPercent = 0;
+	int m_iCaptureEmenyExtraMax = 0;
 	int m_iNoResourcePunishment = 0;
 	int m_iImmueMeleeAttack = 0;
 	int m_iImmueRangedAttack = 0;
@@ -2830,6 +2851,10 @@ private:
 	int m_iLostHitPointDefenseMod = 0;
 	int m_iNearNumEnemyAttackMod = 0;
 	int m_iNearNumEnemyDefenseMod = 0;
+	int m_iHeightAdvantageAttckMod = 0;
+	int m_iExtraWoundedMod = 0;
+	int m_iInterceptionDamageMod = 0;
+	int m_iAirSweepDamageMod = 0;
 
 	int m_iCombatStrengthChangeFromKilledUnits = 0;
 	int m_iRangedCombatStrengthChangeFromKilledUnits = 0;

@@ -1703,6 +1703,8 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iMovePercentCaptureCity = 0;
 	m_iHealPercentCaptureCity = 0;
 	m_iLostAllMovesAttackCity = 0;
+	m_iCaptureEmenyPercent = 0;
+	m_iCaptureEmenyExtraMax = 0;
 	m_iNoResourcePunishment = 0;
 	m_iImmueMeleeAttack = 0;
 	m_iImmueRangedAttack = 0;
@@ -1742,6 +1744,10 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iLostHitPointDefenseMod = 0;
 	m_iNearNumEnemyAttackMod = 0;
 	m_iNearNumEnemyDefenseMod = 0;
+	m_iHeightAdvantageAttckMod = 0;
+	m_iExtraWoundedMod = 0;
+	m_iInterceptionDamageMod = 0;
+	m_iAirSweepDamageMod = 0;
 
 	m_iCombatStrengthChangeFromKilledUnits = 0;
 	m_iRangedCombatStrengthChangeFromKilledUnits = 0;
@@ -6974,7 +6980,12 @@ int CvUnit::GetCaptureChance(CvUnit *pEnemy)
 		{
 			int iMyCombat = m_pUnitInfo->GetCombat();
 			int iComputedChance = /*10*/ GD_INT_GET(COMBAT_CAPTURE_MIN_CHANCE) + iMyCombat * /*40*/ GD_INT_GET(COMBAT_CAPTURE_RATIO_MULTIPLIER) / iTheirCombat;
-			return min(/*80*/ GD_INT_GET(COMBAT_CAPTURE_MAX_CHANCE), iComputedChance);
+			int iCaptureDefeatedEnemyChance = GetCaptureEmenyPercent();
+			if(iCaptureDefeatedEnemyChance != 0)
+			{
+				iComputedChance = iComputedChance * iCaptureDefeatedEnemyChance / 100;
+			}
+			return min(/*80*/ GD_INT_GET(COMBAT_CAPTURE_MAX_CHANCE) + GetCaptureEmenyExtraMax(), iComputedChance);
 		}
 	}
 
@@ -16296,6 +16307,11 @@ int CvUnit::GetGenericMeleeStrengthModifier(const CvUnit* pOtherUnit, const CvPl
 		}
 	}
 
+	iModifier += GC.GetIndependentPromotion()->GetAllyCityStateCombatModifier(*this);
+	iModifier += GC.GetIndependentPromotion()->GetHappinessCombatModifier(*this);
+	iModifier += GC.GetIndependentPromotion()->GetResourceCombatModifier(*this);
+	iModifier += GC.GetIndependentPromotion()->GetNearbyUnitPromotionBonus(*this);
+
 	// Our empire fights well in Golden Ages?
 	if(kPlayer.isGoldenAge())
 	{
@@ -16683,6 +16699,7 @@ int CvUnit::GetMaxAttackStrength(const CvPlot* pFromPlot, const CvPlot* pToPlot,
 			else
 				iModifier += GetOutsideCapitalLandAttackMod();
 		}
+		iModifier += GetHeightAdvantageAttckMod(*pToPlot);
 
 		// VP Terrain Attack Mod
 		iModifier += GetTerrainModifierAttack(pToPlot->getTerrainType());
@@ -16768,7 +16785,10 @@ int CvUnit::GetMaxAttackStrength(const CvPlot* pFromPlot, const CvPlot* pToPlot,
 
 		// Bonus VS wounded
 		if (pDefender->getDamage() > 0)
+		{
 			iModifier += attackWoundedModifier();
+			iModifier += GetExtraWoundedMod();
+		}
 		else
 			iModifier += attackFullyHealedModifier();
 
@@ -17013,6 +17033,7 @@ int CvUnit::GetMaxDefenseStrength(const CvPlot* pInPlot, const CvUnit* pAttacker
 		{
 			iModifier += iNumSpyStayDefenseMod;
 		}
+		if (pAttacker->getDamage() > 0) iModifier += GetExtraWoundedMod();
 	}
 
 	// Unit can't drop below 10% strength
@@ -17216,6 +17237,11 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 		iModifier += GetNearbyCityBonusCombatMod(pMyPlot);
 	}
 
+	iModifier += GC.GetIndependentPromotion()->GetAllyCityStateCombatModifier(*this);
+	iModifier += GC.GetIndependentPromotion()->GetHappinessCombatModifier(*this);
+	iModifier += GC.GetIndependentPromotion()->GetResourceCombatModifier(*this);
+	iModifier += GC.GetIndependentPromotion()->GetNearbyUnitPromotionBonus(*this);
+
 	// Our empire fights well in Golden Ages?
 	if(kPlayer.isGoldenAge())
 	{
@@ -17328,6 +17354,16 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 				}
 			}
 
+			CvCity* pCapital = kPlayer.getCapitalCity();
+			if(pCapital)
+			{
+				if (pTargetPlot->area() == pCapital->plot()->area())
+					iModifier += GetOnCapitalLandAttackMod();
+				else
+					iModifier += GetOutsideCapitalLandAttackMod();
+			}
+			iModifier += GetHeightAdvantageAttckMod(*pTargetPlot);
+
 			// VP Terrain Attack Mod
 			iModifier += GetTerrainModifierAttack(pMyPlot->getTerrainType());
 			if (pMyPlot->isHills())
@@ -17364,6 +17400,15 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 				// Tack on Hills Defense Mod
 				if (pMyPlot->isHills())
 					iModifier += terrainDefenseModifier(TERRAIN_HILL);
+			}
+
+			CvCity* pCapital = kPlayer.getCapitalCity();
+			if(pCapital)
+			{
+				if (pTargetPlot->area() == pCapital->plot()->area())
+					iModifier += GetOnCapitalLandDefenseMod();
+				else
+					iModifier += GetOutsideCapitalLandDefenseMod();
 			}
 
 			// VP Terrain Defense Mod
@@ -17545,7 +17590,10 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 
 			// Bonus VS wounded
 			if (pOtherUnit->getDamage() > 0)
+			{
 				iModifier += attackWoundedModifier();
+				iModifier += GetExtraWoundedMod();
+			}
 			else
 				iModifier += attackFullyHealedModifier();
 
@@ -17746,15 +17794,6 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 			iModifier += iNearNumEnemyMod * GetNumEnemyUnitsAdjacent();
 		}
 
-		CvCity* pCapital = kPlayer.getCapitalCity();
-		if(pCapital && pTargetPlot)
-		{
-			if (pTargetPlot->area() == pCapital->plot()->area())
-				iModifier += GetOnCapitalLandAttackMod();
-			else
-				iModifier += GetOutsideCapitalLandAttackMod();
-		}
-
 		int iNumSpyAttackMod = GetNumSpyAttackMod();
 		if (iNumSpyAttackMod > 0)
 		{
@@ -17830,15 +17869,6 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 		if (iNearNumEnemyMod != 0)
 		{
 			iModifier += iNearNumEnemyMod * GetNumEnemyUnitsAdjacent();
-		}
-
-		CvCity* pCapital = kPlayer.getCapitalCity();
-		if(pCapital && pTargetPlot)
-		{
-			if (pTargetPlot->area() == pCapital->plot()->area())
-				iModifier += GetOnCapitalLandDefenseMod();
-			else
-				iModifier += GetOutsideCapitalLandDefenseMod();
 		}
 
 		int iNumSpyDefenseMod = GetNumSpyDefenseMod();
@@ -27836,14 +27866,14 @@ bool CvUnit::isPromotionValid(PromotionTypes ePromotion) const
 	}
 
 	// Can't acquire interception promotion if unit can't intercept!
-	if(promotionInfo->GetInterceptionCombatModifier() != 0)
+	if(promotionInfo->GetInterceptionCombatModifier() != 0 || promotionInfo->GetInterceptionDamageMod() != 0)
 	{
 		if(!canAirDefend())
 			return false;
 	}
 
 	// Can't acquire Air Sweep promotion if unit can't air sweep!
-	if(promotionInfo->GetAirSweepCombatModifier() != 0)
+	if(promotionInfo->GetAirSweepCombatModifier() != 0 || promotionInfo->GetAirSweepDamageMod() != 0)
 	{
 		if(!IsAirSweepCapable())
 			return false;
@@ -28679,6 +28709,8 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 	ChangeMovePercentCaptureCity(thisPromotion.GetMovePercentCaptureCity() * iChange);
 	ChangeHealPercentCaptureCity(thisPromotion.GetHealPercentCaptureCity() * iChange);
 	ChangeLostAllMovesAttackCity(thisPromotion.GetLostAllMovesAttackCity() * iChange);
+	ChangeCaptureEmenyPercent((thisPromotion.GetCaptureEmenyPercent()) * iChange);
+	ChangeCaptureEmenyExtraMax((thisPromotion.GetCaptureEmenyExtraMax()) * iChange);
 	ChangeNumNoResourcePunishment(thisPromotion.IsNoResourcePunishment() ? iChange : 0);
 	ChangeNumImmueMeleeAttack(thisPromotion.IsImmueMeleeAttack() ? iChange : 0);
 	ChangeNumImmueRangedAttack(thisPromotion.IsImmueRangedAttack() ? iChange : 0);
@@ -28716,6 +28748,10 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 	ChangeLostHitPointDefenseMod(thisPromotion.GetLostHitPointDefenseMod() * iChange);
 	ChangeNearNumEnemyAttackMod(thisPromotion.GetNearNumEnemyAttackMod() * iChange);
 	ChangeNearNumEnemyDefenseMod(thisPromotion.GetNearNumEnemyDefenseMod() * iChange);
+	ChangeHeightAdvantageAttckMod(thisPromotion.GetHeightAdvantageAttckMod() * iChange);
+	ChangeExtraWoundedMod(thisPromotion.GetWoundedMod() * iChange);
+	ChangeInterceptionDamageMod(thisPromotion.GetInterceptionDamageMod() * iChange);
+	ChangeAirSweepDamageMod(thisPromotion.GetAirSweepDamageMod() * iChange);
 
 	if (IsSelected())
 	{
@@ -29440,6 +29476,8 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iMovePercentCaptureCity);
 	visitor(unit.m_iHealPercentCaptureCity);
 	visitor(unit.m_iLostAllMovesAttackCity);
+	visitor(unit.m_iCaptureEmenyPercent);
+	visitor(unit.m_iCaptureEmenyExtraMax);
 	visitor(unit.m_iNoResourcePunishment);
 	visitor(unit.m_iImmueMeleeAttack);
 	visitor(unit.m_iImmueRangedAttack);
@@ -29479,6 +29517,10 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iLostHitPointDefenseMod);
 	visitor(unit.m_iNearNumEnemyAttackMod);
 	visitor(unit.m_iNearNumEnemyDefenseMod);
+	visitor(unit.m_iHeightAdvantageAttckMod);
+	visitor(unit.m_iExtraWoundedMod);
+	visitor(unit.m_iInterceptionDamageMod);
+	visitor(unit.m_iAirSweepDamageMod);
 	visitor(unit.m_iCombatStrengthChangeFromKilledUnits);
 	visitor(unit.m_iRangedCombatStrengthChangeFromKilledUnits);
 }
@@ -32966,6 +33008,15 @@ int CvUnit::AI_promotionValue(PromotionTypes ePromotion)
 		iValue += iExtra;
 	}
 
+	iTemp = pkPromotionInfo->GetWoundedMod();
+	if(iTemp != 0)
+	{
+		iExtra = GetExtraWoundedMod() * 2;
+		iTemp *= (100 + iExtra);
+		iTemp /= 100;
+		iValue += iTemp + (iFlavorOffense * iFlavorRanged) * 2;
+	}
+
 	iTemp = pkPromotionInfo->GetAdjacentMod();
 	// currently not used
 	if (iTemp != 0)
@@ -35483,6 +35534,26 @@ void CvUnit::ChangeLostAllMovesAttackCity(int iValue)
 }
 
 //	--------------------------------------------------------------------------------
+int CvUnit::GetCaptureEmenyPercent() const
+{
+	return m_iCaptureEmenyPercent;
+}
+void CvUnit::ChangeCaptureEmenyPercent(int iValue)
+{
+	m_iCaptureEmenyPercent += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetCaptureEmenyExtraMax() const
+{
+	return m_iCaptureEmenyExtraMax;
+}
+void CvUnit::ChangeCaptureEmenyExtraMax(int iValue)
+{
+	m_iCaptureEmenyExtraMax += iValue;
+}
+
+//	--------------------------------------------------------------------------------
 bool CvUnit::IsNoResourcePunishment() const
 {
 	return m_iNoResourcePunishment > 0;
@@ -35878,6 +35949,56 @@ int CvUnit::GetNearNumEnemyDefenseMod() const
 void CvUnit::ChangeNearNumEnemyDefenseMod(int iValue)
 {
 	m_iNearNumEnemyDefenseMod += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetHeightAdvantageAttckMod() const
+{
+	return m_iHeightAdvantageAttckMod;
+}
+void CvUnit::ChangeHeightAdvantageAttckMod(int iValue)
+{
+	m_iHeightAdvantageAttckMod = iValue;
+}
+int CvUnit::GetHeightAdvantageAttckMod(const CvPlot& TargetPlot) const
+{
+	if(m_iHeightAdvantageAttckMod > 0 && plot())
+	{
+		int iAdvantage = plot()->seeFromLevel(NO_TEAM) - TargetPlot.seeFromLevel(NO_TEAM);
+		if(iAdvantage <= 0) return 0;
+		return std::min(iAdvantage, GC.getHIGHT_MOD_MAX_ADVANTAGE()) * m_iHeightAdvantageAttckMod;
+	}
+	return 0;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetExtraWoundedMod() const
+{
+	return m_iExtraWoundedMod;
+}
+void CvUnit::ChangeExtraWoundedMod(int iValue)
+{
+	m_iExtraWoundedMod = iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetInterceptionDamageMod() const
+{
+	return m_iInterceptionDamageMod;
+}
+void CvUnit::ChangeInterceptionDamageMod(int iValue)
+{
+	m_iInterceptionDamageMod = iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetAirSweepDamageMod() const
+{
+	return m_iAirSweepDamageMod;
+}
+void CvUnit::ChangeAirSweepDamageMod(int iValue)
+{
+	m_iAirSweepDamageMod = iValue;
 }
 
 //	--------------------------------------------------------------------------------
