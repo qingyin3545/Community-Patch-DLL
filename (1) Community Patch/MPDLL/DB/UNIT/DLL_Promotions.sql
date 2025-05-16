@@ -54,6 +54,18 @@ ALTER TABLE UnitPromotions ADD 'LostHitPointAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'LostHitPointDefenseMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NearNumEnemyAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NearNumEnemyDefenseMod' INTEGER DEFAULT 0;
+-- SP-TODO: Lua Interface Changed
+ALTER TABLE UnitPromotions ADD 'AllyCityStateCombatModifier' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'AllyCityStateCombatModifierMax' INTEGER DEFAULT -1;
+ALTER TABLE UnitPromotions ADD 'ExtraHappinessCombatModifier' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'ExtraHappinessCombatModifierMax' INTEGER DEFAULT -1;
+ALTER TABLE UnitPromotions ADD 'ExtraResourceType' TEXT DEFAULT NULL;;
+ALTER TABLE UnitPromotions ADD 'ExtraResourceCombatModifier' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'ExtraResourceCombatModifierMax' INTEGER DEFAULT -1;
+ALTER TABLE UnitPromotions ADD 'NearbyUnitPromotionBonus' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'NearbyUnitPromotionBonusRange' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'NearbyUnitPromotionBonusMax' INTEGER DEFAULT -1;
+ALTER TABLE UnitPromotions ADD 'CombatBonusFromNearbyUnitPromotion' TEXT NOT NULL REFERENCES UnitPromotions(Type);
 
 CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionModifiers (
     `PromotionType` TEXT DEFAULT '',
@@ -63,24 +75,18 @@ CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionModifiers (
     `Defense` INTEGER DEFAULT 0 NOT NULL
 );
 
+ALTER TABLE UnitPromotions ADD 'CaptureEmenyPercent' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'CaptureEmenyExtraMax' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'HeightModPerX' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'WoundedMod' INTEGER DEFAULT 0;
+
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr10' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr11' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr12' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr13' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD COLUMN 'IgnoreDamageChance' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'AllyCityStateCombatModifier' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'AllyCityStateCombatModifierMax' INTEGER DEFAULT -1;
 ALTER TABLE UnitPromotions ADD COLUMN 'CanDoNukeDamage' BOOLEAN DEFAULT 0; 
-ALTER TABLE UnitPromotions ADD COLUMN 'ExtraResourceType' TEXT DEFAULT NULL;;
-ALTER TABLE UnitPromotions ADD COLUMN 'ExtraResourceCombatModifier' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'ExtraResourceCombatModifierMax' INTEGER DEFAULT -1;
-ALTER TABLE UnitPromotions ADD COLUMN 'ExtraHappinessCombatModifier' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'ExtraHappinessCombatModifierMax' INTEGER DEFAULT -1;
 ALTER TABLE UnitPromotions ADD COLUMN 'GetGroundAttackRange' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'NearbyUnitPromotionBonus' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'NearbyUnitPromotionBonusRange' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'NearbyUnitPromotionBonusMax' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'CombatBonusFromNearbyUnitPromotion' TEXT NOT NULL REFERENCES UnitPromotions(Type);
 ALTER TABLE UnitPromotions ADD 'HPHealedIfDestroyEnemyGlobal' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'RangedFlankAttackModifierPercent' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'FeatureInvisible' TEXT DEFAULT NULL;
@@ -103,12 +109,7 @@ ALTER TABLE UnitPromotions ADD COLUMN 'PillageReplenishMoves' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'PillageReplenishAttck'  BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'PillageReplenishHealth' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'PlagueImmune' BOOLEAN DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'HeightModPerX' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'HeightModLimited' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'InsightEnemyDamageModifier' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'CaptureEmenyPercent' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'CaptureEmenyExtraMax' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'WoundedMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'RangeSuppressModifier' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'MilitaryMightMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'FreeExpPerTurn' INTEGER DEFAULT 0;
@@ -163,6 +164,11 @@ CREATE TABLE Promotion_PromotionExclusionAny (
 	PromotionType text REFERENCES UnitPromotions(Type),
 	ExclusionPromotionType text REFERENCES UnitPromotions(Type)
 );
+-- Only for check promotion valid
+CREATE TABLE Promotion_UnitCombatsPromotionValid (
+	PromotionType text REFERENCES UnitPromotions(Type),
+	UnitCombatType text REFERENCES UnitCombatInfos(Type)
+);
 
 CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionUpgrade (
     `PromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
@@ -174,9 +180,6 @@ CREATE TABLE IF NOT EXISTS UnitPromotions_UnitType (
     `UnitType` TEXT DEFAULT '' references Units(Type)
 );
 
---InterceptionDamageMod/AirSweepDamageMod
-ALTER TABLE UnitPromotions ADD COLUMN 'InterceptionDamageMod' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'AirSweepDamageMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD MutuallyExclusiveGroup INTEGER DEFAULT -1;
 
 CREATE TABLE "Promotion_RouteMovementChanges" (
@@ -185,8 +188,12 @@ CREATE TABLE "Promotion_RouteMovementChanges" (
 	'MovementChange' int default 0 not null
 );
 
+-- Only for Lua
+ALTER TABLE UnitPromotions ADD 'InterceptionDamageMod' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'AirSweepDamageMod' INTEGER DEFAULT 0;
 -- Only UI
-ALTER TABLE UnitPromotions ADD COLUMN 'ShowInTooltip' INTEGER DEFAULT 1;
-ALTER TABLE UnitPromotions ADD COLUMN 'ShowInPedia' INTEGER DEFAULT 1;
+ALTER TABLE UnitPromotions ADD 'ShowInTooltip' INTEGER DEFAULT 1;
+ALTER TABLE UnitPromotions ADD 'ShowInPedia' INTEGER DEFAULT 1;
 -- Deprecated
 ALTER TABLE UnitPromotions ADD 'ExtraMoveTimesXX' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'HeightModLimited' INTEGER DEFAULT 0;

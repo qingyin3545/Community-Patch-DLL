@@ -1459,6 +1459,23 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iLostHitPointDefenseMod = kResults.GetInt("LostHitPointDefenseMod");
 	m_iNearNumEnemyAttackMod = kResults.GetInt("NearNumEnemyAttackMod");
 	m_iNearNumEnemyDefenseMod = kResults.GetInt("NearNumEnemyDefenseMod");
+	m_iAllyCityStateCombatModifier = kResults.GetInt("AllyCityStateCombatModifier");
+	m_iAllyCityStateCombatModifierMax = kResults.GetInt("AllyCityStateCombatModifierMax");
+	m_iExtraHappinessCombatModifier = kResults.GetInt("ExtraHappinessCombatModifier");
+	m_iExtraHappinessCombatModifierMax = kResults.GetInt("ExtraHappinessCombatModifierMax");
+	{
+		const char* szTextVal = kResults.GetText("ExtraResourceType");
+		if(szTextVal) m_eExtraResourceType = (ResourceTypes)GC.getInfoTypeForString(szTextVal, true);
+		m_iExtraResourceCombatModifier = kResults.GetInt("ExtraResourceCombatModifier");
+		m_iExtraResourceCombatModifierMax = kResults.GetInt("ExtraResourceCombatModifierMax");
+	}
+	{
+		const char* szTextVal = kResults.GetText("CombatBonusFromNearbyUnitPromotion");
+		if(szTextVal) m_iCombatBonusFromNearbyUnitPromotion = (PromotionTypes)GC.getInfoTypeForString(szTextVal, true);
+		m_iNearbyUnitPromotionBonus = kResults.GetInt("NearbyUnitPromotionBonus");
+		m_iNearbyUnitPromotionBonusRange = kResults.GetInt("NearbyUnitPromotionBonusRange");
+		m_iNearbyUnitPromotionBonusMax = kResults.GetInt("NearbyUnitPromotionBonusMax");
+	}
 
 	return true;
 }
@@ -3889,6 +3906,50 @@ int CvPromotionEntry::GetNearNumEnemyAttackMod() const
 int CvPromotionEntry::GetNearNumEnemyDefenseMod() const
 {
 	return m_iNearNumEnemyDefenseMod;
+}
+int CvPromotionEntry::GetAllyCityStateCombatModifier() const
+{
+	return m_iAllyCityStateCombatModifier;
+}
+int CvPromotionEntry::GetAllyCityStateCombatModifierMax() const
+{
+	return m_iAllyCityStateCombatModifierMax;
+}
+int CvPromotionEntry::GetExtraHappinessCombatModifier() const
+{
+	return m_iExtraHappinessCombatModifier;
+}
+int CvPromotionEntry::GetExtraHappinessCombatModifierMax() const
+{
+	return m_iExtraHappinessCombatModifierMax;
+}
+ResourceTypes CvPromotionEntry::GetExtraResourceType() const
+{
+	return m_eExtraResourceType;
+}
+int CvPromotionEntry::GetExtraResourceCombatModifier() const
+{
+	return m_iExtraResourceCombatModifier;
+}
+int CvPromotionEntry::GetExtraResourceCombatModifierMax() const
+{
+	return m_iExtraResourceCombatModifierMax;
+}
+PromotionTypes CvPromotionEntry::GetCombatBonusFromNearbyUnitPromotion() const
+{
+	return m_iCombatBonusFromNearbyUnitPromotion;
+}
+int CvPromotionEntry::GetNearbyUnitPromotionBonusRange() const
+{
+	return m_iNearbyUnitPromotionBonusRange;
+}
+int CvPromotionEntry::GetNearbyUnitPromotionBonusMax() const
+{
+	return m_iNearbyUnitPromotionBonusMax;
+}
+int CvPromotionEntry::GetNearbyUnitPromotionBonus() const
+{
+	return m_iNearbyUnitPromotionBonus;
 }
 
 //=====================================

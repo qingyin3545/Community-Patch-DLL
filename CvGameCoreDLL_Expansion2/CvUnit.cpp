@@ -16362,6 +16362,11 @@ int CvUnit::GetGenericMeleeStrengthModifier(const CvUnit* pOtherUnit, const CvPl
 		}
 	}
 
+	iModifier += GC.GetIndependentPromotion()->GetAllyCityStateCombatModifier(*this);
+	iModifier += GC.GetIndependentPromotion()->GetHappinessCombatModifier(*this);
+	iModifier += GC.GetIndependentPromotion()->GetResourceCombatModifier(*this);
+	iModifier += GC.GetIndependentPromotion()->GetNearbyUnitPromotionBonus(*this);
+
 	// Our empire fights well in Golden Ages?
 	if(kPlayer.isGoldenAge())
 	{
@@ -17251,6 +17256,11 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 		// Near city bonus
 		iModifier += GetNearbyCityBonusCombatMod(pMyPlot);
 	}
+
+	iModifier += GC.GetIndependentPromotion()->GetAllyCityStateCombatModifier(*this);
+	iModifier += GC.GetIndependentPromotion()->GetHappinessCombatModifier(*this);
+	iModifier += GC.GetIndependentPromotion()->GetResourceCombatModifier(*this);
+	iModifier += GC.GetIndependentPromotion()->GetNearbyUnitPromotionBonus(*this);
 
 	// Our empire fights well in Golden Ages?
 	if(kPlayer.isGoldenAge())

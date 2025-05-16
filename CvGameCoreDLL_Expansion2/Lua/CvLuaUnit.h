@@ -728,6 +728,10 @@ protected:
 	LUAAPIEXTN(GetLostHitPointDefenseMod, int);
 	LUAAPIEXTN(GetNearNumEnemyAttackMod, int);
 	LUAAPIEXTN(GetNearNumEnemyDefenseMod, int);
+	LUAAPIEXTN(GetAllyCityStateCombatModifier, int);
+	LUAAPIEXTN(GetHappinessCombatModifier, int);
+	LUAAPIEXTN(GetResourceCombatModifier, int);
+	LUAAPIEXTN(GetNearbyUnitPromotionBonus, int);
 	static int lGetCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lChangeCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lSetCombatStrengthChangeFromKilledUnits(lua_State* L);
