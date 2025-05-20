@@ -2413,6 +2413,7 @@ CvGlobals::CvGlobals() :
 	GD_INT_INIT(WAR_CASUALTIES_POPULATION_LOSS, 1),
 #endif
 	GD_INT_INIT(PLOT_BUILD_MAX_WORKER, 1),
+	GD_INT_INIT(HIGHT_MOD_MAX_ADVANTAGE, 2),
 
 	////////////// END DEFINES //////////////////
 
@@ -7637,6 +7638,7 @@ void CvGlobals::cacheGlobals()
 	GD_INT_CACHE(WAR_CASUALTIES_POPULATION_LOSS);
 #endif
 	GD_INT_CACHE(PLOT_BUILD_MAX_WORKER);
+	GD_INT_CACHE(HIGHT_MOD_MAX_ADVANTAGE);
 	////////////// END DEFINES //////////////////
 }
 
