@@ -1422,6 +1422,8 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iMovePercentCaptureCity = kResults.GetInt("MovePercentCaptureCity");
 	m_iHealPercentCaptureCity = kResults.GetInt("HealPercentCaptureCity");
 	m_iLostAllMovesAttackCity = kResults.GetInt("LostAllMovesAttackCity");
+	m_iCaptureEmenyPercent = kResults.GetInt("CaptureEmenyPercent");
+	m_iCaptureEmenyExtraMax = kResults.GetInt("CaptureEmenyExtraMax");
 	m_bNoResourcePunishment = kResults.GetBool("NoResourcePunishment");
 	m_bImmueMeleeAttack = kResults.GetBool("ImmueMeleeAttack");
 	m_bImmueRangedAttack = kResults.GetBool("ImmueRangedAttack");
@@ -1459,6 +1461,10 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iLostHitPointDefenseMod = kResults.GetInt("LostHitPointDefenseMod");
 	m_iNearNumEnemyAttackMod = kResults.GetInt("NearNumEnemyAttackMod");
 	m_iNearNumEnemyDefenseMod = kResults.GetInt("NearNumEnemyDefenseMod");
+	m_iHeightAdvantageAttckMod = kResults.GetInt("HeightAdvantageAttckMod");
+	m_iWoundedMod = kResults.GetInt("WoundedMod");
+	m_iInterceptionDamageMod = kResults.GetInt("InterceptionDamageMod");
+	m_iAirSweepDamageMod = kResults.GetInt("AirSweepDamageMod");
 	m_iAllyCityStateCombatModifier = kResults.GetInt("AllyCityStateCombatModifier");
 	m_iAllyCityStateCombatModifierMax = kResults.GetInt("AllyCityStateCombatModifierMax");
 	m_iExtraHappinessCombatModifier = kResults.GetInt("ExtraHappinessCombatModifier");
@@ -3759,6 +3765,14 @@ int CvPromotionEntry::GetLostAllMovesAttackCity() const
 {
 	return m_iLostAllMovesAttackCity;
 }
+int CvPromotionEntry::GetCaptureEmenyPercent() const
+{
+	return m_iCaptureEmenyPercent;
+}
+int CvPromotionEntry::GetCaptureEmenyExtraMax() const
+{
+	return m_iCaptureEmenyExtraMax;
+}
 bool CvPromotionEntry::IsNoResourcePunishment() const
 {
 	return m_bNoResourcePunishment;
@@ -3906,6 +3920,22 @@ int CvPromotionEntry::GetNearNumEnemyAttackMod() const
 int CvPromotionEntry::GetNearNumEnemyDefenseMod() const
 {
 	return m_iNearNumEnemyDefenseMod;
+}
+int CvPromotionEntry::GetHeightAdvantageAttckMod() const
+{
+	return m_iHeightAdvantageAttckMod;
+}
+int CvPromotionEntry::GetWoundedMod() const
+{
+	return m_iWoundedMod;
+}
+int CvPromotionEntry::GetInterceptionDamageMod() const
+{
+	return m_iInterceptionDamageMod;
+}
+int CvPromotionEntry::GetAirSweepDamageMod() const
+{
+	return m_iAirSweepDamageMod;
 }
 int CvPromotionEntry::GetAllyCityStateCombatModifier() const
 {

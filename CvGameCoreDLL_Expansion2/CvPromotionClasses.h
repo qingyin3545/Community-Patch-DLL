@@ -442,6 +442,8 @@ public:
 	int GetMovePercentCaptureCity() const;
 	int GetHealPercentCaptureCity() const;
 	int GetLostAllMovesAttackCity() const;
+	int GetCaptureEmenyPercent() const;
+	int GetCaptureEmenyExtraMax() const;
 	bool IsNoResourcePunishment() const;
 	bool IsImmueMeleeAttack() const;
 	bool IsImmueRangedAttack() const;
@@ -479,6 +481,10 @@ public:
 	int GetLostHitPointDefenseMod() const;
 	int GetNearNumEnemyAttackMod() const;
 	int GetNearNumEnemyDefenseMod() const;
+	int GetHeightAdvantageAttckMod() const;
+	int GetWoundedMod() const;
+	int GetInterceptionDamageMod() const;
+	int GetAirSweepDamageMod() const;
 	int GetAllyCityStateCombatModifier() const;
 	int GetAllyCityStateCombatModifierMax() const;
 	int GetExtraHappinessCombatModifier() const;
@@ -886,6 +892,8 @@ protected:
 	int m_iMovePercentCaptureCity = 0;
 	int m_iHealPercentCaptureCity = 0;
 	int m_iLostAllMovesAttackCity = 0;
+	int m_iCaptureEmenyPercent = 0;
+	int m_iCaptureEmenyExtraMax = 0;
 	bool m_bNoResourcePunishment = false;
 	bool m_bImmueMeleeAttack = false;
 	bool m_bImmueRangedAttack = false;
@@ -923,6 +931,10 @@ protected:
 	int m_iLostHitPointDefenseMod = 0;
 	int m_iNearNumEnemyAttackMod = 0;
 	int m_iNearNumEnemyDefenseMod = 0;
+	int m_iHeightAdvantageAttckMod = 0;
+	int m_iWoundedMod = 0;
+	int m_iInterceptionDamageMod = 0;
+	int m_iAirSweepDamageMod = 0;
 	int m_iAllyCityStateCombatModifier = 0;
 	int m_iAllyCityStateCombatModifierMax = -1;
 	int m_iExtraHappinessCombatModifier = 0;

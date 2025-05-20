@@ -727,6 +727,10 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(GetLostHitPointDefenseMod);
 	Method(GetNearNumEnemyAttackMod);
 	Method(GetNearNumEnemyDefenseMod);
+	Method(GetExtraWoundedMod);
+	Method(GetInterceptionDamageMod);
+	Method(GetAirSweepDamageMod);
+	Method(GetHeightAdvantageAttckMod);
 	Method(GetAllyCityStateCombatModifier);
 	Method(GetHappinessCombatModifier);
 	Method(GetResourceCombatModifier);
@@ -6980,6 +6984,20 @@ LUAAPIIMPL(Unit, GetLostHitPointAttackMod)
 LUAAPIIMPL(Unit, GetLostHitPointDefenseMod)
 LUAAPIIMPL(Unit, GetNearNumEnemyAttackMod)
 LUAAPIIMPL(Unit, GetNearNumEnemyDefenseMod)
+LUAAPIIMPL(Unit, GetExtraWoundedMod)
+LUAAPIIMPL(Unit, GetInterceptionDamageMod)
+LUAAPIIMPL(Unit, GetAirSweepDamageMod)
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetHeightAdvantageAttckMod(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	CvPlot* TargetPlot = CvLuaPlot::GetInstance(L, 2, false);
+	int iResult = 0;
+	if(TargetPlot != nullptr)
+		iResult = pkUnit->GetHeightAdvantageAttckMod(*TargetPlot);
+	lua_pushinteger(L, iResult);
+	return 1;
+}
 //------------------------------------------------------------------------------
 int CvLuaUnit::lGetAllyCityStateCombatModifier(lua_State* L)
 {
