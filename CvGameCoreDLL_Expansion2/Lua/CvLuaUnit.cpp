@@ -671,6 +671,7 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 #ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
 	Method(ClearSamePlotPromotions);
 #endif
+	Method(IsInvisibleInvalid);
 	Method(GetDamageFixValueToUnit);
 	Method(GetDamageFixValueToCity);
 	Method(GetForcedDamageValue);
@@ -7084,6 +7085,14 @@ int CvLuaUnit::lGetNearbyUnitPromotionBonus(lua_State* L)
 {
 	CvUnit* pkUnit = GetInstance(L);
 	lua_pushinteger(L, GC.GetIndependentPromotion()->GetNearbyUnitPromotionBonus(*pkUnit));
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaUnit::lIsInvisibleInvalid(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const bool bResult = pkUnit->IsInvisibleInvalid();
+	lua_pushboolean(L, bResult);
 	return 1;
 }
 //------------------------------------------------------------------------------

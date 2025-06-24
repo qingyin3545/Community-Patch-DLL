@@ -2117,6 +2117,11 @@ public:
 	int otherPromotionAttackModifierByUnit(const CvUnit* otherUnit) const;
 	int otherPromotionDefenseModifierByUnit(const CvUnit* otherUnit) const;
 #endif
+	int GetFeatureInvisibleCount(FeatureTypes eIndex) const;
+	bool IsFeatureInvisible(FeatureTypes eIndex) const;
+	void ChangeNumFeatureInvisible(FeatureTypes eIndex, int iChange);
+	bool IsInvisibleInvalid() const;
+
 	bool IsRangeBackWhenDefense() const;
 	void ChangeNumRangeBackWhenDefense(int iChange);
 
@@ -2809,6 +2814,8 @@ private:
 	int m_iSiegeKillCitizensPercent = 0;
 	int m_iSiegeKillCitizensFixed = 0;
 #endif
+	FeatureTypeCounter m_featureInvisibleCount;
+
 	int m_iNumRangeBackWhenDefense = 0;
 	int m_iNumCanSplashDefender = 0;
 
