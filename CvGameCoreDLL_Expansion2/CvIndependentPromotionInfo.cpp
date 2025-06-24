@@ -4,13 +4,13 @@ void CvIndependentPromotionInfo::Init()
 {
     CvDatabaseUtility kUtility;
     {
+		m_vAllyCityStateCombatModifiers.clear();
 		std::string strKey("AllyCityStateCombatModifier");
 		Database::Results* pResults = kUtility.GetResults(strKey);
 		if(pResults == NULL)
 		{
 			pResults = kUtility.PrepareResults(strKey, "select ID from UnitPromotions where AllyCityStateCombatModifier != 0");
 		}
-		pResults->BindNULL(1);
 		while(pResults->Step())
 		{
 			const int iPromotionID = pResults->GetInt(0);
@@ -18,13 +18,13 @@ void CvIndependentPromotionInfo::Init()
 		}
 	}
 	{
+		m_vHappinessCombatModifiers.clear();
         std::string strKey("ExtraHappinessCombatModifier");
 		Database::Results* pResults = kUtility.GetResults(strKey);
 		if(pResults == NULL)
 		{
 			pResults = kUtility.PrepareResults(strKey, "select ID from UnitPromotions where ExtraHappinessCombatModifier != 0");
 		}
-		pResults->BindNULL(1);
 		while(pResults->Step())
 		{
 			const int iPromotionID = pResults->GetInt(0);
@@ -32,13 +32,13 @@ void CvIndependentPromotionInfo::Init()
 		}
     }
     {
+		m_vResourceCombatModifiers.clear();
 		std::string strKey("ExtraResourceCombatModifier");
 		Database::Results* pResults = kUtility.GetResults(strKey);
 		if(pResults == NULL)
 		{
-			pResults = kUtility.PrepareResults(strKey, "select ID from UnitPromotions where ExtraResourceCombatModifier != 0 and ExtraResourceType != NULL");
+			pResults = kUtility.PrepareResults(strKey, "select ID from UnitPromotions where ExtraResourceCombatModifier != 0 and ExtraResourceType != ''");
 		}
-		pResults->BindNULL(1);
 		while(pResults->Step())
 		{
 			const int iPromotionID = pResults->GetInt(0);
@@ -46,13 +46,13 @@ void CvIndependentPromotionInfo::Init()
 		}
 	}
     {
+		m_vNearbyUnitPromotionBonuses.clear();
         std::string strKey("NearbyUnitPromotionBonus");
 		Database::Results* pResults = kUtility.GetResults(strKey);
 		if(pResults == NULL)
 		{
-			pResults = kUtility.PrepareResults(strKey, "select ID from UnitPromotions where NearbyUnitPromotionBonus != 0 and CombatBonusFromNearbyUnitPromotion != NULL");
+			pResults = kUtility.PrepareResults(strKey, "select ID from UnitPromotions where NearbyUnitPromotionBonus != 0 and CombatBonusFromNearbyUnitPromotion != ''");
 		}
-		pResults->BindNULL(1);
 		while(pResults->Step())
 		{
 			const int iPromotionID = pResults->GetInt(0);
@@ -89,7 +89,7 @@ int CvIndependentPromotionInfo::GetHappinessCombatModifier(const CvUnit& pUnit) 
 	for(auto& ePromotion : vPromotionsUnitHas)
 	{
 		CvPromotionEntry* pPromotion = GC.getPromotionInfo(ePromotion);
-		int iModifierMax = pPromotion->GetExtraResourceCombatModifierMax();
+		int iModifierMax = pPromotion->GetExtraHappinessCombatModifierMax();
 		if(iModifierMax <= 0) iModifierMax = 0x7FFFFFFF;
 		iModifier += std::min(iHappiness * pPromotion->GetExtraHappinessCombatModifier(), iModifierMax);
 	}
@@ -133,7 +133,7 @@ int CvIndependentPromotionInfo::GetNearbyUnitPromotionBonus(const CvUnit& pUnit)
 				{
 					CvUnit* pLoopUnit = pLoopPlot->getUnitByIndex(iK);
 					if (pLoopUnit == nullptr) continue;
-					if (!pLoopUnit->isHasPromotion(ePromotion) || pLoopUnit == &pUnit) continue;
+					if (!pLoopUnit->isHasPromotion(eTargetPromotion) || pLoopUnit == &pUnit) continue;
 					if (GET_PLAYER(pLoopUnit->getOwner()).getTeam() != GET_PLAYER(pUnit.getOwner()).getTeam()) continue;
 
 					iThisModifier += iUnitPromotionModifier;
