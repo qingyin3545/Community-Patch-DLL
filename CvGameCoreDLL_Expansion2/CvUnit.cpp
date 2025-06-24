@@ -19669,6 +19669,11 @@ bool CvUnit::isInvisible(TeamTypes eTeam, bool bDebug, bool bCheckCargo) const
 		return false;
 	}
 
+	if(IsInvisibleInvalid())
+	{
+		return false;
+	}
+
 	if (eTeam!=NO_TEAM)
 		return !(plot()->isInvisibleVisible(eTeam, getInvisibleType()));
 	else
@@ -28435,6 +28440,7 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 		changeFeatureExtraMoveCount(((FeatureTypes)iI), ((thisPromotion.GetFeatureExtraMove(iI)) ? iChange : 0));
 		changeFeatureDoubleHeal(((FeatureTypes)iI), ((thisPromotion.GetFeatureDoubleHeal(iI)) ? iChange : 0));
 		changeFeatureImpassableCount(((FeatureTypes)iI), ((thisPromotion.GetFeatureImpassable(iI)) ? iChange : 0));
+		ChangeNumFeatureInvisible(((FeatureTypes)iI), ((thisPromotion.IsFeatureInvisible(iI)) ? iChange : 0));
 	}
 
 	for (iI = 0; iI < NUM_YIELD_TYPES; iI++)
@@ -35292,6 +35298,52 @@ int CvUnit::otherPromotionDefenseModifierByUnit(const CvUnit* otherUnit) const
 	return iSum;
 }
 #endif
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetFeatureInvisibleCount(FeatureTypes eIndex) const
+{
+	for (FeatureTypeCounter::const_iterator it = m_featureInvisibleCount.begin(); it != m_featureInvisibleCount.end(); ++it)
+	{
+		if (it->first == eIndex)
+			return it->second;
+	}
+
+	return 0;
+}
+
+//	--------------------------------------------------------------------------------
+bool CvUnit::IsFeatureInvisible(FeatureTypes eIndex) const
+{
+	return GetFeatureInvisibleCount(eIndex) > 0;
+}
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ChangeNumFeatureInvisible(FeatureTypes eIndex, int iChange)
+{
+	if (iChange == 0)
+		return;
+
+	FeatureTypeCounter& mVec = m_featureInvisibleCount;
+	for (FeatureTypeCounter::iterator it = mVec.begin(); it != mVec.end(); ++it)
+	{
+		if (it->first == eIndex)
+		{
+			it->second += iChange;
+
+			if (it->second == 0)
+				mVec.erase(it);
+
+			return;
+		}
+	}
+
+	m_featureInvisibleCount.push_back(make_pair(eIndex, iChange));
+}
+bool CvUnit::IsInvisibleInvalid() const
+{
+	// NO_FEATURE will be false If Unit is invisible on at least one Feature
+	return m_featureInvisibleCount.size() > 0 && !IsFeatureInvisible(plot()->getFeatureType());
+}
 
 //	--------------------------------------------------------------------------------
 bool CvUnit::IsRangeBackWhenDefense() const
