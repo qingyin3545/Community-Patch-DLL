@@ -421,6 +421,8 @@ public:
 	std::tr1::unordered_map<PromotionTypes, int>& GetOtherPromotionAttackModifierMap();
 	std::tr1::unordered_map<PromotionTypes, int>& GetOtherPromotionDefenseModifierMap();
 #endif
+	bool IsFeatureInvisible(int iFeature) const;
+
 	bool IsRangeBackWhenDefense() const;
 	bool IsCanSplashDefender() const;
 	int GetHeavyChargeAddMoves() const;
@@ -871,6 +873,8 @@ protected:
 	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionAttackModifiers; // key: other promotion type, value: attack modifier * 100
 	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionDefenseModifiers; // key: other promotion type, value: defense modifier * 100
 #endif
+	bool* m_pbFeatureInvisible = nullptr;
+
 	bool m_bRangeBackWhenDefense = 0;
 	bool m_bCanSplashDefender = 0;
 	int m_iHeavyChargeAddMoves = 0;

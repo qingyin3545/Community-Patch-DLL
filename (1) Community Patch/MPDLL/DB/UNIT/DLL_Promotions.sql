@@ -76,12 +76,40 @@ ALTER TABLE UnitPromotions ADD 'NearbyUnitPromotionBonusRange' INTEGER DEFAULT 0
 ALTER TABLE UnitPromotions ADD 'NearbyUnitPromotionBonusMax' INTEGER DEFAULT -1;
 ALTER TABLE UnitPromotions ADD 'CombatBonusFromNearbyUnitPromotion' TEXT NOT NULL REFERENCES UnitPromotions(Type);
 
+ALTER TABLE UnitPromotions ADD 'FeatureInvisible' TEXT DEFAULT NULL;
+ALTER TABLE UnitPromotions ADD 'FeatureInvisible2' TEXT DEFAULT NULL;
+CREATE TABLE IF NOT EXISTS UnitPromotions_FeatureInvisible (
+    `PromotionType` TEXT DEFAULT '',
+    `FeatureType` TEXT DEFAULT NULL
+);
+
 CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionModifiers (
     `PromotionType` TEXT DEFAULT '',
     `OtherPromotionType` TEXT DEFAULT '',
     `Modifier` INTEGER DEFAULT 0 NOT NULL,
     `Attack` INTEGER DEFAULT 0 NOT NULL,
     `Defense` INTEGER DEFAULT 0 NOT NULL
+);
+
+ALTER TABLE UnitPromotions ADD 'CarrierEXPGivenModifier' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'UnitAttackFaithBonus' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'CityAttackFaithBonus' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'RemovePromotionUpgrade' TEXT DEFAULT NULL;
+ALTER TABLE UnitPromotions ADD 'AttackChanceFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
+ALTER TABLE UnitPromotions ADD 'MovementFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
+ALTER TABLE UnitPromotions ADD 'HealPercentFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
+ALTER TABLE UnitPromotions ADD 'OriginalCapitalDamageFix' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'OriginalCapitalSpecialDamageFix' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'InsightEnemyDamageModifier' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'MilitaryMightMod' INTEGER DEFAULT 0;
+CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionUpgrade (
+    `PromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
+    `JudgePromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
+    `NewPromotionType` TEXT DEFAULT '' references UnitPromotions(Type)
+);
+create table UnitPromotions_Promotions (
+    FreePromotionType text references UnitPromotions(Type),
+    PrePromotionType text references UnitPromotions(Type)
 );
 
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr10' TEXT DEFAULT NULL;
@@ -93,17 +121,6 @@ ALTER TABLE UnitPromotions ADD COLUMN 'CanDoNukeDamage' BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'GetGroundAttackRange' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'HPHealedIfDestroyEnemyGlobal' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'RangedFlankAttackModifierPercent' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'FeatureInvisible' TEXT DEFAULT NULL;
-ALTER TABLE UnitPromotions ADD 'FeatureInvisible2' TEXT DEFAULT NULL;
-ALTER TABLE UnitPromotions ADD 'CarrierEXPGivenModifier' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'UnitAttackFaithBonus' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'CityAttackFaithBonus' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'RemovePromotionUpgrade' TEXT DEFAULT NULL;
-ALTER TABLE UnitPromotions ADD 'AttackChanceFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
-ALTER TABLE UnitPromotions ADD 'MovementFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
-ALTER TABLE UnitPromotions ADD 'HealPercentFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
-ALTER TABLE UnitPromotions ADD 'OriginalCapitalDamageFix' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'OriginalCapitalSpecialDamageFix' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'TurnDamagePercent' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'TurnDamage' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'AdjacentFriendlySapMovement' INTEGER DEFAULT 0;
@@ -113,9 +130,7 @@ ALTER TABLE UnitPromotions ADD COLUMN 'PillageReplenishMoves' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'PillageReplenishAttck'  BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'PillageReplenishHealth' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'PlagueImmune' BOOLEAN DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'InsightEnemyDamageModifier' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'RangeSuppressModifier' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'MilitaryMightMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'FreeExpPerTurn' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'StayCSInfluencePerTurn' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'StayCSExpPerTurn' INTEGER DEFAULT 0;
@@ -156,16 +171,13 @@ CREATE TABLE Promotion_Builds (
 	BuildType text REFERENCES Builds(Type)
 );
 
-create table UnitPromotions_Promotions (
-    FreePromotionType text references UnitPromotions(Type),
-    PrePromotionType text references UnitPromotions(Type)
-);
 --Must have all needed promotions to unlock Promotion
 CREATE TABLE Promotion_PromotionPrereqAnds (
 	PromotionType text REFERENCES UnitPromotions(Type),
 	PrereqPromotionType text REFERENCES UnitPromotions(Type)
 );
---Must any Exclusion promotions will lock Promotion，not two-way
+ALTER TABLE UnitPromotions ADD MutuallyExclusiveGroup INTEGER DEFAULT -1;
+--Must any Exclusion promotions will lock Promotion, not two-way
 CREATE TABLE Promotion_PromotionExclusionAny (
 	PromotionType text REFERENCES UnitPromotions(Type),
 	ExclusionPromotionType text REFERENCES UnitPromotions(Type)
@@ -176,19 +188,12 @@ CREATE TABLE Promotion_UnitCombatsPromotionValid (
 	UnitCombatType text REFERENCES UnitCombatInfos(Type)
 );
 
-CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionUpgrade (
-    `PromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
-    `JudgePromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
-    `NewPromotionType` TEXT DEFAULT '' references UnitPromotions(Type)
-);
 CREATE TABLE IF NOT EXISTS UnitPromotions_UnitType (
     `PromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
     `UnitType` TEXT DEFAULT '' references Units(Type)
 );
 
-ALTER TABLE UnitPromotions ADD MutuallyExclusiveGroup INTEGER DEFAULT -1;
-
-CREATE TABLE "Promotion_RouteMovementChanges" (
+CREATE TABLE Promotion_RouteMovementChanges (
 	'PromotionType'	text no null references UnitPromotions(Type),
 	'RouteType'	text no null references Routes(Type),
 	'MovementChange' int default 0 not null
