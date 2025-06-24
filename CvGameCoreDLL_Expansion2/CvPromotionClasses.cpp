@@ -414,6 +414,7 @@ CvPromotionEntry::~CvPromotionEntry(void)
 	SAFE_DELETE_ARRAY(m_pbCivilianUnitType);
 	SAFE_DELETE_ARRAY(m_pbUnitName);
 	SAFE_DELETE_ARRAY(m_pbPostCombatRandomPromotion);
+	SAFE_DELETE_ARRAY(m_pbFeatureInvisible);
 }
 //------------------------------------------------------------------------------
 bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility)
@@ -1525,6 +1526,23 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 		pResults->Reset();
 	}
 #endif
+	kUtility.PopulateArrayByExistence(m_pbFeatureInvisible,
+		"Features",
+		"UnitPromotions_FeatureInvisible",
+		"FeatureType",
+		"PromotionType",
+		szPromotionType);
+	{
+		const char* szFeatureInvisible = kResults.GetText("FeatureInvisible");
+		int iFeatureInvisible = GC.getInfoTypeForString(szFeatureInvisible, true);
+		if(iFeatureInvisible != NO_FEATURE) m_pbFeatureInvisible[iFeatureInvisible] = true;
+	}
+	{
+		const char* szFeatureInvisible2 = kResults.GetText("FeatureInvisible2");
+		int iFeatureInvisible2 = GC.getInfoTypeForString(szFeatureInvisible2, true);
+		if(iFeatureInvisible2 != NO_FEATURE) m_pbFeatureInvisible[iFeatureInvisible2] = true;
+	}
+
 	m_bRangeBackWhenDefense = kResults.GetBool("RangeBackWhenDefense");
 	m_bCanSplashDefender = kResults.GetBool("CanSplashDefender");
 	m_iHeavyChargeAddMoves = kResults.GetInt("HeavyChargeAddMoves");
@@ -3982,6 +4000,18 @@ std::tr1::unordered_map<PromotionTypes, int>& CvPromotionEntry::GetOtherPromotio
 	return m_pPromotionDefenseModifiers;
 }
 #endif
+bool CvPromotionEntry::IsFeatureInvisible(int iFeature) const
+{
+	ASSERT_DEBUG(i < GC.getNumFeatureInfos(), "Index out of bounds");
+	ASSERT_DEBUG(i > -1, "Index out of bounds");
+
+	if(iFeature > -1 && iFeature < GC.getNumFeatureInfos() && m_pbFeatureInvisible)
+	{
+		return m_pbFeatureInvisible[iFeature];
+	}
+
+	return false;
+}
 bool CvPromotionEntry::IsRangeBackWhenDefense() const
 {
 	return m_bRangeBackWhenDefense;
