@@ -32051,6 +32051,13 @@ int CvPlayer::calculateMilitaryMight()
 			iPower /= 100;
 		}
 
+		int iMod = pLoopUnit->GetMilitaryMightMod();
+		if(iMod != 0)
+		{
+			iPower *= (100 + iMod);
+			iPower /= 100;
+		}
+
 		DomainTypes eDomain = pLoopUnit->getDomainType();
 		if (eDomain == DOMAIN_LAND)
 			iLandPower += iPower;
