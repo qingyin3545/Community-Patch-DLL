@@ -31942,6 +31942,13 @@ int CvPlayer::calculateMilitaryMight(DomainTypes eDomain) const
 			iPower /= 100;
 		}
 
+		int iMod = pLoopUnit->GetMilitaryMightMod();
+		if(iMod != 0)
+		{
+			iPower *= (100 + iMod);
+			iPower /= 100;
+		}
+
 		iSum += iPower;
 	}
 
