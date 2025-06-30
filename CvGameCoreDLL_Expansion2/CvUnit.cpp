@@ -1705,6 +1705,13 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iLostAllMovesAttackCity = 0;
 	m_iCaptureEmenyPercent = 0;
 	m_iCaptureEmenyExtraMax = 0;
+	m_iCarrierEXPGivenModifier = 0;
+	m_iDamageUnitFaithBonus = 0;
+	m_iDamageCityFaithBonus = 0;
+	m_iOriginalCapitalDamageFix = 0;
+	m_iOriginalCapitalSpecialDamageFix = 0;
+	m_iInsightEnemyDamageModifier = 0;
+	m_iMilitaryMightMod = 0;
 	m_iNoResourcePunishment = 0;
 	m_iImmueMeleeAttack = 0;
 	m_iImmueRangedAttack = 0;
@@ -28715,8 +28722,15 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 	ChangeMovePercentCaptureCity(thisPromotion.GetMovePercentCaptureCity() * iChange);
 	ChangeHealPercentCaptureCity(thisPromotion.GetHealPercentCaptureCity() * iChange);
 	ChangeLostAllMovesAttackCity(thisPromotion.GetLostAllMovesAttackCity() * iChange);
-	ChangeCaptureEmenyPercent((thisPromotion.GetCaptureEmenyPercent()) * iChange);
-	ChangeCaptureEmenyExtraMax((thisPromotion.GetCaptureEmenyExtraMax()) * iChange);
+	ChangeCaptureEmenyPercent(thisPromotion.GetCaptureEmenyPercent() * iChange);
+	ChangeCaptureEmenyExtraMax(thisPromotion.GetCaptureEmenyExtraMax() * iChange);
+	ChangeCarrierEXPGivenModifier(thisPromotion.GetCarrierEXPGivenModifier() * iChange);
+	ChangeDamageUnitFaithBonus(thisPromotion.GetDamageUnitFaithBonus() * iChange);
+	ChangeDamageCityFaithBonus(thisPromotion.GetDamageCityFaithBonus() * iChange);
+	ChangeOriginalCapitalDamageFix(thisPromotion.GetOriginalCapitalDamageFix() * iChange);
+	ChangeOriginalCapitalSpecialDamageFix(thisPromotion.GetOriginalCapitalSpecialDamageFix() * iChange);
+	ChangeInsightEnemyDamageModifier(thisPromotion.GetInsightEnemyDamageModifier() * iChange);
+	ChangeMilitaryMightMod(thisPromotion.GetMilitaryMightMod() * iChange);
 	ChangeNumNoResourcePunishment(thisPromotion.IsNoResourcePunishment() ? iChange : 0);
 	ChangeNumImmueMeleeAttack(thisPromotion.IsImmueMeleeAttack() ? iChange : 0);
 	ChangeNumImmueRangedAttack(thisPromotion.IsImmueRangedAttack() ? iChange : 0);
@@ -29484,6 +29498,13 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iLostAllMovesAttackCity);
 	visitor(unit.m_iCaptureEmenyPercent);
 	visitor(unit.m_iCaptureEmenyExtraMax);
+	visitor(unit.m_iCarrierEXPGivenModifier);
+	visitor(unit.m_iDamageUnitFaithBonus);
+	visitor(unit.m_iDamageCityFaithBonus);
+	visitor(unit.m_iOriginalCapitalDamageFix);
+	visitor(unit.m_iOriginalCapitalSpecialDamageFix);
+	visitor(unit.m_iInsightEnemyDamageModifier);
+	visitor(unit.m_iMilitaryMightMod);
 	visitor(unit.m_iNoResourcePunishment);
 	visitor(unit.m_iImmueMeleeAttack);
 	visitor(unit.m_iImmueRangedAttack);
@@ -35603,6 +35624,98 @@ int CvUnit::GetCaptureEmenyExtraMax() const
 void CvUnit::ChangeCaptureEmenyExtraMax(int iValue)
 {
 	m_iCaptureEmenyExtraMax += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetCarrierEXPGivenModifier() const
+{
+	return m_iCarrierEXPGivenModifier;
+}
+void CvUnit::ChangeCarrierEXPGivenModifier(int iValue)
+{
+	m_iCarrierEXPGivenModifier += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetDamageUnitFaithBonus() const
+{
+	return m_iDamageUnitFaithBonus;
+}
+void CvUnit::ChangeDamageUnitFaithBonus(int iValue)
+{
+	m_iDamageUnitFaithBonus += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetDamageCityFaithBonus() const
+{
+	return m_iDamageCityFaithBonus;
+}
+void CvUnit::ChangeDamageCityFaithBonus(int iValue)
+{
+	m_iDamageCityFaithBonus += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetOriginalCapitalDamageFix() const
+{
+	return m_iOriginalCapitalDamageFix;
+}
+void CvUnit::ChangeOriginalCapitalDamageFix(int iValue)
+{
+	m_iOriginalCapitalDamageFix += iValue;
+}
+int CvUnit::GetOriginalCapitalDamageFixTotal() const
+{
+	if (m_iOriginalCapitalDamageFix == 0) return 0;
+	return m_iOriginalCapitalDamageFix * GET_PLAYER(getOwner()).GetNumCapitalCities();
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetOriginalCapitalSpecialDamageFix() const
+{
+	return m_iOriginalCapitalSpecialDamageFix;
+}
+void CvUnit::ChangeOriginalCapitalSpecialDamageFix(int iValue)
+{
+	m_iOriginalCapitalSpecialDamageFix += iValue;
+}
+int CvUnit::GetOriginalCapitalSpecialDamageFixTotal() const
+{
+	if (m_iOriginalCapitalSpecialDamageFix == 0) return 0;
+	int iMajorCapitalBonus = m_iOriginalCapitalSpecialDamageFix;
+	int iMinorCapitalBonus = iMajorCapitalBonus / 2;
+
+	PlayerTypes eMyPlayer = getOwner();
+	CvPlayerAI &kPlayer = GET_PLAYER(eMyPlayer);
+	int iTotalBonus = 0;
+	int iLoop = 0;
+	for (CvCity* pLoopCity = kPlayer.firstCity(&iLoop); pLoopCity != NULL; pLoopCity = kPlayer.nextCity(&iLoop))
+	{
+		if (!pLoopCity->IsOriginalCapital() || pLoopCity->IsOriginalCapitalForPlayer(eMyPlayer)) continue;
+		iTotalBonus += pLoopCity->getOriginalOwner() < MAX_MAJOR_CIVS ? iMajorCapitalBonus : iMinorCapitalBonus;
+	}
+	return iTotalBonus;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetInsightEnemyDamageModifier() const
+{
+	return m_iInsightEnemyDamageModifier;
+}
+void CvUnit::ChangeInsightEnemyDamageModifier(int iValue)
+{
+	m_iInsightEnemyDamageModifier += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetMilitaryMightMod() const
+{
+	return m_iMilitaryMightMod;
+}
+void CvUnit::ChangeMilitaryMightMod(int iValue)
+{
+	m_iMilitaryMightMod += iValue;
 }
 
 //	--------------------------------------------------------------------------------

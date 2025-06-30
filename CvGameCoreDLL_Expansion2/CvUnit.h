@@ -2163,6 +2163,29 @@ public:
 	int GetCaptureEmenyExtraMax() const;
 	void ChangeCaptureEmenyExtraMax(int iValue);
 
+	int GetCarrierEXPGivenModifier() const;
+	void ChangeCarrierEXPGivenModifier(int iValue);
+
+	int GetDamageUnitFaithBonus() const;
+	void ChangeDamageUnitFaithBonus(int iValue);
+	
+	int GetDamageCityFaithBonus() const;
+	void ChangeDamageCityFaithBonus(int iValue);
+	
+	int GetOriginalCapitalDamageFix() const;
+	void ChangeOriginalCapitalDamageFix(int iValue);
+	int GetOriginalCapitalDamageFixTotal() const;
+	
+	int GetOriginalCapitalSpecialDamageFix() const;
+	void ChangeOriginalCapitalSpecialDamageFix(int iValue);
+	int GetOriginalCapitalSpecialDamageFixTotal() const;
+	
+	int GetInsightEnemyDamageModifier() const;
+	void ChangeInsightEnemyDamageModifier(int iValue);
+	
+	int GetMilitaryMightMod() const;
+	void ChangeMilitaryMightMod(int iValue);
+
 	bool IsNoResourcePunishment() const;
 	void ChangeNumNoResourcePunishment(int iChange);
 
@@ -2819,6 +2842,13 @@ private:
 	int m_iLostAllMovesAttackCity = 0;
 	int m_iCaptureEmenyPercent = 0;
 	int m_iCaptureEmenyExtraMax = 0;
+	int m_iCarrierEXPGivenModifier = 0;
+	int m_iDamageUnitFaithBonus = 0;
+	int m_iDamageCityFaithBonus = 0;
+	int m_iOriginalCapitalDamageFix = 0;
+	int m_iOriginalCapitalSpecialDamageFix = 0;
+	int m_iInsightEnemyDamageModifier = 0;
+	int m_iMilitaryMightMod = 0;
 	int m_iNoResourcePunishment = 0;
 	int m_iImmueMeleeAttack = 0;
 	int m_iImmueRangedAttack = 0;
