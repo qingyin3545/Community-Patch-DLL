@@ -1442,6 +1442,13 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iLostAllMovesAttackCity = kResults.GetInt("LostAllMovesAttackCity");
 	m_iCaptureEmenyPercent = kResults.GetInt("CaptureEmenyPercent");
 	m_iCaptureEmenyExtraMax = kResults.GetInt("CaptureEmenyExtraMax");
+	m_iCarrierEXPGivenModifier = kResults.GetInt("CarrierEXPGivenModifier");
+	m_iDamageUnitFaithBonus = kResults.GetInt("DamageUnitFaithBonus");
+	m_iDamageCityFaithBonus = kResults.GetInt("DamageCityFaithBonus");
+	m_iOriginalCapitalDamageFix = kResults.GetInt("OriginalCapitalDamageFix");
+	m_iOriginalCapitalSpecialDamageFix = kResults.GetInt("OriginalCapitalSpecialDamageFix");
+	m_iInsightEnemyDamageModifier = kResults.GetInt("InsightEnemyDamageModifier");
+	m_iMilitaryMightMod = kResults.GetInt("MilitaryMightMod");
 	m_bNoResourcePunishment = kResults.GetBool("NoResourcePunishment");
 	m_bImmueMeleeAttack = kResults.GetBool("ImmueMeleeAttack");
 	m_bImmueRangedAttack = kResults.GetBool("ImmueRangedAttack");
@@ -3802,6 +3809,34 @@ int CvPromotionEntry::GetCaptureEmenyPercent() const
 int CvPromotionEntry::GetCaptureEmenyExtraMax() const
 {
 	return m_iCaptureEmenyExtraMax;
+}
+int CvPromotionEntry::GetCarrierEXPGivenModifier() const
+{
+	return m_iCarrierEXPGivenModifier;
+}
+int CvPromotionEntry::GetDamageUnitFaithBonus() const
+{
+	return m_iDamageUnitFaithBonus;
+}
+int CvPromotionEntry::GetDamageCityFaithBonus() const
+{
+	return m_iDamageCityFaithBonus;
+}
+int CvPromotionEntry::GetOriginalCapitalDamageFix() const
+{
+	return m_iOriginalCapitalDamageFix;
+}
+int CvPromotionEntry::GetOriginalCapitalSpecialDamageFix() const
+{
+	return m_iOriginalCapitalSpecialDamageFix;
+}
+int CvPromotionEntry::GetInsightEnemyDamageModifier() const
+{
+	return m_iInsightEnemyDamageModifier;
+}
+int CvPromotionEntry::GetMilitaryMightMod() const
+{
+	return m_iMilitaryMightMod;
 }
 bool CvPromotionEntry::IsNoResourcePunishment() const
 {

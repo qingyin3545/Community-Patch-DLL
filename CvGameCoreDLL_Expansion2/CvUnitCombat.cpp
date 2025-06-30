@@ -424,7 +424,7 @@ void CvUnitCombat::ResolveMeleeCombat(const CvCombatInfo& kCombatInfo, uint uiPa
 		//don't count the "self-inflicted" damage on the attacker
 		pkDefender->addDamageReceivedThisTurn(iAttackerDamageInflicted, pkAttacker);
 #endif
-	
+		DoBounsFromCombatDamage(kCombatInfo, iAttackerDamageInflicted);
 		pkDefender->ChangeNumTimesAttackedThisTurn(pkAttacker->getOwner(), 1);
 
 		// Update experience for both sides.
@@ -991,6 +991,7 @@ void CvUnitCombat::ResolveRangedUnitVsCombat(const CvCombatInfo& kCombatInfo, ui
 						bTargetIsHuman = true;
 
 					pkAttacker->DoAdjacentPlotDamage(pkTargetPlot,min(iDamage,pkAttacker->getSplashDamage()),"TXT_KEY_MISC_YOU_UNIT_WAS_DAMAGED_SPLASH");
+					DoBounsFromCombatDamage(kCombatInfo, iDamage);
 					pkDefender->ChangeNumTimesAttackedThisTurn(pkAttacker->getOwner(), 1);
 
 					// Defender died
@@ -1231,6 +1232,7 @@ void CvUnitCombat::ResolveRangedCityVsUnitCombat(const CvCombatInfo& kCombatInfo
 
 				if(pkAttacker)
 				{
+					DoBounsFromCombatDamage(kCombatInfo, iDamage);
 					pkDefender->ChangeNumTimesAttackedThisTurn(pkAttacker->getOwner(), 1);
 
 					// Info message for the attacking player
@@ -1341,6 +1343,7 @@ void CvUnitCombat::ResolveCityMeleeCombat(const CvCombatInfo& kCombatInfo, uint 
 #if defined(MOD_CORE_PER_TURN_DAMAGE)
 		pkDefender->addDamageReceivedThisTurn(iAttackerDamageInflicted, pkAttacker);
 #endif
+		DoBounsFromCombatDamage(kCombatInfo, iAttackerDamageInflicted);
 		pkDefender->ChangeNumTimesAttackedThisTurn(pkAttacker->getOwner(), 1);
 		
 		// only gain XP for the first attack made per turn.
@@ -1860,7 +1863,7 @@ void CvUnitCombat::ResolveAirUnitVsCombat(const CvCombatInfo& kCombatInfo, uint 
 				//don't count the "self-inflicted" damage on the attacker
 				pkDefender->addDamageReceivedThisTurn(iAttackerDamageInflicted, pkAttacker);
 #endif
-
+				DoBounsFromCombatDamage(kCombatInfo, iAttackerDamageInflicted);
 				pkDefender->ChangeNumTimesAttackedThisTurn(pkAttacker->getOwner(), 1);
 
 				// Update experience
@@ -2043,6 +2046,7 @@ void CvUnitCombat::ResolveAirUnitVsCombat(const CvCombatInfo& kCombatInfo, uint 
 					bTargetIsHuman = true;
 
 				pCity->clearCombat();
+				DoBounsFromCombatDamage(kCombatInfo, iAttackerDamageInflicted);
 				pCity->ChangeNumTimesAttackedThisTurn(pkAttacker->getOwner(), 1);
 				pCity->changeDamage(iAttackerDamageInflicted);
 #if defined(MOD_CORE_PER_TURN_DAMAGE)
@@ -2167,6 +2171,7 @@ void CvUnitCombat::ResolveAirUnitVsCombat(const CvCombatInfo& kCombatInfo, uint 
 	
 	BATTLE_FINISHED(false);
 	DoNewBattleEffects(kCombatInfo, iAttackerDamageInflicted);
+	DoGiveEXPToCarrier(kCombatInfo);
 }
 
 //	---------------------------------------------------------------------------
@@ -2485,6 +2490,7 @@ void CvUnitCombat::ResolveAirSweep(const CvCombatInfo& kCombatInfo, uint uiParen
 	
 	BATTLE_FINISHED(false);
 	DoNewBattleEffects(kCombatInfo, iAttackerDamageInflicted);
+	DoGiveEXPToCarrier(kCombatInfo);
 }
 
 //	GenerateNuclearCombatInfo
@@ -4608,6 +4614,28 @@ void CvUnitCombat::ApplyPostCityCombatEffects(CvUnit* pkAttacker, CvCity* pkDefe
 			}
 		}
 	}
+	int iCityAttackFaithBonus = pkAttacker->GetDamageCityFaithBonus();
+	if(iCityAttackFaithBonus > 0)
+	{
+		int iFaithBonus = iAttackerDamageInflicted * iCityAttackFaithBonus;
+		iFaithBonus /= 100;
+
+		if(iFaithBonus > 0)
+		{
+			GET_PLAYER(pkAttacker->getOwner()).ChangeFaith(iFaithBonus);
+			CvPlayer& kCityPlayer = GET_PLAYER(pkDefender->getOwner());
+			int iDeduction = min(iFaithBonus, kCityPlayer.GetFaith());
+			kCityPlayer.ChangeFaith(-iDeduction);
+
+			if(pkAttacker->getOwner() == GC.getGame().getActivePlayer())
+			{
+				char text[256] = {0};
+				CvString colorString = "[COLOR_YELLOW]+%d[ENDCOLOR][ICON_PEACE]";
+				sprintf_s(text, colorString, iFaithBonus);
+				SHOW_PLOT_POPUP(pkAttacker->plot(), pkAttacker->getOwner(), text, 0.0);
+			}
+		}
+	}
 	pkDefender->ChangeNumTimesAttackedThisTurn(pkAttacker->getOwner(), 1);
 
 	// Instant yield when dealing damage to city
@@ -5429,6 +5457,44 @@ void CvUnitCombat::DoHeavyChargeEffects(CvUnit* attacker, CvUnit* defender, CvPl
 		}
 	}
 }
+void CvUnitCombat::DoInsightEnemyDamage(const CvCombatInfo & kCombatInfo)
+{
+	CvUnit* pAttackerUnit = kCombatInfo.getUnit(BATTLE_UNIT_ATTACKER);
+	CvUnit* pDefenderUnit = kCombatInfo.getUnit(BATTLE_UNIT_DEFENDER);
+	// Only work when unit vs unit
+	if (pAttackerUnit == nullptr || pDefenderUnit == nullptr) return;
+	int iModifier = pAttackerUnit->GetInsightEnemyDamageModifier();
+	if (iModifier <= 0) return;
+
+	CvPlayerAI& kAttackPlayer = getAttackerPlayer(kCombatInfo);
+	CvPlayerAI& kDefenderPlayer = getDefenderPlayer(kCombatInfo);
+
+	TeamTypes pTeam = kAttackPlayer.getTeam();
+
+	CvUnit* pLoopUnit;
+	int iUnitLoop;
+	for(pLoopUnit = kDefenderPlayer.firstUnit(&iUnitLoop); pLoopUnit != NULL; pLoopUnit = kDefenderPlayer.nextUnit(&iUnitLoop))
+	{
+		CvPlot* pPlot = pLoopUnit->plot();
+		if(pLoopUnit != NULL && pPlot != NULL && pLoopUnit != pDefenderUnit && !pLoopUnit->IsCivilianUnit() && pPlot->isVisible(pTeam))
+		{
+			int iDamageBase = calcDamage(pAttackerUnit, pAttackerUnit->plot(), pLoopUnit, pPlot, kCombatInfo.getAttackIsRanged());
+			int iDamage = (int64)iDamageBase * (int64)iModifier / 100;
+			pLoopUnit->changeDamage(iDamage, pAttackerUnit->getOwner(), pAttackerUnit->GetID());
+		}
+	}
+	ICvUserInterface2* pkDLLInterface = GC.GetEngineUserInterface();
+	if (kAttackPlayer.isHuman())
+	{
+		CvString strBuffer = GetLocalizedText("TXT_KEY_NOTIFICATION_CHAIN_REACTION_ATTACKER", pAttackerUnit->getName(), iModifier);
+		pkDLLInterface->AddMessage(0, kAttackPlayer.GetID(), true, GC.getEVENT_MESSAGE_TIME(), strBuffer /*, "AS2D_COMBAT", MESSAGE_TYPE_INFO, pkDefender->getUnitInfo().GetButton(), (ColorTypes)GC.getInfoTypeForString("COLOR_GREEN"), pkTargetPlot->getX(), pkTargetPlot->getY()*/);
+	}
+	if (kDefenderPlayer.isHuman())
+	{
+		CvString strBuffer = GetLocalizedText("TXT_KEY_NOTIFICATION_CHAIN_REACTION_DEFENDER", pAttackerUnit->getName(), iModifier);
+		pkDLLInterface->AddMessage(0, kDefenderPlayer.GetID(), true, GC.getEVENT_MESSAGE_TIME(), strBuffer /*, "AS2D_COMBAT", MESSAGE_TYPE_INFO, pkDefender->getUnitInfo().GetButton(), (ColorTypes)GC.getInfoTypeForString("COLOR_GREEN"), pkTargetPlot->getX(), pkTargetPlot->getY()*/);
+	}
+}
 #endif
 // Reduce Combat Damage
 static void UnitDamageChangeInterveneNoCondition(CvUnit* thisUnit, int* enemyInflictDamage)
@@ -5538,5 +5604,50 @@ void CvUnitCombat::InterveneInflictDamage(InflictDamageContext* ctx)
 	if (ctx->piDefenseInflictDamage && *ctx->piDefenseInflictDamage <= 0)
 	{
 		*ctx->piDefenseInflictDamage = 0;
+	}
+}
+
+void CvUnitCombat::DoGiveEXPToCarrier(const CvCombatInfo& kCombatInfo)
+{
+	CvUnit* pAttackerUnit = kCombatInfo.getUnit(BATTLE_UNIT_ATTACKER);
+	if (pAttackerUnit == nullptr || pAttackerUnit->GetCarrierEXPGivenModifier() <= 0 || pAttackerUnit->IsDead()) return;
+	if(pAttackerUnit->getTransportUnit())
+	{
+		pAttackerUnit->getTransportUnit()->changeExperienceTimes100(pAttackerUnit->getExperienceTimes100() * pAttackerUnit->GetCarrierEXPGivenModifier() /100);
+		pAttackerUnit->setExperienceTimes100(0);
+	}
+
+	CvUnit* pDefenderUnit = kCombatInfo.getUnit(BATTLE_UNIT_DEFENDER);
+	if (pDefenderUnit == nullptr || pDefenderUnit->IsDead() || pDefenderUnit->GetCarrierEXPGivenModifier() <=0) return;
+	if(pDefenderUnit->getTransportUnit())
+	{
+		pDefenderUnit->getTransportUnit()->changeExperienceTimes100(pDefenderUnit->getExperienceTimes100() * pDefenderUnit->GetCarrierEXPGivenModifier() /100);
+		pDefenderUnit->setExperienceTimes100(0);
+	}
+}
+
+void CvUnitCombat::DoBounsFromCombatDamage(const CvCombatInfo & kCombatInfo, int iAttackDamage)
+{
+	if (iAttackDamage <= 0) return;
+	CvUnit* pAttackerUnit = kCombatInfo.getUnit(BATTLE_UNIT_ATTACKER);
+	CvUnit* pDefenderUnit = kCombatInfo.getUnit(BATTLE_UNIT_DEFENDER);
+	// Only work when Attacker is unit
+	if (pAttackerUnit == nullptr || pDefenderUnit == nullptr) return;
+	if (pAttackerUnit->GetDamageUnitFaithBonus() <= 0) return;
+	iAttackDamage = iAttackDamage < pDefenderUnit->GetCurrHitPoints() ? iAttackDamage : pDefenderUnit->GetCurrHitPoints();
+
+	//Get Instant Yield Output From Attack Damage
+	int iUnitAttackFaithBonus = pAttackerUnit->GetDamageUnitFaithBonus();
+	int iFaithBonus = iAttackDamage * iUnitAttackFaithBonus /100;
+	
+	if(iFaithBonus <= 0) return;
+	CvPlayerAI& kAttackPlayer = getAttackerPlayer(kCombatInfo);
+	kAttackPlayer.ChangeFaith(iFaithBonus);
+	if (kAttackPlayer.GetID() == GC.getGame().getActivePlayer())
+	{
+		char text[256] = {0};
+		CvString colorString = "[COLOR_YELLOW]+%d[ENDCOLOR][ICON_PEACE]";
+		sprintf_s(text, colorString, iFaithBonus);
+		SHOW_PLOT_POPUP(pAttackerUnit->plot(), pAttackerUnit->getOwner(), text, 0.0);
 	}
 }

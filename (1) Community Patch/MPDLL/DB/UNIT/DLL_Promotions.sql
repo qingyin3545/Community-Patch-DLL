@@ -10,6 +10,15 @@ ALTER TABLE UnitPromotions ADD 'HealPercentCaptureCity' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'LostAllMovesAttackCity' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'CaptureEmenyPercent' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'CaptureEmenyExtraMax' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'CarrierEXPGivenModifier' INTEGER DEFAULT 0;
+-- SP-TODO: Column Name UnitAttackFaithBonus -> DamageUnitFaithBonus
+ALTER TABLE UnitPromotions ADD 'DamageUnitFaithBonus' INTEGER DEFAULT 0;
+-- SP-TODO: Column Name CityAttackFaithBonus -> DamageCityFaithBonus
+ALTER TABLE UnitPromotions ADD 'DamageCityFaithBonus' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'OriginalCapitalDamageFix' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'OriginalCapitalSpecialDamageFix' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'InsightEnemyDamageModifier' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD 'MilitaryMightMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NoResourcePunishment' BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'ImmueMeleeAttack' BOOLEAN DEFAULT 0;
 -- SP-TODO: Column Name CannotBeRangedAttacked -> ImmueRangedAttack
@@ -91,17 +100,6 @@ CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionModifiers (
     `Defense` INTEGER DEFAULT 0 NOT NULL
 );
 
-ALTER TABLE UnitPromotions ADD 'CarrierEXPGivenModifier' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'UnitAttackFaithBonus' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'CityAttackFaithBonus' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'RemovePromotionUpgrade' TEXT DEFAULT NULL;
-ALTER TABLE UnitPromotions ADD 'AttackChanceFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
-ALTER TABLE UnitPromotions ADD 'MovementFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
-ALTER TABLE UnitPromotions ADD 'HealPercentFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
-ALTER TABLE UnitPromotions ADD 'OriginalCapitalDamageFix' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'OriginalCapitalSpecialDamageFix' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'InsightEnemyDamageModifier' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD 'MilitaryMightMod' INTEGER DEFAULT 0;
 CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionUpgrade (
     `PromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
     `JudgePromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
@@ -112,6 +110,10 @@ create table UnitPromotions_Promotions (
     PrePromotionType text references UnitPromotions(Type)
 );
 
+ALTER TABLE UnitPromotions ADD 'RemovePromotionUpgrade' TEXT DEFAULT NULL;
+ALTER TABLE UnitPromotions ADD 'AttackChanceFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
+ALTER TABLE UnitPromotions ADD 'MovementFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
+ALTER TABLE UnitPromotions ADD 'HealPercentFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr10' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr11' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr12' TEXT DEFAULT NULL;
