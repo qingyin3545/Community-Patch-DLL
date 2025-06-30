@@ -455,6 +455,13 @@ public:
 	int GetLostAllMovesAttackCity() const;
 	int GetCaptureEmenyPercent() const;
 	int GetCaptureEmenyExtraMax() const;
+	int GetCarrierEXPGivenModifier() const;
+	int GetDamageUnitFaithBonus() const;
+	int GetDamageCityFaithBonus() const;
+	int GetOriginalCapitalDamageFix() const;
+	int GetOriginalCapitalSpecialDamageFix() const;
+	int GetInsightEnemyDamageModifier() const;
+	int GetMilitaryMightMod() const;
 	bool IsNoResourcePunishment() const;
 	bool IsImmueMeleeAttack() const;
 	bool IsImmueRangedAttack() const;
@@ -898,6 +905,13 @@ protected:
 	int m_iLostAllMovesAttackCity = 0;
 	int m_iCaptureEmenyPercent = 0;
 	int m_iCaptureEmenyExtraMax = 0;
+	int m_iCarrierEXPGivenModifier = 0;
+	int m_iDamageUnitFaithBonus = 0;
+	int m_iDamageCityFaithBonus = 0;
+	int m_iOriginalCapitalDamageFix = 0;
+	int m_iOriginalCapitalSpecialDamageFix = 0;
+	int m_iInsightEnemyDamageModifier = 0;
+	int m_iMilitaryMightMod = 0;
 	bool m_bNoResourcePunishment = false;
 	bool m_bImmueMeleeAttack = false;
 	bool m_bImmueRangedAttack = false;

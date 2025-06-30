@@ -79,7 +79,10 @@ protected:
 	static void DoStackingFightBack(const CvCombatInfo& kInfo);
 	static void DoStopAttacker(const CvCombatInfo& kInfo);
 	static void DoHeavyChargeEffects(CvUnit* attacker, CvUnit* defender, CvPlot* battlePlot);
+	static void DoInsightEnemyDamage(const CvCombatInfo& kCombatInfo);
 #endif
+	static void DoGiveEXPToCarrier(const CvCombatInfo& kCombatInfo);
+	static void DoBounsFromCombatDamage(const CvCombatInfo& kCombatInfo, int iAttackDamage);
 
 public:
 	static void ApplyPostKillTraitEffects(CvUnit* pkWinner, CvUnit* pkLoser);
