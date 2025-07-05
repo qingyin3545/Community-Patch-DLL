@@ -35,6 +35,7 @@ typedef std::vector<int> UnitIdContainer; //use a vector as most of the time thi
 typedef std::vector<std::pair<TerrainTypes, int>> TerrainTypeCounter;
 typedef std::vector<std::pair<FeatureTypes, int>> FeatureTypeCounter;
 typedef std::vector<std::pair<UnitClassTypes, int>> UnitClassCounter;
+typedef std::vector<std::pair<PromotionTypes, int>> PromotionCounter;
 typedef FFastSmallFixedList< MissionData, 12, true, c_eCiv5GameplayDLL > MissionQueue;
 
 struct CvUnitCaptureDefinition
@@ -2107,6 +2108,10 @@ public:
 	void ChangeNumFeatureInvisible(FeatureTypes eIndex, int iChange);
 	bool IsInvisibleInvalid() const;
 
+	bool IsPromotionRemoveUpgrade(PromotionTypes eIndex) const;
+	void ChangeNumPromotionRemoveUpgrade(PromotionTypes eIndex, int iChange);
+	void ForceRemovePromotionUpgrade();
+
 	bool IsRangeBackWhenDefense() const;
 	void ChangeNumRangeBackWhenDefense(int iChange);
 
@@ -2818,6 +2823,7 @@ private:
 	int m_iSiegeKillCitizensFixed = 0;
 #endif
 	FeatureTypeCounter m_featureInvisibleCount;
+	PromotionCounter m_removePromotionUpgrade;
 
 	int m_iNumRangeBackWhenDefense = 0;
 	int m_iNumCanSplashDefender = 0;
