@@ -517,6 +517,7 @@ public:
 	int GetNearbyUnitPromotionBonusRange() const;
 	int GetNearbyUnitPromotionBonusMax() const;
 	int GetNearbyUnitPromotionBonus() const;
+	PromotionTypes GetRemovePromotionUpgrade() const;
 
 protected:
 	int m_iLayerAnimationPath;
@@ -970,6 +971,7 @@ protected:
 	int m_iNearbyUnitPromotionBonus;
 	int m_iNearbyUnitPromotionBonusRange;
 	int m_iNearbyUnitPromotionBonusMax;
+	PromotionTypes m_iRemovePromotionUpgrade;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
