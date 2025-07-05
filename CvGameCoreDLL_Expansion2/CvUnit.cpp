@@ -2219,6 +2219,7 @@ void CvUnit::convert(CvUnit* pUnit, bool bIsUpgrade)
 			}
 		}
 	}
+	ForceRemovePromotionUpgrade();
 	setGameTurnCreated(pUnit->getGameTurnCreated());
 	setLastMoveTurn(pUnit->getLastMoveTurn());
 	// Don't kill the unit if upgrading from a unit with more base hit points!!!
@@ -28131,6 +28132,7 @@ void CvUnit::setHasPromotion(PromotionTypes eIndex, bool bNewValue)
 		ChangeExtraWoundedMod(thisPromotion.GetWoundedMod() * iChange);
 		ChangeInterceptionDamageMod(thisPromotion.GetInterceptionDamageMod() * iChange);
 		ChangeAirSweepDamageMod(thisPromotion.GetAirSweepDamageMod() * iChange);
+		ChangeNumPromotionRemoveUpgrade(thisPromotion.GetRemovePromotionUpgrade(), iChange);
 
 		if(IsSelected())
 		{
@@ -28819,6 +28821,8 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iSiegeKillCitizensPercent);
 	visitor(unit.m_iSiegeKillCitizensFixed);
 #endif
+	visitor(unit.m_featureInvisibleCount);
+	visitor(unit.m_removePromotionUpgrade);
 	visitor(unit.m_iNumRangeBackWhenDefense);
 	visitor(unit.m_iNumCanSplashDefender);
 	visitor(unit.m_iHeavyChargeAddMoves);
@@ -34581,14 +34585,10 @@ int CvUnit::GetFeatureInvisibleCount(FeatureTypes eIndex) const
 
 	return 0;
 }
-
-//	--------------------------------------------------------------------------------
 bool CvUnit::IsFeatureInvisible(FeatureTypes eIndex) const
 {
 	return GetFeatureInvisibleCount(eIndex) > 0;
 }
-
-//	--------------------------------------------------------------------------------
 void CvUnit::ChangeNumFeatureInvisible(FeatureTypes eIndex, int iChange)
 {
 	if (iChange == 0)
@@ -34614,6 +34614,45 @@ bool CvUnit::IsInvisibleInvalid() const
 {
 	// NO_FEATURE will be false If Unit is invisible on at least one Feature
 	return m_featureInvisibleCount.size() > 0 && !IsFeatureInvisible(plot()->getFeatureType());
+}
+
+//	--------------------------------------------------------------------------------
+bool CvUnit::IsPromotionRemoveUpgrade(PromotionTypes eIndex) const
+{
+	for (PromotionCounter::const_iterator it = m_removePromotionUpgrade.begin(); it != m_removePromotionUpgrade.end(); ++it)
+	{
+		if (it->first == eIndex) return it->second > 0;
+	}
+	return false;
+}
+void CvUnit::ChangeNumPromotionRemoveUpgrade(PromotionTypes eIndex, int iChange)
+{
+	if (eIndex == NO_PROMOTION || iChange == 0)
+		return;
+
+	PromotionCounter& mVec = m_removePromotionUpgrade;
+	for (PromotionCounter::iterator it = mVec.begin(); it != mVec.end(); ++it)
+	{
+		if (it->first == eIndex)
+		{
+			it->second += iChange;
+
+			if (it->second == 0)
+				mVec.erase(it);
+
+			return;
+		}
+	}
+
+	m_removePromotionUpgrade.push_back(make_pair(eIndex, iChange));
+}
+void CvUnit::ForceRemovePromotionUpgrade()
+{
+	PromotionCounter& mVec = m_removePromotionUpgrade;
+	for (PromotionCounter::iterator it = mVec.begin(); it != mVec.end(); ++it)
+	{
+		setHasPromotion((PromotionTypes)it->first, false);
+	}
 }
 
 //	--------------------------------------------------------------------------------

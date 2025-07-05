@@ -84,6 +84,11 @@ ALTER TABLE UnitPromotions ADD 'NearbyUnitPromotionBonus' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NearbyUnitPromotionBonusRange' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NearbyUnitPromotionBonusMax' INTEGER DEFAULT -1;
 ALTER TABLE UnitPromotions ADD 'CombatBonusFromNearbyUnitPromotion' TEXT NOT NULL REFERENCES UnitPromotions(Type);
+ALTER TABLE UnitPromotions ADD 'RemovePromotionUpgrade' TEXT DEFAULT NULL;
+-- Promotions effect that Unit can only have one
+ALTER TABLE UnitPromotions ADD 'AttackChanceFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
+ALTER TABLE UnitPromotions ADD 'MovementFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
+ALTER TABLE UnitPromotions ADD 'HealPercentFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
 
 ALTER TABLE UnitPromotions ADD 'FeatureInvisible' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD 'FeatureInvisible2' TEXT DEFAULT NULL;
@@ -109,11 +114,11 @@ create table UnitPromotions_Promotions (
     FreePromotionType text references UnitPromotions(Type),
     PrePromotionType text references UnitPromotions(Type)
 );
+CREATE TABLE IF NOT EXISTS UnitPromotions_UnitType (
+    `PromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
+    `UnitType` TEXT DEFAULT '' references Units(Type)
+);
 
-ALTER TABLE UnitPromotions ADD 'RemovePromotionUpgrade' TEXT DEFAULT NULL;
-ALTER TABLE UnitPromotions ADD 'AttackChanceFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
-ALTER TABLE UnitPromotions ADD 'MovementFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
-ALTER TABLE UnitPromotions ADD 'HealPercentFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr10' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr11' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr12' TEXT DEFAULT NULL;
@@ -188,11 +193,6 @@ CREATE TABLE Promotion_PromotionExclusionAny (
 CREATE TABLE Promotion_UnitCombatsPromotionValid (
 	PromotionType text REFERENCES UnitPromotions(Type),
 	UnitCombatType text REFERENCES UnitCombatInfos(Type)
-);
-
-CREATE TABLE IF NOT EXISTS UnitPromotions_UnitType (
-    `PromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
-    `UnitType` TEXT DEFAULT '' references Units(Type)
 );
 
 CREATE TABLE Promotion_RouteMovementChanges (

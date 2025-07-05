@@ -1507,6 +1507,10 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 		m_iNearbyUnitPromotionBonusRange = kResults.GetInt("NearbyUnitPromotionBonusRange");
 		m_iNearbyUnitPromotionBonusMax = kResults.GetInt("NearbyUnitPromotionBonusMax");
 	}
+	{
+		const char* szTextVal = kResults.GetText("RemovePromotionUpgrade");
+		if(szTextVal) m_iRemovePromotionUpgrade = (PromotionTypes)GC.getInfoTypeForString(szTextVal, true);
+	}
 
 	return true;
 }
@@ -4045,6 +4049,10 @@ int CvPromotionEntry::GetNearbyUnitPromotionBonusMax() const
 int CvPromotionEntry::GetNearbyUnitPromotionBonus() const
 {
 	return m_iNearbyUnitPromotionBonus;
+}
+PromotionTypes CvPromotionEntry::GetRemovePromotionUpgrade() const
+{
+	return m_iRemovePromotionUpgrade;
 }
 
 //=====================================
