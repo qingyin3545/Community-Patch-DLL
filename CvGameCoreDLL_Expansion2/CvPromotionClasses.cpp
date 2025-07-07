@@ -1511,9 +1511,9 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 		const char* szTextVal = kResults.GetText("RemovePromotionUpgrade");
 		if(szTextVal) m_iRemovePromotionUpgrade = (PromotionTypes)GC.getInfoTypeForString(szTextVal, true);
 	}
-	m_eAttackChanceFromAttackDamageFormula = (int)static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("AttackChanceFromAttackDamage")));
-	m_eMovementFromAttackDamageFormula = (int)static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("MovementFromAttackDamage")));
-	m_eHealPercentFromAttackDamageFormula = (int)static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("HealPercentFromAttackDamage")));
+	m_eAttackChanceFromAttackDamageFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("AttackChanceFromAttackDamage"), true));
+	m_eMovementFromAttackDamageFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("MovementFromAttackDamage"), true));
+	m_eHealPercentFromAttackDamageFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("HealPercentFromAttackDamage"), true));
 
 	return true;
 }
