@@ -506,9 +506,9 @@ public:
 	int GetNearbyUnitPromotionBonusMax() const;
 	int GetNearbyUnitPromotionBonus() const;
 	PromotionTypes GetRemovePromotionUpgrade() const;
-	int GetAttackChanceFromAttackDamageFormula() const;
-	int GetMovementFromAttackDamageFormula() const;
-	int GetHealPercentFromAttackDamageFormula() const;
+	LuaFormulaTypes GetAttackChanceFromAttackDamageFormula() const;
+	LuaFormulaTypes GetMovementFromAttackDamageFormula() const;
+	LuaFormulaTypes GetHealPercentFromAttackDamageFormula() const;
 
 protected:
 	int m_iLayerAnimationPath;
@@ -964,14 +964,14 @@ protected:
 	ResourceTypes m_eExtraResourceType = NO_RESOURCE;
 	int m_iExtraResourceCombatModifier = 0;
 	int m_iExtraResourceCombatModifierMax = -1;
-	PromotionTypes m_iCombatBonusFromNearbyUnitPromotion;
-	int m_iNearbyUnitPromotionBonus;
-	int m_iNearbyUnitPromotionBonusRange;
-	int m_iNearbyUnitPromotionBonusMax;
-	PromotionTypes m_iRemovePromotionUpgrade;
-	int m_eAttackChanceFromAttackDamageFormula = NO_LUA_FORMULA;
-	int m_eMovementFromAttackDamageFormula = NO_LUA_FORMULA;
-	int m_eHealPercentFromAttackDamageFormula = NO_LUA_FORMULA;
+	PromotionTypes m_iCombatBonusFromNearbyUnitPromotion = NO_PROMOTION;
+	int m_iNearbyUnitPromotionBonus = 0;
+	int m_iNearbyUnitPromotionBonusRange = 0;
+	int m_iNearbyUnitPromotionBonusMax = 0;
+	PromotionTypes m_iRemovePromotionUpgrade = NO_PROMOTION;
+	LuaFormulaTypes m_eAttackChanceFromAttackDamageFormula = NO_LUA_FORMULA;
+	LuaFormulaTypes m_eMovementFromAttackDamageFormula = NO_LUA_FORMULA;
+	LuaFormulaTypes m_eHealPercentFromAttackDamageFormula = NO_LUA_FORMULA;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

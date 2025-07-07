@@ -1511,9 +1511,18 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 		const char* szTextVal = kResults.GetText("RemovePromotionUpgrade");
 		if(szTextVal) m_iRemovePromotionUpgrade = (PromotionTypes)GC.getInfoTypeForString(szTextVal, true);
 	}
-	m_eAttackChanceFromAttackDamageFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("AttackChanceFromAttackDamage"), true));
-	m_eMovementFromAttackDamageFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("MovementFromAttackDamage"), true));
-	m_eHealPercentFromAttackDamageFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("HealPercentFromAttackDamage"), true));
+	{
+		const char* szTextVal = kResults.GetText("AttackChanceFromAttackDamage");
+		m_eAttackChanceFromAttackDamageFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(szTextVal, true));
+	}
+	{
+		const char* szTextVal = kResults.GetText("MovementFromAttackDamage");
+		m_eMovementFromAttackDamageFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(szTextVal, true));
+	}
+	{
+		const char* szTextVal = kResults.GetText("HealPercentFromAttackDamage");
+		m_eHealPercentFromAttackDamageFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(szTextVal, true));
+	}
 
 	return true;
 }
@@ -4057,18 +4066,15 @@ PromotionTypes CvPromotionEntry::GetRemovePromotionUpgrade() const
 {
 	return m_iRemovePromotionUpgrade;
 }
-
-int CvPromotionEntry::GetAttackChanceFromAttackDamageFormula() const
+LuaFormulaTypes CvPromotionEntry::GetAttackChanceFromAttackDamageFormula() const
 {
 	return m_eAttackChanceFromAttackDamageFormula;
 }
-
-int CvPromotionEntry::GetMovementFromAttackDamageFormula() const
+LuaFormulaTypes CvPromotionEntry::GetMovementFromAttackDamageFormula() const
 {
 	return m_eMovementFromAttackDamageFormula;
 }
-
-int CvPromotionEntry::GetHealPercentFromAttackDamageFormula() const
+LuaFormulaTypes CvPromotionEntry::GetHealPercentFromAttackDamageFormula() const
 {
 	return m_eHealPercentFromAttackDamageFormula;
 }

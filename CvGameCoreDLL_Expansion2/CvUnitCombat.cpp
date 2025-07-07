@@ -4796,7 +4796,6 @@ void CvUnitCombat::DoNewBattleEffects(const CvCombatInfo& kCombatInfo, int iAtta
 	DoStackingFightBack(kCombatInfo);
 	DoStopAttacker(kCombatInfo);
 	DoLuaFormulaPostCombatEffects(kCombatInfo, iAttackDamage);
-	//DoBounsFromCombatDamageWhenFinish(kCombatInfo, iAttackDamage);
 	//DoInsightEnemyDamage(kCombatInfo);
 }
 bool CvUnitCombat::ShouldDoNewBattleEffects(const CvCombatInfo& kCombatInfo)
@@ -5655,6 +5654,7 @@ void CvUnitCombat::DoBounsFromCombatDamage(const CvCombatInfo & kCombatInfo, int
 
 void CvUnitCombat::DoLuaFormulaPostCombatEffects(const CvCombatInfo& kCombatInfo, int iAttackDamage)
 {
+	if (iAttackDamage <= 0) return;
 	CvUnit* pAttackerUnit = kCombatInfo.getUnit(BATTLE_UNIT_ATTACKER);
 	CvUnit* pDefenderUnit = kCombatInfo.getUnit(BATTLE_UNIT_DEFENDER);
 	
@@ -5692,7 +5692,7 @@ void CvUnitCombat::DoLuaFormulaPostCombatEffects(const CvCombatInfo& kCombatInfo
 				{
 					char text[256] = {0};
 					colorString = "[COLOR_YELLOW]+%d[ENDCOLOR][ICON_MOVES]";
-					sprintf_s(text, colorString, result.value);
+					sprintf_s(text, colorString, result.value / GC.getMOVE_DENOMINATOR());
 					SHOW_PLOT_POPUP(pAttackerUnit->plot(), pAttackerUnit->getOwner(), text, 0.0);
 				}
 			}

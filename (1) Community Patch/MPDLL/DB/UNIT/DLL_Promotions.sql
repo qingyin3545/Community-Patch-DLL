@@ -83,7 +83,7 @@ ALTER TABLE UnitPromotions ADD 'ExtraResourceCombatModifierMax' INTEGER DEFAULT 
 ALTER TABLE UnitPromotions ADD 'NearbyUnitPromotionBonus' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NearbyUnitPromotionBonusRange' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NearbyUnitPromotionBonusMax' INTEGER DEFAULT -1;
-ALTER TABLE UnitPromotions ADD 'CombatBonusFromNearbyUnitPromotion' TEXT NOT NULL REFERENCES UnitPromotions(Type);
+ALTER TABLE UnitPromotions ADD 'CombatBonusFromNearbyUnitPromotion' TEXT REFERENCES UnitPromotions(Type);
 ALTER TABLE UnitPromotions ADD 'RemovePromotionUpgrade' TEXT DEFAULT NULL;
 -- Promotions effect that Unit can only have one
 ALTER TABLE UnitPromotions ADD 'AttackChanceFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
@@ -94,7 +94,7 @@ ALTER TABLE UnitPromotions ADD 'FeatureInvisible' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD 'FeatureInvisible2' TEXT DEFAULT NULL;
 CREATE TABLE IF NOT EXISTS UnitPromotions_FeatureInvisible (
     `PromotionType` TEXT DEFAULT '',
-    `FeatureType` TEXT DEFAULT NULL
+    `FeatureType` TEXT DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionModifiers (

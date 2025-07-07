@@ -382,13 +382,6 @@ public:
 	void SetNegatorPromotion(int iValue);
 #endif
 
-	void setAttackChanceFromAttackDamageFormula(int iValue);
-	const int GetAttackChanceFromAttackDamageFormula() const;
-	void setMovementFromAttackDamageFormula(int iValue);
-	const int GetMovementFromAttackDamageFormula() const;
-	void setHealPercentFromAttackDamageFormula(int iValue);
-	const int GetHealPercentFromAttackDamageFormula() const;
-
 	bool canEmbarkAtPlot(const CvPlot* pPlot) const;
 	bool canDisembarkAtPlot(const CvPlot* pPlot) const;
 	bool canEmbarkOnto(const CvPlot& pOriginPlot, const CvPlot& pTargetPlot, bool bOverrideEmbarkedCheck = false, int iMoveFlags = 0) const;
@@ -2105,6 +2098,13 @@ public:
 	void ChangeNumPromotionRemoveUpgrade(PromotionTypes eIndex, int iChange);
 	void ForceRemovePromotionUpgrade();
 
+	LuaFormulaTypes GetAttackChanceFromAttackDamageFormula() const;
+	void SetAttackChanceFromAttackDamageFormula(LuaFormulaTypes eValue);
+	LuaFormulaTypes GetMovementFromAttackDamageFormula() const;
+	void SetMovementFromAttackDamageFormula(LuaFormulaTypes eValue);
+	LuaFormulaTypes GetHealPercentFromAttackDamageFormula() const;
+	void SetHealPercentFromAttackDamageFormula(LuaFormulaTypes eValue);
+
 	bool IsRangeBackWhenDefense() const;
 	void ChangeNumRangeBackWhenDefense(int iChange);
 
@@ -2836,6 +2836,10 @@ private:
 	FeatureTypeCounter m_featureInvisibleCount;
 	PromotionCounter m_removePromotionUpgrade;
 
+	LuaFormulaTypes m_eAttackChanceFromAttackDamageFormula = NO_LUA_FORMULA;
+	LuaFormulaTypes m_eMovementFromAttackDamageFormula = NO_LUA_FORMULA;
+	LuaFormulaTypes m_eHealPercentFromAttackDamageFormula = NO_LUA_FORMULA;
+
 	int m_iNumRangeBackWhenDefense = 0;
 	int m_iNumCanSplashDefender = 0;
 
@@ -3252,9 +3256,6 @@ SYNC_ARCHIVE_VAR(AITacticalMove, m_eTacticalMove)
 SYNC_ARCHIVE_VAR(int, m_iTacticalMoveSetTurn)
 SYNC_ARCHIVE_VAR(AIHomelandMove, m_eHomelandMove)
 SYNC_ARCHIVE_VAR(int, m_iHomelandMoveSetTurn)
-SYNC_ARCHIVE_VAR(int, m_eAttackChanceFromAttackDamageFormula)
-SYNC_ARCHIVE_VAR(int, m_eMovementFromAttackDamageFormula)
-SYNC_ARCHIVE_VAR(int, m_eHealPercentFromAttackDamageFormula)
 SYNC_ARCHIVE_END()
 
 #endif

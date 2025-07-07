@@ -27800,9 +27800,9 @@ void CvUnit::setHasPromotion(PromotionTypes eIndex, bool bNewValue)
 		ChangeGreatGeneralCount(thisPromotion.IsGreatGeneral() ? iChange: 0);
 		ChangeGreatAdmiralCount(thisPromotion.IsGreatAdmiral() ? iChange: 0);
 
-		setAttackChanceFromAttackDamageFormula(thisPromotion.GetAttackChanceFromAttackDamageFormula() ? thisPromotion.GetAttackChanceFromAttackDamageFormula() : NO_LUA_FORMULA);
-		setMovementFromAttackDamageFormula(thisPromotion.GetMovementFromAttackDamageFormula() ? thisPromotion.GetMovementFromAttackDamageFormula() : NO_LUA_FORMULA);
-		setHealPercentFromAttackDamageFormula(thisPromotion.GetHealPercentFromAttackDamageFormula() ? thisPromotion.GetHealPercentFromAttackDamageFormula() : NO_LUA_FORMULA);
+		SetAttackChanceFromAttackDamageFormula(thisPromotion.GetAttackChanceFromAttackDamageFormula());
+		SetMovementFromAttackDamageFormula(thisPromotion.GetMovementFromAttackDamageFormula());
+		SetHealPercentFromAttackDamageFormula(thisPromotion.GetHealPercentFromAttackDamageFormula());
 
 		ChangeAuraRangeChange(thisPromotion.GetAuraRangeChange() * iChange);
 		ChangeAuraEffectChange(thisPromotion.GetAuraEffectChange() * iChange);
@@ -34660,6 +34660,45 @@ void CvUnit::ForceRemovePromotionUpgrade()
 }
 
 //	--------------------------------------------------------------------------------
+LuaFormulaTypes CvUnit::GetAttackChanceFromAttackDamageFormula() const
+{
+	return m_eAttackChanceFromAttackDamageFormula;
+}
+void CvUnit::SetAttackChanceFromAttackDamageFormula(LuaFormulaTypes eValue)
+{
+	if(eValue != NO_LUA_FORMULA && m_eAttackChanceFromAttackDamageFormula == NO_LUA_FORMULA)
+	{
+		m_eAttackChanceFromAttackDamageFormula = eValue;
+	}
+}
+
+//	--------------------------------------------------------------------------------
+LuaFormulaTypes CvUnit::GetMovementFromAttackDamageFormula() const
+{
+	return m_eMovementFromAttackDamageFormula;
+}
+void CvUnit::SetMovementFromAttackDamageFormula(LuaFormulaTypes eValue)
+{
+	if(eValue != NO_LUA_FORMULA && m_eMovementFromAttackDamageFormula == NO_LUA_FORMULA)
+	{
+		m_eMovementFromAttackDamageFormula = eValue;
+	}
+}
+
+//	--------------------------------------------------------------------------------
+LuaFormulaTypes CvUnit::GetHealPercentFromAttackDamageFormula() const
+{
+	return m_eHealPercentFromAttackDamageFormula;
+}
+void CvUnit::SetHealPercentFromAttackDamageFormula(LuaFormulaTypes eValue)
+{
+	if(eValue != NO_LUA_FORMULA && m_eHealPercentFromAttackDamageFormula == NO_LUA_FORMULA)
+	{
+		m_eHealPercentFromAttackDamageFormula = eValue;
+	}
+}
+
+//	--------------------------------------------------------------------------------
 bool CvUnit::IsRangeBackWhenDefense() const
 {
 	return m_iNumRangeBackWhenDefense > 0;
@@ -35434,47 +35473,3 @@ void CvUnit::SetRangedCombatStrengthChangeFromKilledUnits(int iValue)
 {
 	m_iRangedCombatStrengthChangeFromKilledUnits = iValue;
 }
-
-//	--------------------------------------------------------------------------------
-void CvUnit::setAttackChanceFromAttackDamageFormula(int iValue)
-{
-	if(iValue != NO_LUA_FORMULA && m_eAttackChanceFromAttackDamageFormula == NO_LUA_FORMULA)
-	{
-		m_eAttackChanceFromAttackDamageFormula = iValue;
-	}
-}
-
-const int CvUnit::GetAttackChanceFromAttackDamageFormula() const
-{
-	return m_eAttackChanceFromAttackDamageFormula;
-}
-
-//	--------------------------------------------------------------------------------
-void CvUnit::setMovementFromAttackDamageFormula(int iValue)
-{
-	if(iValue != NO_LUA_FORMULA && m_eMovementFromAttackDamageFormula == NO_LUA_FORMULA)
-	{
-		m_eMovementFromAttackDamageFormula = iValue;
-	}
-}
-
-const int CvUnit::GetMovementFromAttackDamageFormula() const
-{
-	return m_eMovementFromAttackDamageFormula;
-}
-
-//	--------------------------------------------------------------------------------
-void CvUnit::setHealPercentFromAttackDamageFormula(int iValue)
-{
-	if(iValue != NO_LUA_FORMULA && m_eHealPercentFromAttackDamageFormula == NO_LUA_FORMULA)
-	{
-		m_eHealPercentFromAttackDamageFormula = iValue;
-	}
-}
-
-const int CvUnit::GetHealPercentFromAttackDamageFormula() const
-{
-	return m_eHealPercentFromAttackDamageFormula;
-}
-
-//	--------------------------------------------------------------------------------

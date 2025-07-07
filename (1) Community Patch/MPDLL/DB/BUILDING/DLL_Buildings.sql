@@ -25,6 +25,7 @@ alter table Buildings add column `GoldenAgeMeterMod` int not null default 0;
 ALTER TABLE Buildings ADD COLUMN 'AllowInstantYield' BOOLEAN DEFAULT 0;
 ALTER TABLE Buildings ADD COLUMN 'RiverOrCoastal' BOOLEAN DEFAULT 0;
 alter table Buildings add column `MinNumReligions` int not null default 0;
+ALTER TABLE Buildings ADD 'PolicyNeededType' TEXT DEFAULT NULL REFERENCES Policies(Type);
 
 CREATE TABLE Building_BuildingsNeededInCity(
 	BuildingType text references Buildings(Type),
@@ -118,6 +119,7 @@ ALTER TABLE Buildings ADD COLUMN 'MinorCivFriendship' INTEGER DEFAULT 0;
 ALTER TABLE Buildings ADD FreePromotion2 TEXT DEFAULT NULL;
 ALTER TABLE Buildings ADD FreePromotion3 TEXT DEFAULT NULL;
 ALTER TABLE Buildings ADD COLUMN 'MoveAfterCreated' INTEGER DEFAULT 0;
+ALTER TABLE Buildings ADD COLUMN 'ResearchTotalCostModifierGoldenAge' INTEGER DEFAULT 0;
 
 CREATE TABLE Building_TerrainYieldModifier (
 	'BuildingType' text no null references Buildings(Type),
