@@ -104,6 +104,7 @@ protected:
 	static void DoStopAttacker(const CvCombatInfo& kInfo);
 	static void DoHeavyChargeEffects(CvUnit* attacker, CvUnit* defender, CvPlot* battlePlot);
 	static void DoInsightEnemyDamage(const CvCombatInfo& kCombatInfo);
+	static void DoLuaFormulaPostCombatEffects(const CvCombatInfo& kInfo, int iAttackDamage);
 #endif
 	static void InterveneInflictDamage(InflictDamageContext* ctx);
 	static void DoGiveEXPToCarrier(const CvCombatInfo& kCombatInfo);

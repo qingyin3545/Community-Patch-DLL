@@ -1511,6 +1511,9 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 		const char* szTextVal = kResults.GetText("RemovePromotionUpgrade");
 		if(szTextVal) m_iRemovePromotionUpgrade = (PromotionTypes)GC.getInfoTypeForString(szTextVal, true);
 	}
+	m_eAttackChanceFromAttackDamageFormula = (int)static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("AttackChanceFromAttackDamage")));
+	m_eMovementFromAttackDamageFormula = (int)static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("MovementFromAttackDamage")));
+	m_eHealPercentFromAttackDamageFormula = (int)static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("HealPercentFromAttackDamage")));
 
 	return true;
 }
@@ -4053,6 +4056,21 @@ int CvPromotionEntry::GetNearbyUnitPromotionBonus() const
 PromotionTypes CvPromotionEntry::GetRemovePromotionUpgrade() const
 {
 	return m_iRemovePromotionUpgrade;
+}
+
+int CvPromotionEntry::GetAttackChanceFromAttackDamageFormula() const
+{
+	return m_eAttackChanceFromAttackDamageFormula;
+}
+
+int CvPromotionEntry::GetMovementFromAttackDamageFormula() const
+{
+	return m_eMovementFromAttackDamageFormula;
+}
+
+int CvPromotionEntry::GetHealPercentFromAttackDamageFormula() const
+{
+	return m_eHealPercentFromAttackDamageFormula;
 }
 
 //=====================================

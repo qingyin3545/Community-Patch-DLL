@@ -506,6 +506,9 @@ public:
 	int GetNearbyUnitPromotionBonusMax() const;
 	int GetNearbyUnitPromotionBonus() const;
 	PromotionTypes GetRemovePromotionUpgrade() const;
+	int GetAttackChanceFromAttackDamageFormula() const;
+	int GetMovementFromAttackDamageFormula() const;
+	int GetHealPercentFromAttackDamageFormula() const;
 
 protected:
 	int m_iLayerAnimationPath;
@@ -966,6 +969,9 @@ protected:
 	int m_iNearbyUnitPromotionBonusRange;
 	int m_iNearbyUnitPromotionBonusMax;
 	PromotionTypes m_iRemovePromotionUpgrade;
+	int m_eAttackChanceFromAttackDamageFormula = NO_LUA_FORMULA;
+	int m_eMovementFromAttackDamageFormula = NO_LUA_FORMULA;
+	int m_eHealPercentFromAttackDamageFormula = NO_LUA_FORMULA;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
