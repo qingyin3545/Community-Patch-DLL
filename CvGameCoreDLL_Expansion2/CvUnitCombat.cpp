@@ -4795,6 +4795,7 @@ void CvUnitCombat::DoNewBattleEffects(const CvCombatInfo& kCombatInfo, int iAtta
 	DoKillCitizens(kCombatInfo);
 	DoStackingFightBack(kCombatInfo);
 	DoStopAttacker(kCombatInfo);
+	DoLuaFormulaPostCombatEffects(kCombatInfo, iAttackDamage);
 	//DoBounsFromCombatDamageWhenFinish(kCombatInfo, iAttackDamage);
 	//DoInsightEnemyDamage(kCombatInfo);
 }
@@ -5649,5 +5650,65 @@ void CvUnitCombat::DoBounsFromCombatDamage(const CvCombatInfo & kCombatInfo, int
 		CvString colorString = "[COLOR_YELLOW]+%d[ENDCOLOR][ICON_PEACE]";
 		sprintf_s(text, colorString, iFaithBonus);
 		SHOW_PLOT_POPUP(pAttackerUnit->plot(), pAttackerUnit->getOwner(), text, 0.0);
+	}
+}
+
+void CvUnitCombat::DoLuaFormulaPostCombatEffects(const CvCombatInfo& kCombatInfo, int iAttackDamage)
+{
+	CvUnit* pAttackerUnit = kCombatInfo.getUnit(BATTLE_UNIT_ATTACKER);
+	CvUnit* pDefenderUnit = kCombatInfo.getUnit(BATTLE_UNIT_DEFENDER);
+	
+	// Only work when unit vs unit
+	if (pAttackerUnit == nullptr || pDefenderUnit == nullptr) return;
+	bool bEnemyDeath = pDefenderUnit->IsDead() || pDefenderUnit->isDelayedDeath();
+
+	//Get Extra Attack From Attack Damage
+	int iAttackChanceFromAttackDamageFormula = pAttackerUnit->GetAttackChanceFromAttackDamageFormula();
+	if(iAttackChanceFromAttackDamageFormula != NO_LUA_FORMULA)
+	{
+		auto* evaluator = GC.GetLuaEvaluatorManager()->GetEvaluator((LuaFormulaTypes)iAttackChanceFromAttackDamageFormula);
+		if (evaluator != nullptr)
+		{
+			auto result = evaluator->Evaluate<bool>(iAttackDamage, bEnemyDeath);
+			if(result.ok && result.value)
+				pAttackerUnit->setMadeAttack(false);
+		}
+	}
+
+	//Get Extra Movement From Attack Damage
+	int iMovementFromAttackDamageFormula = pAttackerUnit->GetMovementFromAttackDamageFormula();
+	if(iMovementFromAttackDamageFormula != NO_LUA_FORMULA)
+	{
+		auto* evaluator = GC.GetLuaEvaluatorManager()->GetEvaluator((LuaFormulaTypes)iMovementFromAttackDamageFormula);
+		if (evaluator != nullptr)
+		{
+			auto result = evaluator->Evaluate<int>(iAttackDamage, bEnemyDeath);
+			if(result.ok && result.value > 0)
+			{
+				pAttackerUnit->setMoves(pAttackerUnit->movesLeft() + result.value);
+				CvString colorString;
+				CvPlayerAI& kAttackPlayer = getAttackerPlayer(kCombatInfo);
+				if (kAttackPlayer.GetID() == GC.getGame().getActivePlayer())
+				{
+					char text[256] = {0};
+					colorString = "[COLOR_YELLOW]+%d[ENDCOLOR][ICON_MOVES]";
+					sprintf_s(text, colorString, result.value);
+					SHOW_PLOT_POPUP(pAttackerUnit->plot(), pAttackerUnit->getOwner(), text, 0.0);
+				}
+			}
+		}
+	}
+
+	//Get Extra Heal Percent From Attack Damage
+	int iHealPercentFromAttackDamageFormula = pAttackerUnit->GetHealPercentFromAttackDamageFormula();
+	if(iHealPercentFromAttackDamageFormula != NO_LUA_FORMULA)
+	{
+		auto* evaluator = GC.GetLuaEvaluatorManager()->GetEvaluator((LuaFormulaTypes)iHealPercentFromAttackDamageFormula);
+		if (evaluator != nullptr)
+		{
+			auto result = evaluator->Evaluate<int>(iAttackDamage, pAttackerUnit->GetMaxHitPoints(), bEnemyDeath);
+			if(result.ok && result.value > 0)
+				pAttackerUnit->changeDamage(-result.value);
+		}
 	}
 }
