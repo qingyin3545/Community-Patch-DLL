@@ -1814,6 +1814,10 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	m_iNumNoNuclearWinterLocal = 0;
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	m_bCanDoImmigration = true;
+	m_iNumAllScaleImmigrantIn = 0;
+#endif
 }
 
 
@@ -2587,6 +2591,10 @@ void CvCity::doTurn()
 		doProduction(!doCheckProduction());
 		doDecay();
 		doMeltdown();
+
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+		SetCanDoImmigration(true);
+#endif
 
 		for (int iI = 0; iI < GetNumWorkablePlots(); iI++)
 		{
@@ -14955,6 +14963,9 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 #endif
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 		ChangeNumNoNuclearWinterLocal(pBuildingInfo->IsNoNuclearWinterLocal() ? iChange : 0);
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+		ChangeNumAllScaleImmigrantIn(pBuildingInfo->CanAllScaleImmigrantIn() ? iChange : 0);
 #endif
 
 		// Process for our player
@@ -32235,6 +32246,10 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	visitor(city.m_iNumNoNuclearWinterLocal);
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	visitor(city.m_bCanDoImmigration);
+	visitor(city.m_iNumAllScaleImmigrantIn);
+#endif
 }
 
 //	--------------------------------------------------------------------------------
@@ -36021,6 +36036,34 @@ bool CvCity::IsNoNuclearWinterLocal() const
 void CvCity::ChangeNumNoNuclearWinterLocal(int iChange)
 {
 	m_iNumNoNuclearWinterLocal += iChange;
+}
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+bool CvCity::IsCanDoImmigration() const
+{
+	return m_bCanDoImmigration;
+}
+void CvCity::SetCanDoImmigration(bool bValue)
+{
+	m_bCanDoImmigration = bValue;
+}
+bool CvCity::CanImmigrantIn() const
+{
+	return !IsPuppet() && !IsRazing() && !IsResistance() && !GetCityCitizens()->IsForcedAvoidGrowth()
+		&& IsCanDoImmigration() && CanGrowNormally() && (CanScaleImmigrantIn() || CanAllScaleImmigrantIn())
+		&& GetCityCitizens()->GetSpecialistCount((SpecialistTypes)GC.getInfoTypeForString("SPECIALIST_CITIZEN")) <= 0;
+}
+bool CvCity::CanImmigrantOut() const
+{
+	return IsCanDoImmigration() && CanScaleImmigrantOut();
+}
+bool CvCity::CanAllScaleImmigrantIn() const
+{
+	return m_iNumAllScaleImmigrantIn > 0;
+}
+void CvCity::ChangeNumAllScaleImmigrantIn(int iChange)
+{
+	m_iNumAllScaleImmigrantIn += iChange;
 }
 #endif
 
