@@ -814,7 +814,7 @@ bool CvSpecialistInfo::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	const char* szType = GetType();
 	kUtility.SetYields(m_piYieldChange, "SpecialistYields", "SpecialistType", szType);
 
-	#ifdef MOD_SPECIALIST_RESOURCES
+#ifdef MOD_SPECIALIST_RESOURCES
 	{
 		m_vResourceInfo.clear();
 		std::string strKey = "Specialist - Resources";
@@ -6567,6 +6567,24 @@ int CvResourceInfo::GetCorruptionScoreChange() const
 	return m_iCorruptionScoreChange;
 }
 #endif
+#ifdef MOD_RESOURCE_EXTRA_BUFF
+LuaFormulaTypes CvResourceInfo::GetUnHappinessModifierFormula() const
+{
+	return m_eUnHappinessModifierFormula;
+}
+LuaFormulaTypes CvResourceInfo::GetCityConnectionTradeRouteGoldModifierFormula() const
+{
+	return m_eCityConnectionTradeRouteGoldModifierFormula;
+}
+LuaFormulaTypes CvResourceInfo::GetGoldHurryCostModifierFormula() const
+{
+	return m_eGoldHurryCostModifierFormula;
+}
+const std::vector<CvResourceInfo::YieldInfo>& CvResourceInfo::GetGlobalYieldModifiers() const
+{
+	return m_vGlobalYieldModifiers;
+}
+#endif
 //------------------------------------------------------------------------------
 int CvResourceInfo::GetCreateResouceWightModifier() const
 {
@@ -6858,6 +6876,35 @@ bool CvResourceInfo::CacheResults(Database::Results& kResults, CvDatabaseUtility
 
 #ifdef MOD_GLOBAL_CORRUPTION
 	m_iCorruptionScoreChange = kResults.GetInt("CorruptionScoreChange");
+#endif
+#ifdef MOD_RESOURCE_EXTRA_BUFF
+	m_eUnHappinessModifierFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("UnHappinessModifierFormula"), true));
+	m_eCityConnectionTradeRouteGoldModifierFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("CityConnectionTradeRouteGoldModifierFormula"), true));
+	m_eGoldHurryCostModifierFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("GoldHurryCostModifierFormula"), true));
+
+	{
+		std::string sqlKey = "Resoureces - m_vGlobalYieldModifiers";
+		Database::Results* pResults = kUtility.GetResults(sqlKey);
+		if (pResults == NULL)
+		{
+			const char* szSQL = "select * from Resource_GlobalYieldModifiers where ResourceType = ?";
+			pResults = kUtility.PrepareResults(sqlKey, szSQL);
+		}
+
+		pResults->Bind(1, GetType(), false);
+
+		while (pResults->Step())
+		{
+			YieldInfo info;
+			info.eFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(pResults->GetText("YieldFormula")));
+			info.eYield = static_cast<YieldTypes>(GC.getInfoTypeForString(pResults->GetText("YieldType")));
+			info.eStartEra = static_cast<EraTypes>(GC.getInfoTypeForString(pResults->GetText("StartEra")));
+			info.eEndEra = static_cast<EraTypes>(GC.getInfoTypeForString(pResults->GetText("EndEra")));
+			m_vGlobalYieldModifiers.push_back(info);
+		}
+
+		pResults->Reset();
+	}
 #endif
 	m_iCreateResouceWightModifier = kResults.GetInt("CreateResouceWightModifier");
 

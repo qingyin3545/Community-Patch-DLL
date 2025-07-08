@@ -1914,6 +1914,20 @@ public:
 #ifdef MOD_GLOBAL_CORRUPTION
 	int GetCorruptionScoreChange() const;
 #endif
+#ifdef MOD_RESOURCE_EXTRA_BUFF
+	struct YieldInfo {
+		YieldTypes eYield = NO_YIELD;
+		LuaFormulaTypes eFormula = NO_LUA_FORMULA;
+		EraTypes eStartEra = NO_ERA;
+		EraTypes eEndEra = NO_ERA;
+	};
+
+	LuaFormulaTypes GetUnHappinessModifierFormula() const;
+	LuaFormulaTypes GetCityConnectionTradeRouteGoldModifierFormula() const;
+	LuaFormulaTypes GetGoldHurryCostModifierFormula() const;
+
+	const std::vector<YieldInfo>& GetGlobalYieldModifiers() const;
+#endif
 	int GetCreateResouceWightModifier() const;
 
 	virtual bool CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility);
@@ -1983,6 +1997,13 @@ protected:
 
 #ifdef MOD_GLOBAL_CORRUPTION
 	int m_iCorruptionScoreChange = 0;
+#endif
+#ifdef MOD_RESOURCE_EXTRA_BUFF
+	LuaFormulaTypes m_eUnHappinessModifierFormula = NO_LUA_FORMULA;
+	LuaFormulaTypes m_eCityConnectionTradeRouteGoldModifierFormula = NO_LUA_FORMULA;
+	LuaFormulaTypes m_eGoldHurryCostModifierFormula = NO_LUA_FORMULA;
+
+	std::vector<YieldInfo> m_vGlobalYieldModifiers;
 #endif
 	int m_iCreateResouceWightModifier = 0;
 

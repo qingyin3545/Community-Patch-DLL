@@ -501,6 +501,10 @@ public:
 #ifdef MOD_GLOBAL_WAR_CASUALTIES
 	int GetWarCasualtiesModifier() const;
 #endif
+#ifdef MOD_RESOURCE_EXTRA_BUFF
+	int GetResourceUnhappinessModifier() const;
+	int GetResourceCityConnectionTradeRouteGoldModifier() const;
+#endif
 	std::vector<PolicyResourceInfo>& GetCityResources();
 
 private:
@@ -918,6 +922,10 @@ private:
 #endif
 #ifdef MOD_GLOBAL_WAR_CASUALTIES
 	int m_iWarCasualtiesModifier = 0;
+#endif
+#ifdef MOD_RESOURCE_EXTRA_BUFF
+	int m_iResourceUnhappinessModifier = 0;
+	int m_iResourceCityConnectionTradeRouteGoldModifier = 0;
 #endif
 	std::vector<PolicyResourceInfo> m_vCityResources;
 };
