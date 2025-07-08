@@ -31,24 +31,6 @@ public:
 	int	GetLayerAnimationPath() const;
 	int	GetPrereqPromotion() const;
 	void	SetPrereqPromotion(int i);
-	int	GetPrereqOrPromotion1() const;
-	void	SetPrereqOrPromotion1(int i);
-	int	GetPrereqOrPromotion2() const;
-	void	SetPrereqOrPromotion2(int i);
-	int	GetPrereqOrPromotion3() const;
-	void	SetPrereqOrPromotion3(int i);
-	int	GetPrereqOrPromotion4() const;
-	void	SetPrereqOrPromotion4(int i);
-	int	GetPrereqOrPromotion5() const;
-	void	SetPrereqOrPromotion5(int i);
-	int	GetPrereqOrPromotion6() const;
-	void	SetPrereqOrPromotion6(int i);
-	int	GetPrereqOrPromotion7() const;
-	void	SetPrereqOrPromotion7(int i);
-	int	GetPrereqOrPromotion8() const;
-	void	SetPrereqOrPromotion8(int i);
-	int	GetPrereqOrPromotion9() const;
-	void	SetPrereqOrPromotion9(int i);
 
 	int  GetTechPrereq() const;
 	int  GetInvisibleType() const;
@@ -357,7 +339,6 @@ public:
 	int  GetTerrainPassableTech(int i) const;
 	bool GetFeatureImpassable(int i) const;
 	bool GetUnitCombatClass(int i) const;
-	bool GetCivilianUnitType(int i) const;
 	std::pair<int, int> GetYieldFromPillage(YieldTypes eYield) const;
 #if defined(MOD_PROMOTIONS_UNIT_NAMING)
 	bool IsUnitNaming(int i) const;
@@ -421,6 +402,15 @@ public:
 	std::tr1::unordered_map<PromotionTypes, int>& GetOtherPromotionAttackModifierMap();
 	std::tr1::unordered_map<PromotionTypes, int>& GetOtherPromotionDefenseModifierMap();
 #endif
+	const std::vector<int>& GetPrePromotions() const;
+	const std::vector<int>& GetPromotionPrereqOrs() const;
+	const std::vector<int>& GetPromotionPrereqAnds() const;
+	const std::vector<int>& GetPromotionExclusionAny() const;
+	const std::vector<int>& GetUnitCombatsPromotionValid() const;
+
+	bool GetCivilianUnitType(int i) const;
+	bool GetUnitType(int i) const;
+
 	bool IsFeatureInvisible(int iFeature) const;
 
 	bool IsRangeBackWhenDefense() const;
@@ -513,15 +503,6 @@ public:
 protected:
 	int m_iLayerAnimationPath;
 	int m_iPrereqPromotion;
-	int m_iPrereqOrPromotion1;
-	int m_iPrereqOrPromotion2;
-	int m_iPrereqOrPromotion3;
-	int m_iPrereqOrPromotion4;
-	int m_iPrereqOrPromotion5;
-	int m_iPrereqOrPromotion6;
-	int m_iPrereqOrPromotion7;
-	int m_iPrereqOrPromotion8;
-	int m_iPrereqOrPromotion9;
 
 	int m_iTechPrereq;
 	int m_iInvisibleType;
@@ -827,7 +808,6 @@ protected:
 	bool* m_pbTerrainImpassable;
 	bool* m_pbFeatureImpassable;
 	bool* m_pbUnitCombat;
-	bool* m_pbCivilianUnitType;
 #if defined(MOD_PROMOTIONS_UNIT_NAMING)
 	bool* m_pbUnitName;
 #endif
@@ -884,6 +864,15 @@ protected:
 	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionAttackModifiers; // key: other promotion type, value: attack modifier * 100
 	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionDefenseModifiers; // key: other promotion type, value: defense modifier * 100
 #endif
+	std::vector<int> m_vPrePromotions;
+	std::vector<int> m_vPromotionPrereqOrs;
+	std::vector<int> m_vPromotionPrereqAnds;
+	std::vector<int> m_vPromotionExclusionAny;
+	std::vector<int> m_vUnitCombatsPromotionValid;
+
+	bool* m_pbCivilianUnitType = nullptr;
+	bool* m_pbUnitType = nullptr;
+
 	bool* m_pbFeatureInvisible = nullptr;
 
 	bool m_bRangeBackWhenDefense = 0;

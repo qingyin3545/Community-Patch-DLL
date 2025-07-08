@@ -4796,7 +4796,7 @@ void CvUnitCombat::DoNewBattleEffects(const CvCombatInfo& kCombatInfo, int iAtta
 	DoStackingFightBack(kCombatInfo);
 	DoStopAttacker(kCombatInfo);
 	DoLuaFormulaPostCombatEffects(kCombatInfo, iAttackDamage);
-	//DoInsightEnemyDamage(kCombatInfo);
+	DoInsightEnemyDamage(kCombatInfo);
 }
 bool CvUnitCombat::ShouldDoNewBattleEffects(const CvCombatInfo& kCombatInfo)
 {

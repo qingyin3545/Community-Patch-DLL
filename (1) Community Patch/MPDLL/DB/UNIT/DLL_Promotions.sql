@@ -85,6 +85,10 @@ ALTER TABLE UnitPromotions ADD 'NearbyUnitPromotionBonusRange' INTEGER DEFAULT 0
 ALTER TABLE UnitPromotions ADD 'NearbyUnitPromotionBonusMax' INTEGER DEFAULT -1;
 ALTER TABLE UnitPromotions ADD 'CombatBonusFromNearbyUnitPromotion' TEXT REFERENCES UnitPromotions(Type);
 ALTER TABLE UnitPromotions ADD 'RemovePromotionUpgrade' TEXT DEFAULT NULL;
+ALTER TABLE UnitPromotions ADD 'PromotionPrereqOr10' TEXT DEFAULT NULL;
+ALTER TABLE UnitPromotions ADD 'PromotionPrereqOr11' TEXT DEFAULT NULL;
+ALTER TABLE UnitPromotions ADD 'PromotionPrereqOr12' TEXT DEFAULT NULL;
+ALTER TABLE UnitPromotions ADD 'PromotionPrereqOr13' TEXT DEFAULT NULL;
 -- Promotions effect that Unit can only have one
 ALTER TABLE UnitPromotions ADD 'AttackChanceFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
 ALTER TABLE UnitPromotions ADD 'MovementFromAttackDamage' TEXT REFERENCES LuaFormula(Type);
@@ -118,11 +122,23 @@ CREATE TABLE IF NOT EXISTS UnitPromotions_UnitType (
     `PromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
     `UnitType` TEXT DEFAULT '' references Units(Type)
 );
+--Must have all needed promotions to unlock Promotion
+CREATE TABLE Promotion_PromotionPrereqAnds (
+	PromotionType text REFERENCES UnitPromotions(Type),
+	PrereqPromotionType text REFERENCES UnitPromotions(Type)
+);
+ALTER TABLE UnitPromotions ADD MutuallyExclusiveGroup INTEGER DEFAULT -1;
+--Must any Exclusion promotions will lock Promotion, not two-way
+CREATE TABLE Promotion_PromotionExclusionAny (
+	PromotionType text REFERENCES UnitPromotions(Type),
+	ExclusionPromotionType text REFERENCES UnitPromotions(Type)
+);
+-- Only for check promotion valid
+CREATE TABLE Promotion_UnitCombatsPromotionValid (
+	PromotionType text REFERENCES UnitPromotions(Type),
+	UnitCombatType text REFERENCES UnitCombatInfos(Type)
+);
 
-ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr10' TEXT DEFAULT NULL;
-ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr11' TEXT DEFAULT NULL;
-ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr12' TEXT DEFAULT NULL;
-ALTER TABLE UnitPromotions ADD COLUMN 'PromotionPrereqOr13' TEXT DEFAULT NULL;
 ALTER TABLE UnitPromotions ADD COLUMN 'IgnoreDamageChance' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'CanDoNukeDamage' BOOLEAN DEFAULT 0; 
 ALTER TABLE UnitPromotions ADD COLUMN 'GetGroundAttackRange' INTEGER DEFAULT 0;
@@ -176,23 +192,6 @@ CREATE TABLE Promotion_AuraPromotionProviderNum (
 CREATE TABLE Promotion_Builds (
 	PromotionType text REFERENCES UnitPromotions(Type),
 	BuildType text REFERENCES Builds(Type)
-);
-
---Must have all needed promotions to unlock Promotion
-CREATE TABLE Promotion_PromotionPrereqAnds (
-	PromotionType text REFERENCES UnitPromotions(Type),
-	PrereqPromotionType text REFERENCES UnitPromotions(Type)
-);
-ALTER TABLE UnitPromotions ADD MutuallyExclusiveGroup INTEGER DEFAULT -1;
---Must any Exclusion promotions will lock Promotion, not two-way
-CREATE TABLE Promotion_PromotionExclusionAny (
-	PromotionType text REFERENCES UnitPromotions(Type),
-	ExclusionPromotionType text REFERENCES UnitPromotions(Type)
-);
--- Only for check promotion valid
-CREATE TABLE Promotion_UnitCombatsPromotionValid (
-	PromotionType text REFERENCES UnitPromotions(Type),
-	UnitCombatType text REFERENCES UnitCombatInfos(Type)
 );
 
 CREATE TABLE Promotion_RouteMovementChanges (
