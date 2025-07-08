@@ -1553,6 +1553,14 @@ void CvLuaPlayer::PushMethods(lua_State* L, int t)
 	Method(GetNumArmeeTotal);
 	Method(IsCanEstablishArmee);
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	Method(GetImmigrationCounter);
+	Method(ChangeImmigrationCounter);
+	Method(SetImmigrationCounter);
+	Method(GetImmigrationRate);
+	Method(GetImmigrationInRateFromPolicy);
+	Method(GetImmigrationOutRateFromPolicy);
+#endif
 }
 //------------------------------------------------------------------------------
 void CvLuaPlayer::HandleMissingInstance(lua_State* L)
@@ -19332,4 +19340,28 @@ LUAAPIIMPL(Player, GetNumArmeeUsed)
 LUAAPIIMPL(Player, ChangeNumArmeeUsed)
 LUAAPIIMPL(Player, GetNumArmeeTotal)
 LUAAPIIMPL(Player, IsCanEstablishArmee)
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+LUAAPIIMPL(Player, GetImmigrationCounter)
+LUAAPIIMPL(Player, ChangeImmigrationCounter)
+LUAAPIIMPL(Player, SetImmigrationCounter)
+int CvLuaPlayer::lGetImmigrationRate(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	PlayerTypes eTargetPlayer = (PlayerTypes)lua_tointeger(L, 2);
+	lua_pushinteger(L, pkPlayer->GetImmigrationRate(eTargetPlayer));
+	return 1;
+}
+int CvLuaPlayer::lGetImmigrationInRateFromPolicy(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	lua_pushinteger(L, pkPlayer->GetPlayerPolicies()->GetNumericModifier(POLICYMOD_IMMIGRATION_IN_MODIFIER));
+	return 1;
+}
+int CvLuaPlayer::lGetImmigrationOutRateFromPolicy(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	lua_pushinteger(L, pkPlayer->GetPlayerPolicies()->GetNumericModifier(POLICYMOD_IMMIGRATION_OUT_MODIFIER));
+	return 1;
+}
 #endif

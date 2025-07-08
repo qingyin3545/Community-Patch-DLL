@@ -1653,6 +1653,9 @@ void CvPlayer::uninit()
 	m_aiDomainTroopsTotal.clear();
 	m_aiDomainTroopsUsed.clear();
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	m_aiImmigrationCounter.clear();
+#endif
 }
 
 // FUNCTION: reset()
@@ -2277,6 +2280,10 @@ void CvPlayer::reset(PlayerTypes eID, bool bConstructorCall)
 	m_aiDomainTroopsTotal.resize(NUM_DOMAIN_TYPES, 0);
 	m_aiDomainTroopsUsed.clear();
 	m_aiDomainTroopsUsed.resize(NUM_DOMAIN_TYPES, 0);
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	m_aiImmigrationCounter.clear();
+	m_aiImmigrationCounter.resize(MAX_MAJOR_CIVS, 0);
 #endif
 }
 
@@ -42146,6 +42153,11 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_OPEN_BORDERS_TOURISM_MODIFIER, pkPolicyInfo->GetOpenBordersTourismModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_CONVERSION_MODIFIER, pkPolicyInfo->GetConversionModifier() * iChange);
 
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_IMMIGRATION_IN_MODIFIER, pkPolicyInfo->GetImmigrationInModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_IMMIGRATION_OUT_MODIFIER, pkPolicyInfo->GetImmigrationOutModifier() * iChange);
+#endif
+
 #ifdef MOD_GLOBAL_CORRUPTION
 	for (size_t i = 0; i < GC.getNumCorruptionLevel(); i++)
 	{
@@ -43950,6 +43962,9 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 	visitor(player.m_iNumCropsUsed);
 	visitor(player.m_iNumArmeeTotal);
 	visitor(player.m_iNumArmeeUsed);
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	visitor(player.m_aiImmigrationCounter);
 #endif
 }
 
@@ -49291,7 +49306,136 @@ bool CvPlayer::IsCanEstablishArmee() const
 }
 //	--------------------------------------------------------------------------------
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+int CvPlayer::GetImmigrationCounter(int iIndex) const
+{
+	ASSERT_DEBUG(iIndex >= 0, "iIndex expected to be >= 0");
+	ASSERT_DEBUG(iIndex < MAX_MAJOR_CIVS, "iIndex expected to be < MAX_MAJOR_CIVS");
+	return m_aiImmigrationCounter[iIndex];
+}
+void CvPlayer::ChangeImmigrationCounter(int iIndex, int iChange)
+{
+	ASSERT_DEBUG(iIndex >= 0, "iIndex expected to be >= 0");
+	ASSERT_DEBUG(iIndex < MAX_MAJOR_CIVS, "iIndex expected to be < MAX_MAJOR_CIVS");
+	m_aiImmigrationCounter[iIndex] += iChange;
+}
+void CvPlayer::SetImmigrationCounter(int iIndex, int iValue)
+{
+	ASSERT_DEBUG(iIndex >= 0, "iIndex expected to be >= 0");
+	ASSERT_DEBUG(iIndex < MAX_MAJOR_CIVS, "iIndex expected to be < MAX_MAJOR_CIVS");
+	m_aiImmigrationCounter[iIndex] = iValue;
+}
+int CvPlayer::GetImmigrationRate(PlayerTypes eTargetPlayer) const
+{
+	if(GC.getGame().isOption(GAMEOPTION_SP_IMMIGRATION_OFF))
+	{
+		return 0;
+	}
+	if(!isAlive()) return 0;
+	PlayerTypes ePlayer = GetID();
+	if(eTargetPlayer == NO_PLAYER || eTargetPlayer >= MAX_MAJOR_CIVS || ePlayer == NO_PLAYER || ePlayer >= MAX_MAJOR_CIVS) return 0;
+	if(!GET_PLAYER(eTargetPlayer).isAlive()) return 0;
 
+	int iRtnValue = 0;
+	int iMoveOutCounterBase = GetCulture()->GetInfluenceLevel(eTargetPlayer) - GET_PLAYER(eTargetPlayer).GetCulture()->GetInfluenceLevel(ePlayer);
+	if(iMoveOutCounterBase == 0) return 0;
+
+	int iMoveOutCounterMod = 100;
+	CvPlayer* kMoveInPlayer = NULL;
+	CvPlayer* kMoveOutPlayer = NULL;
+	PlayerTypes eMoveInPlayer = NO_PLAYER;
+	PlayerTypes eMoveOutPlayer = NO_PLAYER;
+	if(iMoveOutCounterBase > 0)
+	{
+		kMoveInPlayer = const_cast<CvPlayer*>(this);
+		eMoveInPlayer = ePlayer;
+		kMoveOutPlayer = &GET_PLAYER(eTargetPlayer);
+		eMoveOutPlayer = eTargetPlayer;
+	}
+	else if(iMoveOutCounterBase < 0)
+	{
+		kMoveInPlayer = &GET_PLAYER(eTargetPlayer);
+		eMoveInPlayer = eTargetPlayer;
+		kMoveOutPlayer = const_cast<CvPlayer*>(this);
+		eMoveOutPlayer = ePlayer;
+	}
+	
+	int iInExcessHappiness = kMoveInPlayer->GetExcessHappiness();
+	int iOutExcessHappiness = kMoveOutPlayer->GetExcessHappiness();
+
+	//Player is not able to accept
+	if(iInExcessHappiness < 0) return 0;
+	if(kMoveInPlayer->getNumResourceAvailable((ResourceTypes)GC.getInfoTypeForString("RESOURCE_CONSUMER", true)) < 0) return 0;
+	if(kMoveInPlayer->GetCurrentEra() >= (EraTypes)GC.getInfoTypeForString("ERA_MODERN", true) && kMoveInPlayer->getNumResourceAvailable((ResourceTypes)GC.getInfoTypeForString("RESOURCE_ELECTRICITY", true)) < 0) return 0;
+	TeamTypes eMoveInTeam = kMoveInPlayer->getTeam();
+	TeamTypes eMoveOutTeam = kMoveOutPlayer->getTeam();
+	if(eMoveInTeam == NO_TEAM || eMoveOutTeam == NO_TEAM || eMoveInTeam == eMoveOutTeam) return 0;
+
+	/*
+		--TODO
+	*/
+	//Diplomacy Modifier
+	CvTeam& kMoveInTeam = GET_TEAM(eMoveInTeam);
+	CvTeam& kMoveOutTeam = GET_TEAM(eMoveOutTeam);
+	if(kMoveInTeam.isAtWar(eMoveOutTeam)) return 0;
+	if(kMoveInTeam.IsAllowsOpenBordersToTeam(eMoveOutTeam))
+	{
+		iMoveOutCounterMod += 100;
+	}
+	if(kMoveInPlayer->GetDiplomacyAI()->IsDenouncedPlayer(eMoveOutPlayer) || kMoveOutPlayer->GetDiplomacyAI()->IsDenouncedPlayer(eMoveInPlayer))
+	{
+		iMoveOutCounterMod -= 50;
+	}
+	if(kMoveInPlayer->GetDiplomacyAI()->IsDoFAccepted(eMoveOutPlayer))
+	{
+		iMoveOutCounterMod += 50;
+	}
+
+	//Religion Modifier
+	ReligionTypes eReligion = kMoveInPlayer->GetReligions()->GetReligionCreatedByPlayer();
+	if(eReligion != NO_RELIGION && kMoveOutPlayer->GetReligions()->HasReligionInMostCities(eReligion))
+	{
+		iMoveOutCounterMod += 100;
+	}
+
+	//Happiness Modifier(only for Human)
+	if(kMoveInPlayer->isHuman())
+	{
+		if(iInExcessHappiness >= 150) iMoveOutCounterMod += 50;
+		else if(iInExcessHappiness >= 100) iMoveOutCounterMod += 25;
+		else if(iInExcessHappiness >= 50) ;
+		else if(iInExcessHappiness >= 20) iMoveOutCounterMod -= 25;
+		else if(iInExcessHappiness >= 0) iMoveOutCounterMod -= 50;
+	}
+	if(kMoveOutPlayer->isHuman())
+	{
+		if(iOutExcessHappiness >= 150) iMoveOutCounterMod -= 50;
+		else if(iOutExcessHappiness >= 100) iMoveOutCounterMod -= 25;
+		else if(iOutExcessHappiness >= 50) ;
+		else if(iOutExcessHappiness >= 20) ;
+		else if(iOutExcessHappiness >= 0) iMoveOutCounterMod += 25;
+		else iMoveOutCounterMod += 50;
+	}
+
+	//Policies Modifier
+	iMoveOutCounterMod += kMoveInPlayer->GetPlayerPolicies()->GetNumericModifier(POLICYMOD_IMMIGRATION_IN_MODIFIER);
+	iMoveOutCounterMod += kMoveOutPlayer->GetPlayerPolicies()->GetNumericModifier(POLICYMOD_IMMIGRATION_OUT_MODIFIER);
+
+	//Trait Modifier
+	if(iInExcessHappiness > iOutExcessHappiness)
+	{
+		iMoveOutCounterMod += kMoveInPlayer->GetPlayerTraits()->GetExceedingHappinessImmigrationModifier();
+	}
+
+	if(iMoveOutCounterMod < 0) iMoveOutCounterMod = 0;
+	iRtnValue = iMoveOutCounterBase * iMoveOutCounterMod;
+	iRtnValue /= 100;
+
+	return iRtnValue;
+}
+#endif
+
+//	--------------------------------------------------------------------------------
 BuildingTypes CvPlayer::GetCivBuilding(BuildingClassTypes eBuildingClass) const
 {
 	CvBuildingClassInfo* pBuildingClassInfo = GC.getBuildingClassInfo(eBuildingClass);
@@ -49312,6 +49456,8 @@ UnitTypes CvPlayer::GetCivUnit(UnitClassTypes eUnitClass, int iFakeSeed) const
 
 	return eCivUnit;
 }
+
+//	--------------------------------------------------------------------------------
 
 FDataStream& operator<<(FDataStream& saveTo, const SPlayerActiveEspionageEvent& readFrom)
 {

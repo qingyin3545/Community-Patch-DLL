@@ -1549,6 +1549,14 @@ protected:
 	LUAAPIEXTN(GetNumArmeeTotal, int);
 	LUAAPIEXTN(IsCanEstablishArmee, bool);
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	LUAAPIEXTN(GetImmigrationCounter, int, iIndex);
+	LUAAPIEXTN(ChangeImmigrationCounter, void, iIndex, iChange);
+	LUAAPIEXTN(SetImmigrationCounter, void, iIndex, iValue);
+	LUAAPIEXTN(GetImmigrationRate, int, eTargetPlayer);
+	LUAAPIEXTN(GetImmigrationInRateFromPolicy, int);
+	LUAAPIEXTN(GetImmigrationOutRateFromPolicy, int);
+#endif
 
 };
 
