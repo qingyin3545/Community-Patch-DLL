@@ -479,6 +479,10 @@ public:
 	bool IsInvolveCorruption() const;
 	int GetCorruptionLevelPolicyCostModifier(CorruptionLevelTypes level) const;
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	int GetImmigrationInModifier() const;
+	int GetImmigrationOutModifier() const;
+#endif
 
 private:
 	int m_iTechPrereq;
@@ -871,6 +875,10 @@ private:
 	bool m_bCorruptionLevelReduceByOne = false;
 	std::vector<int> m_paiCorruptionLevelPolicyCostModifier;
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	int m_iImmigrationInModifier = 0;
+	int m_iImmigrationOutModifier = 0;
+#endif
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1026,6 +1034,10 @@ enum CLOSED_ENUM PolicyModifierType
     POLICYMOD_TRADE_ROUTE_TOURISM_MODIFIER,
 	POLICYMOD_OPEN_BORDERS_TOURISM_MODIFIER,
     POLICYMOD_CONVERSION_MODIFIER,
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	POLICYMOD_IMMIGRATION_IN_MODIFIER,
+	POLICYMOD_IMMIGRATION_OUT_MODIFIER,
+#endif
 	NUM_POLICY_MODIFIER_TYPE
 };
 
