@@ -1566,6 +1566,11 @@ protected:
 #if defined(MOD_SPECIALIST_RESOURCES)
 	LUAAPIEXTN(GetSpecialistResources, table, eSpecialist);
 #endif
+#ifdef MOD_RESOURCE_EXTRA_BUFF
+	LUAAPIEXTN(GetUnHappinessModFromResourceByIndex, int, eResourceType);
+	LUAAPIEXTN(GetCityConnectionTradeRouteGoldModifierFromResourceByIndex, int, eResourceType);
+	LUAAPIEXTN(GetGoldHurryCostModifierFromResourceByIndex, int, eResourceType);
+#endif
 	LUAAPIEXTN(IsMarriageAccepted, bool);
 	LUAAPIEXTN(GetMarriageCounter, int);
 	LUAAPIEXTN(IsCanDiplomaticMarriage, bool);
