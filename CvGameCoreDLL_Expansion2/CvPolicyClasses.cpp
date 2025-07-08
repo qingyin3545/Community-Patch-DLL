@@ -1419,6 +1419,10 @@ bool CvPolicyEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility&
 	m_iCorruptionScoreModifier = kResults.GetInt("CorruptionScoreModifier");
 	m_bCorruptionLevelReduceByOne = kResults.GetBool("CorruptionLevelReduceByOne");
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	m_iImmigrationInModifier = kResults.GetInt("ImmigrationInModifier");
+	m_iImmigrationOutModifier = kResults.GetInt("ImmigrationOutModifier");
+#endif
 
 	return true;
 }
@@ -3774,6 +3778,16 @@ int CvPolicyEntry::GetCorruptionLevelPolicyCostModifier(CorruptionLevelTypes lev
 	}
 
 	return m_paiCorruptionLevelPolicyCostModifier[level];
+}
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+int CvPolicyEntry::GetImmigrationInModifier() const
+{
+	return m_iImmigrationInModifier;
+}
+int CvPolicyEntry::GetImmigrationOutModifier() const
+{
+	return m_iImmigrationOutModifier;
 }
 #endif
 

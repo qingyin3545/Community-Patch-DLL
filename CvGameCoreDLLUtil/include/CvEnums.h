@@ -1310,6 +1310,9 @@ enum CLOSED_ENUM GameOptionTypes
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	GAMEOPTION_SP_NUCLEARWINTER_OFF,
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	GAMEOPTION_SP_IMMIGRATION_OFF,
+#endif
 
 	// KWG: Please do add anymore enums.  Use the CvPreGame::GetGameOption which uses a text key.
 	//      These enums are shared between DLLs and would diverge if each added their own.
