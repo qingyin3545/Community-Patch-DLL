@@ -790,6 +790,12 @@ void CvLuaCity::PushMethods(lua_State* L, int t)
 	Method(HasEnableCrops);
 	Method(HasEnableArmee);
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	Method(IsCanDoImmigration);
+	Method(SetCanDoImmigration);
+	Method(CanImmigrantIn);
+	Method(CanImmigrantOut);
+#endif
 }
 //------------------------------------------------------------------------------
 void CvLuaCity::HandleMissingInstance(lua_State* L)
@@ -7106,4 +7112,10 @@ LUAAPIIMPL(City, CanGrowNormally)
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
 LUAAPIIMPL(City, HasEnableCrops);
 LUAAPIIMPL(City, HasEnableArmee);
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+LUAAPIIMPL(City, IsCanDoImmigration)
+LUAAPIIMPL(City, SetCanDoImmigration)
+LUAAPIIMPL(City, CanImmigrantIn)
+LUAAPIIMPL(City, CanImmigrantOut)
 #endif

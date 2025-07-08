@@ -2267,6 +2267,12 @@ int CvTraitEntry::GetNaturalWonderCorruptionRadius() const
 	return m_iNaturalWonderCorruptionRadius;
 }
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+int CvTraitEntry::GetExceedingHappinessImmigrationModifier() const
+{
+	return m_iExceedingHappinessImmigrationModifier;
+}
+#endif
 
 /// Load XML data
 bool CvTraitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility)
@@ -3706,6 +3712,9 @@ bool CvTraitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& 
 	m_iNaturalWonderCorruptionScoreChange = kResults.GetInt("NaturalWonderCorruptionScoreChange");
 	m_iNaturalWonderCorruptionRadius = kResults.GetInt("NaturalWonderCorruptionRadius");
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	m_iExceedingHappinessImmigrationModifier = kResults.GetInt("ExceedingHappinessImmigrationModifier");
+#endif
 
 	return true;
 }
@@ -5121,6 +5130,9 @@ void CvPlayerTraits::InitPlayerTraits()
 			m_iNaturalWonderCorruptionScoreChange += trait->GetNaturalWonderCorruptionScoreChange();
 			m_iNaturalWonderCorruptionRadius += trait->GetNaturalWonderCorruptionRadius();
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+			m_iExceedingHappinessImmigrationModifier += trait->GetExceedingHappinessImmigrationModifier();
+#endif
 		}
 	}
 
@@ -5653,6 +5665,9 @@ void CvPlayerTraits::Reset()
 	m_iMaxCorruptionLevel = 0;
 	m_iRiverCorruptionScoreChange = 0;
 	m_iNaturalWonderCorruptionScoreChange = 0;
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	m_iExceedingHappinessImmigrationModifier = 0;
 #endif
 }
 
@@ -7656,6 +7671,9 @@ void CvPlayerTraits::Serialize(PlayerTraits& playerTraits, Visitor& visitor)
 	visitor(playerTraits.m_iRiverCorruptionScoreChange);
 	visitor(playerTraits.m_iNaturalWonderCorruptionScoreChange);
 	visitor(playerTraits.m_iNaturalWonderCorruptionRadius);
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	visitor(playerTraits.m_iExceedingHappinessImmigrationModifier);
 #endif
 }
 

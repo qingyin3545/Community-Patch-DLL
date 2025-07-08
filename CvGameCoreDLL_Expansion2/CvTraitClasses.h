@@ -440,6 +440,9 @@ public:
 	int GetNaturalWonderCorruptionScoreChange() const;
 	int GetNaturalWonderCorruptionRadius() const;
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	int GetExceedingHappinessImmigrationModifier() const;
+#endif
 
 	virtual bool CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility);
 
@@ -771,6 +774,9 @@ protected:
 	int m_iRiverCorruptionScoreChange = 0;
 	int m_iNaturalWonderCorruptionScoreChange = 0;
 	int m_iNaturalWonderCorruptionRadius = 0;
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	int m_iExceedingHappinessImmigrationModifier = 0;
 #endif
 
 private:
@@ -2045,6 +2051,12 @@ public:
 		return m_iNaturalWonderCorruptionRadius;
 	}
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	int GetExceedingHappinessImmigrationModifier() const
+	{
+		return m_iExceedingHappinessImmigrationModifier;
+	}
+#endif
 
 private:
 	bool ConvertBarbarianCamp(CvUnit* pByUnit, CvPlot* pPlot);
@@ -2391,6 +2403,9 @@ private:
 	int m_iRiverCorruptionScoreChange = 0;
 	int m_iNaturalWonderCorruptionScoreChange = 0;
 	int m_iNaturalWonderCorruptionRadius = 0;
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	int m_iExceedingHappinessImmigrationModifier = 0;
 #endif
 };
 
