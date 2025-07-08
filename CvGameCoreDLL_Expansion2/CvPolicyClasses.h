@@ -500,6 +500,10 @@ public:
 	bool IsInvolveCorruption() const;
 	int GetCorruptionLevelPolicyCostModifier(CorruptionLevelTypes level) const;
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	int GetImmigrationInModifier() const;
+	int GetImmigrationOutModifier() const;
+#endif
 
 private:
 	int m_iTechPrereq;
@@ -915,6 +919,10 @@ private:
 	bool m_bCorruptionLevelReduceByOne = false;
 	std::vector<int> m_paiCorruptionLevelPolicyCostModifier;
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	int m_iImmigrationInModifier = 0;
+	int m_iImmigrationOutModifier = 0;
+#endif
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1080,6 +1088,11 @@ enum CLOSED_ENUM PolicyModifierType
 #if defined(MOD_RELIGION_CONVERSION_MODIFIERS)
     POLICYMOD_CONVERSION_MODIFIER,
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	POLICYMOD_IMMIGRATION_IN_MODIFIER,
+	POLICYMOD_IMMIGRATION_OUT_MODIFIER,
+#endif
+	NUM_POLICY_MODIFIER_TYPE
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1117,11 +1130,9 @@ public:
 	int GetNumPoliciesOwnedInBranch(PolicyBranchTypes eBranch) const;
 	int GetNumPoliciesPurchasedInBranch(PolicyBranchTypes eBranch) const;
 	CvPolicyXMLEntries* GetPolicies() const;
-#if defined(MOD_BALANCE_CORE)
-	void ClearCache();
-#endif
 	// Functions to return benefits from policies
 	int GetNumericModifier(PolicyModifierType eType);
+	void ChangesNumericModifier(PolicyModifierType eType, int iChange);
 	int GetYieldModifier(YieldTypes eYieldType);
 	int GetBuildingClassYieldModifier(BuildingClassTypes eBuildingClass, YieldTypes eYieldType);
 	int GetBuildingClassYieldChange(BuildingClassTypes eBuildingClass, YieldTypes eYieldType);
@@ -1245,6 +1256,8 @@ private:
 	//these are used so often, make an even faster cache
 	pair<int, int> currentHappinessModifier;
 	pair<int, int> currentHappinessModifierPerCity;
+
+	std::vector<int> m_aiPolicyModifiers;
 };
 
 FDataStream& operator>>(FDataStream&, CvPlayerPolicies&);

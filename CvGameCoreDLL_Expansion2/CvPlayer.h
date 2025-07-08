@@ -2953,6 +2953,12 @@ public:
 	int GetNumArmeeTotal() const;
 	bool IsCanEstablishArmee() const;
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	int GetImmigrationCounter(int iIndex) const;
+	void ChangeImmigrationCounter(int iIndex, int iChange);
+	void SetImmigrationCounter(int iIndex, int iValue);
+	int GetImmigrationRate(PlayerTypes eTargetPlayer) const;
+#endif
 	BuildingTypes GetCivBuilding(BuildingClassTypes eBuildingClass) const;
 	UnitTypes GetCivUnit(UnitClassTypes eUnitClass, int iFakeSeed = 0) const;
 
@@ -3884,6 +3890,9 @@ protected:
 	int m_iNumCropsUsed = 0;
 	int m_iNumArmeeTotal = 0;
 	int m_iNumArmeeUsed = 0;
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	std::vector<int> m_aiImmigrationCounter;
 #endif
 
 };
