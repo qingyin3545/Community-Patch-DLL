@@ -1961,6 +1961,9 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	m_bNoNuclearWinterLocal = kResults.GetBool("NoNuclearWinterLocal");
 #endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+	m_bCanAllScaleImmigrantIn = kResults.GetBool("EnableAlwaysImmigrantIn");
+#endif
 
 	return true;
 }
@@ -5207,6 +5210,12 @@ bool CvBuildingEntry::IsEnableArmee() const
 bool CvBuildingEntry::IsNoNuclearWinterLocal() const
 {
 	return m_bNoNuclearWinterLocal;
+}
+#endif
+#if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
+bool CvBuildingEntry::CanAllScaleImmigrantIn() const
+{
+	return m_bCanAllScaleImmigrantIn;
 }
 #endif
 

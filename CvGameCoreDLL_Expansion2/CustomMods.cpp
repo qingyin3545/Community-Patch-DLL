@@ -587,6 +587,7 @@ int CustomMods::getOption(const string& sOption, int defValue)
 		MOD_OPT_CACHE(GLOBAL_CITY_SCALES);
 		MOD_OPT_CACHE(EVENTS_CITY_SCALES);
 		MOD_OPT_CACHE(NUCLEAR_WINTER_FOR_SP);
+		MOD_OPT_CACHE(INTERNATIONAL_IMMIGRATION_FOR_SP);
 
 		m_bInit = true;
 	}
