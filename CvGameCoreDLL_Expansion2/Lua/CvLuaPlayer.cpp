@@ -1573,6 +1573,11 @@ void CvLuaPlayer::PushMethods(lua_State* L, int t)
 #if defined(MOD_SPECIALIST_RESOURCES)
 	Method(GetSpecialistResources);
 #endif
+#ifdef MOD_RESOURCE_EXTRA_BUFF
+	Method(GetUnHappinessModFromResourceByIndex);
+	Method(GetCityConnectionTradeRouteGoldModifierFromResourceByIndex);
+	Method(GetGoldHurryCostModifierFromResourceByIndex);
+#endif
 	Method(IsMarriageAccepted);
 	Method(GetMarriageCounter);
 	Method(IsCanDiplomaticMarriage);
@@ -19448,6 +19453,32 @@ int CvLuaPlayer::lGetSpecialistResources(lua_State* L)
 		lua_rawseti(L, -2, index++);
 	}
 
+	return 1;
+}
+#endif
+#ifdef MOD_RESOURCE_EXTRA_BUFF
+int CvLuaPlayer::lGetUnHappinessModFromResourceByIndex(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	ResourceTypes eResource = static_cast<ResourceTypes>(lua_tointeger(L, 2));
+	int result = pkPlayer->CalculateUnhappinessModFromResource(GC.getResourceInfo(eResource), pkPlayer->getNumResourceAvailable(eResource));
+	lua_pushinteger(L, result);
+	return 1;
+}
+int CvLuaPlayer::lGetCityConnectionTradeRouteGoldModifierFromResourceByIndex(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	ResourceTypes eResource = static_cast<ResourceTypes>(lua_tointeger(L, 2));
+	int result = pkPlayer->CalculateCityConnectionTradeRouteGoldModifierFromResource(GC.getResourceInfo(eResource), pkPlayer->getNumResourceAvailable(eResource));
+	lua_pushinteger(L, result);
+	return 1;
+}
+int CvLuaPlayer::lGetGoldHurryCostModifierFromResourceByIndex(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	ResourceTypes eResource = static_cast<ResourceTypes>(lua_tointeger(L, 2));
+	int result = pkPlayer->CalculateGoldHurryModFromResource(GC.getResourceInfo(eResource), pkPlayer->getNumResourceAvailable(eResource));
+	lua_pushinteger(L, result);
 	return 1;
 }
 #endif
