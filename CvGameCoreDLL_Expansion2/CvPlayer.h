@@ -2936,6 +2936,25 @@ public:
 	void UpdateResourceFromSpecialists();
 	bool MeetSpecialistResourceRequirement(const CvSpecialistInfo::ResourceInfo& info) const;
 #endif
+#ifdef MOD_RESOURCE_EXTRA_BUFF
+	int GetUnhappinessModFromResource() const;
+	int CalculateUnhappinessModFromResource(CvResourceInfo* pInfo, int num) const;
+
+	int GetCityConnectionTradeRouteGoldModifierFromResource() const;
+	int CalculateCityConnectionTradeRouteGoldModifierFromResource(CvResourceInfo* pInfo, int num) const;
+
+	int GetHurryModifierFromResource(HurryTypes eIndex) const;
+	int CalculateGoldHurryModFromResource(CvResourceInfo* pInfo, int num) const;
+
+	int GetGlobalYieldModifierFromResource(YieldTypes eYield) const;
+	int CalculateGlobalYieldModifierFromResource(CvResourceInfo* pInfo, int num, YieldTypes eYield) const;
+
+	// modifiers from policies ...
+	int GetResourceUnhappinessModifier() const;
+	void ChangeResourceUnhappinessModifier(int value);
+	int GetResourceCityConnectionTradeRouteGoldModifier() const;
+	void ChangeResourceCityConnectionTradeRouteGoldModifier(int value);
+#endif
 	std::vector<PolicyResourceInfo>& GetCityResourcesFromPolicy();
 	const std::vector<PolicyResourceInfo>& GetCityResourcesFromPolicy() const;
 
@@ -3844,6 +3863,11 @@ protected:
 #ifdef MOD_SPECIALIST_RESOURCES
 	std::vector<int> m_paiResourcesFromSpecialists;
 #endif
+#ifdef MOD_RESOURCE_EXTRA_BUFF
+	int m_iResourceUnhappinessModifier = 0;
+	int m_iResourceCityConnectionTradeRouteGoldModifier = 0;
+#endif
+	std::vector<int> m_paiNumResourceAvailableCache;
 	std::vector<PolicyResourceInfo> m_vCityResourcesFromPolicy;
 
 	std::tr1::unordered_set<UnitTypes> m_sUUFromDualEmpire;
