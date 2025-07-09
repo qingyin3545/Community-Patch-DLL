@@ -19,6 +19,8 @@ ALTER TABLE UnitPromotions ADD 'OriginalCapitalDamageFix' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'OriginalCapitalSpecialDamageFix' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'InsightEnemyDamageModifier' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'MilitaryMightMod' INTEGER DEFAULT 0;
+-- SP-TODO: Column Name GetGroundAttackRange -> GroundAttackRange
+ALTER TABLE UnitPromotions ADD 'GroundAttackRange' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NoResourcePunishment' BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'ImmueMeleeAttack' BOOLEAN DEFAULT 0;
 -- SP-TODO: Column Name CannotBeRangedAttacked -> ImmueRangedAttack
@@ -140,8 +142,7 @@ CREATE TABLE Promotion_UnitCombatsPromotionValid (
 );
 
 ALTER TABLE UnitPromotions ADD COLUMN 'IgnoreDamageChance' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'CanDoNukeDamage' BOOLEAN DEFAULT 0; 
-ALTER TABLE UnitPromotions ADD COLUMN 'GetGroundAttackRange' INTEGER DEFAULT 0;
+ALTER TABLE UnitPromotions ADD COLUMN 'CanDoNukeDamage' BOOLEAN DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'HPHealedIfDestroyEnemyGlobal' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'RangedFlankAttackModifierPercent' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'TurnDamagePercent' INTEGER DEFAULT 0;
