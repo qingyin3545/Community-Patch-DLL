@@ -1711,6 +1711,7 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iOriginalCapitalSpecialDamageFix = 0;
 	m_iInsightEnemyDamageModifier = 0;
 	m_iMilitaryMightMod = 0;
+	m_iGroundAttackRange = 0;
 	m_iNoResourcePunishment = 0;
 	m_iImmueMeleeAttack = 0;
 	m_iImmueRangedAttack = 0;
@@ -28603,6 +28604,7 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 	ChangeOriginalCapitalSpecialDamageFix(thisPromotion.GetOriginalCapitalSpecialDamageFix() * iChange);
 	ChangeInsightEnemyDamageModifier(thisPromotion.GetInsightEnemyDamageModifier() * iChange);
 	ChangeMilitaryMightMod(thisPromotion.GetMilitaryMightMod() * iChange);
+	ChangeGroundAttackRange(thisPromotion.GetGroundAttackRange() * iChange);
 	ChangeNumNoResourcePunishment(thisPromotion.IsNoResourcePunishment() ? iChange : 0);
 	ChangeNumImmueMeleeAttack(thisPromotion.IsImmueMeleeAttack() ? iChange : 0);
 	ChangeNumImmueRangedAttack(thisPromotion.IsImmueRangedAttack() ? iChange : 0);
@@ -29385,6 +29387,7 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iOriginalCapitalSpecialDamageFix);
 	visitor(unit.m_iInsightEnemyDamageModifier);
 	visitor(unit.m_iMilitaryMightMod);
+	visitor(unit.m_iGroundAttackRange);
 	visitor(unit.m_iNoResourcePunishment);
 	visitor(unit.m_iImmueMeleeAttack);
 	visitor(unit.m_iImmueRangedAttack);
@@ -29906,11 +29909,13 @@ bool CvUnit::attemptGroundAttacks(const CvPlot& pPlot)
 	if (!IsAirSweepCapable())
 		return bFoundSomething;
 
+	int iRange = 1 + GetGroundAttackRange();
+	if(iRange <= 0) return false;
+
 	int iAirSweepDamage = getGroundAttackDamage();
 
 	CvString strAppendText = GetLocalizedText("TXT_KEY_PROMOTION_AIR_SWEEP");
 
-	int iRange = 1;
 	for (int i = -iRange; i <= iRange; ++i)
 	{
 		for (int j = -iRange; j <= iRange; ++j)
@@ -35682,6 +35687,16 @@ int CvUnit::GetMilitaryMightMod() const
 void CvUnit::ChangeMilitaryMightMod(int iValue)
 {
 	m_iMilitaryMightMod += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetGroundAttackRange() const
+{
+	return m_iGroundAttackRange;
+}
+void CvUnit::ChangeGroundAttackRange(int iValue)
+{
+	m_iGroundAttackRange += iValue;
 }
 
 //	--------------------------------------------------------------------------------
