@@ -1338,6 +1338,41 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 		pResults->Reset();
 	}
 #endif
+	{
+		for (int i = 0; i < NUM_YIELD_TYPES; ++i) {
+			m_aiInstantYieldPerReligionFollowerConverted[i] = 0;
+		}
+		// UnitPromotions_InstantYieldPerReligionFollowerConverted
+		std::string sqlKey = "UnitPromotions_InstantYieldPerReligionFollowerConverted";
+		Database::Results* pResults = kUtility.GetResults(sqlKey);
+		if (pResults == nullptr)
+		{
+			const char* sql = "select YieldType, Yield from UnitPromotions_InstantYieldPerReligionFollowerConverted where PromotionType = ?";
+			pResults = kUtility.PrepareResults(sqlKey, sql);
+		}
+
+		ASSERT_DEBUG(pResults);
+		if (pResults == nullptr)
+		{
+			return false;
+		}
+
+		pResults->Bind(1, szPromotionType);
+
+		while (pResults->Step())
+		{
+			const YieldTypes yieldType = (YieldTypes) GC.getInfoTypeForString(pResults->GetText(0));
+			if (yieldType == -1)
+			{
+				continue;
+			}
+			const int yieldValue = pResults->GetInt(1);
+			m_aiInstantYieldPerReligionFollowerConverted[yieldType] = yieldValue;
+		}
+
+		pResults->Reset();
+	}
+
 	//UnitPromotions_Promotions
 	{
 		m_vPrePromotions.clear();
@@ -3649,11 +3684,6 @@ int CvPromotionEntry::GetOtherPromotionModifier(PromotionTypes other) const
 	ASSERT_DEBUG(other < GC.getNumPromotionInfos(), "GetOtherPromotionModifier: upper bound");
 	ASSERT_DEBUG(other > -1, "GetOtherPromotionModifier: lower bound");
 
-	if (other <= -1 || other >= GC.getNumPromotionInfos())
-	{
-		return -1;
-	}
-
 	auto iterator = m_pPromotionModifiers.find(other);
 	if (iterator == m_pPromotionModifiers.end())
 	{
@@ -3667,11 +3697,6 @@ int CvPromotionEntry::GetOtherPromotionAttackModifier(PromotionTypes other) cons
 	ASSERT_DEBUG(other < GC.getNumPromotionInfos(), "GetOtherPromotionAttackModifier: upper bound");
 	ASSERT_DEBUG(other > -1, "GetOtherPromotionAttackModifier: lower bound");
 
-	if (other <= -1 || other >= GC.getNumPromotionInfos())
-	{
-		return -1;
-	}
-
 	auto iterator = m_pPromotionAttackModifiers.find(other);
 	if (iterator == m_pPromotionAttackModifiers.end())
 	{
@@ -3684,11 +3709,6 @@ int CvPromotionEntry::GetOtherPromotionDefenseModifier(PromotionTypes other) con
 {
 	ASSERT_DEBUG(other < GC.getNumPromotionInfos(), "GetOtherPromotionDefenseModifier: upper bound");
 	ASSERT_DEBUG(other > -1, "GetOtherPromotionDefenseModifier: lower bound");
-
-	if (other <= -1 || other >= GC.getNumPromotionInfos())
-	{
-		return -1;
-	}
 
 	auto iterator = m_pPromotionDefenseModifiers.find(other);
 	if (iterator == m_pPromotionDefenseModifiers.end())
@@ -3715,6 +3735,12 @@ std::tr1::unordered_map<PromotionTypes, int>& CvPromotionEntry::GetOtherPromotio
 	return m_pPromotionDefenseModifiers;
 }
 #endif
+int CvPromotionEntry::GetInstantYieldPerReligionFollowerConverted(YieldTypes eIndex) const
+{
+	ASSERT_DEBUG(i < NUM_YIELD_TYPES, "Index out of bounds");
+	ASSERT_DEBUG(i > -1, "Index out of bounds");
+	return m_aiInstantYieldPerReligionFollowerConverted[eIndex];
+}
 const std::vector<int>& CvPromotionEntry::GetPrePromotions() const
 {
 	return m_vPrePromotions;

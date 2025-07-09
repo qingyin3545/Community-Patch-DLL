@@ -111,6 +111,12 @@ CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionModifiers (
     `Defense` INTEGER DEFAULT 0 NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS UnitPromotions_InstantYieldPerReligionFollowerConverted (
+    `PromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
+    `YieldType` TEXT DEFAULT '' references Yields(Type),
+    `Yield` INTEGER DEFAULT 0
+);
+
 CREATE TABLE IF NOT EXISTS UnitPromotions_PromotionUpgrade (
     `PromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
     `JudgePromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
@@ -158,12 +164,6 @@ ALTER TABLE UnitPromotions ADD COLUMN 'RangeSuppressModifier' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'FreeExpPerTurn' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'StayCSInfluencePerTurn' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD COLUMN 'StayCSExpPerTurn' INTEGER DEFAULT 0;
-
-CREATE TABLE IF NOT EXISTS UnitPromotions_InstantYieldPerReligionFollowerConverted (
-    `PromotionType` TEXT DEFAULT '' references UnitPromotions(Type),
-    `YieldType` TEXT DEFAULT '' references Yields(Type),
-    `Yield` INTEGER DEFAULT 0
-);
 
 -- Add Promotion to other Units in Range, need CustomModOptions PROMOTION_AURA_PROMOTION to make it valid
 ALTER TABLE UnitPromotions ADD COLUMN 'AuraPromotionType' TEXT DEFAULT NULL REFERENCES UnitPromotions(Type);
