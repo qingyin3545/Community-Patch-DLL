@@ -1680,6 +1680,7 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iOriginalCapitalSpecialDamageFix = kResults.GetInt("OriginalCapitalSpecialDamageFix");
 	m_iInsightEnemyDamageModifier = kResults.GetInt("InsightEnemyDamageModifier");
 	m_iMilitaryMightMod = kResults.GetInt("MilitaryMightMod");
+	m_iGroundAttackRange = kResults.GetInt("GroundAttackRange");
 	m_bNoResourcePunishment = kResults.GetBool("NoResourcePunishment");
 	m_bImmueMeleeAttack = kResults.GetBool("ImmueMeleeAttack");
 	m_bImmueRangedAttack = kResults.GetBool("ImmueRangedAttack");
@@ -4180,6 +4181,10 @@ int CvPromotionEntry::GetInsightEnemyDamageModifier() const
 int CvPromotionEntry::GetMilitaryMightMod() const
 {
 	return m_iMilitaryMightMod;
+}
+int CvPromotionEntry::GetGroundAttackRange() const
+{
+	return m_iGroundAttackRange;
 }
 bool CvPromotionEntry::IsNoResourcePunishment() const
 {
