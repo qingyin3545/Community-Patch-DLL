@@ -2201,6 +2201,9 @@ public:
 	int GetMilitaryMightMod() const;
 	void ChangeMilitaryMightMod(int iValue);
 
+	int GetGroundAttackRange() const;
+	void ChangeGroundAttackRange(int iValue);
+
 	bool IsNoResourcePunishment() const;
 	void ChangeNumNoResourcePunishment(int iChange);
 
@@ -2871,6 +2874,7 @@ private:
 	int m_iOriginalCapitalSpecialDamageFix = 0;
 	int m_iInsightEnemyDamageModifier = 0;
 	int m_iMilitaryMightMod = 0;
+	int m_iGroundAttackRange = 0;
 	int m_iNoResourcePunishment = 0;
 	int m_iImmueMeleeAttack = 0;
 	int m_iImmueRangedAttack = 0;
