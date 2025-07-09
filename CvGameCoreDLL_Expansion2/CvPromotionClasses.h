@@ -452,6 +452,7 @@ public:
 	int GetOriginalCapitalSpecialDamageFix() const;
 	int GetInsightEnemyDamageModifier() const;
 	int GetMilitaryMightMod() const;
+	int GetGroundAttackRange() const;
 	bool IsNoResourcePunishment() const;
 	bool IsImmueMeleeAttack() const;
 	bool IsImmueRangedAttack() const;
@@ -905,6 +906,7 @@ protected:
 	int m_iOriginalCapitalSpecialDamageFix = 0;
 	int m_iInsightEnemyDamageModifier = 0;
 	int m_iMilitaryMightMod = 0;
+	int m_iGroundAttackRange = 0;
 	bool m_bNoResourcePunishment = false;
 	bool m_bImmueMeleeAttack = false;
 	bool m_bImmueRangedAttack = false;
