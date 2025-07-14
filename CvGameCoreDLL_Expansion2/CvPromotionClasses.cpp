@@ -1593,6 +1593,15 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iHeavyChargeExtraDamage = kResults.GetInt("HeavyChargeExtraDamage");
 	m_iHeavyChargeCollateralFixed = kResults.GetInt("HeavyChargeCollateralFixed");
 	m_iHeavyChargeCollateralPercent = kResults.GetInt("HeavyChargeCollateralPercent");
+
+	m_iAttackInflictDamageChange = kResults.GetInt("AttackInflictDamageChange");
+	m_iAttackInflictDamageChangeMaxHPPercent = kResults.GetInt("AttackInflictDamageChangeMaxHPPercent");
+	m_iDefenseInflictDamageChange = kResults.GetInt("DefenseInflictDamageChange");
+	m_iDefenseInflictDamageChangeMaxHPPercent = kResults.GetInt("DefenseInflictDamageChangeMaxHPPercent");
+	m_iSiegeInflictDamageChange = kResults.GetInt("SiegeInflictDamageChange");
+	m_iSiegeInflictDamageChangeMaxHPPercent = kResults.GetInt("SiegeInflictDamageChangeMaxHPPercent");
+	m_iOutsideFriendlyLandsInflictDamageChange = kResults.GetInt("OutsideFriendlyLandsInflictDamageChange");
+
 	m_iMaintenanceCost = kResults.GetInt("MaintenanceCost");
 
 	return true;
@@ -4025,6 +4034,34 @@ int CvPromotionEntry::GetHeavyChargeCollateralFixed() const
 int CvPromotionEntry::GetHeavyChargeCollateralPercent() const
 {
 	return m_iHeavyChargeCollateralPercent;
+}
+int CvPromotionEntry::GetAttackInflictDamageChange() const
+{
+	return m_iAttackInflictDamageChange;
+}
+int CvPromotionEntry::GetAttackInflictDamageChangeMaxHPPercent() const
+{
+	return m_iAttackInflictDamageChangeMaxHPPercent;
+}
+int CvPromotionEntry::GetDefenseInflictDamageChange() const
+{
+	return m_iDefenseInflictDamageChange;
+}
+int CvPromotionEntry::GetDefenseInflictDamageChangeMaxHPPercent() const
+{
+	return m_iDefenseInflictDamageChangeMaxHPPercent;
+}
+int CvPromotionEntry::GetSiegeInflictDamageChange() const
+{
+	return m_iSiegeInflictDamageChange;
+}
+int CvPromotionEntry::GetSiegeInflictDamageChangeMaxHPPercent() const
+{
+	return m_iSiegeInflictDamageChangeMaxHPPercent;
+}
+int CvPromotionEntry::GetOutsideFriendlyLandsInflictDamageChange() const
+{
+	return m_iOutsideFriendlyLandsInflictDamageChange;
 }
 int CvPromotionEntry::GetMaintenanceCost() const
 {

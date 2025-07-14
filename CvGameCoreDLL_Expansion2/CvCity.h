@@ -1899,6 +1899,10 @@ public:
 	int GetSiegeKillCitizensModifier() const;
 	void ChangeSiegeKillCitizensModifier(int iChange);
 #endif
+	int getForcedDamageValue()const;
+	void changeForcedDamageValue(int iChange);
+	int getChangeDamageValue()const;
+	void changeChangeDamageValue(int iChange);
 
 protected:
 	SYNC_ARCHIVE_MEMBER(CvCity)
@@ -2350,6 +2354,8 @@ private:
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	int m_iSiegeKillCitizensModifier = 0;
 #endif
+	int m_iForcedDamageValue = 0;
+	int m_iChangeDamageValue = 0;
 };
 
 namespace FSerialization

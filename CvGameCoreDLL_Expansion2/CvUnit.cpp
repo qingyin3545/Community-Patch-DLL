@@ -1806,6 +1806,14 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iHeavyChargeCollateralFixed = 0;
 	m_iHeavyChargeCollateralPercent = 0;
 
+	m_iAttackInflictDamageChange = 0;
+	m_iAttackInflictDamageChangeMaxHPPercent = 0;
+	m_iDefenseInflictDamageChange = 0;
+	m_iDefenseInflictDamageChangeMaxHPPercent = 0;
+	m_iSiegeInflictDamageChange = 0;
+	m_iSiegeInflictDamageChangeMaxHPPercent = 0;
+	m_iOutsideFriendlyLandsInflictDamageChange = 0;
+
 	m_iPromotionMaintenanceCost = 0;
 
 	if(!bConstructorCall)
@@ -5501,9 +5509,21 @@ int CvUnit::getMeleeCombatDamageCity(int iStrength, const CvCity* pCity, int& iS
 		iCityDamage -= iGarrisonDamage;
 	}
 
+	iCityDamage += GetSiegeInflictDamageChange();
+	iCityDamage += GetSiegeInflictDamageChangeMaxHPPercent() * pCity->GetMaxHitPoints() / 100;
+	iCityDamage += GetOutsideFriendlyLandsInflictDamageChange();
+
 	// City can have flat damage reduction
 	if (pCity->getDamageReductionFlat() != 0) {
 		iCityDamage = std::max(0, iCityDamage - pCity->getDamageReductionFlat());
+	}
+	if (pCity->getChangeDamageValue() != 0)
+	{
+		iCityDamage = std::max(0, iCityDamage - pCity->getChangeDamageValue());
+	}
+	if (pCity->getForcedDamageValue() != 0)
+	{
+		iCityDamage = pCity->getForcedDamageValue();
 	}
 
 	// Will both the attacker die, and the city fall? If so, the unit wins
@@ -5539,6 +5559,13 @@ int CvUnit::getMeleeCombatDamage(int iStrength, int iOpponentStrength, int& iSel
 
 		int iDamageTakenMod = GetDamageTakenMod();
 		int iExtraDamageSelf = getChangeDamageValue();
+		
+		if(pkOtherUnit)
+		{
+			iExtraDamageSelf += pkOtherUnit->GetDefenseInflictDamageChange();
+			iExtraDamageSelf += pkOtherUnit->GetDefenseInflictDamageChangeMaxHPPercent() * GetMaxHitPoints() / 100;
+			iExtraDamageSelf += pkOtherUnit->plot()->IsFriendlyTerritory(pkOtherUnit->getOwner()) ? 0 : pkOtherUnit->GetOutsideFriendlyLandsInflictDamageChange();
+		}
 
 		iSelfDamageInflicted = max(0, (CvUnitCombat::DoDamageMath(
 			iOpponentStrength,
@@ -5566,6 +5593,13 @@ int CvUnit::getMeleeCombatDamage(int iStrength, int iOpponentStrength, int& iSel
 		}
 
 		int iExtraDamage = pkOtherUnit ? pkOtherUnit->getChangeDamageValue() : 0;
+
+		{
+			iDamage += GetAttackInflictDamageChange();
+			iDamage += pkOtherUnit ? GetAttackInflictDamageChangeMaxHPPercent() * pkOtherUnit->GetMaxHitPoints() / 100 : 0;
+			iDamage += plot()->IsFriendlyTerritory(getOwner()) ? 0 : GetOutsideFriendlyLandsInflictDamageChange();
+		}
+
 		int iDamageTakenMod = pkOtherUnit ? pkOtherUnit->GetDamageTakenMod() : 0;
 		iDamage = max(0, (CvUnitCombat::DoDamageMath(
 			iStrength,
@@ -17618,6 +17652,9 @@ int CvUnit::GetRangeCombatDamage(const CvUnit* pDefender, const CvCity* pCity, i
 		randomSeed,
 		0 ) / 100;
 
+	if (pTargetPlot) 
+		iDamage += pTargetPlot->IsFriendlyTerritory(getOwner()) ? 0 : GetOutsideFriendlyLandsInflictDamageChange();
+
 	if (pCity && AI_getUnitAIType() != UNITAI_MISSILE_AIR)
 	{
 		iGarrisonDamage = 0;
@@ -17628,9 +17665,20 @@ int CvUnit::GetRangeCombatDamage(const CvUnit* pDefender, const CvCity* pCity, i
 			iDamage -= iGarrisonDamage;
 		}
 
+		iDamage += GetSiegeInflictDamageChange();
+		iDamage += GetSiegeInflictDamageChangeMaxHPPercent() * pCity->GetMaxHitPoints() / 100;
+
 		// City can have flat damage reduction
 		if (pCity->getDamageReductionFlat() != 0) {
 			iDamage = std::max(0, iDamage - pCity->getDamageReductionFlat());
+		}
+		if (pCity->getChangeDamageValue() != 0)
+		{
+			iDamage = std::max(0, iDamage - pCity->getChangeDamageValue());
+		}
+		if (pCity->getForcedDamageValue() != 0)
+		{
+			iDamage = pCity->getForcedDamageValue();
 		}
 	}
 	else if (pDefender)
@@ -17643,6 +17691,10 @@ int CvUnit::GetRangeCombatDamage(const CvUnit* pDefender, const CvCity* pCity, i
 		{
 			iDamage *= 100 + pDefender->GetDamageTakenMod();
 			iDamage /= 100;
+
+			iDamage += GetAttackInflictDamageChange();
+			iDamage += GetAttackInflictDamageChangeMaxHPPercent() * pDefender->GetMaxHitPoints() / 100;
+			
 			iDamage = max(0, iDamage + pDefender->getChangeDamageValue());
 		}
 	}
@@ -17823,6 +17875,13 @@ int CvUnit::GetInterceptionDamage(const CvUnit* pInterceptedAttacker, bool bIncl
 			.mixAssign(iInterceptorStrength)
 			.mixAssign(iInterceptedAttackerStrength);
 	}
+
+	int iExtraDamage = 0;
+	iExtraDamage += pInterceptedAttacker->GetDefenseInflictDamageChange();
+	iExtraDamage += pInterceptedAttacker->GetDefenseInflictDamageChangeMaxHPPercent() * GetMaxHitPoints() / 100;
+	if (pTargetPlot)
+		iExtraDamage += pTargetPlot->IsFriendlyTerritory(pInterceptedAttacker->getOwner()) ? 0 : pInterceptedAttacker->GetOutsideFriendlyLandsInflictDamageChange();
+
 	return CvUnitCombat::DoDamageMath(
 		iInterceptorStrength,
 		iInterceptedAttackerStrength,
@@ -17830,7 +17889,7 @@ int CvUnit::GetInterceptionDamage(const CvUnit* pInterceptedAttacker, bool bIncl
 		/*1200*/ GD_INT_GET(INTERCEPTION_SAME_STRENGTH_POSSIBLE_EXTRA_DAMAGE),
 		bIncludeRand,
 		randomSeed,
-		pInterceptedAttacker->GetInterceptionDefenseDamageModifier() ) / 100;
+		pInterceptedAttacker->GetInterceptionDefenseDamageModifier() ) / 100 + iExtraDamage;
 }
 
 //	--------------------------------------------------------------------------------
@@ -28305,6 +28364,15 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 	ChangeHeavyChargeExtraDamage(iChange * thisPromotion.GetHeavyChargeExtraDamage());
 	ChangeHeavyChargeCollateralFixed(iChange * thisPromotion.GetHeavyChargeCollateralFixed());
 	ChangeHeavyChargeCollateralPercent(iChange * thisPromotion.GetHeavyChargeCollateralPercent());
+
+	ChangeAttackInflictDamageChange(iChange * thisPromotion.GetAttackInflictDamageChange());
+	ChangeAttackInflictDamageChangeMaxHPPercent(iChange * thisPromotion.GetAttackInflictDamageChangeMaxHPPercent());
+	ChangeDefenseInflictDamageChange(iChange * thisPromotion.GetDefenseInflictDamageChange());
+	ChangeDefenseInflictDamageChangeMaxHPPercent(iChange * thisPromotion.GetDefenseInflictDamageChangeMaxHPPercent());
+	ChangeSiegeInflictDamageChange(iChange * thisPromotion.GetSiegeInflictDamageChange());
+	ChangeSiegeInflictDamageChangeMaxHPPercent(iChange * thisPromotion.GetSiegeInflictDamageChangeMaxHPPercent());
+	ChangeOutsideFriendlyLandsInflictDamageChange(iChange * thisPromotion.GetOutsideFriendlyLandsInflictDamageChange());
+
 	ChangePromotionMaintenanceCost(thisPromotion.GetMaintenanceCost() > 0 ? iChange: 0);
 
 	if (IsSelected())
@@ -29017,6 +29085,15 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iHeavyChargeExtraDamage);
 	visitor(unit.m_iHeavyChargeCollateralFixed);
 	visitor(unit.m_iHeavyChargeCollateralPercent);
+
+	visitor(unit.m_iAttackInflictDamageChange);
+	visitor(unit.m_iAttackInflictDamageChangeMaxHPPercent);
+	visitor(unit.m_iDefenseInflictDamageChange);
+	visitor(unit.m_iDefenseInflictDamageChangeMaxHPPercent);
+	visitor(unit.m_iSiegeInflictDamageChange);
+	visitor(unit.m_iSiegeInflictDamageChangeMaxHPPercent);
+	visitor(unit.m_iOutsideFriendlyLandsInflictDamageChange);
+
 	visitor(unit.m_iPromotionMaintenanceCost);
 	visitor(unit.m_iCombatStrengthChangeFromKilledUnits);
 	visitor(unit.m_iRangedCombatStrengthChangeFromKilledUnits);
@@ -34790,6 +34867,69 @@ void CvUnit::ChangeHeavyChargeCollateralFixed(int iChange)
 void CvUnit::ChangeHeavyChargeCollateralPercent(int iChange)
 {
 	m_iHeavyChargeCollateralPercent += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetAttackInflictDamageChange() const
+{
+	return m_iAttackInflictDamageChange;
+}
+int CvUnit::GetAttackInflictDamageChangeMaxHPPercent() const
+{
+	return m_iAttackInflictDamageChangeMaxHPPercent;
+}
+
+int CvUnit::GetDefenseInflictDamageChange() const
+{
+	return m_iDefenseInflictDamageChange;
+}
+int CvUnit::GetDefenseInflictDamageChangeMaxHPPercent() const
+{
+	return m_iDefenseInflictDamageChangeMaxHPPercent;
+}
+
+void CvUnit::ChangeAttackInflictDamageChange(int iChange)
+{
+	m_iAttackInflictDamageChange += iChange;
+}
+void CvUnit::ChangeAttackInflictDamageChangeMaxHPPercent(int iChange)
+{
+	m_iAttackInflictDamageChangeMaxHPPercent += iChange;
+}
+
+void CvUnit::ChangeDefenseInflictDamageChange(int iChange)
+{
+	m_iDefenseInflictDamageChange += iChange;
+}
+void CvUnit::ChangeDefenseInflictDamageChangeMaxHPPercent(int iChange)
+{
+	m_iDefenseInflictDamageChangeMaxHPPercent += iChange;
+}
+
+int CvUnit::GetSiegeInflictDamageChange() const
+{
+	return m_iSiegeInflictDamageChange;
+}
+int CvUnit::GetSiegeInflictDamageChangeMaxHPPercent() const
+{
+	return m_iSiegeInflictDamageChangeMaxHPPercent;
+}
+void CvUnit::ChangeSiegeInflictDamageChange(int iChange)
+{
+	m_iSiegeInflictDamageChange += iChange;
+}
+void CvUnit::ChangeSiegeInflictDamageChangeMaxHPPercent(int iChange)
+{
+	m_iSiegeInflictDamageChangeMaxHPPercent += iChange;
+}
+
+int CvUnit::GetOutsideFriendlyLandsInflictDamageChange() const
+{
+	return m_iOutsideFriendlyLandsInflictDamageChange;
+}
+void CvUnit::ChangeOutsideFriendlyLandsInflictDamageChange(int iChange)
+{
+	m_iOutsideFriendlyLandsInflictDamageChange += iChange;
 }
 
 //	--------------------------------------------------------------------------------

@@ -826,7 +826,9 @@ void CvLuaCity::PushMethods(lua_State* L, int t)
 #endif
 	Method(GetYieldRateInfoTool);
 	Method(GetFoodConsumptionPerPopTimes100);
-#endif
+
+	Method(GetForcedDamageValue);
+	Method(GetChangeDamageValue);
 	Method(GetGreatPersonPointFromReligion);
 }
 //------------------------------------------------------------------------------
@@ -7204,6 +7206,24 @@ int CvLuaCity::lGetFoodConsumptionPerPopTimes100(lua_State* L)
 	lua_pushinteger(L, iResult);
 	return 1;
 }
+//------------------------------------------------------------------------------
+int CvLuaCity::lGetForcedDamageValue(lua_State* L)
+{
+	CvCity* pCity = GetInstance(L);
+
+	const int iResult = pCity->getForcedDamageValue();
+	lua_pushinteger(L, iResult);
+	return 1;
+}
+int CvLuaCity::lGetChangeDamageValue(lua_State* L)
+{
+	CvCity* pCity = GetInstance(L);
+
+	const int iResult = pCity->getChangeDamageValue() - pCity->getDamageReductionFlat();
+	lua_pushinteger(L, iResult);
+	return 1;
+}
+//------------------------------------------------------------------------------
 int CvLuaCity::lGetGreatPersonPointFromReligion(lua_State* L)
 {
 	return lGetExtraSpecialistPoints(L);
