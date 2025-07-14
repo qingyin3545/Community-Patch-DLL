@@ -1821,6 +1821,9 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	m_iSiegeKillCitizensModifier = 0;
 #endif
+	m_iForcedDamageValue = 0;
+	m_iChangeDamageValue = 0;
+
 }
 
 
@@ -14958,6 +14961,8 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 		ChangeSiegeKillCitizensModifier(pBuildingInfo->GetSiegeKillCitizensModifier() * iChange);
 #endif
+		changeForcedDamageValue(pBuildingInfo->GetForcedDamageValue()* iChange);
+		changeChangeDamageValue(pBuildingInfo->GetChangeDamageValue()* iChange);
 
 		// Process for our player
 		for (int iI = 0; iI < MAX_PLAYERS; iI++)
@@ -32273,6 +32278,8 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	visitor(city.m_iSiegeKillCitizensModifier);
 #endif
+	visitor(city.m_iForcedDamageValue);
+	visitor(city.m_iChangeDamageValue);
 }
 
 //	--------------------------------------------------------------------------------
@@ -36099,16 +36106,29 @@ void CvCity::ChangeSiegeKillCitizensModifier(int iChange)
 	m_iSiegeKillCitizensModifier += iChange;
 }
 #endif
-#ifdef MOD_PROMOTION_CITY_DESTROYER
-int CvCity::GetSiegeKillCitizensModifier() const
+//	--------------------------------------------------------------------------------
+int CvCity::getForcedDamageValue() const
 {
-	return m_iSiegeKillCitizensModifier;
+	return m_iForcedDamageValue;
 }
-void CvCity::ChangeSiegeKillCitizensModifier(int iChange)
+void CvCity::changeForcedDamageValue(int iChange)
 {
-	m_iSiegeKillCitizensModifier += iChange;
+	if (iChange != 0)
+	{
+		m_iForcedDamageValue += iChange;
+	}
 }
-#endif
+int CvCity::getChangeDamageValue() const
+{
+	return m_iChangeDamageValue;
+}
+void CvCity::changeChangeDamageValue(int iChange)
+{
+	if (iChange != 0)
+	{
+		m_iChangeDamageValue += iChange;
+	}
+}
 
 FDataStream& operator<<(FDataStream& saveTo, const SCityExtraYields& readFrom)
 {

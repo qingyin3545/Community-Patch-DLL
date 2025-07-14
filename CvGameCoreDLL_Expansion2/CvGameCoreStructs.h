@@ -361,6 +361,9 @@ public:
 	static int getMaxDamageMemberCount() ;
 	void setDamageMemberCount(int iDamageMemberCount);
 
+	BattleTypeTypes GetBattleType() const;
+	void SetBattleType(BattleTypeTypes);
+
 protected:
 	CvUnit* 	m_pUnits[BATTLE_UNIT_COUNT];					//!< The units involved
 	CvCity* 	m_pCities[BATTLE_UNIT_COUNT];					//!< The cities involved
@@ -394,6 +397,8 @@ protected:
 	// If this is non-zero, the damage members will include the primary defenders so don't apply the damage twice!
 	int			m_iDamageMemberCount;
 	CvCombatMemberEntry	m_kDamageMembers[MAX_DAMAGE_MEMBER_COUNT];
+
+	BattleTypeTypes m_eBattleType = NO_BATTLE_TYPE;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
