@@ -528,6 +528,15 @@ void CvCombatInfo::setDamageMemberCount(int iDamageMemberCount)
 	m_iDamageMemberCount = std::min(iDamageMemberCount, (int)MAX_DAMAGE_MEMBER_COUNT);
 }
 
+BattleTypeTypes CvCombatInfo::GetBattleType() const
+{
+	return m_eBattleType;
+}
+void CvCombatInfo::SetBattleType(BattleTypeTypes eBattleType)
+{
+	m_eBattleType = eBattleType;
+}
+
 //------------------------------------------------------------------------------------------------
 // FUNCTION:    CvMissionDefinition::CvMissionDefinition
 //! \brief      Default constructor.

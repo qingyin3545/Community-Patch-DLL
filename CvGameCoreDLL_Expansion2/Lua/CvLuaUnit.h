@@ -691,6 +691,10 @@ protected:
 #ifdef MOD_GLOBAL_PROMOTIONS_REMOVAL
 	LUAAPIEXTN(ClearSamePlotPromotions, void);
 #endif
+	static int lGetDamageFixValueToUnit(lua_State* L);
+	static int lGetDamageFixValueToCity(lua_State* L);
+	static int lGetForcedDamageValue(lua_State* L);
+	static int lGetChangeDamageValue(lua_State* L);
 	LUAAPIEXTN(GetPromotionMaintenanceCost, int);
 
 	static int lGetCombatStrengthChangeFromKilledUnits(lua_State* L);
