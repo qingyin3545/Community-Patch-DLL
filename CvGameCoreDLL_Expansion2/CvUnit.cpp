@@ -19721,7 +19721,7 @@ bool CvUnit::isInvisible(TeamTypes eTeam, bool bDebug, bool bCheckCargo) const
 		return false;
 	}
 
-	if(IsInvisibleInvalid())
+	if(IsInvisibleInvalid(plot()))
 	{
 		return false;
 	}
@@ -21089,8 +21089,8 @@ void CvUnit::setXY(int iX, int iY, bool bGroup, bool bUpdate, bool bShow, bool b
 		{
 			bool bOldInvisibleVisible = false;
 			if(pOldPlot)
-				bOldInvisibleVisible = pOldPlot->isInvisibleVisible(activeTeam, eInvisoType);
-			bool bNewInvisibleVisible = pNewPlot->isInvisibleVisible(activeTeam, eInvisoType);
+				bOldInvisibleVisible = pOldPlot->isInvisibleVisible(activeTeam, eInvisoType) || IsInvisibleInvalid(pOldPlot);
+			bool bNewInvisibleVisible = pNewPlot->isInvisibleVisible(activeTeam, eInvisoType) || IsInvisibleInvalid(pNewPlot);
 			if(bOldInvisibleVisible != bNewInvisibleVisible)
 			{
 				CvInterfacePtr<ICvUnit1> pDllUnit(new CvDllUnit(this));
@@ -35378,7 +35378,7 @@ int CvUnit::GetFeatureInvisibleCount(FeatureTypes eIndex) const
 }
 bool CvUnit::IsFeatureInvisible(FeatureTypes eIndex) const
 {
-	return GetFeatureInvisibleCount(eIndex) > 0;
+	return eIndex != NO_FEATURE && GetFeatureInvisibleCount(eIndex) > 0;
 }
 void CvUnit::ChangeNumFeatureInvisible(FeatureTypes eIndex, int iChange)
 {
@@ -35401,10 +35401,10 @@ void CvUnit::ChangeNumFeatureInvisible(FeatureTypes eIndex, int iChange)
 
 	m_featureInvisibleCount.push_back(make_pair(eIndex, iChange));
 }
-bool CvUnit::IsInvisibleInvalid() const
+bool CvUnit::IsInvisibleInvalid(CvPlot *pPlot) const
 {
 	// NO_FEATURE will be false If Unit is invisible on at least one Feature
-	return m_featureInvisibleCount.size() > 0 && !IsFeatureInvisible(plot()->getFeatureType());
+	return pPlot && m_featureInvisibleCount.size() > 0 && !IsFeatureInvisible(pPlot->getFeatureType());
 }
 
 //	--------------------------------------------------------------------------------
