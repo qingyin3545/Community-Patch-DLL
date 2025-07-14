@@ -2119,6 +2119,24 @@ public:
 	void ChangeHeavyChargeCollateralFixed(int iChange);
 	void ChangeHeavyChargeCollateralPercent(int iChange);
 
+	int GetAttackInflictDamageChange() const;
+	int GetAttackInflictDamageChangeMaxHPPercent() const;
+	void ChangeAttackInflictDamageChange(int iChange);
+	void ChangeAttackInflictDamageChangeMaxHPPercent(int iChange);
+
+	int GetDefenseInflictDamageChange() const;
+	int GetDefenseInflictDamageChangeMaxHPPercent() const;
+	void ChangeDefenseInflictDamageChange(int iChange);
+	void ChangeDefenseInflictDamageChangeMaxHPPercent(int iChange);
+
+	int GetSiegeInflictDamageChange() const;
+	int GetSiegeInflictDamageChangeMaxHPPercent() const;
+	void ChangeSiegeInflictDamageChange(int iChange);
+	void ChangeSiegeInflictDamageChangeMaxHPPercent(int iChange);
+
+	int GetOutsideFriendlyLandsInflictDamageChange() const;
+	void ChangeOutsideFriendlyLandsInflictDamageChange(int iChange);
+
 	int GetPromotionMaintenanceCost() const;
 	void ChangePromotionMaintenanceCost(int iValue);
 
@@ -2630,6 +2648,14 @@ private:
 	int m_iHeavyChargeExtraDamage = 0;
 	int m_iHeavyChargeCollateralFixed = 0;
 	int m_iHeavyChargeCollateralPercent = 0;
+
+	int m_iAttackInflictDamageChange = 0;
+	int m_iAttackInflictDamageChangeMaxHPPercent = 0;
+	int m_iDefenseInflictDamageChange = 0;
+	int m_iDefenseInflictDamageChangeMaxHPPercent = 0;
+	int m_iSiegeInflictDamageChange = 0;
+	int m_iSiegeInflictDamageChangeMaxHPPercent = 0;
+	int m_iOutsideFriendlyLandsInflictDamageChange = 0;
 
 	int m_iPromotionMaintenanceCost = 0;
 

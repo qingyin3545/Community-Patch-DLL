@@ -101,6 +101,7 @@ static CvCombatMemberEntry* AddCombatMember(CvCombatMemberEntry* pkArray, int* p
 void CvUnitCombat::GenerateMeleeCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender, CvPlot& plot, CvCombatInfo* pkCombatInfo)
 {
 	BATTLE_STARTED(BATTLE_TYPE_MELEE, plot);
+	pkCombatInfo->SetBattleType(BATTLE_TYPE_MELEE);
 
 	bool bIncludeRand = !GC.getGame().isGameMultiPlayer();
 
@@ -598,6 +599,7 @@ void CvUnitCombat::ResolveMeleeCombat(const CvCombatInfo& kCombatInfo, uint uiPa
 void CvUnitCombat::GenerateRangedCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender, CvPlot& plot, CvCombatInfo* pkCombatInfo)
 {
 	BATTLE_STARTED(BATTLE_TYPE_RANGED, plot);
+	pkCombatInfo->SetBattleType(BATTLE_TYPE_RANGED);
 	pkCombatInfo->setUnit(BATTLE_UNIT_ATTACKER, &kAttacker);
 	pkCombatInfo->setUnit(BATTLE_UNIT_DEFENDER, pkDefender);
 	pkCombatInfo->setHasMoved(BATTLE_UNIT_ATTACKER, kAttacker.hasMoved());
@@ -748,6 +750,7 @@ void CvUnitCombat::GenerateRangedCombatInfo(CvUnit& kAttacker, CvUnit* pkDefende
 void CvUnitCombat::GenerateRangedCombatInfo(CvCity& kAttacker, CvUnit* pkDefender, CvPlot& plot, CvCombatInfo* pkCombatInfo)
 {
 	BATTLE_STARTED(BATTLE_TYPE_RANGED, plot);
+	pkCombatInfo->SetBattleType(BATTLE_TYPE_RANGED);
 	pkCombatInfo->setCity(BATTLE_UNIT_ATTACKER, &kAttacker);
 	pkCombatInfo->setUnit(BATTLE_UNIT_DEFENDER, pkDefender);
 	pkCombatInfo->setPlot(&plot);
@@ -1343,6 +1346,7 @@ void CvUnitCombat::ResolveCityMeleeCombat(const CvCombatInfo& kCombatInfo, uint 
 void CvUnitCombat::GenerateAirCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender, CvPlot& plot, CvCombatInfo* pkCombatInfo)
 {
 	BATTLE_STARTED(BATTLE_TYPE_AIR, plot);
+	pkCombatInfo->SetBattleType(BATTLE_TYPE_AIR);
 	int iExperience = 0;
 
 	pkCombatInfo->setUnit(BATTLE_UNIT_ATTACKER, &kAttacker);
@@ -1945,6 +1949,7 @@ void CvUnitCombat::ResolveAirUnitVsCombat(const CvCombatInfo& kCombatInfo, uint 
 void CvUnitCombat::GenerateAirSweepCombatInfo(CvUnit& kAttacker, CvUnit* pkDefender, CvPlot& plot, CvCombatInfo* pkCombatInfo)
 {
 	BATTLE_STARTED(BATTLE_TYPE_SWEEP, plot);
+	pkCombatInfo->SetBattleType(BATTLE_TYPE_SWEEP);
 
 	int iAttackerMaxHP = kAttacker.GetMaxHitPoints();
 
@@ -2238,6 +2243,7 @@ void CvUnitCombat::ResolveAirSweep(const CvCombatInfo& kCombatInfo, uint uiParen
 void CvUnitCombat::GenerateNuclearCombatInfo(CvUnit& kAttacker, CvPlot& plot, CvCombatInfo* pkCombatInfo)
 {
 	BATTLE_STARTED(BATTLE_TYPE_NUKE, plot);
+	pkCombatInfo->SetBattleType(BATTLE_TYPE_NUKE);
 	pkCombatInfo->setUnit(BATTLE_UNIT_ATTACKER, &kAttacker);
 	pkCombatInfo->setUnit(BATTLE_UNIT_DEFENDER, NULL);
 	pkCombatInfo->setPlot(&plot);
@@ -4465,13 +4471,16 @@ inline static CvPlayerAI& getDefenderPlayer(const CvCombatInfo& kCombatInfo)
 
 static int calcDamage(CvUnit* pAttacker, CvPlot* pFromPlot, CvUnit* pDefender, CvPlot* pTargetPlot, bool bRangedAttack)
 {
-	if (bRangedAttack) {
-		return pAttacker->GetRangeCombatDamage(pDefender, nullptr, false); ;
+	if (bRangedAttack)
+	{
+		int iUnusedReferenceVariable = 0;
+		return pAttacker->GetRangeCombatDamage(pDefender, nullptr, 0, iUnusedReferenceVariable, !GC.getGame().isGameMultiPlayer());
 	}
 	else {
 		int iAttackStrength = pAttacker->GetMaxAttackStrength(pFromPlot, pDefender->plot(), pDefender);
 		int iDefenseStrength = pDefender->GetMaxDefenseStrength(pDefender->plot(), pAttacker, false);
-		return pAttacker->getCombatDamage(iAttackStrength, iDefenseStrength, false, false, false);
+		int iSelfDamageInflicted = 0;
+		return pAttacker->getMeleeCombatDamage(iAttackStrength, iDefenseStrength, iSelfDamageInflicted, false, pDefender);
 	}
 }
 static int calcOrCacheDamage(CvUnit* pAttacker, CvPlot* pFromPlot, CvUnit* pDefender, CvPlot* pTargetPlot, bool bRangedAttack, std::tr1::unordered_map<CvUnit*, int>& mUnitDamageBaseMap)
