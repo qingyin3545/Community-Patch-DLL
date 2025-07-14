@@ -213,8 +213,14 @@ CvUnit* GetPlayerUnit(const IDInfo& unit);
 
 bool isBeforeUnitCycle(const CvUnit* pFirstUnit, const CvUnit* pSecondUnit);
 bool IsPromotionValidForUnitCombatType(PromotionTypes ePromotion, UnitTypes eUnit);
-bool IsPromotionValidForCivilianUnitType(PromotionTypes ePromotion, UnitTypes eUnit);
-bool isPromotionValid(PromotionTypes ePromotion, UnitTypes eUnit, bool bLeader, bool bTestingPrereq=false);
+bool IsPromotionValidForCivilianUnitType(CvPromotionEntry* pPromotionInfo, UnitTypes eUnit);
+bool IsPromotionValidForUnitType(CvPromotionEntry* pPromotionInfo, UnitTypes eUnit);
+bool IsPromotionValidForUnitPromotions(CvPromotionEntry* pPromotionInfo, CvUnit& pUnit);
+bool IsPromotionValidForUnitPromotionAnds(CvPromotionEntry* pPromotionInfo, CvUnit& pUnit);
+bool IsPromotionValidForUnitPromotionExclusion(CvPromotionEntry* pPromotionInfo, CvUnit& pUnit);
+bool IsPromotionValidForUnitExtraCombats(CvPromotionEntry* pPromotionInfo, const CvUnit* pUnit);
+bool IsPromotionValidForUnit(PromotionTypes ePromotion, CvUnit& pUnit);
+bool isPromotionValid(PromotionTypes ePromotion, UnitTypes eUnit, bool bLeader, bool bTestingPrereq = false, const CvUnit* pUnit = nullptr);
 
 int getPopulationAsset(int iPopulation);
 int getLandPlotsAsset(int iLandPlots);
