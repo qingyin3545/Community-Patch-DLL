@@ -7052,7 +7052,8 @@ int CvLuaUnit::lGetNearbyUnitPromotionBonus(lua_State* L)
 int CvLuaUnit::lIsInvisibleInvalid(lua_State* L)
 {
 	CvUnit* pkUnit = GetInstance(L);
-	const bool bResult = pkUnit->IsInvisibleInvalid();
+	CvPlot* pkPlot = CvLuaPlot::GetInstance(L, 2);
+	const bool bResult = pkUnit->IsInvisibleInvalid(pkPlot);
 	lua_pushboolean(L, bResult);
 	return 1;
 }
