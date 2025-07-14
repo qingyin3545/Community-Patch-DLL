@@ -436,6 +436,15 @@ public:
 	int GetHeavyChargeExtraDamage() const;
 	int GetHeavyChargeCollateralFixed() const;
 	int GetHeavyChargeCollateralPercent() const;
+
+	int GetAttackInflictDamageChange() const;
+	int GetAttackInflictDamageChangeMaxHPPercent() const;
+	int GetDefenseInflictDamageChange() const;
+	int GetDefenseInflictDamageChangeMaxHPPercent() const;
+	int GetSiegeInflictDamageChange() const;
+	int GetSiegeInflictDamageChangeMaxHPPercent() const;
+	int GetOutsideFriendlyLandsInflictDamageChange() const;
+
 	int GetMaintenanceCost() const;
 
 protected:
@@ -809,6 +818,15 @@ protected:
 	int m_iHeavyChargeExtraDamage = 0;
 	int m_iHeavyChargeCollateralFixed = 0;
 	int m_iHeavyChargeCollateralPercent = 0;
+
+	int m_iAttackInflictDamageChange = 0;
+	int m_iAttackInflictDamageChangeMaxHPPercent = 0;
+	int m_iDefenseInflictDamageChange = 0;
+	int m_iDefenseInflictDamageChangeMaxHPPercent = 0;
+	int m_iSiegeInflictDamageChange = 0;
+	int m_iSiegeInflictDamageChangeMaxHPPercent = 0;
+	int m_iOutsideFriendlyLandsInflictDamageChange = 0;
+
 	int m_iMaintenanceCost = 0;
 };
 
