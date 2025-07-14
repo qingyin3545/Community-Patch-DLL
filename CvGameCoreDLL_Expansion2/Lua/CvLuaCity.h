@@ -808,6 +808,8 @@ protected:
 #endif
 	LUAAPIEXTN(GetYieldRateInfoTool, CvString);
 	LUAAPIEXTN(GetFoodConsumptionPerPopTimes100, int);
+	static int lGetForcedDamageValue(lua_State* L);
+	static int lGetChangeDamageValue(lua_State* L);
 	LUAAPIEXTN(GetGreatPersonPointFromReligion, int);
 };
 
