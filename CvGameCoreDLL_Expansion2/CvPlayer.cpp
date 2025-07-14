@@ -26349,6 +26349,9 @@ void CvPlayer::doInstantYield(InstantYieldType iType, bool bCityFaith, GreatPers
 					}
 					if (eYield == YIELD_JFD_LOYALTY && eYield == ePassYield)
 						iValue += iPassYield;
+					if (pUnit)
+						iValue += pUnit->GetInstantYieldPerReligionFollowerConverted(eYield);
+					
 					break;
 				}
 				case INSTANT_YIELD_TYPE_F_SPREAD:
@@ -32109,6 +32112,13 @@ int CvPlayer::calculateMilitaryMight(DomainTypes eDomain) const
 		if (pLoopUnit->getLevel()>3)
 		{
 			iPower *= 100 + (pLoopUnit->getLevel() * 10 - 30);
+			iPower /= 100;
+		}
+
+		int iMod = pLoopUnit->GetMilitaryMightMod();
+		if(iMod != 0)
+		{
+			iPower *= (100 + iMod);
 			iPower /= 100;
 		}
 
@@ -39178,11 +39188,7 @@ void CvPlayer::ChangeFreePromotionCount(PromotionTypes ePromotion, int iChange)
 			for (CvUnit* pLoopUnit = firstUnit(&iLoop); pLoopUnit != NULL; pLoopUnit = nextUnit(&iLoop))
 			{
 				// Valid Promotion for this Unit?
-				if (IsPromotionValidForUnitCombatType(ePromotion, pLoopUnit->getUnitType()))
-				{
-					pLoopUnit->setHasPromotion(ePromotion, true);
-				}
-				else if (IsPromotionValidForCivilianUnitType(ePromotion, pLoopUnit->getUnitType()))
+				if (::IsPromotionValidForUnit(ePromotion, *pLoopUnit))
 				{
 					pLoopUnit->setHasPromotion(ePromotion, true);
 				}
@@ -50250,6 +50256,21 @@ UnitTypes CvPlayer::GetCivUnitWithDefault(UnitClassTypes eUnitClass) const
 		if(pUnitClassInfo) eUnitType = (UnitTypes)pUnitClassInfo->getDefaultUnitIndex();
 	}
 	return eUnitType;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetNumWorldWonders()
+{
+	int iCount = 0;
+	int iLoop;
+	for (CvCity* pLoopCity = firstCity(&iLoop); pLoopCity != NULL; pLoopCity = nextCity(&iLoop))
+	{
+		if (pLoopCity->getNumWorldWonders() > 0)
+		{
+			iCount += pLoopCity->getNumWorldWonders();
+		}
+	}
+	return iCount;
 }
 
 //	--------------------------------------------------------------------------------

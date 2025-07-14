@@ -2988,6 +2988,8 @@ public:
 	UnitTypes GetCivUnit(UnitClassTypes eUnitClass, int iFakeSeed = 0) const;
 	UnitTypes GetCivUnitWithDefault(UnitClassTypes eUnitClass) const;
 
+	int GetNumWorldWonders();
+
 	void DoCombatStrengthChangeFromKill(CvUnit* pAttackingUnit, CvUnit* pDefendingUnit, int iX, int iY);
 
 protected:

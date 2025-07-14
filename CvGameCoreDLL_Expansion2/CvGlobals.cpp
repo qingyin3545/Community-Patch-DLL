@@ -2417,6 +2417,7 @@ CvGlobals::CvGlobals() :
 	GD_INT_INIT(WAR_CASUALTIES_POPULATION_LOSS, 1),
 #endif
 	GD_INT_INIT(PLOT_BUILD_MAX_WORKER, 1),
+	GD_INT_INIT(HIGHT_MOD_MAX_ADVANTAGE, 2),
 
 	////////////// END DEFINES //////////////////
 
@@ -2792,6 +2793,7 @@ void CvGlobals::init()
 	m_pLuaFormulaEntries = FNEW(CvLuaFormulaXMLEntries, c_eCiv5GameplayDLL, 0);
 	m_pLuaEvaluatorManager = FNEW(lua::EvaluatorManager, c_eCiv5GameplayDLL, 0);
 	m_pLuaEvaluatorManager->Init(this);
+	m_pIndependentPromotion = FNEW(CvIndependentPromotionInfo, c_eCiv5GameplayDLL, 0);
 
 	CvPlayerAI::initStatics();
 	CvTeam::initStatics();
@@ -2877,6 +2879,7 @@ void CvGlobals::uninit()
 #endif
 	SAFE_DELETE(m_pLuaFormulaEntries);
 	SAFE_DELETE(m_pLuaEvaluatorManager);
+	SAFE_DELETE(m_pIndependentPromotion);
 
 	// already deleted outside of the dll, set to null for safety
 	m_pathFinder=NULL;
@@ -5332,7 +5335,10 @@ lua::EvaluatorManager* CvGlobals::GetLuaEvaluatorManager()
 {
 	return m_pLuaEvaluatorManager;
 }
-
+CvIndependentPromotionInfo* CvGlobals::GetIndependentPromotion()
+{
+	return m_pIndependentPromotion;
+}
 
 void CvGlobals::cacheGlobals()
 {
@@ -7643,6 +7649,7 @@ void CvGlobals::cacheGlobals()
 	GD_INT_CACHE(WAR_CASUALTIES_POPULATION_LOSS);
 #endif
 	GD_INT_CACHE(PLOT_BUILD_MAX_WORKER);
+	GD_INT_CACHE(HIGHT_MOD_MAX_ADVANTAGE);
 	////////////// END DEFINES //////////////////
 }
 

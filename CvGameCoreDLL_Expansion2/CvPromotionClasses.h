@@ -10,6 +10,7 @@
 #ifndef CIV5_PROMOTION_CLASSES_H
 #define CIV5_PROMOTION_CLASSES_H
 
+#include <array>
 #include "CvBitfield.h"
 
 struct PlagueInfo
@@ -47,24 +48,6 @@ public:
 	int	GetLayerAnimationPath() const;
 	int	GetPrereqPromotion() const;
 	void	SetPrereqPromotion(int i);
-	int	GetPrereqOrPromotion1() const;
-	void	SetPrereqOrPromotion1(int i);
-	int	GetPrereqOrPromotion2() const;
-	void	SetPrereqOrPromotion2(int i);
-	int	GetPrereqOrPromotion3() const;
-	void	SetPrereqOrPromotion3(int i);
-	int	GetPrereqOrPromotion4() const;
-	void	SetPrereqOrPromotion4(int i);
-	int	GetPrereqOrPromotion5() const;
-	void	SetPrereqOrPromotion5(int i);
-	int	GetPrereqOrPromotion6() const;
-	void	SetPrereqOrPromotion6(int i);
-	int	GetPrereqOrPromotion7() const;
-	void	SetPrereqOrPromotion7(int i);
-	int	GetPrereqOrPromotion8() const;
-	void	SetPrereqOrPromotion8(int i);
-	int	GetPrereqOrPromotion9() const;
-	void	SetPrereqOrPromotion9(int i);
 
 	int  GetTechPrereq() const;
 	int  GetInvisibleType() const;
@@ -386,7 +369,6 @@ public:
 	int  GetTerrainPassableTech(int i) const;
 	bool GetFeatureImpassable(int i) const;
 	bool GetUnitCombatClass(int i) const;
-	bool GetCivilianUnitType(int i) const;
 	std::pair<int, int> GetYieldFromPillage(YieldTypes eYield) const;
 	std::set<int> GetBlockedPromotions() const;
 	std::vector<PlagueInfo> GetPlagues() const;
@@ -452,6 +434,19 @@ public:
 	std::tr1::unordered_map<PromotionTypes, int>& GetOtherPromotionAttackModifierMap();
 	std::tr1::unordered_map<PromotionTypes, int>& GetOtherPromotionDefenseModifierMap();
 #endif
+	int GetInstantYieldPerReligionFollowerConverted(YieldTypes eIndex) const;
+
+	const std::vector<int>& GetPrePromotions() const;
+	const std::vector<int>& GetPromotionPrereqOrs() const;
+	const std::vector<int>& GetPromotionPrereqAnds() const;
+	const std::vector<int>& GetPromotionExclusionAny() const;
+	const std::vector<int>& GetUnitCombatsPromotionValid() const;
+
+	bool GetCivilianUnitType(int i) const;
+	bool GetUnitType(int i) const;
+
+	bool IsFeatureInvisible(int iFeature) const;
+
 	bool IsRangeBackWhenDefense() const;
 	bool IsCanSplashDefender() const;
 	int GetHeavyChargeAddMoves() const;
@@ -468,19 +463,81 @@ public:
 	int GetOutsideFriendlyLandsInflictDamageChange() const;
 
 	int GetMaintenanceCost() const;
+	int GetMultipleInitExperience() const;
+	int GetRangeAttackCostModifier() const;
+	int GetMovePercentCaptureCity() const;
+	int GetHealPercentCaptureCity() const;
+	int GetLostAllMovesAttackCity() const;
+	int GetCaptureEmenyPercent() const;
+	int GetCaptureEmenyExtraMax() const;
+	int GetCarrierEXPGivenModifier() const;
+	int GetDamageUnitFaithBonus() const;
+	int GetDamageCityFaithBonus() const;
+	int GetOriginalCapitalDamageFix() const;
+	int GetOriginalCapitalSpecialDamageFix() const;
+	int GetInsightEnemyDamageModifier() const;
+	int GetMilitaryMightMod() const;
+	int GetGroundAttackRange() const;
+	bool IsNoResourcePunishment() const;
+	bool IsImmueMeleeAttack() const;
+	bool IsImmueRangedAttack() const;
+	bool IsCanParadropMoved() const;
+	bool IsCanParadropAnyWhere() const;
+	bool IsCanPillageWithoutWar() const;
+	bool IsImmobile() const;
+	int GetMoveLeftAttackMod() const;
+	int GetMoveUsedAttackMod() const;
+	int GetMoveLeftDefenseMod() const;
+	int GetMoveUsedDefenseMod() const;
+	int GetGoldenAgeMod() const;
+	int GetAntiHigherPopMod() const;
+	int GetNumAttacksMadeThisTurnAttackMod() const;
+	int GetNumSpyDefenseMod() const;
+	int GetNumSpyAttackMod() const;
+	int GetNumWonderDefenseMod() const;
+	int GetNumWonderAttackMod() const;
+	int GetNumWorkDefenseMod() const;
+	int GetNumWorkAttackMod() const;
+	int GetNumSpyStayDefenseMod() const;
+	int GetNumSpyStayAttackMod() const;
+	int GetRangedSupportFireMod() const;
+	int GetMeleeAttackMod() const;
+	int GetMeleeDefenseMod() const;
+	int GetDoFallBackAttackMod() const;
+	int GetBeFallBackDefenseMod() const;
+	int GetNumOriginalCapitalAttackMod() const;
+	int GetNumOriginalCapitalDefenseMod() const;
+	int GetOnCapitalLandAttackMod() const;
+	int GetOutsideCapitalLandAttackMod() const;
+	int GetOnCapitalLandDefenseMod() const;
+	int GetOutsideCapitalLandDefenseMod() const;
+	int GetLostHitPointAttackMod() const;
+	int GetLostHitPointDefenseMod() const;
+	int GetNearNumEnemyAttackMod() const;
+	int GetNearNumEnemyDefenseMod() const;
+	int GetHeightAdvantageAttckMod() const;
+	int GetWoundedMod() const;
+	int GetInterceptionDamageMod() const;
+	int GetAirSweepDamageMod() const;
+	int GetAllyCityStateCombatModifier() const;
+	int GetAllyCityStateCombatModifierMax() const;
+	int GetExtraHappinessCombatModifier() const;
+	int GetExtraHappinessCombatModifierMax() const;
+	ResourceTypes GetExtraResourceType() const;
+	int GetExtraResourceCombatModifier() const;
+	int GetExtraResourceCombatModifierMax() const;
+	PromotionTypes GetCombatBonusFromNearbyUnitPromotion() const;
+	int GetNearbyUnitPromotionBonusRange() const;
+	int GetNearbyUnitPromotionBonusMax() const;
+	int GetNearbyUnitPromotionBonus() const;
+	PromotionTypes GetRemovePromotionUpgrade() const;
+	LuaFormulaTypes GetAttackChanceFromAttackDamageFormula() const;
+	LuaFormulaTypes GetMovementFromAttackDamageFormula() const;
+	LuaFormulaTypes GetHealPercentFromAttackDamageFormula() const;
 
 protected:
 	int m_iLayerAnimationPath;
 	int m_iPrereqPromotion;
-	int m_iPrereqOrPromotion1;
-	int m_iPrereqOrPromotion2;
-	int m_iPrereqOrPromotion3;
-	int m_iPrereqOrPromotion4;
-	int m_iPrereqOrPromotion5;
-	int m_iPrereqOrPromotion6;
-	int m_iPrereqOrPromotion7;
-	int m_iPrereqOrPromotion8;
-	int m_iPrereqOrPromotion9;
 
 	int m_iTechPrereq;
 	int m_iInvisibleType;
@@ -797,7 +854,6 @@ protected:
 	bool* m_pbTerrainImpassable;
 	bool* m_pbFeatureImpassable;
 	bool* m_pbUnitCombat;
-	bool* m_pbCivilianUnitType;
 #if defined(MOD_PROMOTIONS_UNIT_NAMING)
 	bool* m_pbUnitName;
 #endif
@@ -856,6 +912,19 @@ protected:
 	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionAttackModifiers; // key: other promotion type, value: attack modifier * 100
 	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionDefenseModifiers; // key: other promotion type, value: defense modifier * 100
 #endif
+	std::tr1::array<int, NUM_YIELD_TYPES> m_aiInstantYieldPerReligionFollowerConverted;
+
+	std::vector<int> m_vPrePromotions;
+	std::vector<int> m_vPromotionPrereqOrs;
+	std::vector<int> m_vPromotionPrereqAnds;
+	std::vector<int> m_vPromotionExclusionAny;
+	std::vector<int> m_vUnitCombatsPromotionValid;
+
+	bool* m_pbCivilianUnitType = nullptr;
+	bool* m_pbUnitType = nullptr;
+
+	bool* m_pbFeatureInvisible = nullptr;
+
 	bool m_bRangeBackWhenDefense = 0;
 	bool m_bCanSplashDefender = 0;
 	int m_iHeavyChargeAddMoves = 0;
@@ -872,6 +941,77 @@ protected:
 	int m_iOutsideFriendlyLandsInflictDamageChange = 0;
 
 	int m_iMaintenanceCost = 0;
+	int m_iMultipleInitExperience = 0;
+	int m_iRangeAttackCostModifier = 0;
+	int m_iMovePercentCaptureCity = 0;
+	int m_iHealPercentCaptureCity = 0;
+	int m_iLostAllMovesAttackCity = 0;
+	int m_iCaptureEmenyPercent = 0;
+	int m_iCaptureEmenyExtraMax = 0;
+	int m_iCarrierEXPGivenModifier = 0;
+	int m_iDamageUnitFaithBonus = 0;
+	int m_iDamageCityFaithBonus = 0;
+	int m_iOriginalCapitalDamageFix = 0;
+	int m_iOriginalCapitalSpecialDamageFix = 0;
+	int m_iInsightEnemyDamageModifier = 0;
+	int m_iMilitaryMightMod = 0;
+	int m_iGroundAttackRange = 0;
+	bool m_bNoResourcePunishment = false;
+	bool m_bImmueMeleeAttack = false;
+	bool m_bImmueRangedAttack = false;
+	bool m_bCanParadropMoved = false;
+	bool m_bCanParadropAnyWhere = false;
+	bool m_bCanPillageWithoutWar = false;
+	bool m_bImmobile = false;
+	int m_iMoveLeftAttackMod = 0;
+	int m_iMoveUsedAttackMod = 0;
+	int m_iMoveLeftDefenseMod = 0;
+	int m_iMoveUsedDefenseMod = 0;
+	int m_iGoldenAgeMod = 0;
+	int m_iAntiHigherPopMod = 0;
+	int m_iNumAttacksMadeThisTurnAttackMod = 0;
+	int m_iNumSpyDefenseMod = 0;
+	int m_iNumSpyAttackMod = 0;
+	int m_iNumWonderDefenseMod = 0;
+	int m_iNumWonderAttackMod = 0;
+	int m_iNumWorkDefenseMod = 0;
+	int m_iNumWorkAttackMod = 0;
+	int m_iNumSpyStayDefenseMod = 0;
+	int m_iNumSpyStayAttackMod = 0;
+	int m_iRangedSupportFireMod = 0;
+	int m_iMeleeAttackMod = 0;
+	int m_iMeleeDefenseMod = 0;
+	int m_iDoFallBackAttackMod = 0;
+	int m_iBeFallBackDefenseMod = 0;
+	int m_iNumOriginalCapitalAttackMod = 0;
+	int m_iNumOriginalCapitalDefenseMod = 0;
+	int m_iOnCapitalLandAttackMod = 0;
+	int m_iOutsideCapitalLandAttackMod = 0;
+	int m_iOnCapitalLandDefenseMod = 0;
+	int m_iOutsideCapitalLandDefenseMod = 0;
+	int m_iLostHitPointAttackMod = 0;
+	int m_iLostHitPointDefenseMod = 0;
+	int m_iNearNumEnemyAttackMod = 0;
+	int m_iNearNumEnemyDefenseMod = 0;
+	int m_iHeightAdvantageAttckMod = 0;
+	int m_iWoundedMod = 0;
+	int m_iInterceptionDamageMod = 0;
+	int m_iAirSweepDamageMod = 0;
+	int m_iAllyCityStateCombatModifier = 0;
+	int m_iAllyCityStateCombatModifierMax = -1;
+	int m_iExtraHappinessCombatModifier = 0;
+	int m_iExtraHappinessCombatModifierMax = -1;
+	ResourceTypes m_eExtraResourceType = NO_RESOURCE;
+	int m_iExtraResourceCombatModifier = 0;
+	int m_iExtraResourceCombatModifierMax = -1;
+	PromotionTypes m_iCombatBonusFromNearbyUnitPromotion = NO_PROMOTION;
+	int m_iNearbyUnitPromotionBonus = 0;
+	int m_iNearbyUnitPromotionBonusRange = 0;
+	int m_iNearbyUnitPromotionBonusMax = 0;
+	PromotionTypes m_iRemovePromotionUpgrade = NO_PROMOTION;
+	LuaFormulaTypes m_eAttackChanceFromAttackDamageFormula = NO_LUA_FORMULA;
+	LuaFormulaTypes m_eMovementFromAttackDamageFormula = NO_LUA_FORMULA;
+	LuaFormulaTypes m_eHealPercentFromAttackDamageFormula = NO_LUA_FORMULA;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

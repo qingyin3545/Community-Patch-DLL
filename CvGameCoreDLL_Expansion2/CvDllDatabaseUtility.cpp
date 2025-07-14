@@ -422,6 +422,7 @@ bool CvDllDatabaseUtility::PrefetchGameData()
 #endif
 
 	PrefetchCollection(GC.GetLuaFormulaEntries(), "LuaFormula");
+	GC.GetIndependentPromotion()->Init();
 
 	//Copy flavors into string array
 	{

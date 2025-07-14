@@ -1603,6 +1603,7 @@ void CvLuaPlayer::PushMethods(lua_State* L, int t)
 	Method(GetCivUnitNowTech);
 	Method(GetUnitCountFromHasPromotion);
 	Method(GetUnitsListFromHasPromotion);
+	Method(GetNumOtherMajorCapitals);
 }
 //------------------------------------------------------------------------------
 void CvLuaPlayer::HandleMissingInstance(lua_State* L)
@@ -19108,5 +19109,11 @@ int CvLuaPlayer::lGetUnitsListFromHasPromotion(lua_State* L)
 		CvLuaUnit::Push(L, unit);
 		lua_rawseti(L, t, idx++);
 	}
+	return 1;
+}
+int CvLuaPlayer::lGetNumOtherMajorCapitals(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	lua_pushinteger(L, pkPlayer->GetNumCapitalCities());
 	return 1;
 }

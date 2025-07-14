@@ -176,6 +176,7 @@ class ICvUnit1;
 #include "CvBuildingClassCollectionsClasses.h"
 #endif
 #include "CvLuaFormula.h"
+#include "CvIndependentPromotionInfo.h"
 
 class CvGlobals
 {
@@ -708,6 +709,7 @@ public:
 	int GetNumLuaFormulaEntries();
 	CvLuaFormula* GetLuaFormulaEntry(LuaFormulaTypes eFormula);
 	lua::EvaluatorManager* GetLuaEvaluatorManager();
+	CvIndependentPromotionInfo* GetIndependentPromotion();
 
 	//
 	// Global Types
@@ -3055,6 +3057,7 @@ public:
 	GD_INT_MEMBER(WAR_CASUALTIES_POPULATION_LOSS);
 #endif
 	GD_INT_MEMBER(PLOT_BUILD_MAX_WORKER);
+	GD_INT_MEMBER(HIGHT_MOD_MAX_ADVANTAGE);
 
 	////////////// END DEFINES //////////////////
 
@@ -3291,6 +3294,7 @@ protected:
 #endif
 	CvLuaFormulaXMLEntries* m_pLuaFormulaEntries;
 	lua::EvaluatorManager* m_pLuaEvaluatorManager;
+	CvIndependentPromotionInfo* m_pIndependentPromotion;
 
 	//////////////////////////////////////////////////////////////////////////
 	// GLOBAL TYPES

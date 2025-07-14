@@ -35,6 +35,7 @@ typedef std::vector<int> UnitIdContainer; //use a vector as most of the time thi
 typedef std::vector<std::pair<TerrainTypes, int>> TerrainTypeCounter;
 typedef std::vector<std::pair<FeatureTypes, int>> FeatureTypeCounter;
 typedef std::vector<std::pair<UnitClassTypes, int>> UnitClassCounter;
+typedef std::vector<std::pair<PromotionTypes, int>> PromotionCounter;
 typedef FFastSmallFixedList< MissionData, 12, true, c_eCiv5GameplayDLL > MissionQueue;
 
 struct CvUnitCaptureDefinition
@@ -1118,9 +1119,6 @@ public:
 	void updateConditionalPromotions();
 	void finishMoves();
 
-	bool IsImmobile() const;
-	void SetImmobile(bool bValue);
-
 	bool IsInForeignOwnedTerritory() const;
 
 	int getExperienceTimes100() const;
@@ -2138,6 +2136,28 @@ public:
 	int otherPromotionAttackModifierByUnit(const CvUnit* otherUnit) const;
 	int otherPromotionDefenseModifierByUnit(const CvUnit* otherUnit) const;
 #endif
+	const std::tr1::unordered_map<int, int>& GetUnitCombatsPromotionValid() const;
+	void ChangeUnitCombatsPromotionValid(UnitCombatTypes eIndex,int iChange);
+
+	int GetInstantYieldPerReligionFollowerConverted(YieldTypes eIndex) const;
+	void ChangeInstantYieldPerReligionFollowerConverted(YieldTypes eIndex, int iChange);
+
+	int GetFeatureInvisibleCount(FeatureTypes eIndex) const;
+	bool IsFeatureInvisible(FeatureTypes eIndex) const;
+	void ChangeNumFeatureInvisible(FeatureTypes eIndex, int iChange);
+	bool IsInvisibleInvalid(CvPlot *pPlot) const;
+
+	bool IsPromotionRemoveUpgrade(PromotionTypes eIndex) const;
+	void ChangeNumPromotionRemoveUpgrade(PromotionTypes eIndex, int iChange);
+	void ForceRemovePromotionUpgrade();
+
+	LuaFormulaTypes GetAttackChanceFromAttackDamageFormula() const;
+	void SetAttackChanceFromAttackDamageFormula(LuaFormulaTypes eValue);
+	LuaFormulaTypes GetMovementFromAttackDamageFormula() const;
+	void SetMovementFromAttackDamageFormula(LuaFormulaTypes eValue);
+	LuaFormulaTypes GetHealPercentFromAttackDamageFormula() const;
+	void SetHealPercentFromAttackDamageFormula(LuaFormulaTypes eValue);
+
 	bool IsRangeBackWhenDefense() const;
 	void ChangeNumRangeBackWhenDefense(int iChange);
 
@@ -2173,6 +2193,183 @@ public:
 
 	int GetPromotionMaintenanceCost() const;
 	void ChangePromotionMaintenanceCost(int iValue);
+
+	int GetMultipleInitExperience() const;
+	void ChangeMultipleInitExperience(int iValue);
+
+	int GetRangeAttackCostModifier() const;
+	void ChangeRangeAttackCostModifier(int iValue);
+
+	int GetMovePercentCaptureCity() const;
+	void ChangeMovePercentCaptureCity(int iValue);
+
+	int GetHealPercentCaptureCity() const;
+	void ChangeHealPercentCaptureCity(int iValue);
+
+	int GetLostAllMovesAttackCity() const;
+	void ChangeLostAllMovesAttackCity(int iValue);
+
+	int GetCaptureEmenyPercent() const;
+	void ChangeCaptureEmenyPercent(int iValue);
+
+	int GetCaptureEmenyExtraMax() const;
+	void ChangeCaptureEmenyExtraMax(int iValue);
+
+	int GetCarrierEXPGivenModifier() const;
+	void ChangeCarrierEXPGivenModifier(int iValue);
+
+	int GetDamageUnitFaithBonus() const;
+	void ChangeDamageUnitFaithBonus(int iValue);
+	
+	int GetDamageCityFaithBonus() const;
+	void ChangeDamageCityFaithBonus(int iValue);
+	
+	int GetOriginalCapitalDamageFix() const;
+	void ChangeOriginalCapitalDamageFix(int iValue);
+	int GetOriginalCapitalDamageFixTotal() const;
+	
+	int GetOriginalCapitalSpecialDamageFix() const;
+	void ChangeOriginalCapitalSpecialDamageFix(int iValue);
+	int GetOriginalCapitalSpecialDamageFixTotal() const;
+	
+	int GetInsightEnemyDamageModifier() const;
+	void ChangeInsightEnemyDamageModifier(int iValue);
+	
+	int GetMilitaryMightMod() const;
+	void ChangeMilitaryMightMod(int iValue);
+
+	int GetGroundAttackRange() const;
+	void ChangeGroundAttackRange(int iValue);
+
+	bool IsNoResourcePunishment() const;
+	void ChangeNumNoResourcePunishment(int iChange);
+
+	bool IsImmueMeleeAttack() const;
+	void ChangeNumImmueMeleeAttack(int iChange);
+
+	bool IsImmueRangedAttack() const;
+	void ChangeNumImmueRangedAttack(int iChange);
+
+	bool IsCanParadropMoved() const;
+	void ChangeNumCanParadropMoved(int iChange);
+
+	bool IsCanParadropAnyWhere() const;
+	void ChangeNumCanParadropAnyWhere(int iChange);
+
+	bool IsCanPillageWithoutWar() const;
+	void ChangeNumCanPillageWithoutWar(int iChange);
+
+	bool IsImmobile() const;
+	void ChangeNumImmobile(int iChange);
+
+	void ChangeMoveLeftAttackMod(int iValue);
+	int GetMoveLeftAttackMod() const;
+
+	void ChangeMoveUsedAttackMod(int iValue);
+	int GetMoveUsedAttackMod() const;
+
+	void ChangeMoveLeftDefenseMod(int iValue);
+	int GetMoveLeftDefenseMod() const;
+
+	void ChangeMoveUsedDefenseMod(int iValue);
+	int GetMoveUsedDefenseMod() const;
+
+	void ChangeGoldenAgeMod(int iValue);
+	int GetGoldenAgeMod() const;
+
+	void ChangeAntiHigherPopMod(int iValue);
+	int GetAntiHigherPopMod() const;
+
+	void ChangeNumAttacksMadeThisTurnAttackMod(int iValue);
+	int GetNumAttacksMadeThisTurnAttackMod() const;
+
+	void ChangeNumSpyDefenseMod(int iValue);
+	int GetNumSpyDefenseMod() const;
+
+	void ChangeNumSpyAttackMod(int iValue);
+	int GetNumSpyAttackMod() const;
+
+	void ChangeNumWonderAttackMod(int iValue);
+	int GetNumWonderAttackMod() const;
+
+	void ChangeNumWorkAttackMod(int iValue);
+	int GetNumWorkAttackMod() const;
+
+	void ChangeNumWonderDefenseMod(int iValue);
+	int GetNumWonderDefenseMod() const;
+
+	void ChangeNumWorkDefenseMod(int iValue);
+	int GetNumWorkDefenseMod() const;
+
+	void ChangeNumSpyStayAttackMod(int iValue);
+	int GetNumSpyStayAttackMod() const;
+
+	void ChangeNumSpyStayDefenseMod(int iValue);
+	int GetNumSpyStayDefenseMod() const;
+
+	void ChangeRangedSupportFireMod(int iValue);
+	int GetRangedSupportFireMod() const;
+
+	int GetMeleeAttackModifier() const;
+	void ChangeMeleeAttackModifier(int iValue);
+
+	int GetMeleeDefenseModifier() const;
+	void ChangeMeleeDefenseModifier(int iValue);
+
+	int GetDoFallBackAttackMod() const;
+	void ChangeDoFallBackAttackMod(int iValue);
+	int GetNumDoFallBackThisTurn() const;
+	void ChangeNumDoFallBackThisTurn(int iChange);
+	void ClearNumDoFallBackThisTurn();
+
+	int GetBeFallBackDefenseMod() const;
+	void ChangeBeFallBackDefenseMod(int iValue);
+	int GetNumBeFallBackThisTurn() const;
+	void ChangeNumBeFallBackThisTurn(int iChange);
+	void ClearNumBeFallBackThisTurn();
+
+	int GetNumOriginalCapitalAttackMod() const;
+	void ChangeNumOriginalCapitalAttackMod(int iValue);
+
+	int GetNumOriginalCapitalDefenseMod() const;
+	void ChangeNumOriginalCapitalDefenseMod(int iValue);
+
+	int GetOnCapitalLandAttackMod() const;
+	void ChangeOnCapitalLandAttackMod(int iValue);
+
+	int GetOutsideCapitalLandAttackMod() const;
+	void ChangeOutsideCapitalLandAttackMod(int iValue);
+
+	int GetOnCapitalLandDefenseMod() const;
+	void ChangeOnCapitalLandDefenseMod(int iValue);
+	
+	int GetOutsideCapitalLandDefenseMod() const;
+	void ChangeOutsideCapitalLandDefenseMod(int iValue);
+
+	int GetLostHitPointAttackMod() const;
+	void ChangeLostHitPointAttackMod(int iValue);
+
+	int GetLostHitPointDefenseMod() const;
+	void ChangeLostHitPointDefenseMod(int iValue);
+
+	int GetNearNumEnemyAttackMod() const;
+	void ChangeNearNumEnemyAttackMod(int iValue);
+
+	int GetNearNumEnemyDefenseMod() const;
+	void ChangeNearNumEnemyDefenseMod(int iValue);
+
+	int GetHeightAdvantageAttckMod() const;
+	void ChangeHeightAdvantageAttckMod(int iValue);
+	int GetHeightAdvantageAttckMod(const CvPlot& TargetPlot) const;
+
+	int GetExtraWoundedMod() const;
+	void ChangeExtraWoundedMod(int iValue);
+
+	int GetInterceptionDamageMod() const;
+	void ChangeInterceptionDamageMod(int iValue);
+
+	int GetAirSweepDamageMod() const;
+	void ChangeAirSweepDamageMod(int iValue);
 
 	int GetCombatStrengthChangeFromKilledUnits() const;
 	void ChangeCombatStrengthChangeFromKilledUnits(int iChange);
@@ -2241,7 +2438,6 @@ protected:
 	int m_iReconY;
 	int m_iReconCount;
 	int m_iGameTurnCreated;
-	bool m_bImmobile;
 	int m_iExperienceTimes100;
 	int m_iLevel;
 	int m_iCargo;
@@ -2699,6 +2895,16 @@ private:
 	int m_iSiegeKillCitizensPercent = 0;
 	int m_iSiegeKillCitizensFixed = 0;
 #endif
+	std::tr1::unordered_map<int, int> m_mapUnitCombatsPromotionValid;
+	std::tr1::array<int, NUM_YIELD_TYPES> m_aiInstantYieldPerReligionFollowerConverted;
+
+	FeatureTypeCounter m_featureInvisibleCount;
+	PromotionCounter m_removePromotionUpgrade;
+
+	LuaFormulaTypes m_eAttackChanceFromAttackDamageFormula = NO_LUA_FORMULA;
+	LuaFormulaTypes m_eMovementFromAttackDamageFormula = NO_LUA_FORMULA;
+	LuaFormulaTypes m_eHealPercentFromAttackDamageFormula = NO_LUA_FORMULA;
+
 	int m_iNumRangeBackWhenDefense = 0;
 	int m_iNumCanSplashDefender = 0;
 
@@ -2716,6 +2922,64 @@ private:
 	int m_iOutsideFriendlyLandsInflictDamageChange = 0;
 
 	int m_iPromotionMaintenanceCost = 0;
+	int m_iMultipleInitExperience = 0;
+	int m_iRangeAttackCostModifier = 0;
+	int m_iMovePercentCaptureCity = 0;
+	int m_iHealPercentCaptureCity = 0;
+	int m_iLostAllMovesAttackCity = 0;
+	int m_iCaptureEmenyPercent = 0;
+	int m_iCaptureEmenyExtraMax = 0;
+	int m_iCarrierEXPGivenModifier = 0;
+	int m_iDamageUnitFaithBonus = 0;
+	int m_iDamageCityFaithBonus = 0;
+	int m_iOriginalCapitalDamageFix = 0;
+	int m_iOriginalCapitalSpecialDamageFix = 0;
+	int m_iInsightEnemyDamageModifier = 0;
+	int m_iMilitaryMightMod = 0;
+	int m_iGroundAttackRange = 0;
+	int m_iNoResourcePunishment = 0;
+	int m_iImmueMeleeAttack = 0;
+	int m_iImmueRangedAttack = 0;
+	int m_iCanParadropMoved = 0;
+	int m_iCanParadropAnyWhere = 0;
+	int m_iCanPillageWithoutWar = 0;
+	int m_iImmobile = 0;
+	int m_iMoveLeftAttackMod = 0;
+	int m_iMoveUsedAttackMod = 0;
+	int m_iMoveLeftDefenseMod = 0;
+	int m_iMoveUsedDefenseMod = 0;
+	int m_iGoldenAgeMod = 0;
+	int m_iAntiHigherPopMod = 0;
+	int m_iNumAttacksMadeThisTurnAttackMod = 0;
+	int m_iNumSpyDefenseMod = 0;
+	int m_iNumSpyAttackMod = 0;
+	int m_iNumWonderDefenseMod = 0;
+	int m_iNumWonderAttackMod = 0;
+	int m_iNumWorkDefenseMod = 0;
+	int m_iNumWorkAttackMod = 0;
+	int m_iNumSpyStayDefenseMod = 0;
+	int m_iNumSpyStayAttackMod = 0;
+	int m_iRangedSupportFireMod = 0;
+	int m_iMeleeAttackModifier = 0;
+	int m_iMeleeDefenseModifier = 0;
+	int m_iDoFallBackAttackMod = 0;
+	int m_iNumDoFallBackThisTurn = 0;
+	int m_iBeFallBackDefenseMod = 0;
+	int m_iNumBeFallBackThisTurn = 0;
+	int m_iNumOriginalCapitalAttackMod = 0;
+	int m_iNumOriginalCapitalDefenseMod = 0;
+	int m_iOnCapitalLandAttackMod = 0;
+	int m_iOutsideCapitalLandAttackMod = 0;
+	int m_iOnCapitalLandDefenseMod = 0;
+	int m_iOutsideCapitalLandDefenseMod = 0;
+	int m_iLostHitPointAttackMod = 0;
+	int m_iLostHitPointDefenseMod = 0;
+	int m_iNearNumEnemyAttackMod = 0;
+	int m_iNearNumEnemyDefenseMod = 0;
+	int m_iHeightAdvantageAttckMod = 0;
+	int m_iExtraWoundedMod = 0;
+	int m_iInterceptionDamageMod = 0;
+	int m_iAirSweepDamageMod = 0;
 
 	int m_iCombatStrengthChangeFromKilledUnits = 0;
 	int m_iRangedCombatStrengthChangeFromKilledUnits = 0;
@@ -2758,7 +3022,7 @@ SYNC_ARCHIVE_VAR(int, m_iReconX)
 SYNC_ARCHIVE_VAR(int, m_iReconY)
 SYNC_ARCHIVE_VAR(int, m_iReconCount)
 SYNC_ARCHIVE_VAR(int, m_iGameTurnCreated)
-SYNC_ARCHIVE_VAR(bool, m_bImmobile)
+SYNC_ARCHIVE_VAR(int, m_iImmobile)
 SYNC_ARCHIVE_VAR(int, m_iExperienceTimes100)
 SYNC_ARCHIVE_VAR(int, m_iLevel)
 SYNC_ARCHIVE_VAR(int, m_iCargo)

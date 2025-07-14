@@ -10735,12 +10735,16 @@ void CvCity::addProductionExperience(CvUnit* pUnit, bool bHalveXP, bool bGoldPur
 		CvPromotionEntry* pkPromotionInfo = GC.getPromotionInfo(freePromotions[iI]);
 		if (pkPromotionInfo)
 		{
-			if ((pUnit->getUnitCombatType() != NO_UNITCOMBAT && pkPromotionInfo->GetUnitCombatClass(pUnit->getUnitCombatType()))
-				|| (::IsPromotionValidForCivilianUnitType(freePromotions[iI], pUnit->getUnitType())))
+			if(::IsPromotionValidForUnit(freePromotions[iI], *pUnit))
 			{
 				pUnit->setHasPromotion(freePromotions[iI], true);
 			}
 		}
+	}
+
+	if(pUnit->GetMultipleInitExperience() > 0)
+	{
+		pUnit->changeExperienceTimes100(pUnit->getExperienceTimes100() * pUnit->GetMultipleInitExperience() / 100);
 	}
 
 	pUnit->testPromotionReady();
@@ -13708,7 +13712,7 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 			}
 
 			// TERRA COTTA AWESOME
-			if (pBuildingInfo->GetInstantMilitaryIncrease())
+			if (pBuildingInfo->GetInstantMilitaryIncrease() > 0)
 			{
 				std::vector<UnitTypes> aExtraUnits;
 				std::vector<UnitAITypes> aExtraUnitAITypes;
@@ -13750,8 +13754,10 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 					}
 					else
 					{
+						bool bUnitImmobile = pNewUnit->IsImmobile();
 						pNewUnit->kill(false);
-						break;
+						// if this Unit is Immobile, it will Jump fault, but we should not stop loop
+						if (!bUnitImmobile) break;
 					}
 				}
 			}
@@ -27239,7 +27245,7 @@ void CvCity::SetRetroactivePromotion(PromotionTypes eIndex)
 				{
 					if (this == GetPlayer()->getCapitalCity())
 					{
-						if (((pLoopUnit->getUnitCombatType() != NO_UNITCOMBAT) && pkPromotionInfo->GetUnitCombatClass(pLoopUnit->getUnitCombatType())) || ::IsPromotionValidForCivilianUnitType(eIndex, pLoopUnit->getUnitType()))
+						if(::IsPromotionValidForUnit(eIndex, *pLoopUnit))
 						{
 							pLoopUnit->setHasPromotion(eIndex, true);
 						}
@@ -27248,7 +27254,7 @@ void CvCity::SetRetroactivePromotion(PromotionTypes eIndex)
 				else if (pLoopUnit->getOriginCity() != this)
 					continue;
 
-				if (((pLoopUnit->getUnitCombatType() != NO_UNITCOMBAT) && pkPromotionInfo->GetUnitCombatClass(pLoopUnit->getUnitCombatType())) || ::IsPromotionValidForCivilianUnitType(eIndex, pLoopUnit->getUnitType()))
+				if(::IsPromotionValidForUnit(eIndex, *pLoopUnit))
 				{
 					pLoopUnit->setHasPromotion(eIndex, true);
 				}

@@ -125,7 +125,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalOptions>/EHsc /d2noftol3 -Zm265 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/EHsc /d2noftol3 -Zm281 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -191,6 +191,7 @@
     <ClCompile Include="CvEventLog.cpp" />
     <ClCompile Include="CvGameCoreStructs.cpp" />
     <ClCompile Include="CvGreatPersonInfo.cpp" />
+    <ClCompile Include="CvIndependentPromotionInfo.cpp" />
     <ClCompile Include="CvLoggerCSV.cpp" />
     <ClCompile Include="CvLuaFormula.cpp" />
     <ClCompile Include="CvNuclearWinter.cpp" />
@@ -473,6 +474,7 @@
     <ClInclude Include="CvEnumMapSerialization.h" />
     <ClInclude Include="CvEnumsUtil.h" />
     <ClInclude Include="CvGameCoreStructs.h" />
+    <ClInclude Include="CvIndependentPromotionInfo.h" />
     <ClInclude Include="CvLoggerCSV.h" />
     <ClInclude Include="CvCitySpecializationAI.h" />
     <ClInclude Include="CvCityStrategyAI.h" />
