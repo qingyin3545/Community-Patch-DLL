@@ -309,6 +309,7 @@
     <ClCompile Include="Lua\CvLuaUnit.cpp">
       <Filter>interface</Filter>
     </ClCompile>
+    <ClCompile Include="CvCorruption.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\CvGameCoreDLLUtil\include\CvEnums.h" />
@@ -646,6 +647,7 @@
     <ClInclude Include="Lua\CvLuaTeamTech.h">
       <Filter>interface</Filter>
     </ClInclude>
+    <ClInclude Include="CvCorruption.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CvGameCoreDLL.rc" />

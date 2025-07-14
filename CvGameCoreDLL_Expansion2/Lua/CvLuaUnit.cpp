@@ -665,6 +665,10 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(IsOnTerrain);
 	Method(IsAdjacentToTerrain);
 	Method(IsWithinDistanceOfTerrain);
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	Method(GetPlotCorruptionScoreReport);
+#endif
 }
 //------------------------------------------------------------------------------
 const char* CvLuaUnit::GetTypeName()
@@ -6697,3 +6701,13 @@ LUAAPIIMPL(Unit, IsWithinDistanceOfResource)
 LUAAPIIMPL(Unit, IsOnTerrain)
 LUAAPIIMPL(Unit, IsAdjacentToTerrain)
 LUAAPIIMPL(Unit, IsWithinDistanceOfTerrain)
+
+#ifdef MOD_GLOBAL_CORRUPTION
+int CvLuaUnit::lGetPlotCorruptionScoreReport(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	CvString corruptionScoreReport = pkUnit->GetPlotCorruptionScoreReport();
+	lua_pushstring(L, corruptionScoreReport.c_str());
+	return 1;
+}
+#endif

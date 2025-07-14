@@ -775,6 +775,24 @@ protected:
 	static int lGetYieldFromDevelopment(lua_State* L);
 	static int lSetYieldFromDevelopment(lua_State* L);
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	LUAAPIEXTN(GetCorruptionScore, int);
+	LUAAPIEXTN(GetCorruptionLevel, int);
+	LUAAPIEXTN(UpdateCorruption);
+	LUAAPIEXTN(CalculateTotalCorruptionScore, int);
+	LUAAPIEXTN(CalculateCorruptionScoreFromDistance, int);
+	LUAAPIEXTN(CalculateCorruptionScoreFromCoastalBonus, int);
+	LUAAPIEXTN(CalculateCorruptionScoreModifierFromSpy, int);
+	LUAAPIEXTN(CalculateCorruptionScoreModifierFromTrait, int);
+	LUAAPIEXTN(GetCorruptionScoreChangeFromBuilding, int);
+	LUAAPIEXTN(GetCorruptionLevelChangeFromBuilding, int);
+	LUAAPIEXTN(CalculateCorruptionScoreFromResource, int);
+	LUAAPIEXTN(CalculateCorruptionScoreFromTrait, int);
+	LUAAPIEXTN(DecideCorruptionLevelForNormalCity, CorruptionLevelTypes, int);
+	LUAAPIEXTN(GetCorruptionScoreModifierFromPolicy, int);
+	LUAAPIEXTN(GetMaxCorruptionLevel, int);
+	LUAAPIEXTN(IsCorruptionLevelReduceByOne, bool);
+#endif
 	
 #endif
 };
