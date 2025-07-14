@@ -2098,7 +2098,7 @@ public:
 	int GetFeatureInvisibleCount(FeatureTypes eIndex) const;
 	bool IsFeatureInvisible(FeatureTypes eIndex) const;
 	void ChangeNumFeatureInvisible(FeatureTypes eIndex, int iChange);
-	bool IsInvisibleInvalid() const;
+	bool IsInvisibleInvalid(CvPlot *pPlot) const;
 
 	bool IsPromotionRemoveUpgrade(PromotionTypes eIndex) const;
 	void ChangeNumPromotionRemoveUpgrade(PromotionTypes eIndex, int iChange);

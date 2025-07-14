@@ -555,7 +555,7 @@ void CvPlot::updateVisibility()
 				{
 					// This unit has visibility rules, send a message that it needs to update itself.
 					CvInterfacePtr<ICvUnit1> pDllUnit(new CvDllUnit(pLoopUnit));
-					gDLL->GameplayUnitVisibility(pDllUnit.get(), (pLoopUnit->getTeam() == eActiveTeam)?true:(isInvisibleVisible(eActiveTeam, eInvisibleType) || pLoopUnit->IsInvisibleInvalid()), true, 0.01f);
+					gDLL->GameplayUnitVisibility(pDllUnit.get(), (pLoopUnit->getTeam() == eActiveTeam)?true:(isInvisibleVisible(eActiveTeam, eInvisibleType) || pLoopUnit->IsInvisibleInvalid(this)), true, 0.01f);
 				}
 				if (pLoopUnit->IsHiddenByNearbyUnit(this))
 				{
@@ -581,7 +581,7 @@ void CvPlot::updateVisibility()
 					{
 						// This unit has visibility rules, send a message that it needs to update itself.
 						CvInterfacePtr<ICvUnit1> pDllUnit(new CvDllUnit(pLoopUnit));
-						gDLL->GameplayUnitVisibility(pDllUnit.get(), (pLoopUnit->getTeam() == eActiveTeam)?true:(isInvisibleVisible(eActiveTeam, eInvisibleType) || pLoopUnit->IsInvisibleInvalid()), true, 0.01f);
+						gDLL->GameplayUnitVisibility(pDllUnit.get(), (pLoopUnit->getTeam() == eActiveTeam)?true:(isInvisibleVisible(eActiveTeam, eInvisibleType) || pLoopUnit->IsInvisibleInvalid(this)), true, 0.01f);
 					}
 					if (pLoopUnit->IsHiddenByNearbyUnit(this))
 					{
