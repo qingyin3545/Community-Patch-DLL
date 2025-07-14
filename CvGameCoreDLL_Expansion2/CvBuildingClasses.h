@@ -728,6 +728,8 @@ public:
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	int GetSiegeKillCitizensModifier() const;
 #endif
+	int GetForcedDamageValue() const;
+	int GetChangeDamageValue() const;
 
 private:
 	int m_iBuildingClassType;
@@ -1193,6 +1195,8 @@ private:
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	int m_iSiegeKillCitizensModifier = 0;
 #endif
+	int m_iForcedDamageValue = 0;
+	int m_iChangeDamageValue = 0;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
