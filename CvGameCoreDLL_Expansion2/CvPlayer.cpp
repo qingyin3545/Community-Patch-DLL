@@ -15137,7 +15137,12 @@ int CvPlayer::getProductionNeeded(BuildingTypes eTheBuilding) const
 
 	if (pkBuildingInfo->GetNumCityCostMod() > 0 && getNumCities() > 0)
 	{
-		iProductionModifier += (pkBuildingInfo->GetNumCityCostMod() * getNumCities());
+		int iNumCityCost = (pkBuildingInfo->GetNumCityCostMod() * getNumCities());
+		if(pkBuildingInfo->GetBuildingClassInfo().getMaxPlayerInstances() == 1)
+		{
+			iNumCityCost = iNumCityCost * (100 + GetPlayerPolicies()->GetNumericModifier(POLICYMOD_NATIONAL_WONDER_CITY_COST_MODIFIER)) / 100;
+		}
+		iProductionNeeded += iNumCityCost;
 	}
 
 	if (MOD_BALANCE_WORLD_WONDER_COST_INCREASE && isWorldWonderClass(pkBuildingInfo->GetBuildingClassInfo()))
@@ -19835,6 +19840,9 @@ void CvPlayer::DoUpdateTotalHappiness()
 	// Increase for each City Connection to the Capital
 	DoUpdateCityConnectionHappiness();
 	m_iHappiness += GetHappinessFromTradeRoutes();
+
+	// Increase from Faith
+	m_iHappiness += GetHappinessFromFaith();
 
 	if (MOD_ENABLE_ACHIEVEMENTS && isLocalPlayer() && GetExcessHappiness() >= 100)
 		gDLL->UnlockAchievement(ACHIEVEMENT_XP2_45);
@@ -42372,6 +42380,34 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_IMMIGRATION_IN_MODIFIER, pkPolicyInfo->GetImmigrationInModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_IMMIGRATION_OUT_MODIFIER, pkPolicyInfo->GetImmigrationOutModifier() * iChange);
 #endif
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_CAPITAL_TRADE_ROUTE_GOLD_CHANGE, pkPolicyInfo->GetCapitalTradeRouteGoldChange() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_CAPITAL_TRADE_ROUTE_RANGE_CHANGE, pkPolicyInfo->GetCapitalTradeRouteRangeChange() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NATIONAL_WONDER_CITY_COST_MODIFIER, pkPolicyInfo->GetNationalWonderCityCostModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_GLOBAL_HAPPINESS_FROM_FAITH_PERCENT, pkPolicyInfo->GetGlobalHappinessFromFaithPercent() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_HAPPINESS_PER_RELIGION_IN_CITY, pkPolicyInfo->GetHappinessPerReligionInCity() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_MINOR_BULLY_INFLUENCE_LOSS_MODIFIER, pkPolicyInfo->GetMinorBullyInfluenceLossModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_MINOR_LOCAL_BULLY_SCORE_MODIFIER, pkPolicyInfo->GetMinorLocalBullyScoreModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_MINOR_ALLY_BULLY_SCORE_MODIFIER, pkPolicyInfo->GetMinorAllyBullyScoreModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_HAPPINESS_IN_WLTKD_CITIES, pkPolicyInfo->GetHappinessInWLTKDCities() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_WATER_BUILD_SPEED_MODIFIER, pkPolicyInfo->GetWaterBuildSpeedModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_DEEP_WATER_NAVAL_STRENGTH_CULTURE_MODIFIER, pkPolicyInfo->GetDeepWaterNavalStrengthCultureModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_SETTLER_POP_CONSUME, pkPolicyInfo->GetSettlerPopConsume() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_IDEOLOGY_PRESSURE_MODIFIER, pkPolicyInfo->GetIdeologyPressureModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_IDEOLOGY_UNHAPPINESS_MODIFIER, pkPolicyInfo->GetIdeologyUnhappinessModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_DIFFERENT_IDEOLOGY_TOURISM_MODIFIER, pkPolicyInfo->GetDifferentIdeologyTourismModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_RIGGING_ELECTION_INFLUENCE_MODIFIER, pkPolicyInfo->GetRiggingElectionInfluenceModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NUM_SPY_LEVEL_UP_WHEN_RIGGING, pkPolicyInfo->GetSpyLevelUpWhenRigging() ? iChange : 0);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NULLIFY_INFLUENCE_MODIFIER, pkPolicyInfo->GetNullifyInfluenceModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_DIPLOMAT_PROPAGANDA_MODIFIER, pkPolicyInfo->GetDiplomatPropagandaModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_RESISTANCE_MODIFIER, pkPolicyInfo->GetResistanceModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_EXTRA_SPIES, pkPolicyInfo->GetExtraSpies() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_SCIENCE_BEAKER_MOD, pkPolicyInfo->GetScienceBeakerMod() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_PRODUCTION_BEAKER_MOD, pkPolicyInfo->GetProductionBeakerMod() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_ORIGINAL_CAPITAL_CAPTURE_TECH, pkPolicyInfo->GetOriginalCapitalCaptureTech() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_ORIGINAL_CAPITAL_CAPTURE_POLICY, pkPolicyInfo->GetOriginalCapitalCapturePolicy() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_ORIGINAL_CAPITAL_CAPTURE_GREAT_PERSON, pkPolicyInfo->GetOriginalCapitalCaptureGreatPerson() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_RELIGION_PRODUCTION_MODIFIER, pkPolicyInfo->GetReligionProductionModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NUM_UPGRADE_ALL_TERRITORY, pkPolicyInfo->GetUpgradeAllTerritory() ? iChange : 0);
 
 #ifdef MOD_GLOBAL_WAR_CASUALTIES
 	ChangeWarCasualtiesModifier(pkPolicyInfo->GetWarCasualtiesModifier() * iChange);
@@ -42783,6 +42819,7 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 		ChangeNumCitiesFreeCultureBuilding(pkPolicyInfo->GetNumCitiesFreeCultureBuilding());
 		ChangeNumCitiesFreeFoodBuilding(pkPolicyInfo->GetNumCitiesFreeFoodBuilding());
 
+		int iInstanceFoodThresholdPercent = pkPolicyInfo->GetInstantFoodThresholdPercent();
 		for (CvCity* pLoopCity = firstCity(&iLoop); pLoopCity != NULL; pLoopCity = nextCity(&iLoop))
 		{
 			// Grant free culture/food buildings
@@ -42796,6 +42833,11 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 			if (pkPolicyInfo->GetFreePopulationCapital() > 0 && pLoopCity->isCapital())
 			{
 				pLoopCity->changePopulation(pkPolicyInfo->GetFreePopulationCapital(), true, true);
+			}
+
+			if (iInstanceFoodThresholdPercent > 0)
+			{
+				pLoopCity->changeFoodTimes100(iInstanceFoodThresholdPercent * pLoopCity->growthThreshold());
 			}
 		}
 
@@ -50197,6 +50239,14 @@ int CvPlayer::GetNumWorldWonders()
 		}
 	}
 	return iCount;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetHappinessFromFaith() const
+{
+	int iModifier = GetPlayerPolicies()->GetNumericModifier(POLICYMOD_GLOBAL_HAPPINESS_FROM_FAITH_PERCENT);
+	if (iModifier == 0) return 0;
+	return iModifier * GetFaith() / 100;
 }
 
 //	--------------------------------------------------------------------------------

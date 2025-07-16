@@ -1590,6 +1590,8 @@ void CvLuaPlayer::PushMethods(lua_State* L, int t)
 	Method(GetUnitCountFromHasPromotion);
 	Method(GetUnitsListFromHasPromotion);
 	Method(GetNumOtherMajorCapitals);
+
+	Method(GetHappinessFromFaith);
 }
 //------------------------------------------------------------------------------
 void CvLuaPlayer::HandleMissingInstance(lua_State* L)
@@ -19624,3 +19626,6 @@ int CvLuaPlayer::lGetNumOtherMajorCapitals(lua_State* L)
 	lua_pushinteger(L, pkPlayer->GetNumCapitalCities());
 	return 1;
 }
+
+//------------------------------------------------------------------------------
+LUAAPIIMPL(Player, GetHappinessFromFaith)
