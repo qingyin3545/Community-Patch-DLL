@@ -513,6 +513,35 @@ public:
 #endif
 	std::vector<PolicyResourceInfo>& GetCityResources();
 
+	int GetCapitalTradeRouteGoldChange() const;
+	int GetCapitalTradeRouteRangeChange() const;
+	int GetInstantFoodThresholdPercent() const;
+	int GetNationalWonderCityCostModifier() const;
+	int GetGlobalHappinessFromFaithPercent() const;
+	int GetHappinessPerReligionInCity() const;
+	int GetMinorBullyInfluenceLossModifier() const;
+	int GetMinorLocalBullyScoreModifier() const;
+	int GetMinorAllyBullyScoreModifier() const;
+	int GetHappinessInWLTKDCities() const;
+	int GetWaterBuildSpeedModifier() const;
+	int GetDeepWaterNavalStrengthCultureModifier() const;
+	int GetSettlerPopConsume() const;
+	int GetIdeologyPressureModifier() const;
+	int GetIdeologyUnhappinessModifier() const;
+	int GetDifferentIdeologyTourismModifier() const;
+	int GetRiggingElectionInfluenceModifier() const;
+	bool GetSpyLevelUpWhenRigging() const;
+	int GetNullifyInfluenceModifier() const;
+	int GetDiplomatPropagandaModifier() const;
+	int GetResistanceModifier() const;
+	int GetExtraSpies() const;
+	int GetScienceBeakerMod() const;
+	int GetProductionBeakerMod() const;
+	int GetOriginalCapitalCaptureTech() const;
+	int GetOriginalCapitalCapturePolicy() const;
+	int GetOriginalCapitalCaptureGreatPerson() const;
+	int GetReligionProductionModifier() const;
+	bool GetUpgradeAllTerritory() const;
 private:
 	int m_iTechPrereq;
 	int m_iCultureCost;
@@ -939,6 +968,36 @@ private:
 	int m_iResourceCityConnectionTradeRouteGoldModifier = 0;
 #endif
 	std::vector<PolicyResourceInfo> m_vCityResources;
+
+	int m_iCapitalTradeRouteGoldChange = 0;
+	int m_iCapitalTradeRouteRangeChange = 0;
+	int m_iInstantFoodThresholdPercent = 0;
+	int m_iNationalWonderCityCostModifier = 0;
+	int m_iGlobalHappinessFromFaithPercent = 0;
+	int m_iHappinessPerReligionInCity = 0;
+	int m_iMinorBullyInfluenceLossModifier = 0;
+	int m_iMinorLocalBullyScoreModifier = 0;
+	int m_iMinorAllyBullyScoreModifier = 0;
+	int m_iHappinessInWLTKDCities = 0;
+	int m_iWaterBuildSpeedModifier = 0;
+	int m_iDeepWaterNavalStrengthCultureModifier = 0;
+	int m_iSettlerPopConsume = 0;
+	int m_iIdeologyPressureModifier = 0;
+	int m_iIdeologyUnhappinessModifier = 0;
+	int m_iDifferentIdeologyTourismModifier = 0;
+	int m_iRiggingElectionInfluenceModifier = 0;
+	bool m_bSpyLevelUpWhenRigging = false;
+	int m_iNullifyInfluenceModifier = 0;
+	int m_iDiplomatPropagandaModifier = 0;
+	int m_iResistanceModifier = 0;
+	int m_iExtraSpies = 0;
+	int m_iScienceBeakerMod = 0;
+	int m_iProductionBeakerMod = 0;
+	int m_iOriginalCapitalCaptureTech = 0;
+	int m_iOriginalCapitalCapturePolicy = 0;
+	int m_iOriginalCapitalCaptureGreatPerson = 0;
+	int m_iReligionProductionModifier = 0;
+	bool m_bUpgradeAllTerritory = false;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1108,6 +1167,35 @@ enum CLOSED_ENUM PolicyModifierType
 	POLICYMOD_IMMIGRATION_IN_MODIFIER,
 	POLICYMOD_IMMIGRATION_OUT_MODIFIER,
 #endif
+	POLICYMOD_CAPITAL_TRADE_ROUTE_GOLD_CHANGE,
+	POLICYMOD_CAPITAL_TRADE_ROUTE_RANGE_CHANGE,
+	POLICYMOD_NATIONAL_WONDER_CITY_COST_MODIFIER,
+	POLICYMOD_GLOBAL_HAPPINESS_FROM_FAITH_PERCENT,
+	POLICYMOD_HAPPINESS_PER_RELIGION_IN_CITY,
+	POLICYMOD_MINOR_BULLY_INFLUENCE_LOSS_MODIFIER,
+	POLICYMOD_MINOR_LOCAL_BULLY_SCORE_MODIFIER,
+	POLICYMOD_MINOR_ALLY_BULLY_SCORE_MODIFIER,
+	POLICYMOD_HAPPINESS_IN_WLTKD_CITIES,
+	
+	POLICYMOD_WATER_BUILD_SPEED_MODIFIER,
+	POLICYMOD_DEEP_WATER_NAVAL_STRENGTH_CULTURE_MODIFIER,
+	POLICYMOD_SETTLER_POP_CONSUME,
+	POLICYMOD_IDEOLOGY_PRESSURE_MODIFIER,
+	POLICYMOD_IDEOLOGY_UNHAPPINESS_MODIFIER,
+	POLICYMOD_DIFFERENT_IDEOLOGY_TOURISM_MODIFIER,
+	POLICYMOD_RIGGING_ELECTION_INFLUENCE_MODIFIER,
+	POLICYMOD_NUM_SPY_LEVEL_UP_WHEN_RIGGING,
+	POLICYMOD_NULLIFY_INFLUENCE_MODIFIER,
+	POLICYMOD_DIPLOMAT_PROPAGANDA_MODIFIER,
+	POLICYMOD_RESISTANCE_MODIFIER,
+	POLICYMOD_EXTRA_SPIES,
+	POLICYMOD_SCIENCE_BEAKER_MOD,
+	POLICYMOD_PRODUCTION_BEAKER_MOD,
+	POLICYMOD_ORIGINAL_CAPITAL_CAPTURE_TECH,
+	POLICYMOD_ORIGINAL_CAPITAL_CAPTURE_POLICY,
+	POLICYMOD_ORIGINAL_CAPITAL_CAPTURE_GREAT_PERSON,
+	POLICYMOD_RELIGION_PRODUCTION_MODIFIER,
+	POLICYMOD_NUM_UPGRADE_ALL_TERRITORY,
 	NUM_POLICY_MODIFIER_TYPE
 };
 

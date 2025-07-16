@@ -3209,6 +3209,12 @@ int CvPlayerTrade::GetTradeConnectionPolicyValueTimes100(const TradeConnection& 
 			iValue += GET_PLAYER(kTradeConnection.m_eOriginOwner).GetPlayerPolicies()->GetNumericModifier(POLICYMOD_SHARED_IDEOLOGY_TRADE_CHANGE) * 100;
 		}
 
+		int iCapitalPolicyChanges = pOwnerPlayerPolicies->GetNumericModifier(POLICYMOD_CAPITAL_TRADE_ROUTE_GOLD_CHANGE);
+		if(iCapitalPolicyChanges != 0 && GET_PLAYER(kTradeConnection.m_eOriginOwner).getCapitalCityID() == kTradeConnection.m_iOriginID)
+		{
+			iValue += iCapitalPolicyChanges;
+		}
+
 		// city state bonus
 		if (GET_PLAYER(kTradeConnection.m_eDestOwner).isMinorCiv())
 		{
@@ -5290,6 +5296,10 @@ int CvPlayerTrade::GetTradeRouteRange (DomainTypes eDomain, CvCity* pOriginCity)
 			break;
 		default:
 			UNREACHABLE(); // Not a trade domain.
+		}
+		if(pOriginCity->isCapital())
+		{
+			iExtendedRange += m_pPlayer->GetPlayerPolicies()->GetNumericModifier(POLICYMOD_CAPITAL_TRADE_ROUTE_RANGE_CHANGE);
 		}
 	}
 

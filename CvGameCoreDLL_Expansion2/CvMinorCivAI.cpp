@@ -15976,6 +15976,8 @@ int CvMinorCivAI::CalculateBullyScore(PlayerTypes eBullyPlayer, bool bHeavyTribu
 	// **************************
 
 	int iGlobalMilitaryScore = 0;
+	PlayerTypes eAllyPlayer = GetAlly();
+	int iAllyMilitaryScore = 0;
 
 	if (MOD_BALANCE_VP)
 	{
@@ -15989,6 +15991,11 @@ int CvMinorCivAI::CalculateBullyScore(PlayerTypes eBullyPlayer, bool bHeavyTribu
 
 		int iMilitaryMightPercent = 100 * GET_PLAYER(eBullyPlayer).GetMilitaryMight() / max(1, iTotalMilitaryMight);
 		iGlobalMilitaryScore = iMilitaryMightPercent * 50 / 100;
+		if(eAllyPlayer != NO_PLAYER)
+		{
+			iAllyMilitaryScore = 100 * GET_PLAYER(eAllyPlayer).GetMilitaryMight() / max(1, iTotalMilitaryMight);
+			iAllyMilitaryScore = iAllyMilitaryScore * 50 / 100;
+		}
 	}
 	else
 	{
@@ -16006,9 +16013,21 @@ int CvMinorCivAI::CalculateBullyScore(PlayerTypes eBullyPlayer, bool bHeavyTribu
 			{
 				float fRankRatio = (float)(viMilitaryRankings.size() - iRanking) / (float)(viMilitaryRankings.size());
 				iGlobalMilitaryScore = (int)(fRankRatio * 75); // A score between 75*(1 / num majors alive) and 75, with the highest rank major getting 75
-				break;
+			}
+			else if(viMilitaryRankings.GetElement(iRanking) == eAllyPlayer)
+			{
+				float fRankRatio = (float)(viMilitaryRankings.size() - iRanking) / (float)(viMilitaryRankings.size());
+				iAllyMilitaryScore = (int)(fRankRatio * 75); // A score between 75*(1 / num majors alive) and 75, with the highest rank major getting 75
 			}
 		}
+	}
+
+	int iAllyBullyScoreModifier = 0;
+	if(eAllyPlayer != NO_PLAYER && eAllyPlayer != eBullyPlayer)
+	{
+		iAllyBullyScoreModifier = GET_PLAYER(eAllyPlayer).GetPlayerPolicies()->GetNumericModifier(POLICYMOD_MINOR_ALLY_BULLY_SCORE_MODIFIER);
+		iGlobalMilitaryScore -= iAllyMilitaryScore * iAllyBullyScoreModifier / 100;
+		iGlobalMilitaryScore = std::max(0, iGlobalMilitaryScore);
 	}
 
 	iGlobalMilitaryScore *= 100 + GET_PLAYER(eBullyPlayer).GetPlayerTraits()->GetBullyMilitaryStrengthModifier();
@@ -16078,6 +16097,7 @@ int CvMinorCivAI::CalculateBullyScore(PlayerTypes eBullyPlayer, bool bHeavyTribu
 	// **************************
 
 	int iPoliciesScore = iScore * GET_PLAYER(eBullyPlayer).GetPlayerPolicies()->GetNumericModifier(POLICYMOD_MINOR_BULLY_SCORE_MODIFIER) / 100;
+	iPoliciesScore += iLocalMilitaryScore * GET_PLAYER(eBullyPlayer).GetPlayerPolicies()->GetNumericModifier(POLICYMOD_MINOR_LOCAL_BULLY_SCORE_MODIFIER) / 100;
 	if (sTooltipSink && iPoliciesScore != 0)
 	{
 		Localization::String strPositiveFactor = Localization::Lookup("TXT_KEY_POP_CSTATE_BULLY_FACTOR_POSITIVE");
@@ -16578,6 +16598,12 @@ void CvMinorCivAI::DoMajorBullyGold(PlayerTypes eBully, int iGold)
 		int iCurrentInfluence = GetEffectiveFriendshipWithMajorTimes100(eBully);
 		int iRestingInfluence = GetRestingPointChange(eBully) * 100;
 		int iInfluenceChange = /*-1500 in CP, -3000 in VP*/ GD_INT_GET(MINOR_FRIENDSHIP_DROP_BULLY_GOLD_SUCCESS);
+		int iInfluenceModifier = GET_PLAYER(eBully).GetPlayerPolicies()->GetNumericModifier(POLICYMOD_MINOR_BULLY_INFLUENCE_LOSS_MODIFIER);
+		if (iInfluenceModifier > 0)
+		{
+			iInfluenceChange *= iInfluenceModifier;
+			iInfluenceChange /= 100;
+		}
 		if (MOD_BALANCE_VP && iCurrentInfluence >= iRestingInfluence)
 		{
 			iInfluenceChange -= iCurrentInfluence - iRestingInfluence;
@@ -16908,6 +16934,12 @@ void CvMinorCivAI::DoMajorBullyUnit(PlayerTypes eBully, UnitTypes eUnitType)
 				int iCurrentInfluence = GetEffectiveFriendshipWithMajorTimes100(eBully);
 				int iRestingInfluence = GetRestingPointChange(eBully) * 100;
 				int iInfluenceChange = /*-5000 in CP, -6000 in VP*/ GD_INT_GET(MINOR_FRIENDSHIP_DROP_BULLY_WORKER_SUCCESS);
+				int iInfluenceModifier = GET_PLAYER(eBully).GetPlayerPolicies()->GetNumericModifier(POLICYMOD_MINOR_BULLY_INFLUENCE_LOSS_MODIFIER);
+				if (iInfluenceModifier > 0)
+				{
+					iInfluenceChange *= iInfluenceModifier;
+					iInfluenceChange /= 100;
+				}
 				if (iCurrentInfluence >= iRestingInfluence)
 				{
 					iInfluenceChange -= iCurrentInfluence - iRestingInfluence;
