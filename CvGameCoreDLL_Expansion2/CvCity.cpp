@@ -19884,6 +19884,10 @@ int CvCity::GetHappinessFromPolicies(int iPopMod) const
 	}
 
 	iTotalHappiness += kPlayer.GetPlayerPolicies()->GetNumericModifier(POLICYMOD_EXTRA_HAPPINESS_PER_CITY) + kPlayer.GetExtraHappinessPerCity();
+	if(GetWeLoveTheKingDayCounter() > 0)
+	{
+		iTotalHappiness += kPlayer.GetPlayerPolicies()->GetNumericModifier(POLICYMOD_HAPPINESS_IN_WLTKD_CITIES);
+	}
 
 	int iHappinessPerXPopulation = kPlayer.GetHappinessPerXPopulation();
 
@@ -19897,6 +19901,9 @@ int CvCity::GetHappinessFromPolicies(int iPopMod) const
 	{
 		iTotalHappiness += (kPlayer.GetTrade()->GetNumberOfTradeRoutesFromCity(this) * kPlayer.GetHappinessPerActiveTradeRoute());
 	}
+
+	int iHappinessPerReligions = kPlayer.GetPlayerPolicies()->GetNumericModifier(POLICYMOD_HAPPINESS_PER_RELIGION_IN_CITY);
+	if (iHappinessPerReligions != 0) iTotalHappiness += iHappinessPerReligions * GetCityReligions()->GetNumReligionsWithFollowers();
 
 	return iTotalHappiness;
 }

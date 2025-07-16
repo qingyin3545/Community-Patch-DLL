@@ -2989,6 +2989,7 @@ public:
 	UnitTypes GetCivUnitWithDefault(UnitClassTypes eUnitClass) const;
 
 	int GetNumWorldWonders();
+	int GetHappinessFromFaith() const;
 
 	void DoCombatStrengthChangeFromKill(CvUnit* pAttackingUnit, CvUnit* pDefendingUnit, int iX, int iY);
 
