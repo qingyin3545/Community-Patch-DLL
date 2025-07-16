@@ -1588,6 +1588,8 @@ protected:
 	LUAAPIEXTN(GetUnitCountFromHasPromotion, int, ePromotionType);
 	LUAAPIEXTN(GetUnitsListFromHasPromotion, table, ePromotionType);
 	LUAAPIEXTN(GetNumOtherMajorCapitals, int);
+
+	LUAAPIEXTN(GetHappinessFromFaith, int);
 };
 
 namespace CvLuaArgs
