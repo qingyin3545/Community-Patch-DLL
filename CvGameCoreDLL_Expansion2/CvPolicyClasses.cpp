@@ -1414,6 +1414,35 @@ bool CvPolicyEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility&
 
 		pResults->Reset();
 	}
+	m_iCapitalTradeRouteGoldChange = kResults.GetInt("CapitalTradeRouteGoldChange");
+	m_iCapitalTradeRouteRangeChange = kResults.GetInt("CapitalTradeRouteRangeChange");
+	m_iInstantFoodThresholdPercent = kResults.GetInt("InstantFoodThresholdPercent");
+	m_iNationalWonderCityCostModifier = kResults.GetInt("NationalWonderCityCostModifier");
+	m_iGlobalHappinessFromFaithPercent = kResults.GetInt("GlobalHappinessFromFaithPercent");
+	m_iHappinessPerReligionInCity = kResults.GetInt("HappinessPerReligionInCity");
+	m_iMinorBullyInfluenceLossModifier = kResults.GetInt("MinorBullyInfluenceLossModifier");
+	m_iMinorLocalBullyScoreModifier = kResults.GetInt("MinorLocalBullyScoreModifier");
+	m_iMinorAllyBullyScoreModifier = kResults.GetInt("MinorAllyBullyScoreModifier");
+	m_iHappinessInWLTKDCities = kResults.GetInt("HappinessInWLTKDCities");
+	m_iWaterBuildSpeedModifier = kResults.GetInt("WaterBuildSpeedModifier");
+	m_iDeepWaterNavalStrengthCultureModifier = kResults.GetInt("DeepWaterNavalStrengthCultureModifier");
+	m_iSettlerPopConsume = kResults.GetInt("SettlerPopConsume");
+	m_iIdeologyPressureModifier = kResults.GetInt("IdeologyPressureModifier");
+	m_iIdeologyUnhappinessModifier = kResults.GetInt("IdeologyUnhappinessModifier");
+	m_iDifferentIdeologyTourismModifier = kResults.GetInt("DifferentIdeologyTourismModifier");
+	m_iRiggingElectionInfluenceModifier = kResults.GetInt("RiggingElectionInfluenceModifier");
+	m_bSpyLevelUpWhenRigging = kResults.GetBool("SpyLevelUpWhenRigging");
+	m_iNullifyInfluenceModifier = kResults.GetInt("NullifyInfluenceModifier");
+	m_iDiplomatPropagandaModifier = kResults.GetInt("DiplomatPropagandaModifier");
+	m_iResistanceModifier = kResults.GetInt("ResistanceModifier");
+	m_iExtraSpies = kResults.GetInt("ExtraSpies");
+	m_iScienceBeakerMod = kResults.GetInt("ScienceBeakerMod");
+	m_iProductionBeakerMod = kResults.GetInt("ProductionBeakerMod");
+	m_iOriginalCapitalCaptureTech = kResults.GetInt("OriginalCapitalCaptureTech");
+	m_iOriginalCapitalCapturePolicy = kResults.GetInt("OriginalCapitalCapturePolicy");
+	m_iOriginalCapitalCaptureGreatPerson = kResults.GetInt("OriginalCapitalCaptureGreatPerson");
+	m_iReligionProductionModifier = kResults.GetInt("ReligionProductionModifier");
+	m_bUpgradeAllTerritory = kResults.GetBool("UpgradeAllTerritory");
 
 	return true;
 }
@@ -3792,6 +3821,123 @@ int CvPolicyEntry::GetResourceCityConnectionTradeRouteGoldModifier() const
 std::vector<PolicyResourceInfo>& CvPolicyEntry::GetCityResources()
 {
 	return m_vCityResources;
+}
+
+int CvPolicyEntry::GetCapitalTradeRouteGoldChange() const
+{
+	return m_iCapitalTradeRouteGoldChange;
+}
+int CvPolicyEntry::GetCapitalTradeRouteRangeChange() const
+{
+	return m_iCapitalTradeRouteRangeChange;
+}
+int CvPolicyEntry::GetInstantFoodThresholdPercent() const
+{
+	return m_iInstantFoodThresholdPercent;
+}
+int CvPolicyEntry::GetNationalWonderCityCostModifier() const
+{
+	return m_iNationalWonderCityCostModifier;
+}
+int CvPolicyEntry::GetGlobalHappinessFromFaithPercent() const
+{
+	return m_iGlobalHappinessFromFaithPercent;
+}
+int CvPolicyEntry::GetHappinessPerReligionInCity() const
+{
+	return m_iHappinessPerReligionInCity;
+}
+int CvPolicyEntry::GetMinorBullyInfluenceLossModifier() const
+{
+	return m_iMinorBullyInfluenceLossModifier;
+}
+int CvPolicyEntry::GetMinorLocalBullyScoreModifier() const
+{
+	return m_iMinorLocalBullyScoreModifier;
+}
+int CvPolicyEntry::GetMinorAllyBullyScoreModifier() const
+{
+	return m_iMinorAllyBullyScoreModifier;
+}
+int CvPolicyEntry::GetHappinessInWLTKDCities() const
+{
+	return m_iHappinessInWLTKDCities;
+}
+int CvPolicyEntry::GetWaterBuildSpeedModifier() const
+{
+	return m_iWaterBuildSpeedModifier;
+}
+int CvPolicyEntry::GetDeepWaterNavalStrengthCultureModifier() const
+{
+	return m_iDeepWaterNavalStrengthCultureModifier;
+}
+int CvPolicyEntry::GetSettlerPopConsume() const
+{
+	return m_iSettlerPopConsume;
+}
+int CvPolicyEntry::GetIdeologyPressureModifier() const
+{
+	return m_iIdeologyPressureModifier;
+}
+int CvPolicyEntry::GetIdeologyUnhappinessModifier() const
+{
+	return m_iIdeologyUnhappinessModifier;
+}
+int CvPolicyEntry::GetDifferentIdeologyTourismModifier() const
+{
+	return m_iDifferentIdeologyTourismModifier;
+}
+int CvPolicyEntry::GetRiggingElectionInfluenceModifier() const
+{
+	return m_iRiggingElectionInfluenceModifier;
+}
+bool CvPolicyEntry::GetSpyLevelUpWhenRigging() const
+{
+	return m_bSpyLevelUpWhenRigging;
+}
+int CvPolicyEntry::GetNullifyInfluenceModifier() const
+{
+	return m_iNullifyInfluenceModifier;
+}
+int CvPolicyEntry::GetDiplomatPropagandaModifier() const
+{
+	return m_iDiplomatPropagandaModifier;
+}
+int CvPolicyEntry::GetResistanceModifier() const
+{
+	return m_iResistanceModifier;
+}
+int CvPolicyEntry::GetExtraSpies() const
+{
+	return m_iExtraSpies;
+}
+int CvPolicyEntry::GetScienceBeakerMod() const
+{
+	return m_iScienceBeakerMod;
+}
+int CvPolicyEntry::GetProductionBeakerMod() const
+{
+	return m_iProductionBeakerMod;
+}
+int CvPolicyEntry::GetOriginalCapitalCaptureTech() const
+{
+	return m_iOriginalCapitalCaptureTech;
+}
+int CvPolicyEntry::GetOriginalCapitalCapturePolicy() const
+{
+	return m_iOriginalCapitalCapturePolicy;
+}
+int CvPolicyEntry::GetOriginalCapitalCaptureGreatPerson() const
+{
+	return m_iOriginalCapitalCaptureGreatPerson;
+}
+int CvPolicyEntry::GetReligionProductionModifier() const
+{
+	return m_iReligionProductionModifier;
+}
+bool CvPolicyEntry::GetUpgradeAllTerritory() const
+{
+	return m_bUpgradeAllTerritory;
 }
 
 //=====================================
