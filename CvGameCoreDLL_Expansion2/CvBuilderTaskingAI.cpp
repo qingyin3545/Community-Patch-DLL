@@ -1281,7 +1281,7 @@ int CvBuilderTaskingAI::GetTurnsToBuild(const CvUnit* pUnit, BuildTypes eBuild, 
 	if (iBuildLeft == 0)
 		return 0;
 
-	int iBuildRate = pUnit ? pUnit->workRate(true) : 1; // If no unit, return total build time
+	int iBuildRate = pUnit ? pUnit->workRate(true, eBuild) : 1; // If no unit, return total build time
 
 	if (iBuildRate == 0)
 	{

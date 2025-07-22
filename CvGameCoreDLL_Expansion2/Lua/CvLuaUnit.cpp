@@ -2805,8 +2805,9 @@ int CvLuaUnit::lWorkRate(lua_State* L)
 {
 	CvUnit* pkUnit = GetInstance(L);
 	const bool bMax = lua_toboolean(L, 2);
+	const BuildTypes eBuild = (BuildTypes)lua_tointeger(L, 3);
 
-	const int iResult = pkUnit->workRate(bMax);
+	const int iResult = pkUnit->workRate(bMax, eBuild);
 	lua_pushinteger(L, iResult);
 	return 1;
 }
