@@ -29912,6 +29912,13 @@ CvUnit* CvCity::CreateUnit(UnitTypes eUnitType, UnitAITypes eAIType, UnitCreatio
 
 	doUnitCompletionYields(pUnit, eReason);
 
+	int iStrength = std::max(pUnit->GetBaseCombatStrength(), pUnit->GetBaseRangedCombatStrength());
+	if (iStrength > 0)
+	{
+		GET_PLAYER(getOwner()).doInstantYield(INSTANT_YIELD_TYPE_CITY_CREATE_UNIT, false, NO_GREATPERSON, NO_BUILDING, iStrength, 
+			false, NO_PLAYER, NULL, false, this, false, true, false, NO_YIELD, pUnit, NO_TERRAIN, NULL, NULL, NULL);
+	}
+
 	return pUnit;
 }
 
