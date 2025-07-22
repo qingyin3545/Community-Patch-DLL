@@ -13330,7 +13330,7 @@ bool CvUnit::build(BuildTypes eBuild)
 		}
 	}
 
-	int iWorkRateWithMoves = workRate(false);
+	int iWorkRateWithMoves = workRate(false, eBuild);
 
 	int iStartedYet = pPlot->getBuildProgress(eBuild);
 
@@ -15727,7 +15727,7 @@ bool CvUnit::IsWorking() const
 }
 
 //	--------------------------------------------------------------------------------
-int CvUnit::workRate(bool bMax, BuildTypes /*eBuild*/) const
+int CvUnit::workRate(bool bMax, BuildTypes eBuild) const
 {
 	VALIDATE_OBJECT();
 	if (!bMax && !canMove())
@@ -15769,6 +15769,11 @@ int CvUnit::workRate(bool bMax, BuildTypes /*eBuild*/) const
 	else if (kPlayer.isMinorCiv())
 	{
 		Modifiers += GC.getGame().getHandicapInfo().getCityStateWorkRateModifier();
+	}
+
+	if(eBuild != NO_BUILD)
+	{
+		if(GC.getBuildInfo(eBuild)->IsWater()) Modifiers += kPlayer.GetPlayerPolicies()->GetNumericModifier(POLICYMOD_WATER_BUILD_SPEED_MODIFIER);
 	}
 
 	iRate *= Modifiers + 100;
