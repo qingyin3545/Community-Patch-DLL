@@ -26594,6 +26594,14 @@ void CvPlayer::doInstantYield(InstantYieldType iType, bool bCityFaith, GreatPers
 					iValue = pLoopCity->GetInstantYieldFromWLTKDStart(eYield);
 					break;
 				}
+				case INSTANT_YIELD_TYPE_CITY_CREATE_UNIT:
+				{
+					if (eYield == YIELD_CULTURE && pUnit && pUnit->getDomainType() == DOMAIN_SEA && !pUnit->isHasPromotion((PromotionTypes)GD_INT_GET(PROMOTION_OCEAN_IMPASSABLE)))
+					{
+						int iModifier = GetPlayerPolicies()->GetNumericModifier(POLICYMOD_DEEP_WATER_NAVAL_STRENGTH_CULTURE_MODIFIER);
+						if (iModifier > 0) iValue = iPassYield * iModifier / 100;
+					}
+				}
 			}
 
 			//Now, let's apply these yields here as total yields.
@@ -27633,6 +27641,13 @@ void CvPlayer::doInstantYield(InstantYieldType iType, bool bCityFaith, GreatPers
 					addInstantYieldText(iType, localizedText.toUTF8());
 				}
 				return;
+			}
+			case INSTANT_YIELD_TYPE_CITY_CREATE_UNIT:
+			{
+				localizedText = Localization::Lookup("TXT_KEY_INSTANT_YIELD_CITY_CREATE_UNIT");
+				localizedText << (pUnit ? pUnit->getNameKey() : "???");
+				localizedText << totalyieldString;
+				break;
 			}
 			// These yields intentionally have no notification.
 			case INSTANT_YIELD_TYPE_COMBAT_EXPERIENCE:
@@ -41943,6 +41958,11 @@ void CvPlayer::LogInstantYield(YieldTypes eYield, int iValue, InstantYieldType e
 				instantYieldName = "Plunder Trade Route";
 				break;
 			}
+	case INSTANT_YIELD_TYPE_CITY_CREATE_UNIT:
+			{
+				instantYieldName = "City Create Unit";
+				break;
+			}
 	}
 
 	CvString strFileName = "InstantYieldSummary.csv";
@@ -42396,7 +42416,6 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_IDEOLOGY_PRESSURE_MODIFIER, pkPolicyInfo->GetIdeologyPressureModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_IDEOLOGY_UNHAPPINESS_MODIFIER, pkPolicyInfo->GetIdeologyUnhappinessModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_DIFFERENT_IDEOLOGY_TOURISM_MODIFIER, pkPolicyInfo->GetDifferentIdeologyTourismModifier() * iChange);
-	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_RIGGING_ELECTION_INFLUENCE_MODIFIER, pkPolicyInfo->GetRiggingElectionInfluenceModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NUM_SPY_LEVEL_UP_WHEN_RIGGING, pkPolicyInfo->GetSpyLevelUpWhenRigging() ? iChange : 0);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NULLIFY_INFLUENCE_MODIFIER, pkPolicyInfo->GetNullifyInfluenceModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_DIPLOMAT_PROPAGANDA_MODIFIER, pkPolicyInfo->GetDiplomatPropagandaModifier() * iChange);
@@ -43197,6 +43216,10 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 			if (MOD_GLOBAL_CORRUPTION && pkPolicyInfo->IsInvolveCorruption()) pLoopCity->UpdateCorruption();
 #endif
 		}
+	}
+	if (pkPolicyInfo->GetIdeologyPressureModifier() != 0 || pkPolicyInfo->GetIdeologyUnhappinessModifier() != 0)
+	{
+		GetCulture()->DoPublicOpinion();
 	}
 
 	GetTrade()->UpdateTradeConnectionValues();

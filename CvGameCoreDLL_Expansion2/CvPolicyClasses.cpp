@@ -1427,7 +1427,6 @@ bool CvPolicyEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility&
 	m_iIdeologyPressureModifier = kResults.GetInt("IdeologyPressureModifier");
 	m_iIdeologyUnhappinessModifier = kResults.GetInt("IdeologyUnhappinessModifier");
 	m_iDifferentIdeologyTourismModifier = kResults.GetInt("DifferentIdeologyTourismModifier");
-	m_iRiggingElectionInfluenceModifier = kResults.GetInt("RiggingElectionInfluenceModifier");
 	m_bSpyLevelUpWhenRigging = kResults.GetBool("SpyLevelUpWhenRigging");
 	m_iNullifyInfluenceModifier = kResults.GetInt("NullifyInfluenceModifier");
 	m_iDiplomatPropagandaModifier = kResults.GetInt("DiplomatPropagandaModifier");
@@ -3872,10 +3871,6 @@ int CvPolicyEntry::GetIdeologyUnhappinessModifier() const
 int CvPolicyEntry::GetDifferentIdeologyTourismModifier() const
 {
 	return m_iDifferentIdeologyTourismModifier;
-}
-int CvPolicyEntry::GetRiggingElectionInfluenceModifier() const
-{
-	return m_iRiggingElectionInfluenceModifier;
 }
 bool CvPolicyEntry::GetSpyLevelUpWhenRigging() const
 {
