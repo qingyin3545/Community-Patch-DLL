@@ -3432,10 +3432,10 @@ int CvPlot::getBuildTurnsLeft(BuildTypes eBuild, PlayerTypes ePlayer, int iNowEx
 		{
 			if(!pLoopUnit->canMove() && pLoopUnit->getBuildType() == eBuild)
 			{
-				iNowBuildRate += pLoopUnit->workRate(false);
+				iNowBuildRate += pLoopUnit->workRate(false, eBuild);
 			}
 
-			int iThenWorkRate = pLoopUnit->workRate(true);
+			int iThenWorkRate = pLoopUnit->workRate(true, eBuild);
 			if (iThenWorkRate > 0)
 			{
 				iThenWorkRateForUnitOnPlot = max(iThenWorkRateForUnitOnPlot, iThenWorkRate);
@@ -3493,7 +3493,7 @@ int CvPlot::getBuildTurnsTotal(BuildTypes eBuild, PlayerTypes ePlayer) const
 		pUnitNode = nextUnitNode(pUnitNode);
 
 		if (pLoopUnit && pLoopUnit->getBuildType() == eBuild)
-			iBuildRate += pLoopUnit->workRate(true);
+			iBuildRate += pLoopUnit->workRate(true, eBuild);
 	}
 
 	if (iBuildRate == 0)
