@@ -4307,6 +4307,14 @@ int CvPlayerCulture::GetTourismModifierWith(PlayerTypes eTargetPlayer, bool bIgn
 				iMultiplier += iSharedIdeologyMod;
 			}
 		}
+		int iDifferentSharedIdeologyMod = kCityPlayer.GetPlayerPolicies()->GetNumericModifier(POLICYMOD_DIFFERENT_IDEOLOGY_TOURISM_MODIFIER);
+		if (iDifferentSharedIdeologyMod != 0)
+		{
+			if (eMyIdeology != NO_POLICY_BRANCH_TYPE && eTheirIdeology != NO_POLICY_BRANCH_TYPE && eMyIdeology != eTheirIdeology)
+			{
+				iMultiplier += iDifferentSharedIdeologyMod;
+			}
+		}
 	}
 
 	if (m_pPlayer->GetInfluenceSpreadModifier() > 0 && kTargetPlayer.IsNullifyInfluenceModifier())
@@ -4476,6 +4484,15 @@ CvString CvPlayerCulture::GetTourismModifierWithTooltip(PlayerTypes eTargetPlaye
 		if (eMyIdeology != NO_POLICY_BRANCH_TYPE && eTheirIdeology != NO_POLICY_BRANCH_TYPE && eMyIdeology == eTheirIdeology)
 		{
 			szRtnValue += "[COLOR_POSITIVE_TEXT]" + GetLocalizedText("TXT_KEY_CO_PLAYER_TOURISM_SHARED_IDEOLOGY", iSharedIdeologyMod) + "[ENDCOLOR]";
+		}
+	}
+
+	int iDifferentSharedIdeologyMod = m_pPlayer->GetPlayerPolicies()->GetNumericModifier(POLICYMOD_DIFFERENT_IDEOLOGY_TOURISM_MODIFIER);
+	if (iDifferentSharedIdeologyMod > 0)
+	{
+		if (eMyIdeology != NO_POLICY_BRANCH_TYPE && eTheirIdeology != NO_POLICY_BRANCH_TYPE && eMyIdeology != eTheirIdeology)
+		{
+			szRtnValue += "[COLOR_POSITIVE_TEXT]" + GetLocalizedText("TXT_KEY_CO_PLAYER_TOURISM_DIFFERENT_IDEOLOGY", iDifferentSharedIdeologyMod) + "[ENDCOLOR]";
 		}
 	}
 
@@ -4879,6 +4896,9 @@ void CvPlayerCulture::DoPublicOpinion()
 
 				if (iCulturalDominanceOverUs > 0)
 				{
+					iCulturalDominanceOverUs *= (100 + kPlayer.GetPlayerPolicies()->GetNumericModifier(POLICYMOD_IDEOLOGY_PRESSURE_MODIFIER));
+					iCulturalDominanceOverUs /= 100;
+
 					CvString sTheirIdeologyIcon = GC.getPolicyBranchInfo(eOtherCivIdeology)->GetIconString();
 					if (sTheirIdeologyIcon == NULL || sTheirIdeologyIcon.IsEmpty())
 					{
@@ -5376,7 +5396,10 @@ int CvPlayerCulture::ComputePublicOpinionUnhappiness(int iDissatisfaction)
 			iUnhappyPerXPop = 3;
 		}
 
-		return max(m_pPlayer->getNumCities() * iPerCityUnhappy, m_pPlayer->getTotalPopulation() / iUnhappyPerXPop);
+		int iUnhapiness =  max(m_pPlayer->getNumCities() * iPerCityUnhappy, m_pPlayer->getTotalPopulation() / iUnhappyPerXPop);
+		iUnhapiness *= (100 + m_pPlayer->GetPlayerPolicies()->GetNumericModifier(POLICYMOD_IDEOLOGY_UNHAPPINESS_MODIFIER));
+		iUnhapiness /= 100;
+		return iUnhapiness;
 	}
 
 	float fPerCityUnhappy = 1.0f;
@@ -5393,7 +5416,10 @@ int CvPlayerCulture::ComputePublicOpinionUnhappiness(int iDissatisfaction)
 	fPerCityUnhappy = min(10.f,max(1.f,fPerCityUnhappy));
 	fUnhappyPerXPop = min(100.f,max(1.f,fUnhappyPerXPop));
 
-	return (int) max(m_pPlayer->getNumCities() * fPerCityUnhappy, m_pPlayer->getTotalPopulation() / fUnhappyPerXPop);
+	float fUnhapiness = max(m_pPlayer->getNumCities() * fPerCityUnhappy, m_pPlayer->getTotalPopulation() / fUnhappyPerXPop);
+	fUnhapiness *= (100 + m_pPlayer->GetPlayerPolicies()->GetNumericModifier(POLICYMOD_IDEOLOGY_UNHAPPINESS_MODIFIER));
+	fUnhapiness /= 100;
+	return (int)fUnhapiness;
 }
 
 // LOGGING FUNCTIONS
