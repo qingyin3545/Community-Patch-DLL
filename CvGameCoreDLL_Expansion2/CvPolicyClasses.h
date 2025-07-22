@@ -529,7 +529,6 @@ public:
 	int GetIdeologyPressureModifier() const;
 	int GetIdeologyUnhappinessModifier() const;
 	int GetDifferentIdeologyTourismModifier() const;
-	int GetRiggingElectionInfluenceModifier() const;
 	bool GetSpyLevelUpWhenRigging() const;
 	int GetNullifyInfluenceModifier() const;
 	int GetDiplomatPropagandaModifier() const;
@@ -985,7 +984,6 @@ private:
 	int m_iIdeologyPressureModifier = 0;
 	int m_iIdeologyUnhappinessModifier = 0;
 	int m_iDifferentIdeologyTourismModifier = 0;
-	int m_iRiggingElectionInfluenceModifier = 0;
 	bool m_bSpyLevelUpWhenRigging = false;
 	int m_iNullifyInfluenceModifier = 0;
 	int m_iDiplomatPropagandaModifier = 0;
@@ -1176,14 +1174,13 @@ enum CLOSED_ENUM PolicyModifierType
 	POLICYMOD_MINOR_LOCAL_BULLY_SCORE_MODIFIER,
 	POLICYMOD_MINOR_ALLY_BULLY_SCORE_MODIFIER,
 	POLICYMOD_HAPPINESS_IN_WLTKD_CITIES,
-	
 	POLICYMOD_WATER_BUILD_SPEED_MODIFIER,
 	POLICYMOD_DEEP_WATER_NAVAL_STRENGTH_CULTURE_MODIFIER,
 	POLICYMOD_SETTLER_POP_CONSUME,
 	POLICYMOD_IDEOLOGY_PRESSURE_MODIFIER,
 	POLICYMOD_IDEOLOGY_UNHAPPINESS_MODIFIER,
 	POLICYMOD_DIFFERENT_IDEOLOGY_TOURISM_MODIFIER,
-	POLICYMOD_RIGGING_ELECTION_INFLUENCE_MODIFIER,
+
 	POLICYMOD_NUM_SPY_LEVEL_UP_WHEN_RIGGING,
 	POLICYMOD_NULLIFY_INFLUENCE_MODIFIER,
 	POLICYMOD_DIPLOMAT_PROPAGANDA_MODIFIER,
