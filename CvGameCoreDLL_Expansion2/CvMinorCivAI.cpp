@@ -17179,6 +17179,10 @@ void CvMinorCivAI::DoElection()
 			int iGoal = pPlayerEspionage->CalcRequired(SPY_STATE_RIG_ELECTION, pCity, iSpyID);
 			pCityEspionage->SetActivity(eEspionagePlayer, 0, iRate, iGoal);
 			pCityEspionage->SetLastProgress(eEspionagePlayer, iRate);
+			if (GET_PLAYER(eEspionagePlayer).GetPlayerPolicies()->GetNumericModifier(POLICYMOD_NUM_SPY_LEVEL_UP_WHEN_RIGGING))
+			{
+				pPlayerEspionage->LevelUpSpy(iSpyID);
+			}
 		}
 
 		if(iVotes > 0)
