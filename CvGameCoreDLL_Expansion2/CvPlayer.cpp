@@ -559,7 +559,7 @@ CvPlayer::CvPlayer() :
 	, m_iHalfSpecialistFoodCapitalCount()
 	, m_iTradeRouteLandDistanceModifier()
 	, m_iTradeRouteSeaDistanceModifier()
-	, m_bNullifyInfluenceModifier()
+	, m_iNumNullifyInfluenceModifier()
 	, m_aistrInstantYield() // not serialized
 	, m_aistrInstantGreatPersonProgress()
 	, m_iJFDCurrency()
@@ -1410,7 +1410,7 @@ void CvPlayer::uninit()
 	m_iHalfSpecialistFoodCapitalCount = 0;
 	m_iTradeRouteLandDistanceModifier = 0;
 	m_iTradeRouteSeaDistanceModifier = 0;
-	m_bNullifyInfluenceModifier = false;
+	m_iNumNullifyInfluenceModifier = 0;
 	m_iMilitaryFoodProductionCount = 0;
 	m_iGoldenAgeCultureBonusDisabledCount = 0;
 	m_iNumMissionarySpreads = 0;
@@ -4468,7 +4468,7 @@ CvCity* CvPlayer::acquireCity(CvCity* pCity, bool bConquest, bool bGift, bool bO
 			pNewCity->SetOccupied(true);
 
 			// Determine resistance turns.
-			if (bConquest && !bGift)
+			if (bConquest && !bGift && GetPlayerPolicies()->GetNumericModifier(POLICYMOD_NUM_NO_RESISTANCE) <= 0)
 			{
 				int iReductionFromTourism = (isMajorCiv() && GET_PLAYER(eOldOwner).isMajorCiv()) ? GetCulture()->GetInfluenceCityConquestReduction(eOldOwner) : 0;
 				int iResistanceTurns = MOD_BALANCE_VP ? (pNewCity->getPopulation() * 2) / 3 : pNewCity->getPopulation();
@@ -15809,13 +15809,7 @@ void CvPlayer::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst
 	if (pBuildingInfo->IsIgnoreDefensivePactLimit())
 		ChangeIgnoreDefensivePactLimitCount(iChange);
 
-	if (pBuildingInfo->NullifyInfluenceModifier())
-	{
-		if (iChange > 0)
-			SetNullifyInfluenceModifier(true);
-		else
-			SetNullifyInfluenceModifier(false);
-	}
+	ChangeNumNullifyInfluenceModifier(pBuildingInfo->NullifyInfluenceModifier() ? iChange : 0);
 
 	if (pBuildingInfo->GetNoUnhappfromXSpecialistsGlobal() != 0)
 	{
@@ -29646,14 +29640,13 @@ void CvPlayer::ChangeDomainFreeExperience(DomainTypes eIndex, int iChange)
 	m_piDomainFreeExperience[(int)eIndex] += iChange;
 }
 
-void CvPlayer::SetNullifyInfluenceModifier(bool bValue)
+void CvPlayer::ChangeNumNullifyInfluenceModifier(int iValue)
 {
-	if (bValue != m_bNullifyInfluenceModifier)
-		m_bNullifyInfluenceModifier = bValue;
+	m_iNumNullifyInfluenceModifier += iValue;
 }
 bool CvPlayer::IsNullifyInfluenceModifier() const
 {
-	return m_bNullifyInfluenceModifier;
+	return m_iNumNullifyInfluenceModifier > 0;
 }
 
 int CvPlayer::GetTradeRouteProductionSiphonPercent(bool bInternationalOnly, CvPlayer* pOtherPlayer) const
@@ -42491,10 +42484,8 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_IDEOLOGY_UNHAPPINESS_MODIFIER, pkPolicyInfo->GetIdeologyUnhappinessModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_DIFFERENT_IDEOLOGY_TOURISM_MODIFIER, pkPolicyInfo->GetDifferentIdeologyTourismModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NUM_SPY_LEVEL_UP_WHEN_RIGGING, pkPolicyInfo->GetSpyLevelUpWhenRigging() ? iChange : 0);
-	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NULLIFY_INFLUENCE_MODIFIER, pkPolicyInfo->GetNullifyInfluenceModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_DIPLOMAT_PROPAGANDA_MODIFIER, pkPolicyInfo->GetDiplomatPropagandaModifier() * iChange);
-	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_RESISTANCE_MODIFIER, pkPolicyInfo->GetResistanceModifier() * iChange);
-	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_EXTRA_SPIES, pkPolicyInfo->GetExtraSpies() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NUM_NO_RESISTANCE, pkPolicyInfo->IsNoResistance() ? 0 : iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_SCIENCE_BEAKER_MOD, pkPolicyInfo->GetScienceBeakerMod() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_PRODUCTION_BEAKER_MOD, pkPolicyInfo->GetProductionBeakerMod() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_ORIGINAL_CAPITAL_CAPTURE_TECH, pkPolicyInfo->GetOriginalCapitalCaptureTech() * iChange);
@@ -42503,6 +42494,8 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_RELIGION_PRODUCTION_MODIFIER, pkPolicyInfo->GetReligionProductionModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NUM_UPGRADE_ALL_TERRITORY, pkPolicyInfo->GetUpgradeAllTerritory() ? iChange : 0);
 
+	ChangeNumNullifyInfluenceModifier(pkPolicyInfo->IsNullifyInfluenceModifier() ? iChange : 0);
+	
 #ifdef MOD_GLOBAL_WAR_CASUALTIES
 	ChangeWarCasualtiesModifier(pkPolicyInfo->GetWarCasualtiesModifier() * iChange);
 #endif
@@ -43884,7 +43877,7 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 	visitor(player.m_iHalfSpecialistFoodCapitalCount);
 	visitor(player.m_iTradeRouteLandDistanceModifier);
 	visitor(player.m_iTradeRouteSeaDistanceModifier);
-	visitor(player.m_bNullifyInfluenceModifier);
+	visitor(player.m_iNumNullifyInfluenceModifier);
 	visitor(player.m_iMilitaryFoodProductionCount);
 	visitor(player.m_iGoldenAgeCultureBonusDisabledCount);
 	visitor(player.m_iNumMissionarySpreads);
@@ -50416,7 +50409,7 @@ int CvPlayer::GetHappinessFromFaith() const
 {
 	int iModifier = GetPlayerPolicies()->GetNumericModifier(POLICYMOD_GLOBAL_HAPPINESS_FROM_FAITH_PERCENT);
 	if (iModifier == 0) return 0;
-	return iModifier * GetFaith() / 100;
+	return iModifier * GetFaithTimes100();
 }
 
 //	--------------------------------------------------------------------------------
