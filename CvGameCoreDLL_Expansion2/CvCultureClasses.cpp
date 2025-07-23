@@ -4373,7 +4373,7 @@ int CvPlayerCulture::GetTourismModifierWith(PlayerTypes eTargetPlayer, bool bIgn
 				iMultiplier += iSharedIdeologyMod;
 			}
 		}
-		int iDifferentSharedIdeologyMod = kCityPlayer.GetPlayerPolicies()->GetNumericModifier(POLICYMOD_DIFFERENT_IDEOLOGY_TOURISM_MODIFIER);
+		int iDifferentSharedIdeologyMod = m_pPlayer->GetPlayerPolicies()->GetNumericModifier(POLICYMOD_DIFFERENT_IDEOLOGY_TOURISM_MODIFIER);
 		if (iDifferentSharedIdeologyMod != 0)
 		{
 			if (eMyIdeology != NO_POLICY_BRANCH_TYPE && eTheirIdeology != NO_POLICY_BRANCH_TYPE && eMyIdeology != eTheirIdeology)
@@ -4391,6 +4391,7 @@ int CvPlayerCulture::GetTourismModifierWith(PlayerTypes eTargetPlayer, bool bIgn
 	if (m_pPlayer->GetEspionage() && m_pPlayer->GetEspionage()->IsMyDiplomatVisitingThem(eTargetPlayer))
 	{
 		iMultiplier += /*25 in CP, 20 in VP*/ GD_INT_GET(TOURISM_MODIFIER_DIPLOMAT);
+		iMultiplier += m_pPlayer->GetPlayerPolicies()->GetNumericModifier(POLICYMOD_DIPLOMAT_PROPAGANDA_MODIFIER);
 	}
 
 	if (MOD_BALANCE_VP)
@@ -4505,7 +4506,7 @@ CvString CvPlayerCulture::GetTourismModifierWithTooltip(PlayerTypes eTargetPlaye
 	// Diplomat in this player's Capital City
 	if (m_pPlayer->GetEspionage()->IsMyDiplomatVisitingThem(eTargetPlayer))
 	{
-		szRtnValue += "[COLOR_POSITIVE_TEXT]" + GetLocalizedText("TXT_KEY_CO_PLAYER_TOURISM_PROPAGANDA", /*25 in CP, 20 in VP*/ GD_INT_GET(TOURISM_MODIFIER_DIPLOMAT)) + "[ENDCOLOR]";
+		szRtnValue += "[COLOR_POSITIVE_TEXT]" + GetLocalizedText("TXT_KEY_CO_PLAYER_TOURISM_PROPAGANDA", /*25 in CP, 20 in VP*/ GD_INT_GET(TOURISM_MODIFIER_DIPLOMAT) + m_pPlayer->GetPlayerPolicies()->GetNumericModifier(POLICYMOD_DIPLOMAT_PROPAGANDA_MODIFIER)) + "[ENDCOLOR]";
 	}
 	
 	if (MOD_BALANCE_VP)
