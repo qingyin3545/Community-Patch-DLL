@@ -504,10 +504,9 @@ public:
 	int GetIdeologyUnhappinessModifier() const;
 	int GetDifferentIdeologyTourismModifier() const;
 	bool GetSpyLevelUpWhenRigging() const;
-	int GetNullifyInfluenceModifier() const;
+	bool IsNullifyInfluenceModifier() const;
 	int GetDiplomatPropagandaModifier() const;
-	int GetResistanceModifier() const;
-	int GetExtraSpies() const;
+	int IsNoResistance() const;
 	int GetScienceBeakerMod() const;
 	int GetProductionBeakerMod() const;
 	int GetOriginalCapitalCaptureTech() const;
@@ -934,10 +933,9 @@ private:
 	int m_iIdeologyUnhappinessModifier = 0;
 	int m_iDifferentIdeologyTourismModifier = 0;
 	bool m_bSpyLevelUpWhenRigging = false;
-	int m_iNullifyInfluenceModifier = 0;
+	bool m_bNullifyInfluenceModifier = false;
 	int m_iDiplomatPropagandaModifier = 0;
-	int m_iResistanceModifier = 0;
-	int m_iExtraSpies = 0;
+	int m_bNoResistance = 0;
 	int m_iScienceBeakerMod = 0;
 	int m_iProductionBeakerMod = 0;
 	int m_iOriginalCapitalCaptureTech = 0;
@@ -1119,12 +1117,9 @@ enum CLOSED_ENUM PolicyModifierType
 	POLICYMOD_IDEOLOGY_PRESSURE_MODIFIER,
 	POLICYMOD_IDEOLOGY_UNHAPPINESS_MODIFIER,
 	POLICYMOD_DIFFERENT_IDEOLOGY_TOURISM_MODIFIER,
-
 	POLICYMOD_NUM_SPY_LEVEL_UP_WHEN_RIGGING,
-	POLICYMOD_NULLIFY_INFLUENCE_MODIFIER,
 	POLICYMOD_DIPLOMAT_PROPAGANDA_MODIFIER,
-	POLICYMOD_RESISTANCE_MODIFIER,
-	POLICYMOD_EXTRA_SPIES,
+	POLICYMOD_NUM_NO_RESISTANCE,
 	POLICYMOD_SCIENCE_BEAKER_MOD,
 	POLICYMOD_PRODUCTION_BEAKER_MOD,
 	POLICYMOD_ORIGINAL_CAPITAL_CAPTURE_TECH,

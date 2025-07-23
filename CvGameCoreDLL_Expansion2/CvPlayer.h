@@ -1244,7 +1244,7 @@ public:
 	void ChangeDomainFreeExperience(DomainTypes eIndex, int iChange);
 	int GetDomainFreeExperience(DomainTypes) const;
 
-	void SetNullifyInfluenceModifier(bool bValue);
+	void ChangeNumNullifyInfluenceModifier(int iValue);
 	bool IsNullifyInfluenceModifier() const;
 
 	int GetTradeRouteProductionSiphonPercent(bool bInternationalOnly, CvPlayer* pOtherPlayer) const;
@@ -3318,7 +3318,7 @@ protected:
 	int m_iHalfSpecialistFoodCapitalCount;
 	int m_iTradeRouteLandDistanceModifier;
 	int m_iTradeRouteSeaDistanceModifier;
-	bool m_bNullifyInfluenceModifier;
+	int m_iNumNullifyInfluenceModifier;
 	int m_iMilitaryFoodProductionCount;
 	int m_iGoldenAgeCultureBonusDisabledCount;
 	int m_iNumMissionarySpreads;
@@ -4159,7 +4159,7 @@ SYNC_ARCHIVE_VAR(int, m_iHalfSpecialistFoodCount)
 SYNC_ARCHIVE_VAR(int, m_iHalfSpecialistFoodCapitalCount)
 SYNC_ARCHIVE_VAR(int, m_iTradeRouteLandDistanceModifier)
 SYNC_ARCHIVE_VAR(int, m_iTradeRouteSeaDistanceModifier)
-SYNC_ARCHIVE_VAR(bool, m_bNullifyInfluenceModifier)
+SYNC_ARCHIVE_VAR(int, m_iNumNullifyInfluenceModifier)
 SYNC_ARCHIVE_VAR(int, m_iMilitaryFoodProductionCount)
 SYNC_ARCHIVE_VAR(int, m_iGoldenAgeCultureBonusDisabledCount)
 SYNC_ARCHIVE_VAR(int, m_iNumMissionarySpreads)
