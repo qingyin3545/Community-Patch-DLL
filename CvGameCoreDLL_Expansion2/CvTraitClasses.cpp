@@ -1526,7 +1526,7 @@ std::pair<int, int> CvTraitEntry::GetTradeRouteEndYield(YieldTypes eYield) const
 	const std::map<int, std::pair<int, int>>::const_iterator it = m_tradeRouteEndYield.find(static_cast<int>(eYield));
 	if (it != m_tradeRouteEndYield.end())
 	{
-		return it->second;
+		return std::make_pair(it->second.first, it->second.second);
 	}
 	return std::make_pair(0, 0);
 }
@@ -2090,7 +2090,7 @@ std::pair <int, bool> CvTraitEntry::GetUnitCombatProductionCostModifier(const in
 	std::map<int, std::pair<int, bool>>::const_iterator it = m_pibUnitCombatProductionCostModifier.find(unitCombatID);
 	if (it != m_pibUnitCombatProductionCostModifier.end()) // find returns the iterator to map::end if the key iYield is not present in the map
 	{
-		return it->second;
+		return std::make_pair(it->second.first, it->second.second);
 	}
 
 	return std::make_pair(0, false);
@@ -6292,7 +6292,7 @@ std::pair<int, bool> CvPlayerTraits::GetUnitCombatProductionCostModifier(UnitCom
 	std::map<int, std::pair<int, bool>>::const_iterator it = m_aibUnitCombatProductionCostModifier.find((int)eUnitCombat);
 	if (it != m_aibUnitCombatProductionCostModifier.end()) // find returns the iterator to map::end if the key is not present
 	{
-		return it->second;
+		return std::make_pair(it->second.first, it->second.second);
 	}
 
 	return std::make_pair(0, false);
