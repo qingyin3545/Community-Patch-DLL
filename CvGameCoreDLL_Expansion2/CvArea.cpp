@@ -22,6 +22,34 @@
 #include "CvInfosSerializationHelper.h"
 // include after all other headers
 #include "LintFree.h"
+#include "FunctionsRef.h"
+#include "NetworkMessageUtil.h"
+#include "CvLuaArea.h"
+
+//	--------------------------------------------------------------------------------
+void CvArea::ExtractToArg(BasicArguments* arg) {
+	throw NoSuchMethodException("CvArea::ExtractToArg");
+}
+
+CvArea* CvArea::Provide(int id) {
+	auto rtn = GC.getMap().getAreaById(id);
+	if (!rtn) throw NetworkMessageNullPointerExceptopn("CvArea", id);
+	return rtn;
+}
+
+void CvArea::RegistInstanceFunctions()
+{
+}
+
+void CvArea::RegistStaticFunctions() {
+	REGIST_STATIC_FUNCTION(CvArea::PushToLua);
+	REGIST_STATIC_FUNCTION(CvArea::Provide);
+}
+
+void CvArea::PushToLua(lua_State* L, BasicArguments* arg) {
+	CvLuaArea::PushLtwt(L, Provide(arg->identifier1()));
+}
+//	--------------------------------------------------------------------------------
 
 // Public Functions...
 //	--------------------------------------------------------------------------------

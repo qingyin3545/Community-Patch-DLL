@@ -25,6 +25,11 @@
 	lua_setfield(L, t, #Name);
 
 //------------------------------------------------------------------------------
+void CvLuaUnit::RegistStaticFunctions()
+{
+
+}
+//------------------------------------------------------------------------------
 void CvLuaUnit::HandleMissingInstance(lua_State* L)
 {
 	luaL_error(L, "Instance no longer exists.");

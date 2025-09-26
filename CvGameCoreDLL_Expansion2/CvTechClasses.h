@@ -309,11 +309,18 @@ FDataStream& operator<<(FDataStream&, const CvPlayerTechs&);
 //!  - One instance for each team of civs
 //!  - Accessed by any class that needs to check technology ownership
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-class CvTeamTechs
+class CvTeamTechs : public CvGameObjectExtractable
 {
 public:
 	CvTeamTechs(void);
 	~CvTeamTechs(void);
+
+	void ExtractToArg(BasicArguments* arg);
+	static void PushToLua(lua_State* L, BasicArguments* arg);
+	static void RegistInstanceFunctions();
+	static void RegistStaticFunctions();
+	static CvTeamTechs* Provide(TeamTypes team);
+
 	void Init(CvTechXMLEntries* pTechs, CvTeam* pTeam);
 	void Uninit();
 	void Reset();

@@ -26,6 +26,11 @@ using namespace CvLuaArgs;
 TradedItemList::iterator CvLuaDeal::m_iterator;
 
 //------------------------------------------------------------------------------
+void CvLuaDeal::RegistStaticFunctions()
+{
+
+}
+//------------------------------------------------------------------------------
 void CvLuaDeal::PushMethods(lua_State* L, int t)
 {
 	Method(ClearItems);

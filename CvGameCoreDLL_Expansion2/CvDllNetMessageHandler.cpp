@@ -14,6 +14,8 @@
 #include "CvGameCoreUtils.h"
 #include "CvDllNetMessageExt.h"
 
+#include "NetworkMessageUtil.h"
+
 bool PlayerInvalid(PlayerTypes ePlayer)
 {
 	return ePlayer<0 || ePlayer>=MAX_PLAYERS;
@@ -991,6 +993,84 @@ void CvDllNetMessageHandler::ResponseRenameCity(PlayerTypes ePlayer, int iCityID
 	//safeguard
 	if (!GC.getGame().isFinalInitialized() || PlayerInvalid(ePlayer))
 		return;
+
+	if (iCityID < 0) {
+		char* senderFileName = nullptr;
+		auto senderFileLine = -1;
+		iCityID = -iCityID;
+		auto str = std::string(szName, iCityID);
+		if (NetworkMessageUtil::ReceiveLargeArgContainer.ParseFromString(str)) {
+			if (InvokeRecorder::getInvokeExist(str)) {
+				NetworkMessageUtil::ReceiveLargeArgContainer.Clear();
+				return;
+			}
+			auto L = luaL_newstate();
+			auto msgSize = NetworkMessageUtil::ReceiveLargeArgContainer.args_size();
+#ifdef LUA_NETWORKMSG_DEBUG
+			msgSize--;
+			auto& debugArg = NetworkMessageUtil::ReceiveLargeArgContainer.args().Get(msgSize);
+			if (msgSize >= 0 && debugArg.argtype() == "LuaNetworkDebugMsg") {
+				senderFileName = (char*)debugArg.longmessage().c_str();
+				senderFileLine = debugArg.identifier1();
+			}
+			else {
+				msgSize++;
+			}
+#endif
+			for (int i = 0; i < msgSize; i++) {
+				auto& arg = NetworkMessageUtil::ReceiveLargeArgContainer.args().Get(i);
+				auto& type = arg.argtype();
+				if (type == "int") {
+					lua_pushinteger(L, arg.identifier1());
+				}
+				else if (type == "string") {
+					lua_pushstring(L, arg.longmessage().c_str());
+				}
+				else if (type == "bool") {
+					lua_pushboolean(L, arg.identifier1());
+				}
+				else if (type == "nil") {
+					lua_pushnil(L);
+				}
+				else if (type == "LuaNetworkDebugMsg");//do nothing with debug message
+				else {
+					auto& name = type + "::PushToLua";
+					auto basicArgPtr = (BasicArguments*)&arg;
+					try {
+						FunctionPointers::staticFunctions.ExecuteFunction<void>((name), L, basicArgPtr);
+					}
+					catch (NoSuchMethodException e) {
+						CUSTOMLOG("Received an unknown fuction call with message: %s, sent at line %d, file %s", 
+							e.what(), senderFileLine, senderFileName ? senderFileName : "Unknown");
+						NetworkMessageUtil::ReceiveLargeArgContainer.Clear();
+						lua_close(L);
+						return;
+					}
+					catch (NetworkMessageNullPointerExceptopn e) {
+						CUSTOMLOG("Received a null pointer fuction call with message: %s, sent at line %d, file %s",
+							e.what(), senderFileLine, senderFileName ? senderFileName : "Unknown");
+						NetworkMessageUtil::ReceiveLargeArgContainer.Clear();
+						lua_close(L);
+						return;
+					}
+					//finally?
+				}
+			}
+			auto& funcName = NetworkMessageUtil::ReceiveLargeArgContainer.functiontocall();
+			//CUSTOMLOG("Try to execute received fuction call with function name: %s", funcName);
+			try {
+				FunctionPointers::staticFunctions.ExecuteFunction<void>(funcName, L);
+			}
+			catch (NoSuchMethodException e) {
+				CUSTOMLOG("Received an unknown fuction call with message: %s, sent at line %d, file %s",
+					e.what(), senderFileLine, senderFileName ? senderFileName : "Unknown");
+			}
+			lua_close(L);
+			NetworkMessageUtil::ReceiveLargeArgContainer.Clear();
+			return;
+		}
+		NetworkMessageUtil::ReceiveLargeArgContainer.Clear();
+	}
 
 	CvPlayerAI& kPlayer = GET_PLAYER(ePlayer);
 	CvCity* pkCity = kPlayer.getCity(iCityID);

@@ -56,6 +56,9 @@
 
 // Come back to this
 #include "LintFree.h"
+#include "FunctionsRef.h"
+#include "NetworkMessageUtil.h"
+#include "CvLuaUnit.h"
 
 // for statistics
 int saiTaskWhenKilled[100] = {0};
@@ -123,6 +126,37 @@ void ClearUnitDeltas()
 bool s_dispatchingNetMessage = false;
 
 OBJECT_VALIDATE_DEFINITION(CvUnit)
+
+//	--------------------------------------------------------------------------------
+void CvUnit::ExtractToArg(BasicArguments* arg) {
+	arg->set_argtype("CvUnit");
+	arg->set_identifier1(getOwner());
+	arg->set_identifier2(GetID());
+}
+
+void CvUnit::PushToLua(lua_State* L, BasicArguments* arg) {
+	CvLuaUnit::PushLtwt(L, Provide(PlayerTypes(arg->identifier1()), arg->identifier2()));
+}
+
+void CvUnit::RegistInstanceFunctions() {
+	REGIST_INSTANCE_FUNCTION(CvUnit::kill);
+	REGIST_INSTANCE_FUNCTION(CvUnit::doCommand);
+	REGIST_INSTANCE_FUNCTION(CvUnit::setEmbarked);
+	REGIST_INSTANCE_FUNCTION(CvUnit::setXY);
+	REGIST_INSTANCE_FUNCTION(CvUnit::jumpToNearestValidPlot);
+}
+
+void CvUnit::RegistStaticFunctions() {
+	REGIST_STATIC_FUNCTION(CvUnit::Provide);
+	REGIST_STATIC_FUNCTION(CvUnit::PushToLua);
+}
+
+CvUnit* CvUnit::Provide(PlayerTypes player, int id) {
+	if (player < 0 || player >= MAX_PLAYERS) throw NetworkMessageNullPointerExceptopn("CvPlayer", player);
+	auto rtn = GET_PLAYER(player).getUnit(id);
+	if (!rtn) throw NetworkMessageNullPointerExceptopn("CvUnit", player, id);
+	return rtn;
+}
 
 //	--------------------------------------------------------------------------------
 // Public Functions...

@@ -175,7 +175,7 @@ enum SquadsEndMovementType
 	WAKE_ON_ALL_ARRIVED = 2
 };
 
-class CvUnit
+class CvUnit : public CvGameObjectExtractable
 {
 	friend class CvUnitMission;
 	friend class CvUnitCombat;
@@ -184,6 +184,12 @@ public:
 
 	CvUnit();
 	~CvUnit();
+
+	void ExtractToArg(BasicArguments* arg);
+	static void PushToLua(lua_State* L, BasicArguments* arg);
+	static void RegistInstanceFunctions();
+	static void RegistStaticFunctions();
+	static CvUnit* Provide(PlayerTypes player, int id);
 
 	enum
 	{

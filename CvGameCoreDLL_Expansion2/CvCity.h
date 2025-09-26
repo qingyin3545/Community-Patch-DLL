@@ -71,12 +71,18 @@ struct SPlotStats
 	vector<int> vImprovementCount;
 };
 
-class CvCity
+class CvCity : CvGameObjectExtractable
 {
 
 public:
 	CvCity();
 	virtual ~CvCity();
+
+	void ExtractToArg(BasicArguments* arg);
+	static void PushToLua(lua_State* L, BasicArguments* arg);
+	static void RegistInstanceFunctions();
+	static void RegistStaticFunctions();
+	static CvCity* Provide(PlayerTypes player, int cityID);
 
 	enum eUpdateMode {
 		YIELD_UPDATE_NONE, //don't do any bookkeeping

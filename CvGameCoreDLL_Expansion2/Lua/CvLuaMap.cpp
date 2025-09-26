@@ -29,6 +29,11 @@
 #define Method(func) RegisterMethod(L, l##func, #func);
 
 //------------------------------------------------------------------------------
+void CvLuaMap::RegistStaticFunctions()
+{
+
+}
+//------------------------------------------------------------------------------
 const char* CvLuaMap::GetInstanceName()
 {
 	return "Map";

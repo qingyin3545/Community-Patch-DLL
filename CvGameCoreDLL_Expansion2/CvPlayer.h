@@ -77,7 +77,7 @@ struct SPlayerActiveEspionageEvent
 	int iAmount;
 };
 
-class CvPlayer
+class CvPlayer : public CvGameObjectExtractable
 {
 	friend class CvPlayerPolicies;
 private:
@@ -89,6 +89,12 @@ public:
 
 	CvPlayer();
 	virtual ~CvPlayer();
+
+	void ExtractToArg(BasicArguments* arg);
+	static void PushToLua(lua_State* L, BasicArguments* arg);
+	static void RegistInstanceFunctions();
+	static void RegistStaticFunctions();
+	static CvPlayerAI* Provide(PlayerTypes player);
 
 	void init(PlayerTypes eID);
 	void setupGraphical();

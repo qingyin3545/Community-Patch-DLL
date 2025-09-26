@@ -42,6 +42,11 @@
 	lua_setfield(L, t, #Name);
 
 //------------------------------------------------------------------------------
+void CvLuaPlayer::RegistStaticFunctions()
+{
+	
+}
+//------------------------------------------------------------------------------
 void CvLuaPlayer::Register(lua_State* L)
 {
 	FLua::Details::CCallWithErrorHandling(L, pRegister);

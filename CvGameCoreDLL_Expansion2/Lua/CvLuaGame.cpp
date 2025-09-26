@@ -41,6 +41,11 @@
 using namespace CvLuaArgs;
 
 //------------------------------------------------------------------------------
+void CvLuaGame::RegistStaticFunctions()
+{
+
+}
+//------------------------------------------------------------------------------
 const char* CvLuaGame::GetInstanceName()
 {
 	return "Game";

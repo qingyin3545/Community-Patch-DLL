@@ -575,6 +575,18 @@
     <ClCompile Include="CvIndependentPromotionInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FunctionsRef.cpp">
+      <Filter>NetworkSync</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkMessageUtil.cpp">
+      <Filter>NetworkSync</Filter>
+    </ClCompile>
+    <ClCompile Include="LargeArgContainer.pb.cpp">
+      <Filter>NetworkSync</Filter>
+    </ClCompile>
+    <ClCompile Include="StackWalker.cpp">
+      <Filter>NetworkSync\LogTool</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="banned.h">
@@ -1413,6 +1425,27 @@
     </ClInclude>
     <ClInclude Include="CvIndependentPromotionInfo.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionsRef.h">
+      <Filter>NetworkSync</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkMessageUtil.h">
+      <Filter>NetworkSync</Filter>
+    </ClInclude>
+    <ClInclude Include="LargeArgContainer.pb.h">
+      <Filter>NetworkSync</Filter>
+    </ClInclude>
+    <ClInclude Include="ArgumentAdaptor.h">
+      <Filter>NetworkSync</Filter>
+    </ClInclude>
+    <ClInclude Include="LaterFeatures.h">
+      <Filter>NetworkSync</Filter>
+    </ClInclude>
+    <ClInclude Include="CvGameObjectExtractable.h">
+      <Filter>NetworkSync</Filter>
+    </ClInclude>
+    <ClInclude Include="StackWalker.h">
+      <Filter>NetworkSync\LogTool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -17,7 +17,7 @@
 class CvArea;
 class CvTeamTechs;
 
-class CvTeam
+class CvTeam : public CvGameObjectExtractable
 {
 private:
 	CvTeam(const CvTeam&); //hide copy constructor
@@ -26,6 +26,12 @@ private:
 public:
 	CvTeam();
 	virtual ~CvTeam();
+
+	void ExtractToArg(BasicArguments* arg);
+	static void PushToLua(lua_State* L, BasicArguments* arg);
+	static void RegistInstanceFunctions();
+	static void RegistStaticFunctions();
+	static CvTeam* Provide(TeamTypes team);
 
 	static CvTeam& getTeam(TeamTypes eTeam);
 	static void initStatics();

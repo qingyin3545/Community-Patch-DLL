@@ -22,6 +22,8 @@
 class CvLuaGame : public CvLuaStaticInstance<CvLuaGame, CvGame>
 {
 public:
+	static void RegistStaticFunctions();
+
 	//! Returns the name of the static instance.
 	static const char* GetInstanceName();
 

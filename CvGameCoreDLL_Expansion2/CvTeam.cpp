@@ -36,6 +36,8 @@
 #include "CvDllUnit.h"
 
 #include "LintFree.h"
+#include "NetworkMessageUtil.h"
+#include "CvLuaTeam.h"
 
 // statics
 CvTeam* CvTeam::m_aTeams = NULL;
@@ -68,6 +70,30 @@ void CvTeam::freeStatics()
 	delete[] m_aTeams;
 	m_aTeams = NULL;
 }
+
+//	--------------------------------------------------------------------------------
+void CvTeam::PushToLua(lua_State* L, BasicArguments* arg){
+	CvLuaTeam::PushLtwt(L, Provide((TeamTypes)arg->identifier1()));
+}
+
+void CvTeam::ExtractToArg(BasicArguments* arg) {
+	arg->set_argtype("CvTeam");
+	arg->set_identifier1(GetID());
+}
+
+void CvTeam::RegistInstanceFunctions() {
+}
+
+void CvTeam::RegistStaticFunctions() {
+	REGIST_STATIC_FUNCTION(CvTeam::Provide);
+	REGIST_STATIC_FUNCTION(CvTeam::PushToLua);
+}
+
+CvTeam* CvTeam::Provide(TeamTypes team) {
+	if (team < 0 || team >= MAX_TEAMS) throw NetworkMessageNullPointerExceptopn("CvTeam", team);
+	return &getTeam(team);
+}
+//	--------------------------------------------------------------------------------
 
 // Public Functions...
 //	--------------------------------------------------------------------------------

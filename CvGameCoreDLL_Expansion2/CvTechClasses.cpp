@@ -18,6 +18,8 @@
 #include "CvSpanSerialization.h"
 
 #include "LintFree.h"
+#include "NetworkMessageUtil.h"
+#include "CvLuaTeamTech.h"
 
 /// Constructor
 CvTechEntry::CvTechEntry(void):
@@ -2163,6 +2165,27 @@ void CvPlayerTechs::LogFlavorChange(FlavorTypes eFlavor, int change, const char*
 //=====================================
 // CvTeamTechs
 //=====================================
+void CvTeamTechs::RegistStaticFunctions() {
+	REGIST_STATIC_FUNCTION(CvTeamTechs::Provide);
+	REGIST_STATIC_FUNCTION(CvTeamTechs::PushToLua);
+	
+}
+
+void CvTeamTechs::PushToLua(lua_State* L, BasicArguments* arg) {
+	CvLuaTeamTech::PushLtwt(L, Provide((TeamTypes)arg->identifier1()));
+}
+
+CvTeamTechs* CvTeamTechs::Provide(TeamTypes team) {
+	if (team < 0 || team >= MAX_TEAMS) throw NetworkMessageNullPointerExceptopn("CvTeam", team);
+	auto rtn = GET_TEAM(team).GetTeamTechs();
+	if (!rtn) throw NetworkMessageNullPointerExceptopn("CvTeamTechs", team);
+	return rtn;
+}
+
+void CvTeamTechs::ExtractToArg(BasicArguments* arg) {
+	arg->set_argtype("CvTeamTechs");
+	arg->set_identifier1(m_pTeam->GetID());
+}
 /// Constructor
 CvTeamTechs::CvTeamTechs():
 	m_pabHasTech(NULL),

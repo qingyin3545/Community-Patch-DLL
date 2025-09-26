@@ -29,6 +29,11 @@
 using namespace CvLuaArgs;
 
 //------------------------------------------------------------------------------
+void CvLuaCity::RegistStaticFunctions()
+{
+
+}
+//------------------------------------------------------------------------------
 void CvLuaCity::PushMethods(lua_State* L, int t)
 {
 	Method(IsNone);

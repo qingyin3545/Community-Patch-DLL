@@ -73,6 +73,9 @@
     <LibraryPath>C:\Program Files\Microsoft SDKs\Windows\v6.0A\Lib;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\lib</LibraryPath>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnabled>false</VcpkgEnabled>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalOptions>/EHsc  /d2noftol3 -Zm266 %(AdditionalOptions)</AdditionalOptions>
@@ -97,7 +100,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>CvWorldBuilderMapWin32.lib;CvGameCoreDLLUtilWin32.lib;CvLocalizationWin32.lib;CvGameDatabaseWin32.lib;FireWorksWin32.lib;FLuaWin32.lib;lua51_Win32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CvWorldBuilderMapWin32.lib;CvGameCoreDLLUtilWin32.lib;CvLocalizationWin32.lib;CvGameDatabaseWin32.lib;FireWorksWin32.lib;FLuaWin32.lib;lua51_Win32.lib;libprotobuf-lite.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)CvGameCore_Expansion2.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(SolutionDir)\CvWorldBuilderMap\lib\;$(SolutionDir)\CvGameCoreDLLUtil\lib\;$(SolutionDir)\CvLocalization\lib\;$(SolutionDir)\CvGameDatabase\lib\;$(SolutionDir)FirePlace\lib\;$(SolutionDir)ThirdPartyLibs\Lua51\lib\;$(SolutionDir)ThirdPartyLibs\protobuf25\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -149,7 +152,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>CvWorldBuilderMapWin32.lib;CvGameCoreDLLUtilWin32.lib;CvLocalizationWin32.lib;CvGameDatabaseWin32.lib;FireWorksWin32.lib;FLuaWin32.lib;lua51_Win32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CvWorldBuilderMapWin32.lib;CvGameCoreDLLUtilWin32.lib;CvLocalizationWin32.lib;CvGameDatabaseWin32.lib;FireWorksWin32.lib;FLuaWin32.lib;lua51_Win32.lib;libprotobuf-lite.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)CvGameCore_Expansion2.dll</OutputFile>
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(SolutionDir)\CvWorldBuilderMap\lib\;$(SolutionDir)\CvGameCoreDLLUtil\lib\;$(SolutionDir)\CvLocalization\lib\;$(SolutionDir)\CvGameDatabase\lib\;$(SolutionDir)FirePlace\lib\;$(SolutionDir)ThirdPartyLibs\Lua51\lib\;$(SolutionDir)ThirdPartyLibs\protobuf25\lib\Release\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -199,6 +202,10 @@
     <ClCompile Include="CvPromotionCollectionClasses.cpp" />
     <ClCompile Include="CvSerialize.cpp" />
     <ClCompile Include="CvTargeting.cpp" />
+    <ClCompile Include="FunctionsRef.cpp" />
+    <ClCompile Include="LargeArgContainer.pb.cpp" />
+    <ClCompile Include="NetworkMessageUtil.cpp" />
+    <ClCompile Include="StackWalker.cpp" />
     <ClCompile Include="_precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -439,6 +446,7 @@
     <ClInclude Include="..\FirePlace\include\FireWorks\LintFree.h" />
     <ClInclude Include="..\FirePlace\include\FireWorks\Win32\FDebugHelper.h" />
     <ClInclude Include="..\FirePlace\include\FireWorks\Win32\FKBInputDevice.h" />
+    <ClInclude Include="ArgumentAdaptor.h" />
     <ClInclude Include="banned.h" />
     <ClInclude Include="CppLaterFeatures.h" />
     <ClInclude Include="CustomMods.h" />
@@ -474,6 +482,7 @@
     <ClInclude Include="CvEnumMapSerialization.h" />
     <ClInclude Include="CvEnumsUtil.h" />
     <ClInclude Include="CvGameCoreStructs.h" />
+    <ClInclude Include="CvGameObjectExtractable.h" />
     <ClInclude Include="CvIndependentPromotionInfo.h" />
     <ClInclude Include="CvLoggerCSV.h" />
     <ClInclude Include="CvCitySpecializationAI.h" />
@@ -565,7 +574,11 @@
     <ClInclude Include="CvVotingClasses.h" />
     <ClInclude Include="CvWonderProductionAI.h" />
     <ClInclude Include="CvWorldBuilderMapLoader.h" />
+    <ClInclude Include="FunctionsRef.h" />
     <ClInclude Include="HHMods.h" />
+    <ClInclude Include="LargeArgContainer.pb.h" />
+    <ClInclude Include="LaterFeatures.h" />
+    <ClInclude Include="NetworkMessageUtil.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="CvDllBuildInfo.h" />
     <ClInclude Include="CvDllBuildingInfo.h" />
@@ -639,6 +652,7 @@
     <ClInclude Include="Lua\CvLuaTeam.h" />
     <ClInclude Include="Lua\CvLuaTeamTech.h" />
     <ClInclude Include="Lua\CvLuaUnit.h" />
+    <ClInclude Include="StackWalker.h" />
     <ClInclude Include="TContainer.h" />
   </ItemGroup>
   <ItemGroup>

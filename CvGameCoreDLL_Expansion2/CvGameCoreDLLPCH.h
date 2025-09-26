@@ -195,6 +195,8 @@ typedef wchar_t          wchar;
 #include "ICvDLLScriptSystem.h"
 #include "Lua/CvLuaSupport.h"
 
+#include "CvGameObjectExtractable.h"
+
 #include "CvPlayerAI.h"
 #include "CvTreasury.h"
 #include "CvMap.h"

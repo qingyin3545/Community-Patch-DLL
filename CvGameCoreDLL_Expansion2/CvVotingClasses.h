@@ -472,12 +472,19 @@ typedef vector<CvRepealProposal> RepealProposalList;
 //!  - Tracks members and their statuses
 //!  - Queried for certain effects of active Resolutions by other game classes
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-class CvLeague
+class CvLeague : public CvGameObjectExtractable
 {
 public:
 	CvLeague(void);
 	CvLeague(LeagueTypes eID);
 	~CvLeague(void);
+
+	void ExtractToArg(BasicArguments* arg);
+	static void PushToLua(lua_State* L, BasicArguments* arg);
+	static void RegistInstanceFunctions();
+	static void RegistStaticFunctions();
+	static void GetArgumentsAndExecute(LeagueTypes league);
+	static CvLeague* Provide(LeagueTypes league);
 
 	struct Member {
 		Member(void);

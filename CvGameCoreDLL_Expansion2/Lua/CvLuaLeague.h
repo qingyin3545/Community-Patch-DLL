@@ -16,6 +16,8 @@
 class CvLuaLeague : public CvLuaScopedInstance<CvLuaLeague, CvLeague>
 {
 public:
+	static void RegistStaticFunctions();
+
 	//! Push CvLeague methods into table t
 	static void PushMethods(lua_State* L, int t);
 

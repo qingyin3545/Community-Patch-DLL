@@ -18,6 +18,12 @@
 	lua_pushcclosure(L, l##Name, 0);	\
 	lua_setfield(L, t, #Name);
 
+//------------------------------------------------------------------------------
+void CvLuaArea::RegistStaticFunctions()
+{
+
+}
+//------------------------------------------------------------------------------
 void CvLuaArea::PushMethods(lua_State* L, int t)
 {
 	Method(IsNone);

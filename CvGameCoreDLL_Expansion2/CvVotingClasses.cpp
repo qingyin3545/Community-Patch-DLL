@@ -19,7 +19,8 @@
 #include "CvMilitaryAI.h"
 
 #include "LintFree.h"
-
+#include "Lua/CvLuaLeague.h"
+#include "NetworkMessageUtil.h"
 
 // ================================================================================
 //			LeagueHelpers
@@ -2101,6 +2102,26 @@ FDataStream& operator<<(FDataStream& saveTo, const CvRepealProposal& readFrom)
 // ================================================================================
 //			CvLeague
 // ================================================================================
+CvLeague* CvLeague::Provide(LeagueTypes league) {
+	auto rtn = GC.getGame().GetGameLeagues()->GetLeague(league);
+	if (!rtn) throw NetworkMessageNullPointerExceptopn("CvLeague", league);
+	return rtn;
+}
+
+void CvLeague::ExtractToArg(BasicArguments* arg) {
+	arg->set_argtype("CvLeague");
+	arg->set_identifier1(GetID());
+}
+
+void CvLeague::PushToLua(lua_State* L, BasicArguments* arg) {
+	CvLuaLeague::PushLtwt(L, Provide(LeagueTypes(arg->identifier1())));
+}
+
+void CvLeague::RegistStaticFunctions() {
+	REGIST_STATIC_FUNCTION(CvLeague::Provide);
+	REGIST_STATIC_FUNCTION(CvLeague::PushToLua);
+}
+
 CvLeague::CvLeague(void)
 {
 	m_eID = NO_LEAGUE;

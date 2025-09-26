@@ -21,6 +21,8 @@
 class CvLuaTeam : public CvLuaScopedInstance<CvLuaTeam, CvTeam>
 {
 public:
+	static void RegistStaticFunctions();
+
 	//! Push all player instances to Lua
 	static void Register(lua_State* L);
 

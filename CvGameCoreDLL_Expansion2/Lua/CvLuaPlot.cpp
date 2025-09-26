@@ -34,6 +34,11 @@
 #define CHECK_PLOT_VALID(p) if (!p || !GC.getMap().isPlot(p->getX(), p->getY()) || (p < GC.getMap().plotByIndexUnchecked(0)) || (p > GC.getMap().plotByIndexUnchecked(GC.getMap().numPlots() - 1))) return 0;
 
 //------------------------------------------------------------------------------
+void CvLuaPlot::RegistStaticFunctions()
+{
+	
+}
+//------------------------------------------------------------------------------
 void CvLuaPlot::PushMethods(lua_State* L, int t)
 {
 	Method(CanHaveFeature);

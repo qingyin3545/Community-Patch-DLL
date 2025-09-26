@@ -24,6 +24,11 @@
 //			CvLuaLeague
 // ================================================================================
 //------------------------------------------------------------------------------
+void CvLuaLeague::RegistStaticFunctions()
+{
+
+}
+//------------------------------------------------------------------------------
 void CvLuaLeague::HandleMissingInstance(lua_State* L)
 {
 	luaL_error(L, "Instance no longer exists.");

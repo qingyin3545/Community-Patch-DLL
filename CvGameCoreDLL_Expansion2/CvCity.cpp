@@ -46,6 +46,9 @@
 #include "CvDllNetMessageExt.h"
 // include after all other headers
 #include "LintFree.h"
+#include "FunctionsRef.h"
+#include "NetworkMessageUtil.h"
+#include "CvLuaCity.h"
 
 OBJECT_VALIDATE_DEFINITION(CvCity)
 
@@ -157,6 +160,33 @@ U ModifierLookup(const vector<pair<T, U>>& container, T key)
 }
 
 //	--------------------------------------------------------------------------------
+void CvCity::ExtractToArg(BasicArguments* arg) {
+	arg->set_argtype("CvCity");
+	arg->set_identifier1(getOwner());
+	arg->set_identifier2(GetID());
+}
+
+void CvCity::PushToLua(lua_State* L, BasicArguments* arg) {
+	CvLuaCity::PushLtwt(L, Provide(PlayerTypes(arg->identifier1()), arg->identifier2()));
+}
+
+void CvCity::RegistInstanceFunctions() {
+
+}
+
+void CvCity::RegistStaticFunctions() {
+	REGIST_STATIC_FUNCTION(CvCity::Provide);
+	REGIST_STATIC_FUNCTION(CvCity::PushToLua);
+}
+
+CvCity* CvCity::Provide(PlayerTypes player, int cityID) {
+	if (player < 0 || player >= MAX_PLAYERS) throw NetworkMessageNullPointerExceptopn("CvPlayer", player);
+	auto rtn = GET_PLAYER(player).getCity(cityID);
+	if (!rtn) throw NetworkMessageNullPointerExceptopn("CvCity", player, cityID);
+	return rtn;
+}
+//	--------------------------------------------------------------------------------
+
 // Public Functions...
 CvCity::CvCity() :
 	m_syncArchive()

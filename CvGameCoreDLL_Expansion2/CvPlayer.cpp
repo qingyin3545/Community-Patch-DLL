@@ -67,6 +67,8 @@
 // Include this after all other headers.
 #define LINT_WARNINGS_ONLY
 #include "LintFree.h"
+#include "NetworkMessageUtil.h"
+#include "CvLuaPlayer.h"
 
 //Simply empty check utility.
 bool isEmpty(const char* szString)
@@ -129,6 +131,31 @@ void ClearPlayerDeltas()
 	}
 }
 }
+
+//	--------------------------------------------------------------------------------
+void CvPlayer::RegistInstanceFunctions() {
+
+}
+
+void CvPlayer::ExtractToArg(BasicArguments* arg){
+	arg->set_argtype("CvPlayer");
+	arg->set_identifier1(GetID());
+}
+
+void CvPlayer::PushToLua(lua_State* L, BasicArguments* arg) {
+	CvLuaPlayer::PushLtwt(L, Provide(PlayerTypes(arg->identifier1())));
+}
+
+void CvPlayer::RegistStaticFunctions() {
+	REGIST_STATIC_FUNCTION(CvPlayer::Provide);
+	REGIST_STATIC_FUNCTION(CvPlayer::PushToLua);
+}
+
+CvPlayerAI* CvPlayer::Provide(PlayerTypes player) {
+	if(player < 0 || player >= MAX_PLAYERS) throw NetworkMessageNullPointerExceptopn("CvPlayer", player);
+	return &GET_PLAYER(player);
+}
+//	--------------------------------------------------------------------------------
 
 CvPlayer::CvPlayer() :
 	m_syncArchive()

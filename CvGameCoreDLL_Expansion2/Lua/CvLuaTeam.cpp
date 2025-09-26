@@ -28,6 +28,11 @@
 	lua_setfield(L, t, #Name);
 
 //------------------------------------------------------------------------------
+void CvLuaTeam::RegistStaticFunctions()
+{
+
+}
+//------------------------------------------------------------------------------
 void CvLuaTeam::Register(lua_State* L)
 {
 	FLua::Details::CCallWithErrorHandling(L, pRegister);

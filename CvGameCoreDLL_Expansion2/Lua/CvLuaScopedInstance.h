@@ -11,6 +11,7 @@
 
 #include "CvLuaMethodWrapper.h"
 #include "FObjectHandle.h"
+#include "NetworkMessageUtil.h"
 
 template<class Derived, class InstanceType>
 class CvLuaScopedInstance : public CvLuaMethodWrapper<Derived, InstanceType>
@@ -21,7 +22,12 @@ public:
 	{
 		Push(L, handle.pointer());
 	}
+	// Simply push instance pointer without involving information like method table into a lua state.
+	// Only for GetInstance() to correctly retrieve the game object.
+	static void PushLtwt(lua_State* L, InstanceType* pkType);
 	static InstanceType* GetInstance(lua_State* L, int idx = 1, bool bErrorOnFail = true);
+	static int lSendAndExecuteLuaFunction(lua_State* L);
+	static int lSendAndExecuteLuaFunctionPostpone(lua_State* L);
 
 	//! Used by CvLuaMethodWrapper to know where first argument is.
 	static const int GetStartingArgIndex();
@@ -124,6 +130,22 @@ void CvLuaScopedInstance<Derived, InstanceType>::Push(lua_State* L, InstanceType
 }
 //------------------------------------------------------------------------------
 template<class Derived, class InstanceType>
+void CvLuaScopedInstance<Derived, InstanceType>::PushLtwt(lua_State* L, InstanceType* pkType)
+{
+	if (pkType)
+	{
+		lua_createtable(L, 0, 1);
+		lua_pushlightuserdata(L, pkType);
+		lua_setfield(L, -2, "__instance");
+	}
+	else
+	{
+		lua_pushnil(L);
+		throw NoSuchMethodException("Null ptr");
+	}
+}
+//------------------------------------------------------------------------------
+template<class Derived, class InstanceType>
 InstanceType* CvLuaScopedInstance<Derived, InstanceType>::GetInstance(lua_State* L, int idx, bool bErrorOnFail)
 {
 #if defined(VPDEBUG)
@@ -199,5 +221,37 @@ void CvLuaScopedInstance<Derived, InstanceType>::DefaultHandleMissingInstance(lu
 	luaL_error(L, "Instance does not exist.");
 }
 
+//------------------------------------------------------------------------------
+template<class Derived, class InstanceType>
+int CvLuaScopedInstance<Derived, InstanceType>::lSendAndExecuteLuaFunction(lua_State* L) {
+	auto fault = NetworkMessageUtil::ProcessLuaArgForReflection(L, 2) < 0;
+	if (fault) return 0;
+	int time = GetTickCount();
+	NetworkMessageUtil::ReceiveLargeArgContainer.set_invokestamp(time);
+	auto str = NetworkMessageUtil::ReceiveLargeArgContainer.SerializeAsString();
+	InvokeRecorder::pushInvoke(str);
+	gDLL->SendRenameCity(-str.length(), str);
+	auto rtn = 0;
+	try {
+		rtn = staticFunctions.ExecuteFunction<int>(NetworkMessageUtil::ReceiveLargeArgContainer.functiontocall(), L);
+	}
+	catch (NoSuchMethodException e) {
+		CUSTOMLOG(e.what());
+	}
+	NetworkMessageUtil::ReceiveLargeArgContainer.Clear();
+	return rtn;
+}
+
+template<class Derived, class InstanceType>
+int CvLuaScopedInstance<Derived, InstanceType>::lSendAndExecuteLuaFunctionPostpone(lua_State* L) {
+	auto fault = NetworkMessageUtil::ProcessLuaArgForReflection(L, 2) < 0;
+	if (fault) return 0;
+	int time = GetTickCount();
+	NetworkMessageUtil::ReceiveLargeArgContainer.set_invokestamp(time);
+	auto str = NetworkMessageUtil::ReceiveLargeArgContainer.SerializeAsString();
+	gDLL->SendRenameCity(-str.length(), str);
+	NetworkMessageUtil::ReceiveLargeArgContainer.Clear();
+	return 0;
+}
 
 #endif //CVLUASCOPEDNSTANCE_H

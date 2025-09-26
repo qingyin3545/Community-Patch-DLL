@@ -24,6 +24,10 @@
 	lua_setfield(L, t, #Name);
 
 //------------------------------------------------------------------------------
+void CvLuaTeamTech::RegistStaticFunctions()
+{
+}
+//------------------------------------------------------------------------------
 void CvLuaTeamTech::HandleMissingInstance(lua_State* L)
 {
 	DefaultHandleMissingInstance(L);

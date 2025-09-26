@@ -37,6 +37,8 @@
 #include "CvTypes.h"
 // Include this after all other headers.
 #include "LintFree.h"
+#include "NetworkMessageUtil.h"
+#include "CvLuaPlot.h"
 
 // Public Functions...
 
@@ -77,6 +79,33 @@ void ClearPlotDeltas()
 	}
 }
 }
+
+//	--------------------------------------------------------------------------------
+void CvPlot::PushToLua(lua_State* L, BasicArguments* arg) {
+	CvLuaPlot::PushLtwt(L, Provide(arg->identifier1(), arg->identifier2()));
+}
+
+void CvPlot::RegistInstanceFunctions() {
+
+}
+
+void CvPlot::ExtractToArg(BasicArguments* arg) {
+	arg->set_argtype("CvPlot");
+	arg->set_identifier1(getX());
+	arg->set_identifier2(getY());
+}
+
+void CvPlot::RegistStaticFunctions() {
+	REGIST_STATIC_FUNCTION(CvPlot::Provide);
+	REGIST_STATIC_FUNCTION(CvPlot::PushToLua);
+}
+
+CvPlot* CvPlot::Provide(int x, int y) {
+	auto rtn = GC.getMap().plot(x, y);
+	if (!rtn) throw NetworkMessageNullPointerExceptopn("CvPlot", x, y);
+	return rtn;
+}
+//	--------------------------------------------------------------------------------
 
 //////////////////////////////////////////////////////////////////////////
 // CvArchaeologyData serialization
