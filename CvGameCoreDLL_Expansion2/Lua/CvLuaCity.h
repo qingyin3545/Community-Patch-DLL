@@ -790,6 +790,26 @@ protected:
 	static int lSetYieldFromDevelopment(lua_State* L);
 
 	LUAAPIEXTN(GetCompetitiveSpawnUnitType, int, bIncludeRanged, bIncludeShips, bIncludeRecon, bIncludeUUs, bNoResource, bMinorCivGift, bRandom, tUnitCombatIDs);
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	LUAAPIEXTN(GetCorruptionScore, int);
+	LUAAPIEXTN(GetCorruptionLevel, int);
+	LUAAPIEXTN(UpdateCorruption);
+	LUAAPIEXTN(CalculateTotalCorruptionScore, int);
+	LUAAPIEXTN(CalculateCorruptionScoreFromDistance, int);
+	LUAAPIEXTN(CalculateCorruptionScoreFromCoastalBonus, int);
+	LUAAPIEXTN(CalculateCorruptionScoreModifierFromSpy, int);
+	LUAAPIEXTN(CalculateCorruptionScoreModifierFromTrait, int);
+	LUAAPIEXTN(GetCorruptionScoreChangeFromBuilding, int);
+	LUAAPIEXTN(GetCorruptionLevelChangeFromBuilding, int);
+	LUAAPIEXTN(CalculateCorruptionScoreFromResource, int);
+	LUAAPIEXTN(CalculateCorruptionScoreFromTrait, int);
+	LUAAPIEXTN(DecideCorruptionLevelForNormalCity, CorruptionLevelTypes, int);
+	LUAAPIEXTN(GetCorruptionScoreModifierFromPolicy, int);
+	LUAAPIEXTN(GetMaxCorruptionLevel, int);
+	LUAAPIEXTN(IsCorruptionLevelReduceByOne, bool);
+#endif
+
 #endif
 };
 

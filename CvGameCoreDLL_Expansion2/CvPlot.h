@@ -861,6 +861,14 @@ public:
 	/// Constructs a seed value from the plot suitable for pseudo-random number generation.
 	CvSeeder GetPseudoRandomSeed() const;
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	int CalculateCorruptionScoreFromDistance(const CvCity& capitalCity) const;
+	int CalculateCorruptionScoreFromCoastalBonus(const CvCity& capitalCity) const;
+	int CalculateCorruptionScoreFromResource() const;
+	int CalculateCorruptionScoreFromTrait(PlayerTypes ePlayer) const;
+	int CalculateCorruptionScoreModifierFromTrait(PlayerTypes ePlayer) const;
+#endif
+
 protected:
 	class PlotBoolField
 	{

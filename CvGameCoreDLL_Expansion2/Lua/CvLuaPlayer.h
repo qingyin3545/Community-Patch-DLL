@@ -1539,6 +1539,12 @@ protected:
 	static int lSetInstantYieldNotificationDisabled(lua_State* L);
 
 	LUAAPIEXTN(GetCompetitiveSpawnUnitType, int, bIncludeRanged, bIncludeShips, bIncludeRecon, bIncludeUUs, bNoResource, bMinorCivGift, bRandom, tUnitCombatIDs);
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	LUAAPIEXTN(IsCorruptionLevelReduceByOne, bool);
+	LUAAPIEXTN(GetCorruptionScoreModifierFromPolicy, int);
+#endif
+
 };
 
 namespace CvLuaArgs

@@ -1537,6 +1537,11 @@ void CvLuaPlayer::PushMethods(lua_State* L, int t)
 	Method(SetInstantYieldNotificationDisabled);
 
 	Method(GetCompetitiveSpawnUnitType);
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	Method(IsCorruptionLevelReduceByOne);
+	Method(GetCorruptionScoreModifierFromPolicy);
+#endif
 }
 //------------------------------------------------------------------------------
 void CvLuaPlayer::HandleMissingInstance(lua_State* L)
@@ -18722,3 +18727,8 @@ int CvLuaPlayer::lGetCompetitiveSpawnUnitType(lua_State* L)
 	lua_pushinteger(L, eUnit);
 	return 1;
 }
+
+#ifdef MOD_GLOBAL_CORRUPTION
+LUAAPIIMPL(Player, IsCorruptionLevelReduceByOne)
+LUAAPIIMPL(Player, GetCorruptionScoreModifierFromPolicy)
+#endif
