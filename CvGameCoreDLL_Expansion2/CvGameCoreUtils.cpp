@@ -1952,3 +1952,22 @@ void PrintMemoryInfo(const char* hint)
 
 	CloseHandle(hProcess);
 }
+
+extern "C" unsigned int _ftoui3(const float x) {
+	return (unsigned int)_mm_cvt_ss2si(_mm_set_ss(x));
+}
+static const unsigned long long _Int32ToUInt32[] = { 0ULL, 0x41F0000000000000ULL };
+extern "C"  __declspec(naked) double _cdecl _ltod3(const __int64 x) {
+	__asm
+	{
+		xorps   xmm1, xmm1
+		cvtsi2sd xmm1, edx
+		xorps   xmm0, xmm0
+		cvtsi2sd xmm0, ecx
+		shr     ecx, 31
+		mulsd   xmm1, ds:_Int32ToUInt32[8]          //_DP2to32
+		addsd   xmm0, ds : _Int32ToUInt32[ecx * 8]
+		addsd   xmm0, xmm1
+		retn
+	}
+}
