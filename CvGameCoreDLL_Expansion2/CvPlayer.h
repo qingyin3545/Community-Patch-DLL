@@ -2976,6 +2976,11 @@ public:
 	std::vector<PolicyResourceInfo>& GetCityResourcesFromPolicy();
 	const std::vector<PolicyResourceInfo>& GetCityResourcesFromPolicy() const;
 
+	bool IsRemoveOceanImpassableCombatUnit() const;
+	void ChangeRemoveOceanImpassableCombatUnit(int iChange);
+	bool IsRemoveOceanImpassableCivilian() const;
+	void ChangeRemoveOceanImpassableCivilian(int iChange);
+
 	static void GetUCTypesFromPlayer(const CvPlayer& player,
 		std::tr1::unordered_set<UnitTypes>* m_sUU,
 		std::tr1::unordered_set<BuildingTypes>* m_sUB,
@@ -2987,6 +2992,10 @@ public:
 	BuildingTypes GetCivBuilding(BuildingClassTypes eBuildingClass) const;
 	UnitTypes GetCivUnit(UnitClassTypes eUnitClass, int iFakeSeed = 0) const;
 	UnitTypes GetCivUnitWithDefault(UnitClassTypes eUnitClass) const;
+
+	void RemoveCurrentPromotion(PromotionTypes eIndex);
+	void RemoveOceanImpassableCivilian();
+	void RemoveOceanImpassableCombatUnit();
 
 	int GetNumWorldWonders();
 	int GetHappinessFromFaith() const;
@@ -3921,6 +3930,9 @@ protected:
 #endif
 	std::vector<int> m_paiNumResourceAvailableCache;
 	std::vector<PolicyResourceInfo> m_vCityResourcesFromPolicy;
+
+	int m_iRemoveOceanImpassableCombatUnit = 0;
+	int m_iRemoveOceanImpassableCivilian = 0;
 
 	std::tr1::unordered_set<UnitTypes> m_sUUFromDualEmpire;
 	std::tr1::unordered_set<BuildingTypes> m_sUBFromDualEmpire;
