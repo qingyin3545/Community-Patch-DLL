@@ -510,6 +510,9 @@ public:
 	bool IsNullifyInfluenceModifier() const;
 	int GetDiplomatPropagandaModifier() const;
 	int IsNoResistance() const;
+	int GetFreePromotionRemoved() const;
+	int GetCurrentPromotionRemoved() const;
+	bool IsRemoveOceanImpassableCombatUnit() const;
 	int GetScienceBeakerMod() const;
 	int GetProductionBeakerMod() const;
 	int GetOriginalCapitalCaptureTech() const;
@@ -940,6 +943,9 @@ private:
 	bool m_bNullifyInfluenceModifier = false;
 	int m_iDiplomatPropagandaModifier = 0;
 	int m_bNoResistance = 0;
+	int m_iFreePromotionRemoved = NO_PROMOTION;
+	int m_iCurrentPromotionRemoved = NO_PROMOTION;
+	bool m_bRemoveOceanImpassableCombatUnit = false;
 	int m_iScienceBeakerMod = 0;
 	int m_iProductionBeakerMod = 0;
 	int m_iOriginalCapitalCaptureTech = 0;
