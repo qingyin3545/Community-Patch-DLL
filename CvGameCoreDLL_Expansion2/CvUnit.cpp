@@ -27990,6 +27990,12 @@ void CvUnit::setHasPromotion(PromotionTypes eIndex, bool bNewValue)
 			}
 		}
 
+		if ((GET_PLAYER(getOwner()).IsRemoveOceanImpassableCivilian() && IsCivilianUnit())
+			|| (GET_PLAYER(getOwner()).IsRemoveOceanImpassableCombatUnit() && IsCombatUnit()))
+		{
+			if (eIndex == GC.getPROMOTION_OCEAN_IMPASSABLE()) return;
+		}
+
 		// Blocked Promotions
 		std::set<int> sBlockedPromotions = thisPromotion.GetBlockedPromotions();
 		std::set<int>::const_iterator it = sBlockedPromotions.begin();
