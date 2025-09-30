@@ -1431,6 +1431,11 @@ bool CvPolicyEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility&
 	m_bNullifyInfluenceModifier = kResults.GetBool("NullifyInfluenceModifier");
 	m_iDiplomatPropagandaModifier = kResults.GetInt("DiplomatPropagandaModifier");
 	m_bNoResistance = kResults.GetBool("NoResistance");
+	const char* szFreePromotionRemoved = kResults.GetText("FreePromotionRemoved");
+	m_iFreePromotionRemoved = GC.getInfoTypeForString(szFreePromotionRemoved, true);
+	const char* szCurrentPromotionRemoved = kResults.GetText("CurrentPromotionRemoved");
+	m_iCurrentPromotionRemoved = GC.getInfoTypeForString(szCurrentPromotionRemoved, true);
+	m_bRemoveOceanImpassableCombatUnit = kResults.GetBool("RemoveOceanImpassableCombatUnit");
 	m_iScienceBeakerMod = kResults.GetInt("ScienceBeakerMod");
 	m_iProductionBeakerMod = kResults.GetInt("ProductionBeakerMod");
 	m_iOriginalCapitalCaptureTech = kResults.GetInt("OriginalCapitalCaptureTech");
@@ -3886,6 +3891,18 @@ int CvPolicyEntry::GetDiplomatPropagandaModifier() const
 int CvPolicyEntry::IsNoResistance() const
 {
 	return m_bNoResistance;
+}
+int CvPolicyEntry::GetFreePromotionRemoved() const
+{
+	return m_iFreePromotionRemoved;
+}
+int CvPolicyEntry::GetCurrentPromotionRemoved() const
+{
+	return m_iCurrentPromotionRemoved;
+}
+bool CvPolicyEntry::IsRemoveOceanImpassableCombatUnit() const
+{
+	return m_bRemoveOceanImpassableCombatUnit;
 }
 int CvPolicyEntry::GetScienceBeakerMod() const
 {

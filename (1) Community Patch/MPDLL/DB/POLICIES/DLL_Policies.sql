@@ -19,7 +19,23 @@ alter table Policies add NullifyInfluenceModifier boolean default 0;
 alter table Policies add DiplomatPropagandaModifier integer default 0;
 
 alter table Policies add NoResistance boolean default 0;
+alter table Policies add FreePromotionRemoved text references UnitPromotions(Type);
+-- SP-TODO: Column Name RemoveCurrentPromotion -> CurrentPromotionRemoved
+alter table Policies add CurrentPromotionRemoved text references UnitPromotions(Type);
+alter table Policies add RemoveOceanImpassableCombatUnit boolean default 0;
 
+alter table Policies add NoOccupiedUnhappinessGarrisonedCity boolean default 0;
+create table Policy_EraSettlerProductionModifier (
+    PolicyType text references Policies(Type),
+    EraType text references Eras(Type),
+    Modifier integer default 0
+);
+alter table Policies add SettlerPopConsume integer default 0;
+
+alter table Policies add ScienceModifierFromRANum integer default 0;
+alter table Policies add CityExtraProductionCount integer default 0;
+alter table Policies add CaptureCityResistanceTurnsChangeFormula text references LuaFormula(Type);
+alter table Policies add AlwaysWeLoveKindDayInGoldenAge boolean default 0;
 
 -- SP-TODO: Column Name GreatScientistBeakerPolicyModifier -> ScienceBeakerMod
 alter table Policies add ScienceBeakerMod integer default 0;
@@ -78,20 +94,6 @@ CREATE TABLE Policy_BuildSpeedModifier (
 	Modifier integer not null
 );
 
-alter table Policies add SettlerPopConsume integer default 0;
-ALTER TABLE Policies ADD 'SettlerProductionEraModifier' INTEGER DEFAULT 0;
-ALTER TABLE Policies ADD 'SettlerProductionStartEra' TEXT DEFAULT NULL REFERENCES Eras(Type);
-ALTER TABLE Policies ADD 'TourismModifierPerGPCreation' BOOLEAN DEFAULT 0;
-ALTER TABLE Policies ADD 'ScienceModifierFromRANum' INTEGER DEFAULT 0;
-ALTER TABLE Policies ADD 'CityExtraProductionCount' INTEGER DEFAULT 0;
-ALTER TABLE Policies ADD 'FreeBuildingClass' text default null references BuildingClasses(Type);
-alter table Policies add column CaptureCityResistanceTurnsChangeFormula text references LuaFormula(Type);
-alter table Policies add column FreePromotionRemoved integer default -1;
-alter table Policies add column RemoveCurrentPromotion boolean default 0;
-alter table Policies add column RemoveOceanImpassableCombatUnit boolean default 0;
-ALTER TABLE Policies ADD COLUMN 'AlwaysWeLoveKindDayInGoldenAge' BOOLEAN DEFAULT 0;
-alter table Policies add column NoOccupiedUnhappinessGarrisonedCity boolean default 0;
-
 CREATE TABLE Policy_YieldModifierPerArtifacts (
 	'PolicyType' text default '',
 	'YieldType' text default '',
@@ -122,8 +124,12 @@ create table Policy_CityLoveKingDayYieldMod (
 
 -- Deprecated
 alter table Policies add Dummy integer default 0; -- Use IsDummy
-alter table Policies add InstantFoodKeptPercent integer default 0;
+alter table Policies add InstantFoodKeptPercent integer default 0; -- No FoodKept in CP
 alter table Policies add HappinessPerPolicy integer default 0; -- Use HappinessPerXPolicies
 alter table Policies add NumTradeRouteBonus integer default 0; -- Use FreeTradeRoute
-alter table Policies add RiggingElectionInfluenceModifier integer default 0; -- use RigElectionInfluenceModifier
+alter table Policies add RiggingElectionInfluenceModifier integer default 0; -- Use RigElectionInfluenceModifier
 alter table Policies add ExtraSpies integer default 0; -- Use FreeSpy
+alter table Policies add TourismModifierPerGPCreation boolean default 0; -- Too specialized
+alter table Policies add SettlerProductionEraModifier integer default 0; -- Use Policy_EraSettlerProductionModifier
+alter table Policies add SettlerProductionStartEra text references Eras(Type); -- Use Policy_EraSettlerProductionModifier
+alter table Policies add FreeBuildingClass text references BuildingClasses(Type); -- Use AllCityFreeBuilding
