@@ -1671,6 +1671,10 @@ void CvPlayer::uninit()
 #endif
 	m_paiNumResourceAvailableCache.clear();
 	m_vCityResourcesFromPolicy.clear();
+
+	m_iRemoveOceanImpassableCombatUnit = 0;
+	m_iRemoveOceanImpassableCivilian = 0;
+
 	m_sUUFromDualEmpire.clear();
 	m_sUBFromDualEmpire.clear();
 	m_sUIFromDualEmpire.clear();
@@ -42458,6 +42462,22 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	{
 		for (const auto& info : pkPolicyInfo->GetCityResources()) m_vCityResourcesFromPolicy.push_back(info);
 	}
+	// Promotion Removed
+	PromotionTypes eFreePromotionRemoved = (PromotionTypes)pkPolicyInfo->GetFreePromotionRemoved();
+	if (eFreePromotionRemoved != NO_PROMOTION)
+	{
+		ChangeFreePromotionCount(eFreePromotionRemoved, -iChange);
+	}
+	PromotionTypes eCurrentPromotionRemoved = (PromotionTypes)pkPolicyInfo->GetCurrentPromotionRemoved();
+	if (eCurrentPromotionRemoved != NO_PROMOTION && iChange > 0)
+	{
+		RemoveCurrentPromotion(eCurrentPromotionRemoved);
+	}
+	if(pkPolicyInfo->IsRemoveOceanImpassableCombatUnit())
+	{
+		ChangeRemoveOceanImpassableCombatUnit(iChange);
+		if(iChange > 0) RemoveOceanImpassableCombatUnit();
+	}
 
 	// Improvements
 	for (int iI = 0; iI < GC.getNumImprovementInfos(); iI++)
@@ -44341,6 +44361,10 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 #endif
 	visitor(player.m_paiNumResourceAvailableCache);
 	visitor(player.m_vCityResourcesFromPolicy);
+
+	visitor(player.m_iRemoveOceanImpassableCombatUnit);
+	visitor(player.m_iRemoveOceanImpassableCivilian);
+
 	visitor(player.m_sUUFromDualEmpire);
 	visitor(player.m_sUBFromDualEmpire);
 	visitor(player.m_sUIFromDualEmpire);
@@ -50201,6 +50225,24 @@ const std::vector<PolicyResourceInfo>& CvPlayer::GetCityResourcesFromPolicy() co
 }
 
 //	--------------------------------------------------------------------------------
+bool CvPlayer::IsRemoveOceanImpassableCombatUnit() const
+{
+	return m_iRemoveOceanImpassableCombatUnit > 0;
+}
+void CvPlayer::ChangeRemoveOceanImpassableCombatUnit(int iChange)
+{
+	m_iRemoveOceanImpassableCombatUnit += iChange;
+}
+bool CvPlayer::IsRemoveOceanImpassableCivilian() const
+{
+	return m_iRemoveOceanImpassableCivilian > 0;
+}
+void CvPlayer::ChangeRemoveOceanImpassableCivilian(int iChange)
+{
+	m_iRemoveOceanImpassableCivilian += iChange;
+}
+
+//	--------------------------------------------------------------------------------
 void CvPlayer::GetUCTypesFromPlayer(const CvPlayer& player,
 	std::tr1::unordered_set<UnitTypes>* m_sUU,
 	std::tr1::unordered_set<BuildingTypes>* m_sUB,
@@ -50297,6 +50339,42 @@ UnitTypes CvPlayer::GetCivUnitWithDefault(UnitClassTypes eUnitClass) const
 		if(pUnitClassInfo) eUnitType = (UnitTypes)pUnitClassInfo->getDefaultUnitIndex();
 	}
 	return eUnitType;
+}
+
+//	--------------------------------------------------------------------------------
+void CvPlayer::RemoveCurrentPromotion(PromotionTypes ePromotion)
+{
+	// Loop through Units
+	CvUnit* pLoopUnit = nullptr;
+	int iLoop = 0;
+	for(pLoopUnit = firstUnit(&iLoop); pLoopUnit != nullptr; pLoopUnit = nextUnit(&iLoop))
+	{
+		pLoopUnit->setHasPromotion(ePromotion, false);
+	}
+}
+void CvPlayer::RemoveOceanImpassableCivilian()
+{
+	// Loop through Units
+	CvUnit* pLoopUnit = nullptr;
+	int iLoop = 0;
+	PromotionTypes ePromotionOceanImpassable = (PromotionTypes)GC.getPROMOTION_OCEAN_IMPASSABLE();
+	for(pLoopUnit = firstUnit(&iLoop); pLoopUnit != nullptr; pLoopUnit = nextUnit(&iLoop))
+	{
+		if(pLoopUnit->IsCivilianUnit())
+			pLoopUnit->setHasPromotion(ePromotionOceanImpassable, false);
+	}
+}
+void CvPlayer::RemoveOceanImpassableCombatUnit()
+{
+	// Loop through Units
+	CvUnit* pLoopUnit = nullptr;
+	int iLoop = 0;
+	PromotionTypes ePromotionOceanImpassable = (PromotionTypes)GC.getPROMOTION_OCEAN_IMPASSABLE();
+	for(pLoopUnit = firstUnit(&iLoop); pLoopUnit != nullptr; pLoopUnit = nextUnit(&iLoop))
+	{
+		if(pLoopUnit->IsCombatUnit())
+			pLoopUnit->setHasPromotion(ePromotionOceanImpassable, false);
+	}
 }
 
 //	--------------------------------------------------------------------------------
