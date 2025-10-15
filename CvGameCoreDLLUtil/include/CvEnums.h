@@ -3850,3 +3850,9 @@ enum CLOSED_ENUM ExplorationDomainTypes
 	EXPLORATION_COAST,
 	EXPLORATION_OCEAN
 };
+
+#ifdef MOD_GLOBAL_CORRUPTION
+enum CLOSED_ENUM CorruptionLevelTypes {
+	INVALID_CORRUPTION = -1
+};
+#endif

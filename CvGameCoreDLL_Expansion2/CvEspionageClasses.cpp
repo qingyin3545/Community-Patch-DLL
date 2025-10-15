@@ -2817,6 +2817,13 @@ bool CvPlayerEspionage::MoveSpyTo(CvCity* pCity, uint uiSpyIndex, bool bAsDiplom
 		int iRate = CalcPerTurn(SPY_STATE_TRAVELLING, pCity, uiSpyIndex);
 		int iGoal = CalcRequired(SPY_STATE_TRAVELLING, pCity, uiSpyIndex);
 		pCityEspionage->SetActivity(m_pPlayer->GetID(), 0, iRate, iGoal);
+	
+#ifdef MOD_GLOBAL_CORRUPTION
+		if (MOD_GLOBAL_CORRUPTION)
+		{
+			pCity->UpdateCorruption();
+		}
+#endif
 	}
 
 	return true;
@@ -2923,6 +2930,13 @@ bool CvPlayerEspionage::ExtractSpyFromCity(uint uiSpyIndex)
 
 	pCityEspionage->SetPendingEvents(ePlayer, 0);
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	if (MOD_GLOBAL_CORRUPTION)
+	{
+		pCity->UpdateCorruption();
+	}
+#endif
+
 	return true;
 }
 
@@ -2953,6 +2967,22 @@ void CvPlayerEspionage::LevelUpSpy(uint uiSpyIndex, int iExperience)
 		if (bCanLevel)
 		{
 			CvSpyRank eOriginalRank = m_aSpyList[uiSpyIndex].m_eRank;
+
+#ifdef MOD_GLOBAL_CORRUPTION
+			if (MOD_GLOBAL_CORRUPTION)
+			{
+				const int iX = m_aSpyList[uiSpyIndex].m_iCityX;
+				const int iY = m_aSpyList[uiSpyIndex].m_iCityY;
+				CvPlot* pPlot = GC.getMap().plot(iX, iY);
+				if(pPlot)
+				{
+					CvCity* pCity = pPlot->getPlotCity();
+					if (pCity) {
+						pCity->UpdateCorruption();
+					}
+				}
+			}
+#endif
 
 			// announce promotion through notification
 			m_aSpyList[uiSpyIndex].m_eRank = (CvSpyRank)(m_aSpyList[uiSpyIndex].m_eRank + 1);
