@@ -3839,3 +3839,10 @@ enum CLOSED_ENUM IsHumanReason
 	ISHUMAN_UI,                     // UI related isHuman calls.
 	OTHER_ISHUMAN_REASON            // Any other isHuman call reason (multiplayer syncing or other isHuman calls we do not want to tamper with).
 };
+
+
+#ifdef MOD_GLOBAL_CORRUPTION
+enum CLOSED_ENUM CorruptionLevelTypes {
+	INVALID_CORRUPTION = -1
+};
+#endif

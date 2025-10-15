@@ -35411,6 +35411,332 @@ bool CvCity::IsNukeKillable(int iNukeLevel)
 	return getPopulation() < /*5*/ GD_INT_GET(NUKE_LEVEL2_ELIM_POPULATION_THRESHOLD);
 }
 
+#ifdef MOD_GLOBAL_CORRUPTION
+int CvCity::GetCorruptionScore() const
+{
+	return m_iCachedCorruptionScore;
+}
+
+CorruptionLevelTypes CvCity::GetCorruptionLevel() const
+{
+	return m_eCachedCorruptionLevel;
+}
+
+void CvCity::UpdateCorruption()
+{
+	CvPlayerAI& owner = GET_PLAYER(getOwner());
+	if (!owner.EnableCorruption())
+	{
+		return;
+	}
+
+	const int oldScore = m_iCachedCorruptionScore;
+	const CorruptionLevelTypes eOldLevel = m_eCachedCorruptionLevel;
+	auto* pOldLevel = GC.getCorruptionLevelInfo(eOldLevel);
+
+	const int newScore = CalculateTotalCorruptionScore();
+	CvCorruptionLevel* pNewLevel = nullptr;
+	if (isCapital())
+	{
+		pNewLevel = GC.getCapitalCityCorruptionLevel();
+	}
+	else if (IsPuppet())
+	{
+		pNewLevel = GC.getPuppetCityCorruptionLevel();
+	}
+	else
+	{
+		pNewLevel = DecideCorruptionLevelForNormalCity(newScore);
+	}
+
+	m_iCachedCorruptionScore = newScore;
+	m_eCachedCorruptionLevel = pNewLevel ? static_cast<CorruptionLevelTypes>(pNewLevel->GetID()) : INVALID_CORRUPTION;
+
+	if (pNewLevel == pOldLevel)
+	{
+		return;
+	}
+
+	bool haveOldPublicSecurityBuilding = false;
+	if (pOldLevel)
+	{
+		auto cityHall = owner.GetCivBuilding(pOldLevel->GetCityHallBuildingClass());
+		if (cityHall != NO_BUILDING)
+		{
+			GetCityBuildings()->SetNumRealBuilding(cityHall, 0);
+		}
+		auto publicSecurity = owner.GetCivBuilding(pOldLevel->GetPublicSecurityBuildingClass());
+		if (publicSecurity != NO_BUILDING)
+		{
+			haveOldPublicSecurityBuilding = GetCityBuildings()->GetNumRealBuilding(publicSecurity) > 0;
+			GetCityBuildings()->SetNumRealBuilding(publicSecurity, 0);
+		}
+	}
+
+	if (pNewLevel)
+	{
+		auto cityHall = owner.GetCivBuilding(pNewLevel->GetCityHallBuildingClass());
+		if (cityHall != NO_BUILDING)
+		{
+			GetCityBuildings()->SetNumRealBuilding(cityHall, 1);
+		}
+
+		auto publicSecurity = owner.GetCivBuilding(pNewLevel->GetPublicSecurityBuildingClass());
+		if (publicSecurity != NO_BUILDING && haveOldPublicSecurityBuilding 
+				&& pOldLevel->GetScoreLowerBoundBase() > pNewLevel->GetScoreLowerBoundBase())
+		{
+			GetCityBuildings()->SetNumRealBuilding(publicSecurity, 1);
+		}
+	}
+}
+
+int CvCity::CalculateCorruptionScoreFromResource() const
+{
+	auto resource = plot() ? plot()->getResourceType() : NO_RESOURCE;
+	auto* resourceInfo = GC.getResourceInfo(resource);
+	return resourceInfo != nullptr ? resourceInfo->GetCorruptionScoreChange() : 0;
+}
+
+int CvCity::CalculateCorruptionScoreFromTrait() const
+{
+	CvPlayerAI& owner = GET_PLAYER(getOwner());
+	int TraitBounsTotal = 0;
+	if(plot())
+	{
+		TraitBounsTotal += plot()->isRiver() ? owner.GetPlayerTraits()->GetRiverCorruptionScoreChange() : 0;
+	}
+	return TraitBounsTotal;
+}
+
+int CvCity::CalculateTotalCorruptionScore() const
+{
+	CvPlayerAI& owner = GET_PLAYER(getOwner());
+
+	// Base Score
+	int score = 0;
+	score += CalculateCorruptionScoreFromDistance();
+	score += CalculateCorruptionScoreFromCoastalBonus();
+	score += CalculateCorruptionScoreFromResource();
+	score += GetCorruptionScoreChangeFromBuilding();
+	score += CalculateCorruptionScoreFromTrait();
+	score = std::max(0, score);
+
+	// Score Modifier
+	int modifier = 100;
+	modifier += CalculateCorruptionScoreModifierFromSpy();
+	modifier += CalculateCorruptionScoreModifierFromTrait();
+	modifier += owner.GetCorruptionScoreModifierFromPolicy();
+	modifier = std::max(0, modifier);
+
+	score = score * modifier / 100;
+	score = std::max(0, score);
+	return score;
+}
+
+int CvCity::GetCorruptionScoreModifierFromPolicy() const
+{
+	CvPlayerAI &owner = GET_PLAYER(getOwner());
+	return owner.GetCorruptionScoreModifierFromPolicy();
+}
+
+int CvCity::CalculateCorruptionScoreFromDistance() const
+{
+	CvPlayerAI& owner = GET_PLAYER(getOwner());
+	CvCity* capital = owner.getCapitalCity();
+	if (capital == nullptr || capital == this)
+	{
+		return 0;
+	}
+
+	int score = plotDistance(capital->plot()->getX(), capital->plot()->getY(), this->plot()->getX(), this->plot()->getY()) * GC.getCORRUPTION_SCORE_PER_DISTANCE(); // calculate by major capital
+	for (const int cityId : owner.GetSecondCapitals()) // calculate by second capitals
+	{
+		CvCity* pSecondCapital = owner.getCity(cityId);
+		if (pSecondCapital == nullptr)
+		{
+			continue;
+		}
+
+		int scoreBySecondCapital = plotDistance(pSecondCapital->plot()->getX(), pSecondCapital->plot()->getY(), this->plot()->getX(), this->plot()->getY()) * GC.getCORRUPTION_SCORE_PER_DISTANCE();
+		scoreBySecondCapital += pSecondCapital->GetSecondCapitalsExtraScore();
+		score = std::min(scoreBySecondCapital, score);
+	}
+
+	return score;
+}
+
+int CvCity::CalculateCorruptionScoreFromCoastalBonus() const
+{
+	CvPlayerAI& owner = GET_PLAYER(getOwner());
+	CvCity* capital = owner.getCapitalCity();
+	if (capital == nullptr || capital == this)
+	{
+		return 0;
+	}
+	return capital->isCoastal() && isCoastal() ? GC.getCORRUPTION_SCORE_COASTAL_BONUS() : 0;
+}
+
+int CvCity::CalculateCorruptionScoreModifierFromSpy() const
+{
+	CvPlayerAI& owner = GET_PLAYER(getOwner());
+	auto* espionage = owner.GetEspionage();
+	if (espionage == nullptr)
+	{
+		return 0;
+	}
+
+	int spyIndex = espionage->GetSpyIndexInCity(const_cast<CvCity*>(this));
+	if (spyIndex == -1)
+	{
+		return 0;
+	}
+
+	int rank = espionage->m_aSpyList[spyIndex].m_eRank + 1;
+	if (rank == 0) {
+		return 0;
+	}
+	if (rank == 1) {
+		return -33;
+	}
+	if (rank == 2) {
+		return -67;
+	}
+	return -100;
+}
+
+int CvCity::CalculateCorruptionScoreModifierFromTrait()  const
+{
+	if(plot() != NULL)
+	{
+		return plot()->CalculateCorruptionScoreModifierFromTrait(getOwner());
+	}
+	return 0;
+}
+
+bool CvCity::IsCorruptionLevelReduceByOne() const
+{
+	CvPlayerAI& owner = GET_PLAYER(getOwner());
+	return owner.IsCorruptionLevelReduceByOne() || owner.GetPlayerTraits()->GetCorruptionLevelReduceByOne();
+}
+
+int CvCity::GetMaxCorruptionLevel() const
+{
+	CvPlayerAI& owner = GET_PLAYER(getOwner());
+	return owner.GetPlayerTraits()->GetMaxCorruptionLevel();
+}
+
+CvCorruptionLevel* CvCity::DecideCorruptionLevelForNormalCity(const int score) const
+{
+	CvPlayerAI& owner = GET_PLAYER(getOwner());
+	CvCorruptionLevel* result = nullptr;
+	int resultIndex = -1;
+	for (int index = 0; index < GC.getOrderedNormalCityCorruptionLevels().size(); index++)
+	{
+		auto* level = GC.getOrderedNormalCityCorruptionLevels()[index];
+		if (level->GetScoreLowerBound(GC.getMap().getGridWidth(), GC.getMap().getGridHeight()) > score)
+		{
+			break;
+		}
+		result = level;
+		resultIndex = index;
+	}
+
+	if (resultIndex > 1)
+	{
+		if (IsCorruptionLevelReduceByOne())
+		{
+			resultIndex--;
+			result = GC.getOrderedNormalCityCorruptionLevels()[resultIndex];
+		}
+	}
+
+	if (GetCorruptionLevelChangeFromBuilding() != 0)
+	{
+		bool oldNoneZero = resultIndex > 0;
+		resultIndex = resultIndex + GetCorruptionLevelChangeFromBuilding();
+		if (oldNoneZero)
+		{
+			resultIndex = std::max(1, resultIndex);
+		}
+		else
+		{
+			resultIndex = std::max(0, resultIndex);
+		}
+
+		if (resultIndex > GC.getOrderedNormalCityCorruptionLevels().size() - 1)
+		{
+			resultIndex = GC.getOrderedNormalCityCorruptionLevels().size() - 1;
+		}
+		result = GC.getOrderedNormalCityCorruptionLevels()[resultIndex];
+	}
+
+	if (GetMaxCorruptionLevel() >= 0 && resultIndex > GetMaxCorruptionLevel())
+	{
+		resultIndex = GetMaxCorruptionLevel();
+		result = GC.getOrderedNormalCityCorruptionLevels()[resultIndex];
+	}
+
+	return result;
+}
+
+int CvCity::GetCorruptionScoreChangeFromBuilding() const
+{
+	return m_iCorruptionScoreChangeFromBuilding;
+}
+
+void CvCity::ChangeCorruptionScoreChangeFromBuilding(int value)
+{
+	m_iCorruptionScoreChangeFromBuilding += value;
+}
+
+int CvCity::GetCorruptionLevelChangeFromBuilding() const
+{
+	return m_iCorruptionLevelChangeFromBuilding;
+}
+
+void CvCity::ChangeCorruptionLevelChangeFromBuilding(int value)
+{
+	m_iCorruptionLevelChangeFromBuilding += value;
+}
+
+bool CvCity::IsSecondCapital() const
+{
+	return m_bIsSecondCapital;
+}
+void CvCity::SetSecondCapital(bool value)
+{
+	m_bIsSecondCapital = value;
+}
+
+int CvCity::GetSecondCapitalsExtraScore() const
+{
+	return m_iSecondCapitalsExtraScore;
+}
+void CvCity::ChangeSecondCapitalsExtraScore(int iChange)
+{
+	if(iChange == 0 || !MOD_GLOBAL_CORRUPTION) return;
+	CvPlayerAI &kPlayer = GET_PLAYER(getOwner());
+	if(!kPlayer.EnableCorruption()) return;
+
+	m_iSecondCapitalsExtraScore += iChange;
+	if(m_iSecondCapitalsExtraScore > 0 && !IsSecondCapital())
+	{
+		SetSecondCapital(true);
+		kPlayer.AddSecondCapital(GetID());
+		int iLoop = 0;
+		for (CvCity* pCity = kPlayer.firstCity(&iLoop); pCity != NULL; pCity = kPlayer.nextCity(&iLoop))
+		{
+			pCity->UpdateCorruption();
+		}
+	}
+	if(m_iSecondCapitalsExtraScore <= 0 && IsSecondCapital())
+	{
+		SetSecondCapital(false);
+		GET_PLAYER(getOwner()).RemoveSecondCapital(GetID());
+	}
+}
+#endif
+
 FDataStream& operator<<(FDataStream& saveTo, const SCityExtraYields& readFrom)
 {
 	saveTo << readFrom.forTerrain;

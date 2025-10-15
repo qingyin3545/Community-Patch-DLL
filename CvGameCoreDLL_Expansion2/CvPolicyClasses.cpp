@@ -1347,6 +1347,35 @@ bool CvPolicyEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility&
 		m_ppiBuildingClassYieldChanges[iI][YIELD_CULTURE] += m_paiBuildingClassCultureChanges[iI];
 	}
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	{
+		static size_t size = kUtility.MaxRows("CorruptionLevels");
+		m_paiCorruptionLevelPolicyCostModifier.resize(size, 0);
+
+		std::string sqlKey = "m_paiCorruptionLevelPolicyCostModifier";
+		Database::Results* pResults = kUtility.GetResults(sqlKey);
+		if(pResults == NULL)
+		{
+			const char* szSQL = "select * from Policy_CorruptionLevelPolicyCostModifier where PolicyType = ?";
+			pResults = kUtility.PrepareResults(sqlKey, szSQL);
+		}
+
+		pResults->Bind(1, szPolicyType, false);
+
+		while(pResults->Step())
+		{
+			int level = GC.getInfoTypeForString(pResults->GetText("CorruptionLevelType"));
+			int value = pResults->GetInt("Modifier");
+			if (level >= 0 && level < size)
+				m_paiCorruptionLevelPolicyCostModifier[level] += value;
+		}
+
+		pResults->Reset();
+	}
+	m_iCorruptionScoreModifier = kResults.GetInt("CorruptionScoreModifier");
+	m_bCorruptionLevelReduceByOne = kResults.GetBool("CorruptionLevelReduceByOne");
+#endif
+
 	return true;
 }
 
@@ -3657,6 +3686,33 @@ BuildingTypes CvPolicyEntry::GetFreeBuildingOnConquest() const
 {
 	return m_eFreeBuildingOnConquest;
 }
+
+#ifdef MOD_GLOBAL_CORRUPTION
+int CvPolicyEntry::GetCorruptionScoreModifier() const
+{
+	return m_iCorruptionScoreModifier;
+}
+
+bool CvPolicyEntry::GetCorruptionLevelReduceByOne() const
+{
+	return m_bCorruptionLevelReduceByOne;
+}
+
+bool CvPolicyEntry::IsInvolveCorruption() const
+{
+	return m_iCorruptionScoreModifier != 0 || m_bCorruptionLevelReduceByOne;
+}
+
+int CvPolicyEntry::GetCorruptionLevelPolicyCostModifier(CorruptionLevelTypes level) const
+{
+	if (level < 0 || level >= m_paiCorruptionLevelPolicyCostModifier.size())
+	{
+		return 0;
+	}
+
+	return m_paiCorruptionLevelPolicyCostModifier[level];
+}
+#endif
 
 //=====================================
 // CvPolicyBranchEntry

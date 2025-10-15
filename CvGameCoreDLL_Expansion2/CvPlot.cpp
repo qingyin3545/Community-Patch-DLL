@@ -15966,3 +15966,65 @@ CvSeeder CvPlot::GetPseudoRandomSeed() const
 {
 	return CvSeeder(static_cast<uint>(getX()) * 17 + static_cast<uint>(getY()) * 23);
 }
+
+
+#ifdef MOD_GLOBAL_CORRUPTION
+int CvPlot::CalculateCorruptionScoreFromDistance(const CvCity& capitalCity) const
+{
+	int capX = capitalCity.plot()->getX();
+	int capY = capitalCity.plot()->getY();
+	int score = plotDistance(capX, capY, getX(), getY()) * GC.getCORRUPTION_SCORE_PER_DISTANCE();
+	CvPlayerAI &kPlayer = GET_PLAYER(capitalCity.getOwner());
+	for (const int cityId : kPlayer.GetSecondCapitals()) // calculate by second capitals
+	{
+		CvCity* pSecondCapital = kPlayer.getCity(cityId);
+		if (pSecondCapital == nullptr)
+		{
+			continue;
+		}
+
+		int scoreBySecondCapital = plotDistance(pSecondCapital->plot()->getX(), pSecondCapital->plot()->getY(), getX(), getY()) * GC.getCORRUPTION_SCORE_PER_DISTANCE();
+		scoreBySecondCapital += pSecondCapital->GetSecondCapitalsExtraScore();
+		score = std::min(scoreBySecondCapital, score);
+	}
+	return score;
+
+}
+int CvPlot::CalculateCorruptionScoreFromCoastalBonus(const CvCity& capitalCity) const
+{
+	return capitalCity.isCoastal() && isCoastalLand() ? GC.getCORRUPTION_SCORE_COASTAL_BONUS() : 0;
+}
+int CvPlot::CalculateCorruptionScoreFromResource() const
+{
+	auto* resourceInfo = GC.getResourceInfo(getResourceType());
+	return resourceInfo != nullptr ? resourceInfo->GetCorruptionScoreChange() : 0;
+}
+int CvPlot::CalculateCorruptionScoreFromTrait(PlayerTypes ePlayer) const
+{
+	CvPlayerAI& owner = GET_PLAYER(ePlayer);
+	int iTraitBounsTotal = 0;
+	iTraitBounsTotal += isRiver() ? owner.GetPlayerTraits()->GetRiverCorruptionScoreChange() : 0;
+	return iTraitBounsTotal;
+}
+int CvPlot::CalculateCorruptionScoreModifierFromTrait(PlayerTypes ePlayer) const
+{
+	CvPlayerAI& owner = GET_PLAYER(ePlayer);
+	int iTraitBounsTotal = owner.GetPlayerTraits()->GetNaturalWonderCorruptionScoreChange();
+	if(iTraitBounsTotal != 0)
+	{
+		int iRange = owner.GetPlayerTraits()->GetNaturalWonderCorruptionRadius();
+		for (int iDX = -iRange; iDX <= iRange; iDX++)
+		{
+			for (int iDY = -iRange; iDY <= iRange; iDY++)
+			{
+				CvPlot* pLoopPlot = plotXYWithRangeCheck(getX(), getY(), iDX, iDY, iRange);
+				if (pLoopPlot != NULL && pLoopPlot->IsNaturalWonder(true))
+				{
+					return iTraitBounsTotal;
+				}
+			}
+		}
+	}
+	return 0;
+}
+#endif

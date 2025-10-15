@@ -1522,6 +1522,12 @@ void CvLuaPlayer::PushMethods(lua_State* L, int t)
 	Method(SetEconomicStrategies);
 	Method(GetMilitaryStrategies);
 	Method(SetMilitaryStrategies);
+
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	Method(IsCorruptionLevelReduceByOne);
+	Method(GetCorruptionScoreModifierFromPolicy);
+#endif
 }
 //------------------------------------------------------------------------------
 void CvLuaPlayer::HandleMissingInstance(lua_State* L)
@@ -19227,3 +19233,9 @@ int CvLuaPlayer::lSetMilitaryStrategies(lua_State* L)
 	}
 	return 0;
 }
+
+
+#ifdef MOD_GLOBAL_CORRUPTION
+LUAAPIIMPL(Player, IsCorruptionLevelReduceByOne)
+LUAAPIIMPL(Player, GetCorruptionScoreModifierFromPolicy)
+#endif

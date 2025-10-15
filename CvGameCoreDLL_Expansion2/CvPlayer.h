@@ -2860,6 +2860,28 @@ public:
 
 	int calculateNuclearMight(PlayerTypes ePlayer = NO_PLAYER, bool bComputeShelterNumbers = false, int iBombShelterPercent = 0, int iNukeModifier = 0, int iInterceptionChance = 0);
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	bool EnableCorruption() const;
+
+	int GetCorruptionScoreModifierFromPolicy() const;
+	void ChangeCorruptionScoreModifierFromPolicy(int change);
+	int GetCorruptionLevelReduceByOneRC() const;
+	bool IsCorruptionLevelReduceByOne() const;
+	void ChangeCorruptionLevelReduceByOneRC(int change);
+
+	int GetCorruptionPolicyCostModifier() const;
+	void ChangeCorruptionPolicyCostModifier(int change);
+
+	int GetCorruptionLevelPolicyCostModifier(CorruptionLevelTypes level) const;
+	void ChangeCorruptionLevelPolicyCostModifier(CorruptionLevelTypes level, int change);
+
+	const std::vector<int>& GetSecondCapitals() const;
+	void AddSecondCapital(int iNewSecondCapitalID);
+	void RemoveSecondCapital(int iSecondCapitalID);
+#endif
+	BuildingTypes GetCivBuilding(BuildingClassTypes eBuildingClass) const;
+	UnitTypes GetCivUnit(UnitClassTypes eUnitClass, int iFakeSeed = 0) const;
+
 protected:
 	class ConqueredByBoolField
 	{
@@ -3722,6 +3744,16 @@ protected:
 
 	friend FDataStream& operator>>(FDataStream&, CvPlayer::ConqueredByBoolField&);
 	friend FDataStream& operator<<(FDataStream&, const CvPlayer::ConqueredByBoolField&);
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	int m_iCorruptionScoreModifierFromPolicy = 0;
+	int m_iCorruptionLevelReduceByOneRC = 0;
+	int m_iCorruptionPolicyCostModifier = 0;
+
+	std::vector<int> m_paiCorruptionLevelPolicyCostModifier;
+	std::vector<int> m_viSecondCapitals;
+#endif
+
 };
 
 inline FDataStream& operator>>(FDataStream& stream, CvPlayer::ConqueredByBoolField& bfEverConqueredBy)

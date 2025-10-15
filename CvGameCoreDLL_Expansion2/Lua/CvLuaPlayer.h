@@ -1518,6 +1518,13 @@ protected:
 	static int lSetEconomicStrategies(lua_State* L);
 	static int lGetMilitaryStrategies(lua_State* L);
 	static int lSetMilitaryStrategies(lua_State* L);
+
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	LUAAPIEXTN(IsCorruptionLevelReduceByOne, bool);
+	LUAAPIEXTN(GetCorruptionScoreModifierFromPolicy, int);
+#endif
+
 };
 
 namespace CvLuaArgs
