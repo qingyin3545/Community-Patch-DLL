@@ -2726,6 +2726,10 @@ void CvGlobals::init()
 	m_pCorporations = FNEW(CvCorporationXMLEntries, c_eCiv5GameplayDLL, 0);
 	m_pContracts = FNEW(CvContractXMLEntries, c_eCiv5GameplayDLL, 0);
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	m_pCorruptionInfo = FNEW(CvCorruptionLevelXMLEntries, c_eCiv5GameplayDLL, 0);
+#endif
+
 	CvPlayerAI::initStatics();
 	CvTeam::initStatics();
 
@@ -2792,6 +2796,10 @@ void CvGlobals::uninit()
 	SAFE_DELETE(m_pathFinder);
 	SAFE_DELETE(m_interfacePathFinder);
 	SAFE_DELETE(m_stepFinder);
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	SAFE_DELETE(m_pCorruptionInfo);
+#endif
 
 	// already deleted outside of the dll, set to null for safety
 	m_pathFinder=NULL;
@@ -5009,6 +5017,67 @@ bool CvGlobals::GetHexDebugLayerString(CvPlot* pkPlot, const char* szLayerName, 
 
 	return true;
 }
+
+#ifdef MOD_GLOBAL_CORRUPTION
+int CvGlobals::getNumCorruptionLevel()
+{
+	return m_pCorruptionInfo->GetEntries().size();
+}
+
+std::vector<CvCorruptionLevel*>& CvGlobals::getCorruptionLevelInfo()
+{
+	return m_pCorruptionInfo->GetEntries();
+}
+
+CvCorruptionLevel* CvGlobals::getCorruptionLevelInfo(CorruptionLevelTypes eCorruptionLevel)
+{
+	return m_pCorruptionInfo->GetEntry(eCorruptionLevel);
+}
+
+std::vector<CvCorruptionLevel*>& CvGlobals::getOrderedNormalCityCorruptionLevels()
+{
+	return m_vOrderedNormalCityCorruptionLevels;
+}
+
+void CvGlobals::initCityCorruptionLevelsByCityType()
+{
+	m_vOrderedNormalCityCorruptionLevels.clear();
+	auto& corruptionLevels = getCorruptionLevelInfo();
+	for (auto* level : corruptionLevels)
+	{
+		if (level == nullptr)
+		{
+			continue;
+		}
+		if (level->IsCapital())
+		{
+			m_pCapitalCityCorruptionLevel = level;
+			continue;
+		}
+		if (level->IsPuppet())
+		{
+			m_pPuppetCityCorruptionLevel = level;
+			continue;
+		}
+		m_vOrderedNormalCityCorruptionLevels.push_back(level);
+	}
+
+	std::sort(m_vOrderedNormalCityCorruptionLevels.begin(), m_vOrderedNormalCityCorruptionLevels.end(), [](CvCorruptionLevel* a, CvCorruptionLevel* b) {
+		return a->GetScoreLowerBoundBase() < b->GetScoreLowerBoundBase();
+	});
+}
+
+CvCorruptionLevel* CvGlobals::getPuppetCityCorruptionLevel() const
+{
+	return m_pPuppetCityCorruptionLevel;
+}
+
+CvCorruptionLevel* CvGlobals::getCapitalCityCorruptionLevel() const
+{
+	return m_pCapitalCityCorruptionLevel;
+}
+
+#endif
 
 
 void CvGlobals::cacheGlobals()
@@ -7275,6 +7344,11 @@ void CvGlobals::cacheGlobals()
 	GD_INT_CACHE(PRISONERS_OF_WAR_PROMOTION);
 	GD_INT_CACHE(MORALE_PROMOTION);
 
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	GD_INT_CACHE(CORRUPTION_SCORE_PER_DISTANCE);
+	GD_INT_CACHE(CORRUPTION_SCORE_COASTAL_BONUS);
+#endif
 	////////////// END DEFINES //////////////////
 }
 

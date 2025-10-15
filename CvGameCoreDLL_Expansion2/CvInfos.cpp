@@ -6482,6 +6482,13 @@ bool CvResourceInfo::isFeatureTerrain(int i) const
 	return m_pbFeatureTerrain ?	m_pbFeatureTerrain[i] : false;
 }
 //------------------------------------------------------------------------------
+#ifdef MOD_GLOBAL_CORRUPTION
+int CvResourceInfo::GetCorruptionScoreChange() const
+{
+	return m_iCorruptionScoreChange;
+}
+#endif
+//------------------------------------------------------------------------------
 bool CvResourceInfo::CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility)
 {
 	if(!CvBaseInfo::CacheResults(kResults, kUtility))
@@ -6751,6 +6758,10 @@ bool CvResourceInfo::CacheResults(Database::Results& kResults, CvDatabaseUtility
 
 		pResults->Reset();
 	}
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	m_iCorruptionScoreChange = kResults.GetInt("CorruptionScoreChange");
+#endif
 
 	return true;
 }
