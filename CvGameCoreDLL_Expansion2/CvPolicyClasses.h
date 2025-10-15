@@ -471,6 +471,13 @@ public:
 		return m_siPolicyDisables;
 	}
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	int GetCorruptionScoreModifier() const;
+	bool GetCorruptionLevelReduceByOne() const;
+	bool IsInvolveCorruption() const;
+	int GetCorruptionLevelPolicyCostModifier(CorruptionLevelTypes level) const;
+#endif
+
 private:
 	int m_iTechPrereq;
 	int m_iCultureCost;
@@ -855,6 +862,12 @@ private:
 	int** m_ppiBuildingClassYieldModifiers;
 	int** m_ppiBuildingClassYieldChanges;
 	int* m_piFlavorValue;
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	int m_iCorruptionScoreModifier = 0;
+	bool m_bCorruptionLevelReduceByOne = false;
+	std::vector<int> m_paiCorruptionLevelPolicyCostModifier;
+#endif
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

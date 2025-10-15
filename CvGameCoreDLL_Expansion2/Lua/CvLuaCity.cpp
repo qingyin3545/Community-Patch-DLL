@@ -762,6 +762,26 @@ void CvLuaCity::PushMethods(lua_State* L, int t)
 	Method(SetYieldFromDevelopment);
 
 	Method(GetCompetitiveSpawnUnitType);
+
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	Method(GetCorruptionScore);
+	Method(GetCorruptionLevel);
+	Method(UpdateCorruption);
+	Method(CalculateTotalCorruptionScore);
+	Method(CalculateCorruptionScoreFromDistance);
+	Method(CalculateCorruptionScoreFromCoastalBonus);
+	Method(CalculateCorruptionScoreModifierFromSpy);
+	Method(CalculateCorruptionScoreModifierFromTrait);
+	Method(GetCorruptionScoreChangeFromBuilding);
+	Method(GetCorruptionLevelChangeFromBuilding);
+	Method(CalculateCorruptionScoreFromResource);
+	Method(CalculateCorruptionScoreFromTrait);
+	Method(GetCorruptionScoreModifierFromPolicy);
+	Method(DecideCorruptionLevelForNormalCity);
+	Method(GetMaxCorruptionLevel);
+	Method(IsCorruptionLevelReduceByOne);
+#endif
 }
 //------------------------------------------------------------------------------
 void CvLuaCity::HandleMissingInstance(lua_State* L)
@@ -7029,3 +7049,32 @@ int CvLuaCity::lGetCompetitiveSpawnUnitType(lua_State* L)
 	lua_pushinteger(L, eUnit);
 	return 1;
 }
+
+
+#ifdef MOD_GLOBAL_CORRUPTION
+LUAAPIIMPL(City, GetCorruptionScore);
+LUAAPIIMPL(City, GetCorruptionLevel);
+LUAAPIIMPL(City, UpdateCorruption);
+LUAAPIIMPL(City, CalculateTotalCorruptionScore);
+LUAAPIIMPL(City, CalculateCorruptionScoreFromDistance);
+LUAAPIIMPL(City, CalculateCorruptionScoreFromCoastalBonus);
+LUAAPIIMPL(City, CalculateCorruptionScoreModifierFromSpy);
+LUAAPIIMPL(City, CalculateCorruptionScoreModifierFromTrait);
+LUAAPIIMPL(City, GetCorruptionScoreChangeFromBuilding);
+LUAAPIIMPL(City, GetCorruptionLevelChangeFromBuilding);
+LUAAPIIMPL(City, CalculateCorruptionScoreFromResource);
+LUAAPIIMPL(City, CalculateCorruptionScoreFromTrait);
+LUAAPIIMPL(City, GetCorruptionScoreModifierFromPolicy);
+LUAAPIIMPL(City, GetMaxCorruptionLevel);
+LUAAPIIMPL(City, IsCorruptionLevelReduceByOne);
+
+int CvLuaCity::lDecideCorruptionLevelForNormalCity(lua_State* L)
+{
+	CvCity* pCity = GetInstance(L);
+	int iScore = lua_tointeger(L, 2);
+	auto* pResult = pCity->DecideCorruptionLevelForNormalCity(iScore);
+	int iResult = pResult == nullptr ? INVALID_CORRUPTION : pResult->GetID();
+	lua_pushinteger(L, iResult);
+	return 1;
+}
+#endif

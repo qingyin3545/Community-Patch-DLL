@@ -21,6 +21,8 @@
 #include "CvPreGame.h"
 #include "CvSerialize.h"
 
+#include "CvCorruption.h"
+
 // 0 = center of city, 1-6 = the edge of city on points, 7-12 = one tile out
 #define NUM_CITY_BUILDING_DISPLAY_SLOTS (13)
 
@@ -1823,6 +1825,39 @@ public:
 
 	bool IsConnectedToOcean() const;
 
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	int GetCorruptionScore() const;
+	CorruptionLevelTypes GetCorruptionLevel() const;
+	void UpdateCorruption();
+
+	int CalculateTotalCorruptionScore() const;
+	int CalculateCorruptionScoreFromDistance() const;
+	int CalculateCorruptionScoreFromCoastalBonus() const;
+	int CalculateCorruptionScoreFromResource() const;
+	int CalculateCorruptionScoreFromTrait() const;
+	int CalculateCorruptionScoreModifierFromSpy() const;
+	int CalculateCorruptionScoreModifierFromTrait() const;
+
+	CvCorruptionLevel* DecideCorruptionLevelForNormalCity(const int score) const;
+
+	int GetCorruptionScoreChangeFromBuilding() const;
+	void ChangeCorruptionScoreChangeFromBuilding(int value);
+
+	int GetCorruptionLevelChangeFromBuilding() const;
+	void ChangeCorruptionLevelChangeFromBuilding(int value);
+
+	int GetCorruptionScoreModifierFromPolicy() const;
+	int GetMaxCorruptionLevel() const;
+	bool IsCorruptionLevelReduceByOne() const;
+
+	bool IsSecondCapital() const;
+	void SetSecondCapital(bool value);
+
+	int GetSecondCapitalsExtraScore() const;
+	void ChangeSecondCapitalsExtraScore(int iChange);
+#endif
+
 protected:
 	SYNC_ARCHIVE_MEMBER(CvCity)
 
@@ -2234,6 +2269,16 @@ private:
 	// Prevent copying due to dynamic memory allocation
 	CvCity(const CvCity&);
 	CvCity& operator=(const CvCity&);
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	int m_iCachedCorruptionScore = 0;
+	CorruptionLevelTypes m_eCachedCorruptionLevel = INVALID_CORRUPTION;
+
+	int m_iCorruptionScoreChangeFromBuilding = 0;
+	int m_iCorruptionLevelChangeFromBuilding = 0;
+	bool m_bIsSecondCapital = false;
+	int m_iSecondCapitalsExtraScore = 0;
+#endif
 };
 
 namespace FSerialization

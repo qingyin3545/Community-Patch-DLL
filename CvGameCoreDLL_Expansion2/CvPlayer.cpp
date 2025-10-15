@@ -1645,6 +1645,12 @@ void CvPlayer::uninit()
 	m_vCityConnectionPlots.clear();
 	m_vIndustrialCityConnectionPlots.clear();
 	m_eID = NO_PLAYER;
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	m_iCorruptionScoreModifierFromPolicy = 0;
+	m_iCorruptionLevelReduceByOneRC = 0;
+	m_iCorruptionPolicyCostModifier = 0;
+#endif
 }
 
 // FUNCTION: reset()
@@ -15888,6 +15894,13 @@ void CvPlayer::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst
 	// Global base pressure mod
 	ChangeBasePressureModifier(pBuildingInfo->GetBasePressureModGlobal() * iChange);
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	if (MOD_GLOBAL_CORRUPTION)
+	{
+		ChangeCorruptionPolicyCostModifier(pBuildingInfo->GetCorruptionPolicyCostModifier() * iChange);
+	}
+#endif
+
 	for(iI = 0; iI < NUM_YIELD_TYPES; iI++)
 	{
 		if (pArea)
@@ -25265,6 +25278,23 @@ void CvPlayer::recomputePolicyCostModifier()
 	if(iCost < /*-75*/ GD_INT_GET(POLICY_COST_DISCOUNT_MAX))
 		iCost = GD_INT_GET(POLICY_COST_DISCOUNT_MAX);
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	if (MOD_GLOBAL_CORRUPTION && EnableCorruption())
+	{
+		int iSum = 0;
+		CvCity* pLoopCity = nullptr;
+		int iLoop = 0;
+		for(pLoopCity = firstCity(&iLoop); pLoopCity != nullptr; pLoopCity = nextCity(&iLoop))
+		{
+			auto level = pLoopCity->GetCorruptionLevel();
+			iSum += GetCorruptionLevelPolicyCostModifier(level);
+		}
+		iSum += GetCorruptionPolicyCostModifier();
+		iSum = iSum < 0 ? 0 : iSum;
+		iCost += iSum;
+	}
+#endif
+
 	m_iPolicyCostModifier = iCost;
 }
 
@@ -30944,7 +30974,16 @@ void CvPlayer::setCapitalCity(CvCity* pNewCapitalCity)
 				setOriginalCapitalXY(pNewCapitalCity);
 
 			m_iCapitalCityID = pNewCapitalCity->GetID();
-
+#ifdef MOD_GLOBAL_CORRUPTION
+			if (MOD_GLOBAL_CORRUPTION)
+			{
+				int iLoop = 0;
+				for(CvCity* pLoopCity = firstCity(&iLoop); pLoopCity != NULL; pLoopCity = nextCity(&iLoop))
+				{
+					pLoopCity->UpdateCorruption();
+				}
+			}
+#endif
 			//add the capital bonus
 			pNewCapitalCity->UpdateYieldsFromExistingFriendsAndAllies(false);
 		}
@@ -42210,6 +42249,18 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_OPEN_BORDERS_TOURISM_MODIFIER, pkPolicyInfo->GetOpenBordersTourismModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_CONVERSION_MODIFIER, pkPolicyInfo->GetConversionModifier() * iChange);
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	for (size_t i = 0; i < GC.getNumCorruptionLevel(); i++)
+	{
+		ChangeCorruptionLevelPolicyCostModifier((CorruptionLevelTypes)i, pkPolicyInfo->GetCorruptionLevelPolicyCostModifier((CorruptionLevelTypes)i) * iChange);
+	}
+	if (pkPolicyInfo->GetCorruptionLevelReduceByOne())
+	{
+		ChangeCorruptionLevelReduceByOneRC(iChange);
+	}
+	ChangeCorruptionScoreModifierFromPolicy(iChange * pkPolicyInfo->GetCorruptionScoreModifier());
+#endif
+
 	// Improvements
 	for (int iI = 0; iI < GC.getNumImprovementInfos(); iI++)
 	{
@@ -42950,6 +43001,14 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	}
 
 	// Generic updates
+#ifdef MOD_GLOBAL_CORRUPTION
+	if (MOD_GLOBAL_CORRUPTION && pkPolicyInfo->IsInvolveCorruption())
+	{
+		int iLoop = 0;
+		for (CvCity* pLoopCity = firstCity(&iLoop); pLoopCity != NULL; pLoopCity = nextCity(&iLoop)) pLoopCity->UpdateCorruption();
+	}
+#endif
+
 	GetTrade()->UpdateTradeConnectionValues();
 	recomputeGreatPeopleModifiers();
 	recomputePolicyCostModifier();
@@ -44045,6 +44104,15 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 	visitor(player.m_refuseBrokeredWarTrade);
 	visitor(player.m_refuseBrokeredPeaceTrade);
 	visitor(player.m_refuseResearchAgreementTrade);
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	visitor(player.m_iCorruptionScoreModifierFromPolicy);
+	visitor(player.m_iCorruptionLevelReduceByOneRC);
+	visitor(player.m_iCorruptionPolicyCostModifier);
+	
+	visitor(player.m_paiCorruptionLevelPolicyCostModifier);
+	visitor(player.m_viSecondCapitals);
+#endif
 }
 
 //
@@ -49209,6 +49277,118 @@ UnitTypes CvPlayer::GetCompetitiveSpawnUnitType(const bool bIncludeRanged, const
 
 	// Choose from weighted unit types
 	return veUnitRankings.ChooseFromTopChoices(/*5*/ GD_INT_GET(UNIT_SPAWN_NUM_CHOICES), seed);
+}
+
+#ifdef MOD_GLOBAL_CORRUPTION
+bool CvPlayer::EnableCorruption() const
+{
+	return isHuman();
+}
+
+int CvPlayer::GetCorruptionScoreModifierFromPolicy() const
+{
+	return m_iCorruptionScoreModifierFromPolicy;
+}
+
+void CvPlayer::ChangeCorruptionScoreModifierFromPolicy(int change)
+{
+	m_iCorruptionScoreModifierFromPolicy += change;
+}
+
+int CvPlayer::GetCorruptionLevelReduceByOneRC() const
+{
+	return m_iCorruptionLevelReduceByOneRC;
+}
+
+bool CvPlayer::IsCorruptionLevelReduceByOne() const
+{
+	return m_iCorruptionLevelReduceByOneRC > 0;
+}
+
+void CvPlayer::ChangeCorruptionLevelReduceByOneRC(int change)
+{
+	m_iCorruptionLevelReduceByOneRC += change;
+}
+
+int CvPlayer::GetCorruptionPolicyCostModifier() const
+{
+	return m_iCorruptionPolicyCostModifier;
+}
+void CvPlayer::ChangeCorruptionPolicyCostModifier(int change)
+{
+	m_iCorruptionPolicyCostModifier += change;
+	recomputePolicyCostModifier();
+	DoUpdateNextPolicyCost();
+}
+
+int CvPlayer::GetCorruptionLevelPolicyCostModifier(CorruptionLevelTypes level) const
+{
+	if (level < 0 || level >= GC.getNumCorruptionLevel())
+	{
+		return 0;
+	}
+
+	return m_paiCorruptionLevelPolicyCostModifier[level];
+}
+
+void CvPlayer::ChangeCorruptionLevelPolicyCostModifier(CorruptionLevelTypes level, int change)
+{
+	if (level < 0 || level >= GC.getNumCorruptionLevel())
+	{
+		return;
+	}
+	m_paiCorruptionLevelPolicyCostModifier[level] += change;
+}
+
+const std::vector<int>& CvPlayer::GetSecondCapitals() const
+{
+	return m_viSecondCapitals;
+}
+
+void CvPlayer::AddSecondCapital(int iNewSecondCapitalID)
+{
+	if (std::find(m_viSecondCapitals.begin(), m_viSecondCapitals.end(), iNewSecondCapitalID) != m_viSecondCapitals.end())
+	{
+		return; // already exist
+	}
+	m_viSecondCapitals.push_back(iNewSecondCapitalID);
+}
+
+void CvPlayer::RemoveSecondCapital(int iSecondCapitalID)
+{
+	auto it = std::find(m_viSecondCapitals.begin(), m_viSecondCapitals.end(), iSecondCapitalID);
+	if (it == m_viSecondCapitals.end())
+	{
+		return;
+	}
+
+	m_viSecondCapitals.erase(it);
+	int iLoop = 0;
+	for (CvCity* pCity = firstCity(&iLoop); pCity != NULL; pCity = nextCity(&iLoop))
+	{
+		pCity->UpdateCorruption();
+	}
+}
+#endif
+BuildingTypes CvPlayer::GetCivBuilding(BuildingClassTypes eBuildingClass) const
+{
+	CvBuildingClassInfo* pBuildingClassInfo = GC.getBuildingClassInfo(eBuildingClass);
+	if(!pBuildingClassInfo) return NO_BUILDING;
+
+	BuildingTypes eCivBuilding = NO_BUILDING;
+	eCivBuilding = (BuildingTypes)(getCivilizationInfo().getCivilizationBuildings(eBuildingClass));
+
+	return eCivBuilding;
+}
+UnitTypes CvPlayer::GetCivUnit(UnitClassTypes eUnitClass, int iFakeSeed) const
+{
+	CvUnitClassInfo* pUnitClassInfo = GC.getUnitClassInfo(eUnitClass);
+	if(!pUnitClassInfo) return NO_UNIT;
+
+	UnitTypes eCivUnit = NO_UNIT;
+	eCivUnit = (UnitTypes)getCivilizationInfo().getCivilizationUnits(eUnitClass);
+
+	return eCivUnit;
 }
 
 FDataStream& operator<<(FDataStream& saveTo, const SPlayerActiveEspionageEvent& readFrom)
