@@ -398,6 +398,11 @@ bool CvDllDatabaseUtility::PrefetchGameData()
 	PrefetchCollection(GC.getCorporationInfo(), "Corporations");
 	PrefetchCollection(GC.getContractInfo(), "Contracts");
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	PrefetchCollection(GC.getCorruptionLevelInfo(), "CorruptionLevels");
+	GC.initCityCorruptionLevelsByCityType();
+#endif
+
 	//Copy flavors into string array
 	{
 		CvDatabaseUtility kUtility;

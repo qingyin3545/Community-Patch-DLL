@@ -644,6 +644,10 @@ protected:
 	LUAAPIEXTN(IsOnTerrain, bool, iTerrainType);
 	LUAAPIEXTN(IsAdjacentToTerrain, bool, iTerrainType);
 	LUAAPIEXTN(IsWithinDistanceOfTerrain, bool, iTerrainType, iDistance);
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	static int lGetPlotCorruptionScoreReport(lua_State* L);
+#endif
 };
 
 namespace CvLuaArgs
