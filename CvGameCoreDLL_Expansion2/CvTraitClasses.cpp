@@ -2311,6 +2311,29 @@ bool CvTraitEntry::TerrainClaimBoost(TerrainTypes eTerrain)
 	}
 }
 
+#ifdef MOD_GLOBAL_CORRUPTION
+bool CvTraitEntry::GetCorruptionLevelReduceByOne() const
+{
+	return m_bCorruptionLevelReduceByOne;
+}
+int CvTraitEntry::GetMaxCorruptionLevel() const
+{
+	return m_iMaxCorruptionLevel;
+}
+int CvTraitEntry::GetRiverCorruptionScoreChange() const
+{
+	return m_iRiverCorruptionScoreChange;
+}
+int CvTraitEntry::GetNaturalWonderCorruptionScoreChange() const
+{
+	return m_iNaturalWonderCorruptionScoreChange;
+}
+int CvTraitEntry::GetNaturalWonderCorruptionRadius() const
+{
+	return m_iNaturalWonderCorruptionRadius;
+}
+#endif
+
 /// Load XML data
 bool CvTraitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility)
 {
@@ -3742,6 +3765,14 @@ bool CvTraitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& 
 	m_piGoldenAgeGreatPersonRateModifier[GC.getInfoTypeForString("GREATPERSON_ARTIST")] += m_iGoldenAgeGreatArtistRateModifier;
 	m_piGoldenAgeGreatPersonRateModifier[GC.getInfoTypeForString("GREATPERSON_MUSICIAN")] += m_iGoldenAgeGreatMusicianRateModifier;
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	m_bCorruptionLevelReduceByOne = kResults.GetBool("CorruptionLevelReduceByOne");
+	m_iMaxCorruptionLevel = kResults.GetInt("MaxCorruptionLevel");
+	m_iRiverCorruptionScoreChange = kResults.GetInt("RiverCorruptionScoreChange");
+	m_iNaturalWonderCorruptionScoreChange = kResults.GetInt("NaturalWonderCorruptionScoreChange");
+	m_iNaturalWonderCorruptionRadius = kResults.GetInt("NaturalWonderCorruptionRadius");
+#endif
+
 	return true;
 }
 
@@ -5149,6 +5180,13 @@ void CvPlayerTraits::InitPlayerTraits()
 				PromotionTypes ePromotion = static_cast<PromotionTypes>(*it);
 				m_seFreePromotions.insert(ePromotion);
 			}
+#ifdef MOD_GLOBAL_CORRUPTION
+			m_bCorruptionLevelReduceByOne = trait->GetCorruptionLevelReduceByOne();
+			m_iMaxCorruptionLevel = trait->GetMaxCorruptionLevel();
+			m_iRiverCorruptionScoreChange += trait->GetRiverCorruptionScoreChange();
+			m_iNaturalWonderCorruptionScoreChange += trait->GetNaturalWonderCorruptionScoreChange();
+			m_iNaturalWonderCorruptionRadius += trait->GetNaturalWonderCorruptionRadius();
+#endif
 		}
 	}
 
@@ -5676,6 +5714,13 @@ void CvPlayerTraits::Reset()
 		FreeResourceXCities temp;
 		m_aFreeResourceXCities.push_back(temp);
 	}
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	m_bCorruptionLevelReduceByOne = false;
+	m_iMaxCorruptionLevel = 0;
+	m_iRiverCorruptionScoreChange = 0;
+	m_iNaturalWonderCorruptionScoreChange = 0;
+#endif
 }
 
 /// Does this player possess a specific trait?
@@ -7693,6 +7738,13 @@ void CvPlayerTraits::Serialize(PlayerTraits& playerTraits, Visitor& visitor)
 	visitor(playerTraits.m_ppiCityYieldFromUnimprovedFeature);
 	visitor(playerTraits.m_ppaaiUnimprovedFeatureYieldChange);
 	visitor(playerTraits.m_aUniqueLuxuryAreas);
+#ifdef MOD_GLOBAL_CORRUPTION
+	visitor(playerTraits.m_bCorruptionLevelReduceByOne);
+	visitor(playerTraits.m_iMaxCorruptionLevel);
+	visitor(playerTraits.m_iRiverCorruptionScoreChange);
+	visitor(playerTraits.m_iNaturalWonderCorruptionScoreChange);
+	visitor(playerTraits.m_iNaturalWonderCorruptionRadius);
+#endif
 }
 
 /// Serialization read

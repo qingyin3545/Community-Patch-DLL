@@ -701,6 +701,14 @@ public:
 	bool IsFaithPurchaseOnly() const;
 	int GetBasePressureModGlobal() const;
 
+#ifdef MOD_GLOBAL_CORRUPTION
+	int GetCorruptionScoreChange() const;
+	int GetCorruptionLevelChange() const;
+	int GetCorruptionPolicyCostModifier() const;
+	int GetMinCorruptionLevelNeeded() const;
+	int GetMaxCorruptionLevelNeeded() const;
+#endif
+
 private:
 	int m_iBuildingClassType;
 	const CvBuildingClassInfo* m_pkBuildingClassInfo;
@@ -1137,6 +1145,14 @@ private:
 	CvThemingBonusInfo* m_paThemingBonusInfo;
 	int m_iNumThemingBonuses;
 	vector<UnitTypes> m_vUnitTypesUnlocked; //not serialized
+
+#ifdef MOD_GLOBAL_CORRUPTION
+	int m_iCorruptionScoreChange = 0;
+	int m_iCorruptionLevelChange = 0;
+	int m_iCorruptionPolicyCostModifier = 0;
+	int m_iMinCorruptionLevelNeeded = -1;
+	int m_iMaxCorruptionLevelNeeded = -1;
+#endif	
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
