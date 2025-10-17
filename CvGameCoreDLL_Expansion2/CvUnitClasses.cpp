@@ -671,6 +671,8 @@ bool CvUnitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& k
 	m_iCombatStrengthChangeAfterKilling = kResults.GetInt("CombatStrengthChangeAfterKilling");
 	m_iRangedCombatStrengthChangeAfterKilling = kResults.GetInt("RangedCombatStrengthChangeAfterKilling");
 
+	m_iTrainPopulationConsume = kResults.GetInt("TrainPopulationConsume");
+
 	// Calculate military Power and cache it
 	DoUpdatePower();
 
@@ -2059,6 +2061,11 @@ int CvUnitEntry::GetCombatStrengthChangeAfterKilling() const
 int CvUnitEntry::GetRangedCombatStrengthChangeAfterKilling() const
 {
 	return m_iRangedCombatStrengthChangeAfterKilling;
+}
+
+int CvUnitEntry::GetTrainPopulationConsume() const
+{
+	return m_iTrainPopulationConsume;
 }
 
 //=====================================

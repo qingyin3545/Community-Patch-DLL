@@ -2361,6 +2361,9 @@ public:
 	void ChangeRangedCombatStrengthChangeFromKilledUnits(int iChange);
 	void SetRangedCombatStrengthChangeFromKilledUnits(int iValue);
 
+	int GetExtraPopConsume() const;
+	void SetExtraPopConsume(int iValue);
+
 protected:
 	const MissionData* HeadMissionData() const;
 	MissionData* HeadMissionData();
@@ -2946,6 +2949,8 @@ private:
 
 	int m_iCombatStrengthChangeFromKilledUnits = 0;
 	int m_iRangedCombatStrengthChangeFromKilledUnits = 0;
+
+	int m_iExtraPopConsume = 0;
 
 	friend class CvLuaUnit;
 };

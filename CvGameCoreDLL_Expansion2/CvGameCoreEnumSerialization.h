@@ -89,6 +89,8 @@ FDataStream& operator>>(FDataStream&, CityScaleTypes&);
 FDataStream& operator<<(FDataStream&, const PromotionCollectionsTypes&);
 FDataStream& operator>>(FDataStream&, PromotionCollectionsTypes&);
 #endif
+FDataStream& operator<<(FDataStream&, const LuaFormulaTypes&);
+FDataStream& operator>>(FDataStream&, LuaFormulaTypes&);
 
 template<typename Enum, typename T>
 inline FDataStream& operator<<(FDataStream& saveTo, const CvEnum<Enum, T>& readFrom)

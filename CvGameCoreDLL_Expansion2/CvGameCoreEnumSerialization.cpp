@@ -218,6 +218,14 @@ FDataStream& operator>>(FDataStream& loadFrom, PromotionCollectionsTypes& writeT
 	return ReadBasicEnum<int>(loadFrom, writeTo);
 }
 #endif
+FDataStream& operator<<(FDataStream& saveTo, const LuaFormulaTypes& readFrom)
+{
+	return WriteBasicEnum<int>(saveTo, readFrom);
+}
+FDataStream& operator>>(FDataStream& loadFrom, LuaFormulaTypes& writeTo)
+{
+	return ReadBasicEnum<int>(loadFrom, writeTo);
+}
 
 //------------------------------------------------------------------------------
 namespace FSerialization

@@ -2954,6 +2954,10 @@ public:
 	std::vector<PolicyResourceInfo>& GetCityResourcesFromPolicy();
 	const std::vector<PolicyResourceInfo>& GetCityResourcesFromPolicy() const;
 
+	LuaFormulaTypes GetCaptureCityResistanceTurnsChangeFormula() const;
+	void SetCaptureCityResistanceTurnsChangeFormula(LuaFormulaTypes value);
+	int GetCaptureCityResistanceTurnsChange(CvCity* city, int originalResistanceTurn, bool originalOwnerLostCaptal) const;
+
 	bool IsRemoveOceanImpassableCombatUnit() const;
 	void ChangeRemoveOceanImpassableCombatUnit(int iChange);
 	bool IsRemoveOceanImpassableCivilian() const;
@@ -3882,6 +3886,8 @@ protected:
 #endif
 	std::vector<int> m_paiNumResourceAvailableCache;
 	std::vector<PolicyResourceInfo> m_vCityResourcesFromPolicy;
+
+	LuaFormulaTypes m_iCaptureCityResistanceTurnsChangeFormula = NO_LUA_FORMULA;
 
 	int m_iRemoveOceanImpassableCombatUnit = 0;
 	int m_iRemoveOceanImpassableCivilian = 0;
