@@ -241,6 +241,8 @@ public:
 	int GetCombatStrengthChangeAfterKilling() const;
 	int GetRangedCombatStrengthChangeAfterKilling() const;
 
+	int GetTrainPopulationConsume() const;
+
 private:
 
 	int m_iProductionCost;
@@ -448,6 +450,8 @@ private:
 
 	int m_iCombatStrengthChangeAfterKilling = 0;
 	int m_iRangedCombatStrengthChangeAfterKilling = 0;
+
+	int m_iTrainPopulationConsume = 0;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

@@ -1411,6 +1411,7 @@ bool CvPolicyEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility&
 
 		pResults->Reset();
 	}
+	m_eCaptureCityResistanceTurnsChangeFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("CaptureCityResistanceTurnsChangeFormula")));
 	m_iCapitalTradeRouteGoldChange = kResults.GetInt("CapitalTradeRouteGoldChange");
 	m_iCapitalTradeRouteRangeChange = kResults.GetInt("CapitalTradeRouteRangeChange");
 	m_iInstantFoodThresholdPercent = kResults.GetInt("InstantFoodThresholdPercent");
@@ -1424,6 +1425,8 @@ bool CvPolicyEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility&
 	m_iWaterBuildSpeedModifier = kResults.GetInt("WaterBuildSpeedModifier");
 	m_iDeepWaterNavalStrengthCultureModifier = kResults.GetInt("DeepWaterNavalStrengthCultureModifier");
 	m_iSettlerPopConsume = kResults.GetInt("SettlerPopConsume");
+	m_iScienceModifierFromRANum = kResults.GetInt("ScienceModifierFromRANum");
+	m_iWLTKDFromGoldenAgeLengthModifier = kResults.GetInt("WLTKDFromGoldenAgeLengthModifier");
 	m_iIdeologyPressureModifier = kResults.GetInt("IdeologyPressureModifier");
 	m_iIdeologyUnhappinessModifier = kResults.GetInt("IdeologyUnhappinessModifier");
 	m_iDifferentIdeologyTourismModifier = kResults.GetInt("DifferentIdeologyTourismModifier");
@@ -3812,6 +3815,11 @@ std::vector<PolicyResourceInfo>& CvPolicyEntry::GetCityResources()
 	return m_vCityResources;
 }
 
+LuaFormulaTypes CvPolicyEntry::GetCaptureCityResistanceTurnsChangeFormula() const
+{
+	return m_eCaptureCityResistanceTurnsChangeFormula;
+}
+
 int CvPolicyEntry::GetCapitalTradeRouteGoldChange() const
 {
 	return m_iCapitalTradeRouteGoldChange;
@@ -3863,6 +3871,14 @@ int CvPolicyEntry::GetDeepWaterNavalStrengthCultureModifier() const
 int CvPolicyEntry::GetSettlerPopConsume() const
 {
 	return m_iSettlerPopConsume;
+}
+int CvPolicyEntry::GetScienceModifierFromRANum() const
+{
+	return m_iScienceModifierFromRANum;
+}
+int CvPolicyEntry::GetWLTKDFromGoldenAgeLengthModifier() const
+{
+	return m_iWLTKDFromGoldenAgeLengthModifier;
 }
 int CvPolicyEntry::GetIdeologyPressureModifier() const
 {
