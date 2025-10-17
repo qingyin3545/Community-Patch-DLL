@@ -1763,6 +1763,8 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iCombatStrengthChangeFromKilledUnits = 0;
 	m_iRangedCombatStrengthChangeFromKilledUnits = 0;
 
+	m_iExtraPopConsume = 0;
+
 	if(!bConstructorCall)
 	{
 		m_Promotions.Reset();
@@ -6412,6 +6414,8 @@ void CvUnit::gift(bool bTestTransport)
 		pGiftUnit->GetReligionDataMutable()->SetReligion(GetReligionData()->GetReligion());
 		pGiftUnit->GetReligionDataMutable()->SetReligiousStrength(GetReligionData()->GetReligiousStrength());
 		pGiftUnit->GetReligionDataMutable()->SetSpreadsUsed(GetReligionData()->GetSpreadsUsed());
+
+		pGiftUnit->SetExtraPopConsume(GetExtraPopConsume());
 
 		if (pGiftUnit->getOwner() == GC.getGame().getActivePlayer())
 		{
@@ -29450,6 +29454,7 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iAirSweepDamageMod);
 	visitor(unit.m_iCombatStrengthChangeFromKilledUnits);
 	visitor(unit.m_iRangedCombatStrengthChangeFromKilledUnits);
+	visitor(unit.m_iExtraPopConsume);
 }
 
 //	--------------------------------------------------------------------------------
@@ -36209,6 +36214,16 @@ void CvUnit::ChangeRangedCombatStrengthChangeFromKilledUnits(int iChange)
 void CvUnit::SetRangedCombatStrengthChangeFromKilledUnits(int iValue)
 {
 	m_iRangedCombatStrengthChangeFromKilledUnits = iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetExtraPopConsume() const
+{
+	return m_iExtraPopConsume;
+}
+void CvUnit::SetExtraPopConsume(int iValue)
+{
+	m_iExtraPopConsume = iValue;
 }
 
 //	--------------------------------------------------------------------------------

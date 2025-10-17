@@ -721,6 +721,8 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(GetRangedCombatStrengthChangeFromKilledUnits);
 	Method(ChangeRangedCombatStrengthChangeFromKilledUnits);
 	Method(SetRangedCombatStrengthChangeFromKilledUnits);
+	Method(GetExtraPopConsume);
+	Method(SetExtraPopConsume);
 }
 //------------------------------------------------------------------------------
 const char* CvLuaUnit::GetTypeName()
@@ -7176,3 +7178,5 @@ int CvLuaUnit::lSetRangedCombatStrengthChangeFromKilledUnits(lua_State* L)
 	return 0;
 }
 //------------------------------------------------------------------------------
+LUAAPIIMPL(Unit, GetExtraPopConsume)
+LUAAPIIMPL(Unit, SetExtraPopConsume)
