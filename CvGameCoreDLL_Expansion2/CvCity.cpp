@@ -29859,6 +29859,33 @@ CvUnit* CvCity::CreateUnit(UnitTypes eUnitType, UnitAITypes eAIType, UnitCreatio
 			changePopulation(-1);
 	}
 
+	int iPopConsume = pUnit->getUnitInfo().GetTrainPopulationConsume();
+	if(iPopConsume > 0 && eReason != REASON_FAITH_BUY)
+	{
+		if(pUnit->getUnitClassType() == GC.getInfoTypeForString("UNITCLASS_SETTLER"))
+		{
+			iPopConsume += kOwner.GetPlayerPolicies()->GetNumericModifier(POLICYMOD_SETTLER_POP_CONSUME);
+		}
+		iPopConsume = std::min(getPopulation() -1, iPopConsume);
+		if(iPopConsume != 0)
+		{
+			pUnit->SetExtraPopConsume(iPopConsume);
+			changePopulation(-iPopConsume);
+			if (kOwner.isHuman())
+			{
+				CvNotifications *pNotifications = kOwner.GetNotifications();
+				if (pNotifications)
+				{
+					Localization::String strMessage = Localization::Lookup("TXT_KEY_NOTIFICATION_SETTLER_TRAINED_CITY");
+					strMessage << iPopConsume;
+					strMessage << getNameKey();
+					Localization::String strSummary = Localization::Lookup("TXT_KEY_NOTIFICATION_SETTLER_TRAINED_CITY_SHORT");
+					pNotifications->Add(NOTIFICATION_STARVING, strMessage.toUTF8(), strSummary.toUTF8(), getX(), getY(), -1);
+				}
+			}
+		}
+	}
+
 	CvPlot* pRallyPlot = getRallyPlot();
 	if (pRallyPlot)
 	{
