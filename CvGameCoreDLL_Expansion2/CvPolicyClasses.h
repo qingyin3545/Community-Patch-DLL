@@ -489,6 +489,7 @@ public:
 	int GetResourceCityConnectionTradeRouteGoldModifier() const;
 #endif
 	std::vector<PolicyResourceInfo>& GetCityResources();
+	LuaFormulaTypes GetCaptureCityResistanceTurnsChangeFormula() const;
 
 	int GetCapitalTradeRouteGoldChange() const;
 	int GetCapitalTradeRouteRangeChange() const;
@@ -503,6 +504,8 @@ public:
 	int GetWaterBuildSpeedModifier() const;
 	int GetDeepWaterNavalStrengthCultureModifier() const;
 	int GetSettlerPopConsume() const;
+	int GetScienceModifierFromRANum() const;
+	int GetWLTKDFromGoldenAgeLengthModifier() const;
 	int GetIdeologyPressureModifier() const;
 	int GetIdeologyUnhappinessModifier() const;
 	int GetDifferentIdeologyTourismModifier() const;
@@ -922,6 +925,7 @@ private:
 	int m_iResourceCityConnectionTradeRouteGoldModifier = 0;
 #endif
 	std::vector<PolicyResourceInfo> m_vCityResources;
+	LuaFormulaTypes m_eCaptureCityResistanceTurnsChangeFormula = NO_LUA_FORMULA;
 
 	int m_iCapitalTradeRouteGoldChange = 0;
 	int m_iCapitalTradeRouteRangeChange = 0;
@@ -936,6 +940,8 @@ private:
 	int m_iWaterBuildSpeedModifier = 0;
 	int m_iDeepWaterNavalStrengthCultureModifier = 0;
 	int m_iSettlerPopConsume = 0;
+	int m_iScienceModifierFromRANum = 0;
+	int m_iWLTKDFromGoldenAgeLengthModifier = 0;
 	int m_iIdeologyPressureModifier = 0;
 	int m_iIdeologyUnhappinessModifier = 0;
 	int m_iDifferentIdeologyTourismModifier = 0;
@@ -1124,6 +1130,8 @@ enum CLOSED_ENUM PolicyModifierType
 	POLICYMOD_WATER_BUILD_SPEED_MODIFIER,
 	POLICYMOD_DEEP_WATER_NAVAL_STRENGTH_CULTURE_MODIFIER,
 	POLICYMOD_SETTLER_POP_CONSUME,
+	POLICYMOD_SCIENCE_MODIFIER_FROM_RA_NUM,
+	POLICYMOD_WLTKD_FROM_GOLDEN_AGE_LENGTH_MODIFIER,
 	POLICYMOD_IDEOLOGY_PRESSURE_MODIFIER,
 	POLICYMOD_IDEOLOGY_UNHAPPINESS_MODIFIER,
 	POLICYMOD_DIFFERENT_IDEOLOGY_TOURISM_MODIFIER,

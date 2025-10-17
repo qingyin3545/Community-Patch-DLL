@@ -1678,6 +1678,8 @@ void CvPlayer::uninit()
 	m_paiNumResourceAvailableCache.clear();
 	m_vCityResourcesFromPolicy.clear();
 
+	m_iCaptureCityResistanceTurnsChangeFormula = NO_LUA_FORMULA;
+
 	m_iRemoveOceanImpassableCombatUnit = 0;
 	m_iRemoveOceanImpassableCivilian = 0;
 
@@ -4478,6 +4480,10 @@ CvCity* CvPlayer::acquireCity(CvCity* pCity, bool bConquest, bool bGift, bool bO
 				int iResistanceTurns = MOD_BALANCE_VP ? (pNewCity->getPopulation() * 2) / 3 : pNewCity->getPopulation();
 				iResistanceTurns *= 100 - iReductionFromTourism;
 				iResistanceTurns /= 100;
+				
+				int iTurnChange = GetCaptureCityResistanceTurnsChange(pNewCity, iResistanceTurns, GET_PLAYER(eOldOwner).IsHasLostCapital());
+				iResistanceTurns += iTurnChange;
+
 				pNewCity->ChangeResistanceTurns(max(iResistanceTurns, 1));
 			}
 		}
@@ -24798,6 +24804,18 @@ void CvPlayer::changeGoldenAgeTurns(int iChange, bool bFree)
 			}
 		}
 
+		int iWLTKDFromGoldenAgeLengthModifier = GetPlayerPolicies()->GetNumericModifier(POLICYMOD_WLTKD_FROM_GOLDEN_AGE_LENGTH_MODIFIER);
+		if(iWLTKDFromGoldenAgeLengthModifier > 0)
+		{
+			int iValue = iChange * iWLTKDFromGoldenAgeLengthModifier;
+			iValue /= 100;
+			int iLoop = 0;
+			for (CvCity* pLoopCity = firstCity(&iLoop); pLoopCity != NULL; pLoopCity = nextCity(&iLoop))
+			{
+				pLoopCity->ChangeWeLoveTheKingDayCounter(iValue);
+			}
+		}
+
 		if (GetPlayerTraits()->GetGoldenAgeGarrisonedCityRangeStrikeModifier() > 0)
 		{
 			ChangeGarrisonedCityRangeStrikeModifier(GetPlayerTraits()->GetGoldenAgeGarrisonedCityRangeStrikeModifier());
@@ -35555,9 +35573,13 @@ int CvPlayer::GetScienceFromHappinessTimes100() const
 /// Where is our Science coming from?
 int CvPlayer::GetScienceFromResearchAgreementsTimes100() const
 {
+	// RAs currently do not have default effect
+	int iModifier = /*0*/ GD_INT_GET(RESEARCH_AGREEMENT_MOD) + GetPlayerPolicies()->GetNumericModifier(POLICYMOD_SCIENCE_MODIFIER_FROM_RA_NUM);
+	if (iModifier == 0) return 0;
+
 	int iScience = GetScienceFromCitiesTimes100(false);
 
-	int iResearchAgreementBonus = /*0*/ GD_INT_GET(RESEARCH_AGREEMENT_MOD) * GET_TEAM(getTeam()).GetTotalNumResearchAgreements(); // RAs currently do not have this effect
+	int iResearchAgreementBonus = iModifier * GET_TEAM(getTeam()).GetTotalNumResearchAgreements();
 	iScience *= iResearchAgreementBonus;	// Apply to the % to the current value
 	iScience /= 100;
 
@@ -42484,6 +42506,8 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_WATER_BUILD_SPEED_MODIFIER, pkPolicyInfo->GetWaterBuildSpeedModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_DEEP_WATER_NAVAL_STRENGTH_CULTURE_MODIFIER, pkPolicyInfo->GetDeepWaterNavalStrengthCultureModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_SETTLER_POP_CONSUME, pkPolicyInfo->GetSettlerPopConsume() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_SCIENCE_MODIFIER_FROM_RA_NUM, pkPolicyInfo->GetScienceModifierFromRANum() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_WLTKD_FROM_GOLDEN_AGE_LENGTH_MODIFIER, pkPolicyInfo->GetWLTKDFromGoldenAgeLengthModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_IDEOLOGY_PRESSURE_MODIFIER, pkPolicyInfo->GetIdeologyPressureModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_IDEOLOGY_UNHAPPINESS_MODIFIER, pkPolicyInfo->GetIdeologyUnhappinessModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_DIFFERENT_IDEOLOGY_TOURISM_MODIFIER, pkPolicyInfo->GetDifferentIdeologyTourismModifier() * iChange);
@@ -42536,6 +42560,19 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	{
 		for (const auto& info : pkPolicyInfo->GetCityResources()) m_vCityResourcesFromPolicy.push_back(info);
 	}
+
+	if (pkPolicyInfo->GetCaptureCityResistanceTurnsChangeFormula() != NO_LUA_FORMULA)
+	{
+		if (iChange > 0)
+		{
+			SetCaptureCityResistanceTurnsChangeFormula(pkPolicyInfo->GetCaptureCityResistanceTurnsChangeFormula());
+		}
+		else
+		{
+			SetCaptureCityResistanceTurnsChangeFormula(NO_LUA_FORMULA);
+		}
+	}
+
 	// Promotion Removed
 	PromotionTypes eFreePromotionRemoved = (PromotionTypes)pkPolicyInfo->GetFreePromotionRemoved();
 	if (eFreePromotionRemoved != NO_PROMOTION)
@@ -44451,6 +44488,8 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 #endif
 	visitor(player.m_paiNumResourceAvailableCache);
 	visitor(player.m_vCityResourcesFromPolicy);
+
+	visitor(player.m_iCaptureCityResistanceTurnsChangeFormula);
 
 	visitor(player.m_iRemoveOceanImpassableCombatUnit);
 	visitor(player.m_iRemoveOceanImpassableCivilian);
@@ -50312,6 +50351,32 @@ std::vector<PolicyResourceInfo>& CvPlayer::GetCityResourcesFromPolicy()
 const std::vector<PolicyResourceInfo>& CvPlayer::GetCityResourcesFromPolicy() const
 {
 	return m_vCityResourcesFromPolicy;
+}
+
+//	--------------------------------------------------------------------------------
+LuaFormulaTypes CvPlayer::GetCaptureCityResistanceTurnsChangeFormula() const
+{
+	return m_iCaptureCityResistanceTurnsChangeFormula;
+}
+void CvPlayer::SetCaptureCityResistanceTurnsChangeFormula(LuaFormulaTypes value)
+{
+	m_iCaptureCityResistanceTurnsChangeFormula = value;
+}
+int CvPlayer::GetCaptureCityResistanceTurnsChange(CvCity* city, int originalResistanceTurn, bool originalOwnerLostCaptal) const
+{
+	auto* eval = GC.GetLuaEvaluatorManager()->GetEvaluator(GetCaptureCityResistanceTurnsChangeFormula());
+	if (eval == nullptr)
+	{
+		return 0;
+	}
+
+	auto result = eval->Evaluate<int>(city->getPopulation(), originalResistanceTurn, originalOwnerLostCaptal);
+	if (!result.ok)
+	{
+		return 0;
+	}
+
+	return result.value;
 }
 
 //	--------------------------------------------------------------------------------
