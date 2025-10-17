@@ -721,6 +721,8 @@ protected:
 	static int lGetRangedCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lChangeRangedCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lSetRangedCombatStrengthChangeFromKilledUnits(lua_State* L);
+	LUAAPIEXTN(GetExtraPopConsume, int);
+	LUAAPIEXTN(SetExtraPopConsume, void, iValue);
 };
 
 namespace CvLuaArgs
