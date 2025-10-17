@@ -24,18 +24,13 @@ alter table Policies add FreePromotionRemoved text references UnitPromotions(Typ
 alter table Policies add CurrentPromotionRemoved text references UnitPromotions(Type);
 alter table Policies add RemoveOceanImpassableCombatUnit boolean default 0;
 
-alter table Policies add NoOccupiedUnhappinessGarrisonedCity boolean default 0;
-create table Policy_EraSettlerProductionModifier (
-    PolicyType text references Policies(Type),
-    EraType text references Eras(Type),
-    Modifier integer default 0
-);
 alter table Policies add SettlerPopConsume integer default 0;
-
 alter table Policies add ScienceModifierFromRANum integer default 0;
-alter table Policies add CityExtraProductionCount integer default 0;
 alter table Policies add CaptureCityResistanceTurnsChangeFormula text references LuaFormula(Type);
-alter table Policies add AlwaysWeLoveKindDayInGoldenAge boolean default 0;
+
+
+alter table Policies add CityExtraProductionCount integer default 0;
+alter table Policies add NoOccupiedUnhappinessGarrisonedCity boolean default 0;
 
 -- SP-TODO: Column Name GreatScientistBeakerPolicyModifier -> ScienceBeakerMod
 alter table Policies add ScienceBeakerMod integer default 0;
@@ -45,6 +40,14 @@ alter table Policies add OriginalCapitalCapturePolicy integer default 0;
 alter table Policies add OriginalCapitalCaptureGreatPerson integer default 0;
 alter table Policies add ReligionProductionModifier integer default 0;
 alter table Policies add UpgradeAllTerritory boolean default 0;
+-- SP-TODO: Column Name AlwaysWeLoveKindDayInGoldenAge -> WLTKDFromGoldenAgeLengthModifier
+alter table Policies add WLTKDFromGoldenAgeLengthModifier integer default 0;
+
+create table Policy_EraSettlerProductionModifier (
+    PolicyType text references Policies(Type),
+    EraType text references Eras(Type),
+    Modifier integer default 0
+);
 
 create table Policy_MinorsTradeRouteYieldRate (
     PolicyType text default '',
