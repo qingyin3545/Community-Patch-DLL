@@ -1429,7 +1429,10 @@ bool CvPolicyEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility&
 	m_iDeepWaterNavalStrengthCultureModifier = kResults.GetInt("DeepWaterNavalStrengthCultureModifier");
 	m_iSettlerPopConsume = kResults.GetInt("SettlerPopConsume");
 	m_iScienceModifierFromRANum = kResults.GetInt("ScienceModifierFromRANum");
+	m_iCityExtraProductionCount = kResults.GetInt("CityExtraProductionCount");
+	m_bNoOccupiedUnhappinessGarrisonedCity = kResults.GetBool("NoOccupiedUnhappinessGarrisonedCity");
 	m_iWLTKDFromGoldenAgeLengthModifier = kResults.GetInt("WLTKDFromGoldenAgeLengthModifier");
+	m_bAlwaysWLTKDInGoldenAge = kResults.GetBool("AlwaysWLTKDInGoldenAge");
 	m_iIdeologyPressureModifier = kResults.GetInt("IdeologyPressureModifier");
 	m_iIdeologyUnhappinessModifier = kResults.GetInt("IdeologyUnhappinessModifier");
 	m_iDifferentIdeologyTourismModifier = kResults.GetInt("DifferentIdeologyTourismModifier");
@@ -3890,9 +3893,21 @@ int CvPolicyEntry::GetScienceModifierFromRANum() const
 {
 	return m_iScienceModifierFromRANum;
 }
+int CvPolicyEntry::GetCityExtraProductionCount() const
+{
+	return m_iCityExtraProductionCount;
+}
+bool CvPolicyEntry::IsNoOccupiedUnhappinessGarrisonedCity() const
+{
+	return m_bNoOccupiedUnhappinessGarrisonedCity;
+}
 int CvPolicyEntry::GetWLTKDFromGoldenAgeLengthModifier() const
 {
 	return m_iWLTKDFromGoldenAgeLengthModifier;
+}
+bool CvPolicyEntry::IsAlwaysWLTKDInGoldenAge() const
+{
+	return m_bAlwaysWLTKDInGoldenAge;
 }
 int CvPolicyEntry::GetIdeologyPressureModifier() const
 {
@@ -3906,7 +3921,7 @@ int CvPolicyEntry::GetDifferentIdeologyTourismModifier() const
 {
 	return m_iDifferentIdeologyTourismModifier;
 }
-bool CvPolicyEntry::GetSpyLevelUpWhenRigging() const
+bool CvPolicyEntry::IsSpyLevelUpWhenRigging() const
 {
 	return m_bSpyLevelUpWhenRigging;
 }
@@ -3958,7 +3973,7 @@ int CvPolicyEntry::GetReligionProductionModifier() const
 {
 	return m_iReligionProductionModifier;
 }
-bool CvPolicyEntry::GetUpgradeAllTerritory() const
+bool CvPolicyEntry::IsUpgradeAllTerritory() const
 {
 	return m_bUpgradeAllTerritory;
 }
@@ -4863,6 +4878,10 @@ bool CvPlayerPolicies::HasPolicyEncouragingGarrisons() const
 				return true;
 			}
 			else if(pPolicy->IsGarrisonFreeMaintenance())
+			{
+				return true;
+			}
+			else if(pPolicy->IsNoOccupiedUnhappinessGarrisonedCity())
 			{
 				return true;
 			}
