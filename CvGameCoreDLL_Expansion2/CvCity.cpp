@@ -10383,7 +10383,9 @@ void CvCity::DoTestResourceDemanded()
 
 	if (GetWeLoveTheKingDayCounter() > 0)
 	{
-		ChangeWeLoveTheKingDayCounter(-1);
+		bool bNoConsumeCounter = GET_PLAYER(getOwner()).isGoldenAge() && GET_PLAYER(getOwner()).GetPlayerPolicies()->GetNumericModifier(POLICYMOD_ALWAYS_WLTKD_IN_GOLDEN_AGE_COUNT) > 0;
+		if (!bNoConsumeCounter)
+			ChangeWeLoveTheKingDayCounter(-1);
 
 		// WLTKD over!
 		if (GetWeLoveTheKingDayCounter() == 0)
@@ -16521,6 +16523,10 @@ void CvCity::SetGarrison(CvUnit* pUnit)
 			{
 				GET_PLAYER(getOwner()).changeExtraUnitCost(-pUnit->getUnitInfo().GetExtraMaintenanceCost());
 			}
+			if(GET_PLAYER(getOwner()).GetPlayerPolicies()->GetNumericModifier(POLICYMOD_NO_OCCUPIED_UNHAPPINESS_GARRISONED_CITY_COUNT) > 0)
+			{
+				ChangeNoOccupiedUnhappinessCount(1);
+			}
 
 			if (pUnit != NULL && pUnit->GetReligiousPressureModifier() != 0)
 			{
@@ -16564,6 +16570,10 @@ void CvCity::SetGarrison(CvUnit* pUnit)
 			if(pOldGarrison != NULL && GET_PLAYER(pOldGarrison->getOwner()).IsGarrisonFreeMaintenance())
 			{
 				GET_PLAYER(pOldGarrison->getOwner()).changeExtraUnitCost(pOldGarrison->getUnitInfo().GetExtraMaintenanceCost());
+			}
+			if(GET_PLAYER(getOwner()).GetPlayerPolicies()->GetNumericModifier(POLICYMOD_NO_OCCUPIED_UNHAPPINESS_GARRISONED_CITY_COUNT) > 0)
+			{
+				ChangeNoOccupiedUnhappinessCount(-1);
 			}
 
 			if (pOldGarrison != NULL && pOldGarrison->GetReligiousPressureModifier() != 0)
@@ -31504,6 +31514,9 @@ void CvCity::doProduction(bool bAllowNoProduction)
 {
 	VALIDATE_OBJECT();
 
+	int iMaxProductionCount = 1 + GET_PLAYER(getOwner()).GetPlayerPolicies()->GetNumericModifier(POLICYMOD_ALWAYS_WLTKD_IN_GOLDEN_AGE_COUNT);
+DO_PRODUCTION_CYCLE_BEGIN:
+
 	if (!isHuman(ISHUMAN_AI_CITY_PRODUCTION) || isProductionAutomated())
 	{
 		if (!isProduction() || isProductionProcess() || AI_isChooseProductionDirty())
@@ -31553,6 +31566,11 @@ void CvCity::doProduction(bool bAllowNoProduction)
 		if (getProduction() >= getProductionNeeded())
 		{
 			popOrder(0, !isProductionProcess(), true);
+			if (iMaxProductionCount > 1)
+			{
+				iMaxProductionCount--;
+				goto DO_PRODUCTION_CYCLE_BEGIN;
+			}
 		}
 	}
 	else
