@@ -26,11 +26,9 @@ alter table Policies add RemoveOceanImpassableCombatUnit boolean default 0;
 
 alter table Policies add SettlerPopConsume integer default 0;
 alter table Policies add ScienceModifierFromRANum integer default 0;
-alter table Policies add CaptureCityResistanceTurnsChangeFormula text references LuaFormula(Type);
-
-
 alter table Policies add CityExtraProductionCount integer default 0;
 alter table Policies add NoOccupiedUnhappinessGarrisonedCity boolean default 0;
+alter table Policies add CaptureCityResistanceTurnsChangeFormula text references LuaFormula(Type);
 
 -- SP-TODO: Column Name GreatScientistBeakerPolicyModifier -> ScienceBeakerMod
 alter table Policies add ScienceBeakerMod integer default 0;
@@ -40,8 +38,9 @@ alter table Policies add OriginalCapitalCapturePolicy integer default 0;
 alter table Policies add OriginalCapitalCaptureGreatPerson integer default 0;
 alter table Policies add ReligionProductionModifier integer default 0;
 alter table Policies add UpgradeAllTerritory boolean default 0;
--- SP-TODO: Column Name AlwaysWeLoveKindDayInGoldenAge -> WLTKDFromGoldenAgeLengthModifier
 alter table Policies add WLTKDFromGoldenAgeLengthModifier integer default 0;
+-- SP-TODO: Column Name AlwaysWeLoveKindDayInGoldenAge -> AlwaysWLTKDInGoldenAge
+alter table Policies add AlwaysWLTKDInGoldenAge boolean default 0;
 
 create table Policy_EraSettlerProductionModifier (
     PolicyType text references Policies(Type),
@@ -105,24 +104,17 @@ CREATE TABLE Policy_YieldModifierPerArtifacts (
 	foreign key (YieldType) references Yields(Type)
 );
 
-CREATE TABLE Policy_GreatPersonOutputModifierPerGWs (
-	'PolicyType' text default '',
-	'GreatPersonType' text default '',
-	'Modifier' integer  not null ,
-	foreign key (PolicyType) references Policies(Type),
-	foreign key (GreatPersonType) references GreatPersons(Type)
-);
-
 create table Policy_YieldPerPopChanges (
     PolicyType text references Policies(Type),
     YieldType text references Yields(Type),
     Yield integer default 0
 );
 
-create table Policy_CityLoveKingDayYieldMod (
+-- SP-TODO: Table Name Policy_CityLoveKingDayYieldMod -> Policy_CityWLTKDYieldModifier
+create table Policy_CityWLTKDYieldModifier (
     PolicyType text references Policies(Type),
     YieldType text references Yields(Type),
-    Yield integer default 0
+    Modifier integer default 0
 );
 
 -- Deprecated
@@ -136,3 +128,10 @@ alter table Policies add TourismModifierPerGPCreation boolean default 0; -- Too 
 alter table Policies add SettlerProductionEraModifier integer default 0; -- Use Policy_EraSettlerProductionModifier
 alter table Policies add SettlerProductionStartEra text references Eras(Type); -- Use Policy_EraSettlerProductionModifier
 alter table Policies add FreeBuildingClass text references BuildingClasses(Type); -- Use AllCityFreeBuilding
+CREATE TABLE Policy_GreatPersonOutputModifierPerGWs (
+	'PolicyType' text default '',
+	'GreatPersonType' text default '',
+	'Modifier' integer  not null ,
+	foreign key (PolicyType) references Policies(Type),
+	foreign key (GreatPersonType) references GreatPersons(Type)
+);
