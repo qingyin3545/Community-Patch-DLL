@@ -42152,6 +42152,7 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 
 	GetPlayerTraits()->InitPlayerTraits();
 	bool bGarrisonFreeMaintenancePre = IsGarrisonFreeMaintenance();
+	bool bNoOccupiedUnhappinessGarrisonedCityPre = GetPlayerPolicies()->GetNumericModifier(POLICYMOD_NO_OCCUPIED_UNHAPPINESS_GARRISONED_CITY_COUNT) > 0;
 
 	ChangeCulturePerWonder(pkPolicyInfo->GetCulturePerWonder() * iChange);
 	ChangeCultureWonderMultiplier(pkPolicyInfo->GetCultureWonderMultiplier() * iChange);
@@ -42433,11 +42434,14 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_DEEP_WATER_NAVAL_STRENGTH_CULTURE_MODIFIER, pkPolicyInfo->GetDeepWaterNavalStrengthCultureModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_SETTLER_POP_CONSUME, pkPolicyInfo->GetSettlerPopConsume() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_SCIENCE_MODIFIER_FROM_RA_NUM, pkPolicyInfo->GetScienceModifierFromRANum() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_CITY_EXTRA_PRODUCTION_COUNT, pkPolicyInfo->GetCityExtraProductionCount() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NO_OCCUPIED_UNHAPPINESS_GARRISONED_CITY_COUNT, pkPolicyInfo->IsNoOccupiedUnhappinessGarrisonedCity() ? iChange : 0);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_WLTKD_FROM_GOLDEN_AGE_LENGTH_MODIFIER, pkPolicyInfo->GetWLTKDFromGoldenAgeLengthModifier() * iChange);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_ALWAYS_WLTKD_IN_GOLDEN_AGE_COUNT, pkPolicyInfo->IsAlwaysWLTKDInGoldenAge() ? iChange : 0);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_IDEOLOGY_PRESSURE_MODIFIER, pkPolicyInfo->GetIdeologyPressureModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_IDEOLOGY_UNHAPPINESS_MODIFIER, pkPolicyInfo->GetIdeologyUnhappinessModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_DIFFERENT_IDEOLOGY_TOURISM_MODIFIER, pkPolicyInfo->GetDifferentIdeologyTourismModifier() * iChange);
-	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NUM_SPY_LEVEL_UP_WHEN_RIGGING, pkPolicyInfo->GetSpyLevelUpWhenRigging() ? iChange : 0);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NUM_SPY_LEVEL_UP_WHEN_RIGGING, pkPolicyInfo->IsSpyLevelUpWhenRigging() ? iChange : 0);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_DIPLOMAT_PROPAGANDA_MODIFIER, pkPolicyInfo->GetDiplomatPropagandaModifier() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NUM_NO_RESISTANCE, pkPolicyInfo->IsNoResistance() ? 0 : iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_SCIENCE_BEAKER_MOD, pkPolicyInfo->GetScienceBeakerMod() * iChange);
@@ -42446,7 +42450,7 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_ORIGINAL_CAPITAL_CAPTURE_POLICY, pkPolicyInfo->GetOriginalCapitalCapturePolicy() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_ORIGINAL_CAPITAL_CAPTURE_GREAT_PERSON, pkPolicyInfo->GetOriginalCapitalCaptureGreatPerson() * iChange);
 	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_RELIGION_PRODUCTION_MODIFIER, pkPolicyInfo->GetReligionProductionModifier() * iChange);
-	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NUM_UPGRADE_ALL_TERRITORY, pkPolicyInfo->GetUpgradeAllTerritory() ? iChange : 0);
+	GetPlayerPolicies()->ChangesNumericModifier(POLICYMOD_NUM_UPGRADE_ALL_TERRITORY, pkPolicyInfo->IsUpgradeAllTerritory() ? iChange : 0);
 
 	ChangeNumNullifyInfluenceModifier(pkPolicyInfo->IsNullifyInfluenceModifier() ? iChange : 0);
 	
@@ -42631,12 +42635,17 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 		}
 
 		int iCityCultureChange = pkPolicyInfo->GetCulturePerCity() * iChange;
+		bool bNoOccupiedUnhappinessGarrisonedCity = GetPlayerPolicies()->GetNumericModifier(POLICYMOD_NO_OCCUPIED_UNHAPPINESS_GARRISONED_CITY_COUNT) > 0;
 		if (pLoopCity->HasGarrison())
 		{
 			iCityCultureChange += pkPolicyInfo->GetCulturePerGarrisonedUnit() * iChange;
 			if(IsGarrisonFreeMaintenance() != bGarrisonFreeMaintenancePre)
 			{
 				changeExtraUnitCost(-pLoopCity->GetGarrisonedUnit()->getUnitInfo().GetExtraMaintenanceCost() * iChange);
+			}
+			if(bNoOccupiedUnhappinessGarrisonedCity != bNoOccupiedUnhappinessGarrisonedCityPre)
+			{
+				pLoopCity->ChangeNoOccupiedUnhappinessCount(iChange);
 			}
 		}
 		pLoopCity->ChangeBaseYieldRateFromPolicies(YIELD_CULTURE, iCityCultureChange);

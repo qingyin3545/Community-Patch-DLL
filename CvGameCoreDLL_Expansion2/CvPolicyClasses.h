@@ -502,11 +502,14 @@ public:
 	int GetDeepWaterNavalStrengthCultureModifier() const;
 	int GetSettlerPopConsume() const;
 	int GetScienceModifierFromRANum() const;
+	int GetCityExtraProductionCount() const;
+	bool IsNoOccupiedUnhappinessGarrisonedCity() const;
 	int GetWLTKDFromGoldenAgeLengthModifier() const;
+	bool IsAlwaysWLTKDInGoldenAge() const;
 	int GetIdeologyPressureModifier() const;
 	int GetIdeologyUnhappinessModifier() const;
 	int GetDifferentIdeologyTourismModifier() const;
-	bool GetSpyLevelUpWhenRigging() const;
+	bool IsSpyLevelUpWhenRigging() const;
 	bool IsNullifyInfluenceModifier() const;
 	int GetDiplomatPropagandaModifier() const;
 	int IsNoResistance() const;
@@ -519,7 +522,7 @@ public:
 	int GetOriginalCapitalCapturePolicy() const;
 	int GetOriginalCapitalCaptureGreatPerson() const;
 	int GetReligionProductionModifier() const;
-	bool GetUpgradeAllTerritory() const;
+	bool IsUpgradeAllTerritory() const;
 private:
 	int m_iTechPrereq;
 	int m_iCultureCost;
@@ -937,7 +940,10 @@ private:
 	int m_iDeepWaterNavalStrengthCultureModifier = 0;
 	int m_iSettlerPopConsume = 0;
 	int m_iScienceModifierFromRANum = 0;
+	int m_iCityExtraProductionCount = 0;
+	bool m_bNoOccupiedUnhappinessGarrisonedCity = false;
 	int m_iWLTKDFromGoldenAgeLengthModifier = 0;
+	bool m_bAlwaysWLTKDInGoldenAge = false;
 	int m_iIdeologyPressureModifier = 0;
 	int m_iIdeologyUnhappinessModifier = 0;
 	int m_iDifferentIdeologyTourismModifier = 0;
@@ -1127,7 +1133,10 @@ enum CLOSED_ENUM PolicyModifierType
 	POLICYMOD_DEEP_WATER_NAVAL_STRENGTH_CULTURE_MODIFIER,
 	POLICYMOD_SETTLER_POP_CONSUME,
 	POLICYMOD_SCIENCE_MODIFIER_FROM_RA_NUM,
+	POLICYMOD_CITY_EXTRA_PRODUCTION_COUNT,
+	POLICYMOD_NO_OCCUPIED_UNHAPPINESS_GARRISONED_CITY_COUNT,
 	POLICYMOD_WLTKD_FROM_GOLDEN_AGE_LENGTH_MODIFIER,
+	POLICYMOD_ALWAYS_WLTKD_IN_GOLDEN_AGE_COUNT,
 	POLICYMOD_IDEOLOGY_PRESSURE_MODIFIER,
 	POLICYMOD_IDEOLOGY_UNHAPPINESS_MODIFIER,
 	POLICYMOD_DIFFERENT_IDEOLOGY_TOURISM_MODIFIER,
