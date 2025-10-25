@@ -63,15 +63,6 @@ FDataStream& operator<<(FDataStream& saveTo, const PlagueInfo& readFrom)
 CvPromotionEntry::CvPromotionEntry():
 	m_iLayerAnimationPath(ANIMATIONPATH_NONE),
 	m_iPrereqPromotion(NO_PROMOTION),
-	m_iPrereqOrPromotion1(NO_PROMOTION),
-	m_iPrereqOrPromotion2(NO_PROMOTION),
-	m_iPrereqOrPromotion3(NO_PROMOTION),
-	m_iPrereqOrPromotion4(NO_PROMOTION),
-	m_iPrereqOrPromotion5(NO_PROMOTION),
-	m_iPrereqOrPromotion6(NO_PROMOTION),
-	m_iPrereqOrPromotion7(NO_PROMOTION),
-	m_iPrereqOrPromotion8(NO_PROMOTION),
-	m_iPrereqOrPromotion9(NO_PROMOTION),
 	m_iTechPrereq(NO_TECH),
 	m_iInvisibleType(NO_INVISIBLE),
 	m_iSeeInvisibleType(NO_INVISIBLE),
@@ -357,7 +348,6 @@ CvPromotionEntry::CvPromotionEntry():
 	m_piTerrainPassableTech(NULL),
 	m_pbFeatureImpassable(NULL),
 	m_pbUnitCombat(NULL),
-	m_pbCivilianUnitType(NULL),
 	m_pbUnitName(NULL),
 	m_pbPostCombatRandomPromotion(NULL)
 {
@@ -411,9 +401,10 @@ CvPromotionEntry::~CvPromotionEntry(void)
 	SAFE_DELETE_ARRAY(m_piTerrainPassableTech);
 	SAFE_DELETE_ARRAY(m_pbFeatureImpassable);
 	SAFE_DELETE_ARRAY(m_pbUnitCombat);
-	SAFE_DELETE_ARRAY(m_pbCivilianUnitType);
 	SAFE_DELETE_ARRAY(m_pbUnitName);
 	SAFE_DELETE_ARRAY(m_pbPostCombatRandomPromotion);
+	SAFE_DELETE_ARRAY(m_pbCivilianUnitType);
+	SAFE_DELETE_ARRAY(m_pbUnitType);
 	SAFE_DELETE_ARRAY(m_pbFeatureInvisible);
 }
 //------------------------------------------------------------------------------
@@ -688,33 +679,6 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 
 	const char* szPromotionPrereq = kResults.GetText("PromotionPrereq");
 	m_iPrereqPromotion = GC.getInfoTypeForString(szPromotionPrereq, true);
-
-	const char* szPromotionPrereqOr1 = kResults.GetText("PromotionPrereqOr1");
-	m_iPrereqOrPromotion1 = GC.getInfoTypeForString(szPromotionPrereqOr1, true);
-
-	const char* szPromotionPrereqOr2 = kResults.GetText("PromotionPrereqOr2");
-	m_iPrereqOrPromotion2 = GC.getInfoTypeForString(szPromotionPrereqOr2, true);
-
-	const char* szPromotionPrereqOr3 = kResults.GetText("PromotionPrereqOr3");
-	m_iPrereqOrPromotion3 = GC.getInfoTypeForString(szPromotionPrereqOr3, true);
-
-	const char* szPromotionPrereqOr4 = kResults.GetText("PromotionPrereqOr4");
-	m_iPrereqOrPromotion4 = GC.getInfoTypeForString(szPromotionPrereqOr4, true);
-
-	const char* szPromotionPrereqOr5 = kResults.GetText("PromotionPrereqOr5");
-	m_iPrereqOrPromotion5 = GC.getInfoTypeForString(szPromotionPrereqOr5, true);
-
-	const char* szPromotionPrereqOr6 = kResults.GetText("PromotionPrereqOr6");
-	m_iPrereqOrPromotion6 = GC.getInfoTypeForString(szPromotionPrereqOr6, true);
-
-	const char* szPromotionPrereqOr7 = kResults.GetText("PromotionPrereqOr7");
-	m_iPrereqOrPromotion7 = GC.getInfoTypeForString(szPromotionPrereqOr7, true);
-
-	const char* szPromotionPrereqOr8 = kResults.GetText("PromotionPrereqOr8");
-	m_iPrereqOrPromotion8 = GC.getInfoTypeForString(szPromotionPrereqOr8, true);
-
-	const char* szPromotionPrereqOr9 = kResults.GetText("PromotionPrereqOr9");
-	m_iPrereqOrPromotion9 = GC.getInfoTypeForString(szPromotionPrereqOr9, true);
 
 	//Arrays
 	const int iNumUnitClasses = kUtility.MaxRows("UnitClasses");
@@ -1259,34 +1223,6 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 		pResults->Reset();
 	}
 
-	//UnitPromotions_CivilianUnitType
-	{
-		kUtility.InitializeArray(m_pbCivilianUnitType, iNumUnitTypes, false);
-
-		std::string sqlKey = "m_pbCivilianUnitType";
-		Database::Results* pResults = kUtility.GetResults(sqlKey);
-		if(pResults == NULL)
-		{
-			const char* szSQL = "select Units.ID from UnitPromotions_CivilianUnitType inner join Units On Units.Type = UnitType where PromotionType = ?";
-			pResults = kUtility.PrepareResults(sqlKey, szSQL);
-		}
-
-		ASSERT(pResults);
-		if(!pResults) return false;
-
-		pResults->Bind(1, szPromotionType);
-
-		while(pResults->Step())
-		{
-			const int iUnit = (UnitTypes)pResults->GetInt(0);
-			ASSERT(iUnit < iNumUnitTypes);
-
-			m_pbCivilianUnitType[iUnit] = true;
-		}
-
-		pResults->Reset();
-	}
-
 	//UnitPromotions_BlockedPromotions
 	{
 		m_siBlockedPromotions.clear();
@@ -1526,6 +1462,177 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 		pResults->Reset();
 	}
 #endif
+	//UnitPromotions_Promotions
+	{
+		m_vPrePromotions.clear();
+		std::string sqlKey = "m_vPrePromotions";
+		Database::Results* pResults = kUtility.GetResults(sqlKey);
+		if (pResults == NULL)
+		{
+			const char* szSQL = "select UnitPromotions.ID from UnitPromotions_Promotions inner join UnitPromotions where FreePromotionType = ? and PrePromotionType = UnitPromotions.Type;";
+			pResults = kUtility.PrepareResults(sqlKey, szSQL);
+		}
+
+		ASSERT_DEBUG(pResults);
+		if (!pResults) return false;
+
+		pResults->Bind(1, szPromotionType);
+
+		while (pResults->Step())
+		{
+			const int iPrePromotion = (PromotionTypes)pResults->GetInt(0);
+			ASSERT_DEBUG(iPrePromotion < iNumUnitPromotions);
+			m_vPrePromotions.push_back(iPrePromotion);
+		}
+
+		pResults->Reset();
+	}
+	//PromotionPrereqOr1-13
+	{
+		for(int i = 1; i <= 13; i++)
+		{
+			CvString szPrereqOri;
+			szPrereqOri.Format("PromotionPrereqOr%d", i);
+			const char* szPromotionPrereqOri = kResults.GetText(szPrereqOri.c_str());
+			int iPrereqOrPromotioni = GC.getInfoTypeForString(szPromotionPrereqOri, true);
+			if(iPrereqOrPromotioni == NO_PROMOTION) continue;
+			m_vPromotionPrereqOrs.push_back(iPrereqOrPromotioni);
+		}
+	}
+	//Promotion_PromotionPrereqAnds
+	{
+		m_vPromotionPrereqAnds.clear();
+		std::string sqlKey = "m_vPromotionPrereqAnds";
+		Database::Results* pResults = kUtility.GetResults(sqlKey);
+		if(pResults == NULL)
+		{
+			const char* szSQL = "select UnitPromotions.ID from Promotion_PromotionPrereqAnds inner join UnitPromotions on UnitPromotions.Type = PrereqPromotionType where PromotionType = ?";
+			pResults = kUtility.PrepareResults(sqlKey, szSQL);
+		}
+		ASSERT_DEBUG(pResults);
+		if (!pResults) return false;
+
+		pResults->Bind(1, szPromotionType);
+
+		while (pResults->Step())
+		{
+			const int iPrereqPromotion = (PromotionTypes)pResults->GetInt(0);
+			ASSERT_DEBUG(iPrereqPromotion < iNumUnitPromotions);
+			m_vPromotionPrereqAnds.push_back(iPrereqPromotion);
+		}
+
+		pResults->Reset();
+	}
+	//Promotion_PromotionExclusionAny
+	{
+		m_vPromotionExclusionAny.clear();
+		std::string sqlKey = "m_vPromotionExclusionAny";
+		Database::Results* pResults = kUtility.GetResults(sqlKey);
+		if(pResults == NULL)
+		{
+			const char* szSQL = "select UnitPromotions.ID from Promotion_PromotionExclusionAny inner join UnitPromotions on UnitPromotions.Type = ExclusionPromotionType where PromotionType = ?";
+			pResults = kUtility.PrepareResults(sqlKey, szSQL);
+		}
+		ASSERT_DEBUG(pResults);
+		if (!pResults) return false;
+
+		pResults->Bind(1, szPromotionType);
+
+		while (pResults->Step())
+		{
+			const int iExclusionPromotion = (PromotionTypes)pResults->GetInt(0);
+			ASSERT_DEBUG(iExclusionPromotion < iNumUnitPromotions);
+			m_vPromotionExclusionAny.push_back(iExclusionPromotion);
+		}
+
+		pResults->Reset();
+	}
+	//Promotion_UnitCombatsPromotionValid(only for check promotion valid)
+	{
+		m_vUnitCombatsPromotionValid.clear();
+
+		std::string sqlKey = "m_vUnitCombatsPromotionValid";
+		Database::Results* pResults = kUtility.GetResults(sqlKey);
+		if (pResults == NULL) {
+			const char* szSQL = "SELECT UnitCombatInfos.ID FROM Promotion_UnitCombatsPromotionValid INNER JOIN UnitCombatInfos ON UnitCombatInfos.Type = UnitCombatType WHERE PromotionType = ?";
+			pResults = kUtility.PrepareResults(sqlKey, szSQL);
+		}
+		ASSERT_DEBUG(pResults);
+		if (!pResults) return false;
+
+		pResults->Bind(1, szPromotionType);
+
+		while (pResults->Step()) {
+			const int iUnitCombatsPromotionValid = (UnitCombatTypes)pResults->GetInt(0);
+			ASSERT_DEBUG(iUnitCombatsPromotionValid < iNumUnitCombatClasses);
+			m_vUnitCombatsPromotionValid.push_back(iUnitCombatsPromotionValid);
+		}
+
+		pResults->Reset();
+	}
+	//UnitPromotions_CivilianUnitType
+	{
+		std::string sqlKey = "m_pbCivilianUnitType";
+		Database::Results* pResults = kUtility.GetResults(sqlKey);
+		if(pResults == NULL)
+		{
+			const char* szSQL = "select Units.ID from UnitPromotions_CivilianUnitType inner join Units On Units.Type = UnitType where PromotionType = ?";
+			pResults = kUtility.PrepareResults(sqlKey, szSQL);
+		}
+
+		ASSERT(pResults);
+		if(!pResults) return false;
+
+		pResults->Bind(1, szPromotionType);
+
+		while(pResults->Step())
+		{
+			// Only init when it has a result
+			if(m_pbCivilianUnitType == nullptr)
+			{
+				kUtility.InitializeArray(m_pbCivilianUnitType, iNumUnitTypes, false);
+			}
+			const int iUnit = (UnitTypes)pResults->GetInt(0);
+			ASSERT(iUnit < iNumUnitTypes);
+
+			m_pbCivilianUnitType[iUnit] = true;
+		}
+
+		pResults->Reset();
+	}
+	//UnitPromotions_UnitType
+	{
+		kUtility.InitializeArray(m_pbUnitType, iNumUnitTypes, false);
+
+		std::string sqlKey = "m_pbUnitType";
+		Database::Results* pResults = kUtility.GetResults(sqlKey);
+		if (pResults == NULL)
+		{
+			const char* szSQL = "select Units.ID from UnitPromotions_UnitType inner join Units On Units.Type = UnitType where PromotionType = ?";
+			pResults = kUtility.PrepareResults(sqlKey, szSQL);
+		}
+
+		ASSERT_DEBUG(pResults);
+		if (!pResults) return false;
+
+		pResults->Bind(1, szPromotionType);
+
+		while (pResults->Step())
+		{
+			// Only init when it has a result
+			if(m_pbUnitType == nullptr)
+			{
+				kUtility.InitializeArray(m_pbUnitType, iNumUnitTypes, false);
+			}
+			const int iUnit = (UnitTypes)pResults->GetInt(0);
+			ASSERT_DEBUG(iUnit < iNumUnitTypes);
+
+			m_pbUnitType[iUnit] = true;
+		}
+
+		pResults->Reset();
+	}
+
 	kUtility.PopulateArrayByExistence(m_pbFeatureInvisible,
 		"Features",
 		"UnitPromotions_FeatureInvisible",
@@ -1667,114 +1774,6 @@ int CvPromotionEntry::GetPrereqPromotion() const
 void CvPromotionEntry::SetPrereqPromotion(int i)
 {
 	m_iPrereqPromotion = i;
-}
-
-/// Accessor: Gets promotion 1 of an either/or promotion prerequisite.
-int CvPromotionEntry::GetPrereqOrPromotion1() const
-{
-	return m_iPrereqOrPromotion1;
-}
-
-/// Accessor: Sets promotion 1 of an either/or promotion prerequisite.
-void CvPromotionEntry::SetPrereqOrPromotion1(int i)
-{
-	m_iPrereqOrPromotion1 = i;
-}
-
-/// Accessor: Gets promotion 2 of an either/or promotion prerequisite.
-int CvPromotionEntry::GetPrereqOrPromotion2() const
-{
-	return m_iPrereqOrPromotion2;
-}
-
-/// Accessor: Sets promotion 2 of an either/or promotion prerequisite.
-void CvPromotionEntry::SetPrereqOrPromotion2(int i)
-{
-	m_iPrereqOrPromotion2 = i;
-}
-
-/// Accessor: Gets promotion 3 of an either/or promotion prerequisite.
-int CvPromotionEntry::GetPrereqOrPromotion3() const
-{
-	return m_iPrereqOrPromotion3;
-}
-
-/// Accessor: Sets promotion 3 of an either/or promotion prerequisite.
-void CvPromotionEntry::SetPrereqOrPromotion3(int i)
-{
-	m_iPrereqOrPromotion3 = i;
-}
-
-/// Accessor: Gets promotion 4 of an either/or promotion prerequisite.
-int CvPromotionEntry::GetPrereqOrPromotion4() const
-{
-	return m_iPrereqOrPromotion4;
-}
-
-/// Accessor: Sets promotion 4 of an either/or promotion prerequisite.
-void CvPromotionEntry::SetPrereqOrPromotion4(int i)
-{
-	m_iPrereqOrPromotion4 = i;
-}
-
-/// Accessor: Gets promotion 5 of an either/or promotion prerequisite.
-int CvPromotionEntry::GetPrereqOrPromotion5() const
-{
-	return m_iPrereqOrPromotion5;
-}
-
-/// Accessor: Sets promotion 5 of an either/or promotion prerequisite.
-void CvPromotionEntry::SetPrereqOrPromotion5(int i)
-{
-	m_iPrereqOrPromotion5 = i;
-}
-
-/// Accessor: Gets promotion 6 of an either/or promotion prerequisite.
-int CvPromotionEntry::GetPrereqOrPromotion6() const
-{
-	return m_iPrereqOrPromotion6;
-}
-
-/// Accessor: Sets promotion 6 of an either/or promotion prerequisite.
-void CvPromotionEntry::SetPrereqOrPromotion6(int i)
-{
-	m_iPrereqOrPromotion6 = i;
-}
-
-/// Accessor: Gets promotion 7 of an either/or promotion prerequisite.
-int CvPromotionEntry::GetPrereqOrPromotion7() const
-{
-	return m_iPrereqOrPromotion7;
-}
-
-/// Accessor: Sets promotion 7 of an either/or promotion prerequisite.
-void CvPromotionEntry::SetPrereqOrPromotion7(int i)
-{
-	m_iPrereqOrPromotion7 = i;
-}
-
-/// Accessor: Gets promotion 8 of an either/or promotion prerequisite.
-int CvPromotionEntry::GetPrereqOrPromotion8() const
-{
-	return m_iPrereqOrPromotion8;
-}
-
-/// Accessor: Sets promotion 8 of an either/or promotion prerequisite.
-void CvPromotionEntry::SetPrereqOrPromotion8(int i)
-{
-	m_iPrereqOrPromotion8 = i;
-}
-
-/// Accessor: Gets promotion 9 of an either/or promotion prerequisite.
-int CvPromotionEntry::GetPrereqOrPromotion9() const
-{
-	return m_iPrereqOrPromotion9;
-}
-
-/// Accessor: Sets promotion 9 of an either/or promotion prerequisite.
-void CvPromotionEntry::SetPrereqOrPromotion9(int i)
-{
-	m_iPrereqOrPromotion9 = i;
 }
 
 /// Accessor: Gets the tech prerequisite for this promotion
@@ -3735,19 +3734,6 @@ bool CvPromotionEntry::GetUnitCombatClass(int i) const
 	return false;
 }
 
-/// Returns the civilian unit type that this promotion is available for
-bool CvPromotionEntry::GetCivilianUnitType(int i) const
-{
-	PRECONDITION(i < GC.getNumUnitInfos(), "Index out of bounds");
-	PRECONDITION(i > -1, "Index out of bounds");
-
-	if(i > -1 && i < GC.getNumUnitInfos() && m_pbCivilianUnitType)
-	{
-		return m_pbCivilianUnitType[i];
-	}
-
-	return false;
-}
 
 /// Returns the amount of a given yield to receive when a unit that has this promotion pillages a tile.
 /// 
@@ -4023,6 +4009,53 @@ std::tr1::unordered_map<PromotionTypes, int>& CvPromotionEntry::GetOtherPromotio
 	return m_pPromotionDefenseModifiers;
 }
 #endif
+const std::vector<int>& CvPromotionEntry::GetPrePromotions() const
+{
+	return m_vPrePromotions;
+}
+const std::vector<int>& CvPromotionEntry::GetPromotionPrereqOrs() const
+{
+	return m_vPromotionPrereqOrs;
+}
+const std::vector<int>& CvPromotionEntry::GetPromotionPrereqAnds() const
+{
+	return m_vPromotionPrereqAnds;
+}
+const std::vector<int>& CvPromotionEntry::GetPromotionExclusionAny() const
+{
+	return m_vPromotionExclusionAny;
+}
+/// Returns the Valid CombatType Promotions this Promotion given
+const std::vector<int>& CvPromotionEntry::GetUnitCombatsPromotionValid() const
+{
+	return m_vUnitCombatsPromotionValid;
+}
+/// Returns the civilian unit type that this promotion is available for
+bool CvPromotionEntry::GetCivilianUnitType(int i) const
+{
+	PRECONDITION(i < GC.getNumUnitInfos(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+
+	if(m_pbCivilianUnitType && i > -1 && i < GC.getNumUnitInfos())
+	{
+		return m_pbCivilianUnitType[i];
+	}
+
+	return false;
+}
+/// Returns the  unit type that this promotion is available for
+bool CvPromotionEntry::GetUnitType(int i) const
+{
+	PRECONDITION(i < GC.getNumUnitInfos(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+
+	if (m_pbUnitType && i > -1 && i < GC.getNumUnitInfos())
+	{
+		return m_pbUnitType[i];
+	}
+
+	return false;
+}
 bool CvPromotionEntry::IsFeatureInvisible(int iFeature) const
 {
 	ASSERT_DEBUG(i < GC.getNumFeatureInfos(), "Index out of bounds");
