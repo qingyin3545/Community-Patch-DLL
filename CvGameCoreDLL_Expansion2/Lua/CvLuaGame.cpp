@@ -527,6 +527,7 @@ void CvLuaGame::RegisterMembers(lua_State* L)
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	Method(GetImmigrationRegressand);
 #endif
+	Method(CheckDllVersion);
 }
 //------------------------------------------------------------------------------
 
@@ -4271,3 +4272,9 @@ int CvLuaGame::lGetImmigrationRegressand(lua_State* L)
 	return 1;
 }
 #endif
+int CvLuaGame::lCheckDllVersion(lua_State* L)
+{
+	const int iVersion = luaL_checkint(L, 1);
+	lua_pushboolean(L, true);
+	return 1;
+}
