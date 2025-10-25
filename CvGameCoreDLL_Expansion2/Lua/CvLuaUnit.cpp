@@ -723,6 +723,7 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(SetRangedCombatStrengthChangeFromKilledUnits);
 	Method(GetExtraPopConsume);
 	Method(SetExtraPopConsume);
+	Method(IsCannotBeCapturedUnit);
 }
 //------------------------------------------------------------------------------
 const char* CvLuaUnit::GetTypeName()
@@ -7180,3 +7181,11 @@ int CvLuaUnit::lSetRangedCombatStrengthChangeFromKilledUnits(lua_State* L)
 //------------------------------------------------------------------------------
 LUAAPIIMPL(Unit, GetExtraPopConsume)
 LUAAPIIMPL(Unit, SetExtraPopConsume)
+int CvLuaUnit::lIsCannotBeCapturedUnit(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	const bool bResult = pkUnit->GetCannotBeCaptured();
+
+	lua_pushboolean(L, bResult);
+	return 1;
+}
