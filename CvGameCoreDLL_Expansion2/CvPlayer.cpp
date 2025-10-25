@@ -26313,6 +26313,9 @@ void CvPlayer::doInstantYield(InstantYieldType iType, bool bCityFaith, GreatPers
 					}
 					if (eYield == YIELD_JFD_LOYALTY && eYield == ePassYield)
 						iValue += iPassYield;
+					if (pUnit)
+						iValue += pUnit->GetInstantYieldPerReligionFollowerConverted(eYield);
+					
 					break;
 				}
 				case INSTANT_YIELD_TYPE_F_SPREAD:
