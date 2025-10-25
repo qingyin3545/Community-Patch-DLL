@@ -509,6 +509,7 @@ protected:
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	LUAAPIEXTN(GetImmigrationRegressand, int);
 #endif
+	LUAAPIEXTN(CheckDllVersion, bool, iVersion);
 };
 
 #endif //CVLUAGAME_H

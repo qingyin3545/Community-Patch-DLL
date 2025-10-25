@@ -50329,9 +50329,9 @@ std::tr1::unordered_set<ImprovementTypes>& CvPlayer::GetUIFromDualEmpire()
 //	--------------------------------------------------------------------------------
 BuildingTypes CvPlayer::GetCivBuilding(BuildingClassTypes eBuildingClass) const
 {
+	if(eBuildingClass == NO_BUILDINGCLASS) return NO_BUILDING;
+	
 	CvBuildingClassInfo* pBuildingClassInfo = GC.getBuildingClassInfo(eBuildingClass);
-	if(!pBuildingClassInfo) return NO_BUILDING;
-
 	BuildingTypes eCivBuilding = NO_BUILDING;
 	eCivBuilding = (BuildingTypes)(getCivilizationInfo().getCivilizationBuildings(eBuildingClass));
 
@@ -50339,9 +50339,9 @@ BuildingTypes CvPlayer::GetCivBuilding(BuildingClassTypes eBuildingClass) const
 }
 UnitTypes CvPlayer::GetCivUnit(UnitClassTypes eUnitClass, int iFakeSeed) const
 {
+	if(eUnitClass == NO_UNITCLASS) return NO_UNIT;
+	
 	CvUnitClassInfo* pUnitClassInfo = GC.getUnitClassInfo(eUnitClass);
-	if(!pUnitClassInfo) return NO_UNIT;
-
 	UnitTypes eCivUnit = NO_UNIT;
 	eCivUnit = (UnitTypes)getCivilizationInfo().getCivilizationUnits(eUnitClass);
 
@@ -50349,11 +50349,13 @@ UnitTypes CvPlayer::GetCivUnit(UnitClassTypes eUnitClass, int iFakeSeed) const
 }
 UnitTypes CvPlayer::GetCivUnitWithDefault(UnitClassTypes eUnitClass) const
 {
+	if(eUnitClass == NO_UNITCLASS) return NO_UNIT;
+
 	UnitTypes eUnitType = GetCivUnit(eUnitClass);
 	if (eUnitType == NO_UNIT)
 	{
 		CvUnitClassInfo* pUnitClassInfo = GC.getUnitClassInfo(eUnitClass);
-		if(pUnitClassInfo) eUnitType = (UnitTypes)pUnitClassInfo->getDefaultUnitIndex();
+		eUnitType = (UnitTypes)pUnitClassInfo->getDefaultUnitIndex();
 	}
 	return eUnitType;
 }
