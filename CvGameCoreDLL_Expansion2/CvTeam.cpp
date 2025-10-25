@@ -7938,7 +7938,7 @@ void CvTeam::processTech(TechTypes eTech, int iChange, bool bNoBonus)
 							if (pLoopUnit->plot()->IsFriendlyTerritory(*it))
 							{
 								// Civilian unit or the unit can acquire this promotion
-								if (IsPromotionValidForUnitCombatType(ePromotion, pLoopUnit->getUnitType()) || IsPromotionValidForCivilianUnitType(ePromotion, pLoopUnit->getUnitType()))
+								if (::IsPromotionValidForUnit(ePromotion, *pLoopUnit))
 								{
 									pLoopUnit->setHasPromotion(ePromotion, true);
 								}
