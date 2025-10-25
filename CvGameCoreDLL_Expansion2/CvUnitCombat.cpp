@@ -4388,20 +4388,19 @@ void CvUnitCombat::ApplyPostCityCombatEffects(CvUnit* pkAttacker, CvCity* pkDefe
 	if(iCityAttackFaithBonus > 0)
 	{
 		int iFaithBonus = iAttackerDamageInflicted * iCityAttackFaithBonus;
-		iFaithBonus /= 100;
 
-		if(iFaithBonus > 0)
+		if(iFaithBonus / 100 > 0)
 		{
-			GET_PLAYER(pkAttacker->getOwner()).ChangeFaith(iFaithBonus);
+			GET_PLAYER(pkAttacker->getOwner()).ChangeFaithTimes100(iFaithBonus);
 			CvPlayer& kCityPlayer = GET_PLAYER(pkDefender->getOwner());
-			int iDeduction = min(iFaithBonus, kCityPlayer.GetFaith());
-			kCityPlayer.ChangeFaith(-iDeduction);
+			int iDeduction = min(iFaithBonus, kCityPlayer.GetFaithTimes100());
+			kCityPlayer.ChangeFaithTimes100(-iDeduction);
 
 			if(pkAttacker->getOwner() == GC.getGame().getActivePlayer())
 			{
 				char text[256] = {0};
 				CvString colorString = "[COLOR_YELLOW]+%d[ENDCOLOR][ICON_PEACE]";
-				sprintf_s(text, colorString, iFaithBonus);
+				sprintf_s(text, colorString, iFaithBonus / 100);
 				SHOW_PLOT_POPUP(pkAttacker->plot(), pkAttacker->getOwner(), text, 0.0);
 			}
 		}
@@ -4567,7 +4566,7 @@ void CvUnitCombat::DoNewBattleEffects(const CvCombatInfo& kCombatInfo, int iAtta
 	DoStackingFightBack(kCombatInfo);
 	DoStopAttacker(kCombatInfo);
 	DoLuaFormulaPostCombatEffects(kCombatInfo, iAttackDamage);
-	//DoInsightEnemyDamage(kCombatInfo);
+	DoInsightEnemyDamage(kCombatInfo);
 }
 bool CvUnitCombat::ShouldDoNewBattleEffects(const CvCombatInfo& kCombatInfo)
 {

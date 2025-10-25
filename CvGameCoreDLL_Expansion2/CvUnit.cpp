@@ -896,16 +896,10 @@ void CvUnit::initWithNameOffset(int iID, UnitTypes eUnit, int iNameOffset, UnitA
 		if(kPlayer.IsFreePromotion(ePromotion))
 		{
 			// Valid Promotion for this Unit?
-			if(::IsPromotionValidForUnitCombatType(ePromotion, getUnitType()))
+			if(::IsPromotionValidForUnit(ePromotion, *this))
 			{
 				setHasPromotion(ePromotion, true);
 			}
-
-			else if(::IsPromotionValidForCivilianUnitType(ePromotion, getUnitType()))
-			{
-				setHasPromotion(ePromotion, true);
-			}
-
 		}
 	}
 
@@ -1681,6 +1675,11 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iSiegeKillCitizensPercent = 0;
 	m_iSiegeKillCitizensFixed = 0;
 #endif
+	m_mapUnitCombatsPromotionValid.clear();
+
+	m_featureInvisibleCount.clear();
+	m_removePromotionUpgrade.clear();
+
 	m_iNumRangeBackWhenDefense = 0;
 	m_iNumCanSplashDefender = 0;
 
@@ -2068,8 +2067,7 @@ void CvUnit::convert(CvUnit* pUnit, bool bIsUpgrade)
 			}
 
 			// if we get this due to a policy or wonder
-			else if (GET_PLAYER(getOwner()).IsFreePromotion(ePromotion) && (
-						::IsPromotionValidForUnitCombatType(ePromotion, getUnitType()) || ::IsPromotionValidForCivilianUnitType(ePromotion, getUnitType())))
+			else if (GET_PLAYER(getOwner()).IsFreePromotion(ePromotion) && ::IsPromotionValidForUnit(ePromotion, *this))
 			{
 				bFree = true;
 				bGivePromotion = true;
@@ -27619,6 +27617,26 @@ bool CvUnit::canAcquirePromotion(PromotionTypes ePromotion) const
 	}
 		
 
+	//Have Exclusions?
+	const std::vector<int>& pExclusions = pkPromotionInfo->GetPromotionExclusionAny();
+	if(!pExclusions.empty())
+	{
+		for(int Ii=0; Ii < pExclusions.size(); Ii++)
+		{
+			if(isHasPromotion((PromotionTypes)pExclusions[Ii])) return false;
+		}
+	}
+
+	// Has all needed Promotions?
+	const std::vector<int>& pPrereqAnds = pkPromotionInfo->GetPromotionPrereqAnds();
+	if(!pPrereqAnds.empty())
+	{
+		for(int Ii=0; Ii < pPrereqAnds.size(); Ii++)
+		{
+			if(!isHasPromotion((PromotionTypes)pPrereqAnds[Ii])) return false;
+		}
+	}
+
 	// AND prereq
 	if(pkPromotionInfo->GetPrereqPromotion() != NO_PROMOTION)
 	{
@@ -27629,100 +27647,16 @@ bool CvUnit::canAcquirePromotion(PromotionTypes ePromotion) const
 	}
 
 	// OR prereqs
-	bool bLacksOrPrereq = false;
-
-	PromotionTypes ePromotion1 = (PromotionTypes) pkPromotionInfo->GetPrereqOrPromotion1();
-	if(ePromotion1 != NO_PROMOTION)
+	const std::vector<int>& vPrereqOrs = pkPromotionInfo->GetPromotionPrereqOrs();
+	bool bLacksOrPrereq = vPrereqOrs.size() > 0;
+	for(const auto iPrereq : pkPromotionInfo->GetPromotionPrereqOrs())
 	{
-		if(!isHasPromotion(ePromotion1))
-			bLacksOrPrereq = true;
-	}
-
-	// OR Promotion 2
-	if(bLacksOrPrereq)
-	{
-		PromotionTypes ePromotion2 = (PromotionTypes) pkPromotionInfo->GetPrereqOrPromotion2();
-		if(ePromotion2 != NO_PROMOTION)
+		PromotionTypes ePrereq = (PromotionTypes)iPrereq;
+		if (ePrereq == NO_PROMOTION) continue;
+		if (isHasPromotion(ePrereq))
 		{
-			if(isHasPromotion(ePromotion2))
-				bLacksOrPrereq = false;
-		}
-	}
-
-	// OR Promotion 3
-	if(bLacksOrPrereq)
-	{
-		PromotionTypes ePromotion3 = (PromotionTypes) pkPromotionInfo->GetPrereqOrPromotion3();
-		if(ePromotion3 != NO_PROMOTION)
-		{
-			if(isHasPromotion(ePromotion3))
-				bLacksOrPrereq = false;
-		}
-	}
-
-	// OR Promotion 4
-	if(bLacksOrPrereq)
-	{
-		PromotionTypes ePromotion4 = (PromotionTypes) pkPromotionInfo->GetPrereqOrPromotion4();
-		if(ePromotion4 != NO_PROMOTION)
-		{
-			if(isHasPromotion(ePromotion4))
-				bLacksOrPrereq = false;
-		}
-	}
-
-	// OR Promotion 5
-	if(bLacksOrPrereq)
-	{
-		PromotionTypes ePromotion5 = (PromotionTypes) pkPromotionInfo->GetPrereqOrPromotion5();
-		if(ePromotion5 != NO_PROMOTION)
-		{
-			if(isHasPromotion(ePromotion5))
-				bLacksOrPrereq = false;
-		}
-	}
-
-	// OR Promotion 6
-	if(bLacksOrPrereq)
-	{
-		PromotionTypes ePromotion6 = (PromotionTypes) pkPromotionInfo->GetPrereqOrPromotion6();
-		if(ePromotion6 != NO_PROMOTION)
-		{
-			if(isHasPromotion(ePromotion6))
-				bLacksOrPrereq = false;
-		}
-	}
-
-	// OR Promotion 7
-	if(bLacksOrPrereq)
-	{
-		PromotionTypes ePromotion7 = (PromotionTypes) pkPromotionInfo->GetPrereqOrPromotion7();
-		if(ePromotion7 != NO_PROMOTION)
-		{
-			if(isHasPromotion(ePromotion7))
-				bLacksOrPrereq = false;
-		}
-	}
-
-	// OR Promotion 8
-	if(bLacksOrPrereq)
-	{
-		PromotionTypes ePromotion8 = (PromotionTypes) pkPromotionInfo->GetPrereqOrPromotion8();
-		if(ePromotion8 != NO_PROMOTION)
-		{
-			if(isHasPromotion(ePromotion8))
-				bLacksOrPrereq = false;
-		}
-	}
-
-	// OR Promotion 9
-	if(bLacksOrPrereq)
-	{
-		PromotionTypes ePromotion9 = (PromotionTypes) pkPromotionInfo->GetPrereqOrPromotion9();
-		if(ePromotion9 != NO_PROMOTION)
-		{
-			if(isHasPromotion(ePromotion9))
-				bLacksOrPrereq = false;
+			bLacksOrPrereq = false;
+			break;
 		}
 	}
 
@@ -27787,7 +27721,7 @@ bool CvUnit::isPromotionValid(PromotionTypes ePromotion) const
 		return false;
 	}
 
-	if(!::isPromotionValid(ePromotion, getUnitType(), true))
+	if(!::isPromotionValid(ePromotion, getUnitType(), true, false, this))
 		return false;
 
 	// Insta-heal - must be damaged
@@ -28484,6 +28418,10 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 		changeCombatModPerAdjacentUnitCombatAttackMod(((UnitCombatTypes)iI), (thisPromotion.GetCombatModPerAdjacentUnitCombatAttackModifier(iI) * iChange));
 		changeCombatModPerAdjacentUnitCombatDefenseMod(((UnitCombatTypes)iI), (thisPromotion.GetCombatModPerAdjacentUnitCombatDefenseModifier(iI) * iChange));
 	}
+	for(auto iCombatType : thisPromotion.GetUnitCombatsPromotionValid())
+	{
+		ChangeUnitCombatsPromotionValid((UnitCombatTypes)iCombatType, iChange);
+	}
 
 	for (iI = 0; iI < GC.getNumUnitClassInfos(); iI++)
 	{
@@ -28708,9 +28646,9 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 	ChangeAirSweepDamageMod(thisPromotion.GetAirSweepDamageMod() * iChange);
 	ChangeNumPromotionRemoveUpgrade(thisPromotion.GetRemovePromotionUpgrade(), iChange);
 
-	setAttackChanceFromAttackDamageFormula(thisPromotion.GetAttackChanceFromAttackDamageFormula() ? thisPromotion.GetAttackChanceFromAttackDamageFormula() : NO_LUA_FORMULA);
-	setMovementFromAttackDamageFormula(thisPromotion.GetMovementFromAttackDamageFormula() ? thisPromotion.GetMovementFromAttackDamageFormula() : NO_LUA_FORMULA);
-	setHealPercentFromAttackDamageFormula(thisPromotion.GetHealPercentFromAttackDamageFormula() ? thisPromotion.GetHealPercentFromAttackDamageFormula() : NO_LUA_FORMULA);
+	SetAttackChanceFromAttackDamageFormula(thisPromotion.GetAttackChanceFromAttackDamageFormula() ? thisPromotion.GetAttackChanceFromAttackDamageFormula() : NO_LUA_FORMULA);
+	SetMovementFromAttackDamageFormula(thisPromotion.GetMovementFromAttackDamageFormula() ? thisPromotion.GetMovementFromAttackDamageFormula() : NO_LUA_FORMULA);
+	SetHealPercentFromAttackDamageFormula(thisPromotion.GetHealPercentFromAttackDamageFormula() ? thisPromotion.GetHealPercentFromAttackDamageFormula() : NO_LUA_FORMULA);
 
 	if (IsSelected())
 	{
@@ -29414,6 +29352,7 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iSiegeKillCitizensPercent);
 	visitor(unit.m_iSiegeKillCitizensFixed);
 #endif
+	visitor(unit.m_mapUnitCombatsPromotionValid);
 	visitor(unit.m_featureInvisibleCount);
 	visitor(unit.m_removePromotionUpgrade);
 	visitor(unit.m_iNumRangeBackWhenDefense);
@@ -32457,7 +32396,7 @@ void CvUnit::AI_promote()
 			int iValue = AI_promotionValue(ePromotion);
 
 			//value lower-level promotions a bit less.
-			if (pkPromotionEntry->GetPrereqOrPromotion1() == NO_PROMOTION)
+			if (pkPromotionEntry->GetPromotionPrereqOrs().size() == 0)
 			{
 				if (iLevel >= 2)
 				{
@@ -32478,23 +32417,18 @@ void CvUnit::AI_promote()
 					continue;
 
 				//for some basic forward planning, look at promotions this promotion unlocks and add those to the value.
-				if (   pkNextPromotionEntry->GetPrereqOrPromotion1() == ePromotion
-					|| pkNextPromotionEntry->GetPrereqOrPromotion2() == ePromotion
-					|| pkNextPromotionEntry->GetPrereqOrPromotion3() == ePromotion
-					|| pkNextPromotionEntry->GetPrereqOrPromotion4() == ePromotion
-					|| pkNextPromotionEntry->GetPrereqOrPromotion5() == ePromotion
-					|| pkNextPromotionEntry->GetPrereqOrPromotion6() == ePromotion
-					|| pkNextPromotionEntry->GetPrereqOrPromotion7() == ePromotion
-					|| pkNextPromotionEntry->GetPrereqOrPromotion8() == ePromotion
-					|| pkNextPromotionEntry->GetPrereqOrPromotion9() == ePromotion)
+				for(auto eNextPrePromotion : pkNextPromotionEntry->GetPromotionPrereqOrs())
 				{
-					iNextValue = AI_promotionValue(eNextPromotion);
-					if (iNextValue > iBestNextValue)
+					if(eNextPrePromotion == ePromotion)
 					{
-						iBestNextValue = iNextValue;
+						iNextValue = AI_promotionValue(eNextPromotion);
+						if (iNextValue > iBestNextValue)
+						{
+							iBestNextValue = iNextValue;
+						}
+						break;
 					}
 				}
-
 			}
 			
 			iValue += iBestNextValue / 2;
@@ -35319,6 +35253,23 @@ int CvUnit::otherPromotionDefenseModifierByUnit(const CvUnit* otherUnit) const
 	return iSum;
 }
 #endif
+
+//	--------------------------------------------------------------------------------
+/// This unitcombat provided by its promotions?
+const std::tr1::unordered_map<int, int>& CvUnit::GetUnitCombatsPromotionValid() const
+{
+	return m_mapUnitCombatsPromotionValid;
+}
+void CvUnit::ChangeUnitCombatsPromotionValid(UnitCombatTypes eIndex,int iChange)
+{
+	ASSERT_DEBUG(eIndex < GC.getNumUnitCombatClassInfos(), "Index out of bounds");
+	ASSERT_DEBUG(eIndex > -1, "Index out of bounds");
+	m_mapUnitCombatsPromotionValid[eIndex] += iChange;
+	if (m_mapUnitCombatsPromotionValid[eIndex] == 0)
+	{
+		m_mapUnitCombatsPromotionValid.erase(eIndex);
+	}
+}
 
 //	--------------------------------------------------------------------------------
 int CvUnit::GetFeatureInvisibleCount(FeatureTypes eIndex) const
