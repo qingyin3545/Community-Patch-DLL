@@ -10860,8 +10860,7 @@ void CvCity::addProductionExperience(CvUnit* pUnit, bool bHalveXP, UnitCreationR
 		CvPromotionEntry* pkPromotionInfo = GC.getPromotionInfo(freePromotions[iI]);
 		if (pkPromotionInfo)
 		{
-			if ((pUnit->getUnitCombatType() != NO_UNITCOMBAT && pkPromotionInfo->GetUnitCombatClass(pUnit->getUnitCombatType()))
-				|| (::IsPromotionValidForCivilianUnitType(freePromotions[iI], pUnit->getUnitType())))
+			if(::IsPromotionValidForUnit(freePromotions[iI], *pUnit))
 			{
 				pUnit->setHasPromotion(freePromotions[iI], true);
 			}
@@ -27343,7 +27342,7 @@ void CvCity::SetRetroactivePromotion(PromotionTypes eIndex)
 				{
 					if (this == GetPlayer()->getCapitalCity())
 					{
-						if (((pLoopUnit->getUnitCombatType() != NO_UNITCOMBAT) && pkPromotionInfo->GetUnitCombatClass(pLoopUnit->getUnitCombatType())) || ::IsPromotionValidForCivilianUnitType(eIndex, pLoopUnit->getUnitType()))
+						if(::IsPromotionValidForUnit(eIndex, *pLoopUnit))
 						{
 							pLoopUnit->setHasPromotion(eIndex, true);
 						}
@@ -27352,7 +27351,7 @@ void CvCity::SetRetroactivePromotion(PromotionTypes eIndex)
 				else if (pLoopUnit->getOriginCity() != this)
 					continue;
 
-				if (((pLoopUnit->getUnitCombatType() != NO_UNITCOMBAT) && pkPromotionInfo->GetUnitCombatClass(pLoopUnit->getUnitCombatType())) || ::IsPromotionValidForCivilianUnitType(eIndex, pLoopUnit->getUnitType()))
+				if(::IsPromotionValidForUnit(eIndex, *pLoopUnit))
 				{
 					pLoopUnit->setHasPromotion(eIndex, true);
 				}
