@@ -10869,6 +10869,11 @@ void CvCity::addProductionExperience(CvUnit* pUnit, bool bHalveXP, UnitCreationR
 		}
 	}
 
+	if(pUnit->GetMultipleInitExperience() > 0)
+	{
+		pUnit->changeExperienceTimes100(pUnit->getExperienceTimes100() * pUnit->GetMultipleInitExperience() / 100);
+	}
+
 	pUnit->testPromotionReady();
 }
 
@@ -13775,7 +13780,7 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 			}
 
 			// TERRA COTTA AWESOME
-			if (pBuildingInfo->GetInstantMilitaryIncrease())
+			if (pBuildingInfo->GetInstantMilitaryIncrease() > 0)
 			{
 				std::vector<UnitTypes> aExtraUnits;
 				std::vector<UnitAITypes> aExtraUnitAITypes;
@@ -13817,8 +13822,10 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 					}
 					else
 					{
+						bool bUnitImmobile = pNewUnit->IsImmobile();
 						pNewUnit->kill(false);
-						break;
+						// if this Unit is Immobile, it will Jump fault, but we should not stop loop
+						if (!bUnitImmobile) break;
 					}
 				}
 			}
