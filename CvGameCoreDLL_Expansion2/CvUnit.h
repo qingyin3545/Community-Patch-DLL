@@ -2103,6 +2103,9 @@ public:
 	int otherPromotionAttackModifierByUnit(const CvUnit* otherUnit) const;
 	int otherPromotionDefenseModifierByUnit(const CvUnit* otherUnit) const;
 #endif
+	const std::tr1::unordered_map<int, int>& GetUnitCombatsPromotionValid() const;
+	void ChangeUnitCombatsPromotionValid(UnitCombatTypes eIndex,int iChange);
+
 	int GetFeatureInvisibleCount(FeatureTypes eIndex) const;
 	bool IsFeatureInvisible(FeatureTypes eIndex) const;
 	void ChangeNumFeatureInvisible(FeatureTypes eIndex, int iChange);
@@ -2829,6 +2832,8 @@ private:
 	int m_iSiegeKillCitizensPercent = 0;
 	int m_iSiegeKillCitizensFixed = 0;
 #endif
+	std::tr1::unordered_map<int, int> m_mapUnitCombatsPromotionValid;
+
 	FeatureTypeCounter m_featureInvisibleCount;
 	PromotionCounter m_removePromotionUpgrade;
 
