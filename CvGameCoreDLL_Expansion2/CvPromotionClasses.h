@@ -10,6 +10,7 @@
 #ifndef CIV5_PROMOTION_CLASSES_H
 #define CIV5_PROMOTION_CLASSES_H
 
+#include <array>
 #include "CvBitfield.h"
 
 struct PlagueInfo
@@ -411,6 +412,8 @@ public:
 	std::tr1::unordered_map<PromotionTypes, int>& GetOtherPromotionAttackModifierMap();
 	std::tr1::unordered_map<PromotionTypes, int>& GetOtherPromotionDefenseModifierMap();
 #endif
+	int GetInstantYieldPerReligionFollowerConverted(YieldTypes eIndex) const;
+
 	const std::vector<int>& GetPrePromotions() const;
 	const std::vector<int>& GetPromotionPrereqOrs() const;
 	const std::vector<int>& GetPromotionPrereqAnds() const;
@@ -865,6 +868,8 @@ protected:
 	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionAttackModifiers; // key: other promotion type, value: attack modifier * 100
 	std::tr1::unordered_map<PromotionTypes, int> m_pPromotionDefenseModifiers; // key: other promotion type, value: defense modifier * 100
 #endif
+	std::tr1::array<int, NUM_YIELD_TYPES> m_aiInstantYieldPerReligionFollowerConverted;
+
 	std::vector<int> m_vPrePromotions;
 	std::vector<int> m_vPromotionPrereqOrs;
 	std::vector<int> m_vPromotionPrereqAnds;
