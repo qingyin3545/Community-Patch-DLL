@@ -449,7 +449,18 @@ public:
 	int GetOutsideFriendlyLandsInflictDamageChange() const;
 
 	int GetMaintenanceCost() const;
+	int GetMultipleInitExperience() const;
+	int GetRangeAttackCostModifier() const;
+	int GetMovePercentCaptureCity() const;
+	int GetHealPercentCaptureCity() const;
+	int GetLostAllMovesAttackCity() const;
 	bool IsNoResourcePunishment() const;
+	bool IsImmueMeleeAttack() const;
+	bool IsImmueRangedAttack() const;
+	bool IsCanParadropMoved() const;
+	bool IsCanParadropAnyWhere() const;
+	bool IsCanPillageWithoutWar() const;
+	bool IsImmobile() const;
 	int GetMoveLeftAttackMod() const;
 	int GetMoveUsedAttackMod() const;
 	int GetMoveLeftDefenseMod() const;
@@ -466,7 +477,7 @@ public:
 	int GetNumSpyStayDefenseMod() const;
 	int GetNumSpyStayAttackMod() const;
 	int GetRangedSupportFireMod() const;
-	int GetMeleeAttackModifier() const;
+	int GetMeleeAttackMod() const;
 	int GetMeleeDefenseMod() const;
 	int GetDoFallBackAttackMod() const;
 	int GetBeFallBackDefenseMod() const;
@@ -865,7 +876,18 @@ protected:
 	int m_iOutsideFriendlyLandsInflictDamageChange = 0;
 
 	int m_iMaintenanceCost = 0;
+	int m_iMultipleInitExperience = 0;
+	int m_iRangeAttackCostModifier = 0;
+	int m_iMovePercentCaptureCity = 0;
+	int m_iHealPercentCaptureCity = 0;
+	int m_iLostAllMovesAttackCity = 0;
 	bool m_bNoResourcePunishment = false;
+	bool m_bImmueMeleeAttack = false;
+	bool m_bImmueRangedAttack = false;
+	bool m_bCanParadropMoved = false;
+	bool m_bCanParadropAnyWhere = false;
+	bool m_bCanPillageWithoutWar = false;
+	bool m_bImmobile = false;
 	int m_iMoveLeftAttackMod = 0;
 	int m_iMoveUsedAttackMod = 0;
 	int m_iMoveLeftDefenseMod = 0;
@@ -882,7 +904,7 @@ protected:
 	int m_iNumSpyStayDefenseMod = 0;
 	int m_iNumSpyStayAttackMod = 0;
 	int m_iRangedSupportFireMod = 0;
-	int m_iMeleeAttackModifier = 0;
+	int m_iMeleeAttackMod = 0;
 	int m_iMeleeDefenseMod = 0;
 	int m_iDoFallBackAttackMod = 0;
 	int m_iBeFallBackDefenseMod = 0;

@@ -1222,6 +1222,16 @@ void CvUnitCombat::ResolveCityMeleeCombat(const CvCombatInfo& kCombatInfo, uint 
 	// Barbarians don't capture Cities in Community Patch only
 	if (pkAttacker && pkDefender)
 	{
+		if(pkAttacker->GetLostAllMovesAttackCity() > 0)
+		{
+			pkAttacker->setMoves(0);
+			if (pkAttacker->getOwner() == GC.getGame().getActivePlayer())
+			{
+				CvString strBuffer = GetLocalizedText("TXT_KEY_NOTIFICATION_ATTACKING_CITY_LOST_MOVEMENT", pkAttacker->getName());
+				ICvUserInterface2* pkDLLInterface = GC.GetEngineUserInterface();
+				pkDLLInterface->AddMessage(0, pkAttacker->getOwner(), true, GC.getEVENT_MESSAGE_TIME(), strBuffer);
+			}
+		}
 		if (pkAttacker->isBarbarian() && (pkDefender->getDamage() >= pkDefender->GetMaxHitPoints()) && !MOD_BALANCE_VP)
 		{
 			// 1 HP left
@@ -1291,6 +1301,17 @@ void CvUnitCombat::ResolveCityMeleeCombat(const CvCombatInfo& kCombatInfo, uint 
 
 				ApplyPostCityCombatEffects(pkAttacker, pkDefender, iAttackerDamageInflicted);
 				pkAttacker->UnitMove(pkPlot, true, pkAttacker);
+
+				int iMovePercentCaptureCity = pkAttacker->GetMovePercentCaptureCity();
+				if(iMovePercentCaptureCity != 0)
+				{
+					pkAttacker->setMoves(pkAttacker->maxMoves() * iMovePercentCaptureCity / 100);
+				}
+				int iHealPercentCaptureCity = pkAttacker->GetHealPercentCaptureCity();
+				if(iHealPercentCaptureCity != 0)
+				{
+					pkAttacker->changeDamage(-(iHealPercentCaptureCity * pkAttacker->GetMaxHitPoints() / 100));
+				}
 			}
 		}
 		// Neither side lost
@@ -3732,7 +3753,10 @@ CvUnitCombat::ATTACK_RESULT CvUnitCombat::AttackRanged(CvUnit& kAttacker, int iX
 		{
 			kAttacker.setMadeAttack(true);
 			if (!kAttacker.IsFreeAttackMoves())
-				kAttacker.changeMoves(-GD_INT_GET(MOVE_DENOMINATOR));
+			{
+				int iMoveCost = GD_INT_GET(MOVE_DENOMINATOR) * kAttacker.GetRangeAttackCostModifier() / 100;
+				kAttacker.changeMoves(-iMoveCost);
+			}
 		}
 
 		uint uiParentEventID = 0;
