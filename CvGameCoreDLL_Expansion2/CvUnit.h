@@ -2112,6 +2112,13 @@ public:
 	void ChangeNumPromotionRemoveUpgrade(PromotionTypes eIndex, int iChange);
 	void ForceRemovePromotionUpgrade();
 
+	LuaFormulaTypes GetAttackChanceFromAttackDamageFormula() const;
+	void SetAttackChanceFromAttackDamageFormula(LuaFormulaTypes eValue);
+	LuaFormulaTypes GetMovementFromAttackDamageFormula() const;
+	void SetMovementFromAttackDamageFormula(LuaFormulaTypes eValue);
+	LuaFormulaTypes GetHealPercentFromAttackDamageFormula() const;
+	void SetHealPercentFromAttackDamageFormula(LuaFormulaTypes eValue);
+
 	bool IsRangeBackWhenDefense() const;
 	void ChangeNumRangeBackWhenDefense(int iChange);
 
@@ -2824,6 +2831,10 @@ private:
 #endif
 	FeatureTypeCounter m_featureInvisibleCount;
 	PromotionCounter m_removePromotionUpgrade;
+
+	LuaFormulaTypes m_eAttackChanceFromAttackDamageFormula = NO_LUA_FORMULA;
+	LuaFormulaTypes m_eMovementFromAttackDamageFormula = NO_LUA_FORMULA;
+	LuaFormulaTypes m_eHealPercentFromAttackDamageFormula = NO_LUA_FORMULA;
 
 	int m_iNumRangeBackWhenDefense = 0;
 	int m_iNumCanSplashDefender = 0;
