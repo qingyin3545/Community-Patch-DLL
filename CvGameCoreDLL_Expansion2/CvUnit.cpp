@@ -1676,6 +1676,10 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iSiegeKillCitizensFixed = 0;
 #endif
 	m_mapUnitCombatsPromotionValid.clear();
+	for (int i = 0; i < NUM_YIELD_TYPES; ++i)
+	{
+		m_aiInstantYieldPerReligionFollowerConverted[i] = 0;
+	}
 
 	m_featureInvisibleCount.clear();
 	m_removePromotionUpgrade.clear();
@@ -11385,7 +11389,7 @@ bool CvUnit::DoSpreadReligion()
 
 			int iPostFollowers = pCity->GetCityReligions()->GetNumFollowers(eReligion);
 			
-			kPlayer.doInstantYield(INSTANT_YIELD_TYPE_SPREAD, false, NO_GREATPERSON, NO_BUILDING, iPostFollowers - iPreSpreadFollowers, false, pCity->getOwner(), plot());
+			kPlayer.doInstantYield(INSTANT_YIELD_TYPE_SPREAD, false, NO_GREATPERSON, NO_BUILDING, iPostFollowers - iPreSpreadFollowers, false, pCity->getOwner(), plot(), false, NULL, false, true, false, NO_YIELD, this);
 
 			if (pCity->plot() && pCity->plot()->GetActiveFogOfWarMode() == FOGOFWARMODE_OFF)
 			{
@@ -28412,6 +28416,7 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 				}
 			}
 		}
+		ChangeInstantYieldPerReligionFollowerConverted(eYield, thisPromotion.GetInstantYieldPerReligionFollowerConverted(eYield) * iChange);
 	}
 
 	for (iI = 0; iI < GC.getNumUnitCombatClassInfos(); iI++)
@@ -29359,6 +29364,7 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iSiegeKillCitizensFixed);
 #endif
 	visitor(unit.m_mapUnitCombatsPromotionValid);
+	visitor(unit.m_aiInstantYieldPerReligionFollowerConverted);
 	visitor(unit.m_featureInvisibleCount);
 	visitor(unit.m_removePromotionUpgrade);
 	visitor(unit.m_iNumRangeBackWhenDefense);
@@ -35278,6 +35284,22 @@ void CvUnit::ChangeUnitCombatsPromotionValid(UnitCombatTypes eIndex,int iChange)
 	{
 		m_mapUnitCombatsPromotionValid.erase(eIndex);
 	}
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetInstantYieldPerReligionFollowerConverted(YieldTypes eIndex) const
+{
+	ASSERT_DEBUG(i < NUM_YIELD_TYPES, "Index out of bounds");
+	ASSERT_DEBUG(i > -1, "Index out of bounds");
+
+	return m_aiInstantYieldPerReligionFollowerConverted[eIndex];
+}
+void CvUnit::ChangeInstantYieldPerReligionFollowerConverted(YieldTypes eIndex, int iChange)
+{
+	ASSERT_DEBUG(i < NUM_YIELD_TYPES, "Index out of bounds");
+	ASSERT_DEBUG(i > -1, "Index out of bounds");
+
+	m_aiInstantYieldPerReligionFollowerConverted[eIndex] += iChange;
 }
 
 //	--------------------------------------------------------------------------------
