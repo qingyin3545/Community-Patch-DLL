@@ -1106,9 +1106,6 @@ public:
 	void updateConditionalPromotions();
 	void finishMoves();
 
-	bool IsImmobile() const;
-	void SetImmobile(bool bValue);
-
 	bool IsInForeignOwnedTerritory() const;
 
 	int getExperienceTimes100() const;
@@ -2140,8 +2137,41 @@ public:
 	int GetPromotionMaintenanceCost() const;
 	void ChangePromotionMaintenanceCost(int iValue);
 
+	int GetMultipleInitExperience() const;
+	void ChangeMultipleInitExperience(int iValue);
+
+	int GetRangeAttackCostModifier() const;
+	void ChangeRangeAttackCostModifier(int iValue);
+
+	int GetMovePercentCaptureCity() const;
+	void ChangeMovePercentCaptureCity(int iValue);
+
+	int GetHealPercentCaptureCity() const;
+	void ChangeHealPercentCaptureCity(int iValue);
+
+	int GetLostAllMovesAttackCity() const;
+	void ChangeLostAllMovesAttackCity(int iValue);
+
 	bool IsNoResourcePunishment() const;
-	void ChangeIsNoResourcePunishment(int iChange);
+	void ChangeNumNoResourcePunishment(int iChange);
+
+	bool IsImmueMeleeAttack() const;
+	void ChangeNumImmueMeleeAttack(int iChange);
+
+	bool IsImmueRangedAttack() const;
+	void ChangeNumImmueRangedAttack(int iChange);
+
+	bool IsCanParadropMoved() const;
+	void ChangeNumCanParadropMoved(int iChange);
+
+	bool IsCanParadropAnyWhere() const;
+	void ChangeNumCanParadropAnyWhere(int iChange);
+
+	bool IsCanPillageWithoutWar() const;
+	void ChangeNumCanPillageWithoutWar(int iChange);
+
+	bool IsImmobile() const;
+	void ChangeNumImmobile(int iChange);
 
 	void ChangeMoveLeftAttackMod(int iValue);
 	int GetMoveLeftAttackMod() const;
@@ -2307,7 +2337,6 @@ protected:
 	int m_iReconCount;
 	int m_iGameTurnCreated;
 	int m_iTurnSliceCreated; // not serialized
-	bool m_bImmobile;
 	int m_iExperienceTimes100;
 	int m_iLevel;
 	int m_iCargo;
@@ -2757,7 +2786,18 @@ private:
 	int m_iOutsideFriendlyLandsInflictDamageChange = 0;
 
 	int m_iPromotionMaintenanceCost = 0;
+	int m_iMultipleInitExperience = 0;
+	int m_iRangeAttackCostModifier = 0;
+	int m_iMovePercentCaptureCity = 0;
+	int m_iHealPercentCaptureCity = 0;
+	int m_iLostAllMovesAttackCity = 0;
 	int m_iNoResourcePunishment = 0;
+	int m_iImmueMeleeAttack = 0;
+	int m_iImmueRangedAttack = 0;
+	int m_iCanParadropMoved = 0;
+	int m_iCanParadropAnyWhere = 0;
+	int m_iCanPillageWithoutWar = 0;
+	int m_iImmobile = 0;
 	int m_iMoveLeftAttackMod = 0;
 	int m_iMoveUsedAttackMod = 0;
 	int m_iMoveLeftDefenseMod = 0;
@@ -2832,7 +2872,7 @@ SYNC_ARCHIVE_VAR(int, m_iReconX)
 SYNC_ARCHIVE_VAR(int, m_iReconY)
 SYNC_ARCHIVE_VAR(int, m_iReconCount)
 SYNC_ARCHIVE_VAR(int, m_iGameTurnCreated)
-SYNC_ARCHIVE_VAR(bool, m_bImmobile)
+SYNC_ARCHIVE_VAR(int, m_iImmobile)
 SYNC_ARCHIVE_VAR(int, m_iExperienceTimes100)
 SYNC_ARCHIVE_VAR(int, m_iLevel)
 SYNC_ARCHIVE_VAR(int, m_iCargo)

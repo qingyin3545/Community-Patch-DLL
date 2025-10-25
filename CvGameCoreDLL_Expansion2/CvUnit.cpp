@@ -154,7 +154,6 @@ CvUnit::CvUnit() :
 	, m_iSquadDestinationX()
 	, m_iSquadDestinationY()
 	, m_SquadEndMovementType()
-	, m_bImmobile()
 	, m_iExperienceTimes100()
 	, m_iLevel()
 	, m_iCargo()
@@ -1004,7 +1003,7 @@ void CvUnit::initWithNameOffset(int iID, UnitTypes eUnit, int iNameOffset, UnitA
 	// Is this Unit immobile?
 	if(getUnitInfo().IsImmobile())
 	{
-		SetImmobile(true);
+		ChangeNumImmobile(1);
 	}
 
 	setMoves(maxMoves());
@@ -1311,7 +1310,6 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iSquadDestinationX = -1;
 	m_iSquadDestinationY = -1;
 	m_SquadEndMovementType = ALERT_ON_ARRIVAL;
-	m_bImmobile = false;
 	m_iExperienceTimes100 = 0;
 	m_iLevel = 1;
 	m_iCargo = 0;
@@ -1700,7 +1698,18 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iOutsideFriendlyLandsInflictDamageChange = 0;
 
 	m_iPromotionMaintenanceCost = 0;
+	m_iMultipleInitExperience = 0;
+	m_iRangeAttackCostModifier = 0;
+	m_iMovePercentCaptureCity = 0;
+	m_iHealPercentCaptureCity = 0;
+	m_iLostAllMovesAttackCity = 0;
 	m_iNoResourcePunishment = 0;
+	m_iImmueMeleeAttack = 0;
+	m_iImmueRangedAttack = 0;
+	m_iCanParadropMoved = 0;
+	m_iCanParadropAnyWhere = 0;
+	m_iCanPillageWithoutWar = 0;
+	m_iImmobile = 0;
 	m_iMoveLeftAttackMod = 0;
 	m_iMoveUsedAttackMod = 0;
 	m_iMoveLeftDefenseMod = 0;
@@ -4818,7 +4827,7 @@ bool CvUnit::canEnterTerrain(const CvPlot& enterPlot, int iMoveFlags) const
 		return (enterPlot.isCity() && enterPlot.getPlotCity()->getOwner()==getOwner()) || canLoad(enterPlot);
 
 	// Immobile can go nowhere ... except where they are or cities
-	if (eDomain==DOMAIN_IMMOBILE || m_bImmobile)
+	if (eDomain==DOMAIN_IMMOBILE || IsImmobile())
 		if (!at(enterPlot.getX(),enterPlot.getY()) && !enterPlot.isCity())
 			return false;
 
@@ -5171,6 +5180,14 @@ bool CvUnit::canMoveInto(const CvPlot& plot, int iMoveFlags) const
 		// Does unit only attack cities?
 		if(IsCityAttackSupport() && !plot.isEnemyCity(*this) && plot.getBestDefender(NO_PLAYER))
 		{
+			return false;
+		}
+
+		for (int iUnitLoop = 0; iUnitLoop < plot.getNumUnits(); iUnitLoop++)
+		{
+			CvUnit* pLoopUnit = plot.getUnitByIndex(iUnitLoop);
+			if (pLoopUnit == nullptr || !pLoopUnit->IsImmueMeleeAttack() || plot.isEnemyCity(*this)) continue;
+			if (!GET_TEAM(getTeam()).isAtWar(pLoopUnit->getTeam())) continue;
 			return false;
 		}
 	}
@@ -8703,7 +8720,7 @@ bool CvUnit::canParadrop(const CvPlot* pPlot, bool bOnlyTestVisibility) const
 	// Things we check when we want to know if the unit can actually drop RIGHT NOW
 	if(!bOnlyTestVisibility)
 	{
-		if(hasMoved())
+		if(hasMoved() && !IsCanParadropMoved())
 		{
 			return false;
 		}
@@ -8747,6 +8764,8 @@ bool CvUnit::canParadrop(const CvPlot* pPlot, bool bOnlyTestVisibility) const
 		}
 		else
 		{
+			if (IsCanParadropAnyWhere()) return true;
+
 			// We're not in friendly territory, call the event to see if we CAN start from here anyway
 			if (MOD_EVENTS_PARADROPS)
 			{
@@ -10231,7 +10250,7 @@ bool CvUnit::canPillage(const CvPlot* pPlot) const
 	if(!(getUnitInfo().IsPillage()))
 		return false;
 
-	if(pPlot->isOwned() && !isEnemy(pPlot->getTeam(), pPlot))
+	if(pPlot->isOwned() && !isEnemy(pPlot->getTeam(), pPlot) && !IsCanPillageWithoutWar())
 		return false;
 
 	if(pPlot->getDomain() != getDomainType())
@@ -16039,7 +16058,7 @@ int CvUnit::GetStrategicResourceCombatPenalty() const
 
 	// Barbs and City-States don't require resources
 	if (IsNoResourcePunishment())
-		return iPenalty;
+		return 0;
 
 	CvPlayerAI& kPlayer = GET_PLAYER(getOwner());
 	if (!kPlayer.isMajorCiv())
@@ -16555,7 +16574,7 @@ int CvUnit::GetMaxAttackStrength(const CvPlot* pFromPlot, const CvPlot* pToPlot,
 	}
 
 	iModifier += GetMeleeAttackModifier();
-	iModifier += GetNumAttacksMadeThisTurnAttackMod()* getNumAttacksMadeThisTurn();
+	iModifier += GetNumAttacksMadeThisTurnAttackMod() * getNumAttacksMadeThisTurn();
 	iModifier += GetNumDoFallBackThisTurn() * GetDoFallBackAttackMod();
 
 	int iNumOriginalCapitalAttackMod = GetNumOriginalCapitalAttackMod();
@@ -21987,27 +22006,6 @@ void CvUnit::finishMoves()
 	SetFortified(false);
 
 	PublishQueuedVisualizationMoves();
-}
-
-//	--------------------------------------------------------------------------------
-/// Is this unit capable of moving on its own?
-bool CvUnit::IsImmobile() const
-{
-	if(getDomainType() == DOMAIN_IMMOBILE)
-	{
-		return true;
-	}
-
-	return m_bImmobile;
-}
-
-/// Is this unit capable of moving on its own?
-void CvUnit::SetImmobile(bool bValue)
-{
-	if(IsImmobile() != bValue)
-	{
-		m_bImmobile = bValue;
-	}
 }
 
 //	--------------------------------------------------------------------------------
@@ -28676,7 +28674,18 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 	ChangeOutsideFriendlyLandsInflictDamageChange(iChange * thisPromotion.GetOutsideFriendlyLandsInflictDamageChange());
 
 	ChangePromotionMaintenanceCost(thisPromotion.GetMaintenanceCost() > 0 ? iChange: 0);
-	ChangeIsNoResourcePunishment(thisPromotion.IsNoResourcePunishment() ? iChange : 0);
+	ChangeMultipleInitExperience(thisPromotion.GetMultipleInitExperience() * iChange);
+	ChangeRangeAttackCostModifier(thisPromotion.GetRangeAttackCostModifier() * iChange);
+	ChangeMovePercentCaptureCity(thisPromotion.GetMovePercentCaptureCity() * iChange);
+	ChangeHealPercentCaptureCity(thisPromotion.GetHealPercentCaptureCity() * iChange);
+	ChangeLostAllMovesAttackCity(thisPromotion.GetLostAllMovesAttackCity() * iChange);
+	ChangeNumNoResourcePunishment(thisPromotion.IsNoResourcePunishment() ? iChange : 0);
+	ChangeNumImmueMeleeAttack(thisPromotion.IsImmueMeleeAttack() ? iChange : 0);
+	ChangeNumImmueRangedAttack(thisPromotion.IsImmueRangedAttack() ? iChange : 0);
+	ChangeNumCanParadropMoved(thisPromotion.IsCanParadropMoved() ? iChange : 0);
+	ChangeNumCanParadropAnyWhere(thisPromotion.IsCanParadropAnyWhere() ? iChange : 0);
+	ChangeNumCanPillageWithoutWar(thisPromotion.IsCanPillageWithoutWar() ? iChange : 0);
+	ChangeNumImmobile(thisPromotion.IsImmobile() ? iChange : 0);
 	ChangeMoveLeftAttackMod(thisPromotion.GetMoveLeftAttackMod() * iChange);
 	ChangeMoveUsedAttackMod(thisPromotion.GetMoveUsedAttackMod() * iChange);
 	ChangeMoveLeftDefenseMod(thisPromotion.GetMoveLeftDefenseMod() * iChange);
@@ -28693,7 +28702,7 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 	ChangeNumSpyStayAttackMod(thisPromotion.GetNumSpyStayAttackMod()* iChange);
 	ChangeNumSpyStayDefenseMod(thisPromotion.GetNumSpyStayDefenseMod()* iChange);
 	ChangeRangedSupportFireMod(thisPromotion.GetRangedSupportFireMod() * iChange);
-	ChangeMeleeAttackModifier((thisPromotion.GetMeleeAttackModifier()) * iChange);
+	ChangeMeleeAttackModifier((thisPromotion.GetMeleeAttackMod()) * iChange);
 	ChangeMeleeDefenseModifier(thisPromotion.GetMeleeDefenseMod() * iChange);
 	ChangeDoFallBackAttackMod(thisPromotion.GetDoFallBackAttackMod()* iChange);
 	ChangeBeFallBackDefenseMod(thisPromotion.GetBeFallBackDefenseMod()* iChange);
@@ -28987,7 +28996,6 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iReconY);
 	visitor(unit.m_iReconCount);
 	visitor(unit.m_iGameTurnCreated);
-	visitor(unit.m_bImmobile);
 	visitor(unit.m_iExperienceTimes100);
 	visitor(unit.m_iLevel);
 	visitor(unit.m_iCargo);
@@ -29427,7 +29435,18 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iOutsideFriendlyLandsInflictDamageChange);
 
 	visitor(unit.m_iPromotionMaintenanceCost);
+	visitor(unit.m_iMultipleInitExperience);
+	visitor(unit.m_iRangeAttackCostModifier);
+	visitor(unit.m_iMovePercentCaptureCity);
+	visitor(unit.m_iHealPercentCaptureCity);
+	visitor(unit.m_iLostAllMovesAttackCity);
 	visitor(unit.m_iNoResourcePunishment);
+	visitor(unit.m_iImmueMeleeAttack);
+	visitor(unit.m_iImmueRangedAttack);
+	visitor(unit.m_iCanParadropMoved);
+	visitor(unit.m_iCanParadropAnyWhere);
+	visitor(unit.m_iCanPillageWithoutWar);
+	visitor(unit.m_iImmobile);
 	visitor(unit.m_iMoveLeftAttackMod);
 	visitor(unit.m_iMoveUsedAttackMod);
 	visitor(unit.m_iMoveLeftDefenseMod);
@@ -29722,6 +29741,8 @@ bool CvUnit::canRangeStrikeAt(int iX, int iY, bool bNeedWar, bool bNoncombatAllo
 
 				return false;
 			}
+
+			if (pDefender->IsImmueRangedAttack()) return false;
 
 			// if the defender is a sub
 			if (MOD_GLOBAL_SUBS_UNDER_ICE_IMMUNITY && pDefender->getInvisibleType() == 0)
@@ -32668,7 +32689,7 @@ int CvUnit::AI_promotionValue(PromotionTypes ePromotion)
 		iValue += iTemp + iFlavorOffense * 2;
 	}
 
-	iTemp = pkPromotionInfo->GetMeleeAttackModifier();
+	iTemp = pkPromotionInfo->GetMeleeAttackMod();
 	if(iTemp != 0 && IsCanAttackWithMove())
 	{
 		iExtra = GetMeleeAttackModifier() * 2;
@@ -33168,7 +33189,23 @@ int CvUnit::AI_promotionValue(PromotionTypes ePromotion)
 			iExtra *= 2;
 		iValue += iExtra;
 	}
-	
+
+	iTemp = pkPromotionInfo->GetMovePercentCaptureCity();
+	if(iTemp != 0 && !IsCanAttackRanged())
+	{
+		iExtra = getExtraCityAttackPercent();
+		iTemp *= (100 + iExtra * 2);
+		iTemp /= 100;
+		iValue += iTemp + iFlavorOffense * 2;
+	}
+	iTemp = pkPromotionInfo->GetHealPercentCaptureCity();
+	if(iTemp != 0 && !IsCanAttackRanged())
+	{
+		iExtra = getExtraCityAttackPercent();
+		iTemp *= (100 + iExtra * 2);
+		iTemp /= 100;
+		iValue += iTemp + iFlavorOffense * 2;
+	}
 
 			// Ranged Attack Helpers
 	
@@ -35396,15 +35433,129 @@ void CvUnit::ChangePromotionMaintenanceCost(int iValue)
 }
 
 //	--------------------------------------------------------------------------------
+int CvUnit::GetMultipleInitExperience() const
+{
+	return m_iMultipleInitExperience;
+}
+void CvUnit::ChangeMultipleInitExperience(int iValue)
+{
+	m_iMultipleInitExperience += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetRangeAttackCostModifier() const
+{
+	return m_iRangeAttackCostModifier;
+}
+void CvUnit::ChangeRangeAttackCostModifier(int iValue)
+{
+	m_iRangeAttackCostModifier += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetMovePercentCaptureCity() const
+{
+	return m_iMovePercentCaptureCity;
+}
+void CvUnit::ChangeMovePercentCaptureCity(int iValue)
+{
+	m_iMovePercentCaptureCity += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetHealPercentCaptureCity() const
+{
+	return m_iHealPercentCaptureCity;
+}
+void CvUnit::ChangeHealPercentCaptureCity(int iValue)
+{
+	m_iHealPercentCaptureCity += iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetLostAllMovesAttackCity() const
+{
+	return m_iLostAllMovesAttackCity;
+}
+void CvUnit::ChangeLostAllMovesAttackCity(int iValue)
+{
+	m_iLostAllMovesAttackCity += iValue;
+}
+
+//	--------------------------------------------------------------------------------
 bool CvUnit::IsNoResourcePunishment() const
 {
 	return m_iNoResourcePunishment > 0;
 }
-void CvUnit::ChangeIsNoResourcePunishment(int iChange)
+void CvUnit::ChangeNumNoResourcePunishment(int iChange)
 {
 	m_iNoResourcePunishment += iChange;
 }
 
+//	--------------------------------------------------------------------------------
+bool CvUnit::IsImmueMeleeAttack() const
+{
+	return m_iImmueMeleeAttack > 0;
+}
+void CvUnit::ChangeNumImmueMeleeAttack(int iChange)
+{
+	m_iImmueMeleeAttack += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+bool CvUnit::IsImmueRangedAttack() const
+{
+	return m_iImmueRangedAttack > 0;
+}
+void CvUnit::ChangeNumImmueRangedAttack(int iChange)
+{
+	m_iImmueRangedAttack += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+bool CvUnit::IsCanParadropMoved() const
+{
+	return m_iCanParadropMoved > 0;
+}
+void CvUnit::ChangeNumCanParadropMoved(int iChange)
+{
+	m_iCanParadropMoved += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+bool CvUnit::IsCanParadropAnyWhere() const
+{
+	return m_iCanParadropAnyWhere > 0;
+}
+void CvUnit::ChangeNumCanParadropAnyWhere(int iChange)
+{
+	m_iCanParadropAnyWhere += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+bool CvUnit::IsCanPillageWithoutWar() const
+{
+	return m_iCanPillageWithoutWar > 0;
+}
+void CvUnit::ChangeNumCanPillageWithoutWar(int iChange)
+{
+	m_iCanPillageWithoutWar += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+bool CvUnit::IsImmobile() const
+{
+	if(getDomainType() == DOMAIN_IMMOBILE)
+	{
+		return true;
+	}
+	return m_iImmobile > 0;
+}
+void CvUnit::ChangeNumImmobile(int iChange)
+{
+	m_iImmobile += iChange;
+	// gDLL->GameplayUnitShouldDimFlag Crash!
+}
 //	--------------------------------------------------------------------------------
 void CvUnit::ChangeMoveLeftAttackMod(int iValue)
 {
