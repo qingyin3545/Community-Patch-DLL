@@ -120,6 +120,7 @@ ALTER TABLE Buildings ADD FreePromotion2 TEXT DEFAULT NULL;
 ALTER TABLE Buildings ADD FreePromotion3 TEXT DEFAULT NULL;
 ALTER TABLE Buildings ADD COLUMN 'MoveAfterCreated' INTEGER DEFAULT 0;
 ALTER TABLE Buildings ADD COLUMN 'ResearchTotalCostModifierGoldenAge' INTEGER DEFAULT 0;
+alter table Buildings add TradeRouteRiverBonusModifier integer default 0;
 
 CREATE TABLE Building_TerrainYieldModifier (
 	'BuildingType' text no null references Buildings(Type),
@@ -191,6 +192,12 @@ CREATE TABLE Building_YieldFromProcessModifierGlobal (
 	'BuildingType' text no null references Buildings(Type),
 	'YieldType' text references Yields(Type),
 	'Yield' int default 0 not null
+);
+create table Building_SpecialistYieldModifiers (
+	BuildingType text not null references Buildings(Type),
+	SpecialistType text not null references Specialists(Type),
+	YieldType text not null references Yields(Type),
+	Yield integer not null default 0
 );
 CREATE TABLE Building_SpecialistYieldModifiersGlobal (
 	'BuildingType' text no null references Buildings(Type),

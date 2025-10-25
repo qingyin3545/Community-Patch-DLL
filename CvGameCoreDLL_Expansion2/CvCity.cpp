@@ -35659,8 +35659,7 @@ void CvCity::UpdateCorruption()
 int CvCity::CalculateCorruptionScoreFromResource() const
 {
 	auto resource = plot() ? plot()->getResourceType() : NO_RESOURCE;
-	auto* resourceInfo = GC.getResourceInfo(resource);
-	return resourceInfo != nullptr ? resourceInfo->GetCorruptionScoreChange() : 0;
+	return resource != NO_RESOURCE ? GC.getResourceInfo(resource)->GetCorruptionScoreChange() : 0;
 }
 
 int CvCity::CalculateCorruptionScoreFromTrait() const

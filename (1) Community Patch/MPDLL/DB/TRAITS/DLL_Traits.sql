@@ -16,6 +16,16 @@ create table Trait_PerMajorReligionFollowerYieldModifier (
     YieldType text references Yields(Type),
     Yield int default 0
 );
+create table Trait_PerMajorReligionFollowerYieldModifierTimes100 (
+    TraitType text references Traits(Type),
+    YieldType text references Yields(Type),
+    Yield int default 0
+);
+create table Trait_PerMajorReligionFollowerYieldModifierMax (
+    TraitType text references Traits(Type),
+    YieldType text references Yields(Type),
+    Max int default 0
+);
 
 ALTER TABLE Traits ADD COLUMN 'CiviliansFreePromotion' TEXT DEFAULT NULL;
 CREATE TABLE Trait_FreePromotionUnitClasses(
@@ -53,6 +63,9 @@ ALTER TABLE Traits ADD COLUMN 'PromotionWhenKilledUnit' TEXT DEFAULT NULL;
 ALTER TABLE Traits ADD COLUMN 'PromotionRadiusWhenKilledUnit' INTEGER DEFAULT 0;
 ALTER TABLE Traits ADD COLUMN 'AttackBonusAdjacentWhenUnitKilled' INTEGER DEFAULT 0;
 ALTER TABLE Traits ADD COLUMN 'KilledAttackBonusDecreasePerTurn' INTEGER DEFAULT 0;
+
+alter table Traits add column `NoDoDeficit` boolean not null default 0;
+alter table Traits add column `OwnedReligionUnitCultureExtraTurns` int not null default 0;
 
 create table Trait_CityYieldModifierFromAdjacentFeature (
     TraitType text references Traits(Type),
@@ -92,4 +105,9 @@ create table Trait_SeaTradeRouteYieldTimes100 (
 	TraitType text references Traits(Type),
 	YieldType text references Yields(Type),
 	Yield int default 0
+);
+create table Trait_BuildingClassFaithCost (
+    TraitType text references Traits(Type),
+    BuildingClassType text references BuildingClasses(Type),
+    Cost int default 0
 );

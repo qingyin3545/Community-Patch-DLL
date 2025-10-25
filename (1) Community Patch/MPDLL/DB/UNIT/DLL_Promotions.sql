@@ -49,7 +49,7 @@ ALTER TABLE UnitPromotions ADD 'NumWorkAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NumSpyStayDefenseMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'NumSpyStayAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'RangedSupportFireMod' INTEGER DEFAULT 0;
--- SP-TODO: Column Name MeleeAttackModfier -> MeleeAttackMod
+-- SP-TODO: Column Name MeleeAttackModifier -> MeleeAttackMod
 ALTER TABLE UnitPromotions ADD 'MeleeAttackMod' INTEGER DEFAULT 0;
 ALTER TABLE UnitPromotions ADD 'MeleeDefenseMod' INTEGER DEFAULT 0;
 -- SP-TODO: Lua Interface Changed
