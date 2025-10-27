@@ -4,9 +4,9 @@ alter table Policies add InstantFoodThresholdPercent integer default 0;
 alter table Policies add NationalWonderCityCostModifier integer default 0;
 alter table Policies add GlobalHappinessFromFaithPercent integer default 0;
 alter table Policies add HappinessPerReligionInCity integer default 0;
-alter table Policies add MinorBullyInfluenceLossModifier int default 0;
-alter table Policies add MinorLocalBullyScoreModifier int default 0;
-alter table Policies add MinorAllyBullyScoreModifier int default 0;
+alter table Policies add MinorBullyInfluenceLossModifier integer default 0;
+alter table Policies add MinorLocalBullyScoreModifier integer default 0;
+alter table Policies add MinorAllyBullyScoreModifier integer default 0;
 alter table Policies add HappinessInWLTKDCities integer default 0;
 alter table Policies add WaterBuildSpeedModifier integer default 0;
 alter table Policies add DeepWaterNavalStrengthCultureModifier integer default 0;
@@ -49,39 +49,33 @@ create table Policy_EraSettlerProductionModifier (
 );
 
 create table Policy_MinorsTradeRouteYieldRate (
-    PolicyType text default '',
-    YieldType text default '',
-    Rate integer not null
+    PolicyType text references Policies(Type),
+    YieldType text references Yields(Type),
+    Rate integer default 0
 );
 
 create table Policy_InternalTradeRouteDestYieldRate (
-    PolicyType text default '',
-    YieldType text default '',
-    Rate integer not null
+    PolicyType text references Policies(Type),
+    YieldType text references Yields(Type),
+    Rate integer default 0
 );
 
-CREATE TABLE Policy_CityWithWorldWonderYieldModifier (
-	'PolicyType' text default '',
-	'YieldType' text default '',
-	'Yield' integer  not null ,
-	foreign key (PolicyType) references Policies(Type),
-	foreign key (YieldType) references Yields(Type)
+create table Policy_CityWithWorldWonderYieldModifier (
+    PolicyType text references Policies(Type),
+    YieldType text references Yields(Type),
+    Yield integer default 0
 );
 
-CREATE TABLE Policy_TradeRouteCityYieldModifier (
-	'PolicyType' text default '',
-	'YieldType' text default '',
-	'Yield' integer not null ,
-	foreign key (PolicyType) references Policies(Type),
-	foreign key (YieldType) references Yields(Type)
+create table Policy_TradeRouteCityYieldModifier (
+    PolicyType text references Policies(Type),
+    YieldType text references Yields(Type),
+    Yield integer default 0
 );
 
-CREATE TABLE Policy_CityNumberCityYieldModifier (
-	'PolicyType' text default '',
-	'YieldType' text default '',
-	'Yield' integer not null ,
-	foreign key (PolicyType) references Policies(Type),
-	foreign key (YieldType) references Yields(Type)
+create table Policy_CityNumberCityYieldModifier (
+    PolicyType text references Policies(Type),
+    YieldType text references Yields(Type),
+    Yield integer default 0
 );
 
 create table Policy_HappinessYieldModifier (
@@ -90,18 +84,16 @@ create table Policy_HappinessYieldModifier (
     YieldFormula text references LuaFormula(Type)
 );
 
-CREATE TABLE Policy_BuildSpeedModifier (
-	PolicyType TEXT REFERENCES Policies(Type),
-	BuildType text REFERENCES Builds(Type),
-	Modifier integer not null
+create table Policy_BuildSpeedModifier (
+    PolicyType text references Policies(Type),
+    BuildType text references Builds(Type),
+    Modifier integer default 0
 );
 
-CREATE TABLE Policy_YieldModifierPerArtifacts (
-	'PolicyType' text default '',
-	'YieldType' text default '',
-	'Yield' integer  not null ,
-	foreign key (PolicyType) references Policies(Type),
-	foreign key (YieldType) references Yields(Type)
+create table Policy_YieldModifierPerArtifacts (
+    PolicyType text references Policies(Type),
+    YieldType text references Yields(Type),
+    Yield integer default 0
 );
 
 create table Policy_YieldPerPopChanges (
@@ -117,6 +109,11 @@ create table Policy_CityWLTKDYieldModifier (
     Modifier integer default 0
 );
 
+create table PolicyBranch_CivilizationLocked (
+    PolicyBranchType text references PolicyBranchTypes(Type),
+    CivilizationType text references Civilizations(Type)
+);
+
 -- Deprecated
 alter table Policies add Dummy integer default 0; -- Use IsDummy
 alter table Policies add InstantFoodKeptPercent integer default 0; -- No FoodKept in CP
@@ -128,10 +125,8 @@ alter table Policies add TourismModifierPerGPCreation boolean default 0; -- Too 
 alter table Policies add SettlerProductionEraModifier integer default 0; -- Use Policy_EraSettlerProductionModifier
 alter table Policies add SettlerProductionStartEra text references Eras(Type); -- Use Policy_EraSettlerProductionModifier
 alter table Policies add FreeBuildingClass text references BuildingClasses(Type); -- Use AllCityFreeBuilding
-CREATE TABLE Policy_GreatPersonOutputModifierPerGWs (
-	'PolicyType' text default '',
-	'GreatPersonType' text default '',
-	'Modifier' integer  not null ,
-	foreign key (PolicyType) references Policies(Type),
-	foreign key (GreatPersonType) references GreatPersons(Type)
+create table Policy_GreatPersonOutputModifierPerGWs (
+    PolicyType text references Policies(Type),
+    GreatPersonType text references GreatPersons(Type),
+    Modifier integer default 0
 );

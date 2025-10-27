@@ -1,27 +1,26 @@
-CREATE TABLE Building_DomainTroops(
-    'BuildingType' TEXT REFERENCES Buildings(Type),
-    'DomainType' TEXT REFERENCES Domains(Type),
-    'NumTroop' INTEGER NOT NULL DEFAULT 0
+create table Building_DomainTroops (
+    BuildingType text references Buildings(Type),
+    DomainType text references Domains(Type),
+    NumTroop integer default 0
 );
 
-ALTER TABLE Units ADD 'NoTroopConsume' BOOLEAN DEFAULT 0;
-ALTER TABLE Units ADD 'CannotBeEstablishedCorps' BOOLEAN DEFAULT 0;
---ALTER TABLE UnitPromotions ADD 'NoTroopConsume' INTEGER DEFAULT 0;
+alter table Units add NoTroopConsume boolean default 0;
+alter table Units add CannotBeEstablishedCorps boolean default 0;
 
 --24 for base amount, 4 per city scale
-INSERT INTO Defines(Name, Value) VALUES('TROOP_RATE_TIMES100_LOW', 50);
-INSERT INTO Defines(Name, Value) VALUES('TROOP_RATE_TIMES100_DEFAULT', 100);
-INSERT INTO Defines(Name, Value) VALUES('TROOP_RATE_TIMES100_HIGH', 150);
-INSERT INTO Defines(Name, Value) VALUES('TROOP_NUM_BASE', 24);
+insert into Defines(Name, Value) values('TROOP_RATE_TIMES100_LOW', 50);
+insert into Defines(Name, Value) values('TROOP_RATE_TIMES100_DEFAULT', 100);
+insert into Defines(Name, Value) values('TROOP_RATE_TIMES100_HIGH', 150);
+insert into Defines(Name, Value) values('TROOP_NUM_BASE', 24);
 
-ALTER TABLE Buildings ADD 'NumCrops' INTEGER DEFAULT 0;
-ALTER TABLE Buildings ADD 'NumArmee' INTEGER DEFAULT 0;
+alter table Buildings add NumCrops integer default 0;
+alter table Buildings add NumArmee integer default 0;
 
-ALTER TABLE UnitPromotions ADD COLUMN 'IsCrops' BOOLEAN DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'IsArmee' BOOLEAN DEFAULT 0;
+alter table UnitPromotions add IsCrops boolean default 0;
+alter table UnitPromotions add IsArmee boolean default 0;
 
-ALTER TABLE UnitPromotions ADD COLUMN 'NumEstablishCorps' INTEGER DEFAULT 0;
-ALTER TABLE UnitPromotions ADD COLUMN 'CannotBeEstablishedCorps' BOOLEAN DEFAULT 0;
+alter table UnitPromotions add NumEstablishCorps integer default 0;
+alter table UnitPromotions add CannotBeEstablishedCorps boolean default 0;
 
-ALTER TABLE Buildings ADD 'EnableCrops' boolean DEFAULT 0;
-ALTER TABLE Buildings ADD 'EnableArmee' boolean DEFAULT 0;
+alter table Buildings add EnableCrops boolean default 0;
+alter table Buildings add EnableArmee boolean default 0;

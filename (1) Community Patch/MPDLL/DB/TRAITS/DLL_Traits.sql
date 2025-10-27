@@ -1,113 +1,112 @@
 -- Insert SQL Rules Here
-alter table Traits add column `CanDiplomaticMarriage` boolean not null default 0;
-alter table Traits add column `AbleToDualEmpire` boolean not null default 0;
+alter table Traits add CanDiplomaticMarriage boolean default 0;
+alter table Traits add AbleToDualEmpire boolean default 0;
 
 
-alter table Traits add column `AdequateLuxuryCompleteQuestInfluenceModifier` int not null default 0;
-alter table Traits add column `AdequateLuxuryCompleteQuestInfluenceModifierMax` int not null default -1;
-alter table Traits add column `AllyCityStateCombatModifier` int not null default 0;
-alter table Traits add column `AllyCityStateCombatModifierMax` int not null default -1;
-alter table Traits add column `CanFoundMountainCity` boolean not null default 0;
-alter table Traits add column `CanFoundCoastCity` boolean not null default 0;
-alter table Traits add column `GoldenAgeMinorPerTurnInfluence` int not null default 0;
+alter table Traits add AdequateLuxuryCompleteQuestInfluenceModifier integer default 0;
+alter table Traits add AdequateLuxuryCompleteQuestInfluenceModifierMax integer default -1;
+alter table Traits add AllyCityStateCombatModifier integer default 0;
+alter table Traits add AllyCityStateCombatModifierMax integer default -1;
+alter table Traits add CanFoundMountainCity boolean default 0;
+alter table Traits add CanFoundCoastCity boolean default 0;
+alter table Traits add GoldenAgeMinorPerTurnInfluence integer default 0;
 
 create table Trait_PerMajorReligionFollowerYieldModifier (
     TraitType text references Traits(Type),
     YieldType text references Yields(Type),
-    Yield int default 0
+    Yield integer default 0
 );
 create table Trait_PerMajorReligionFollowerYieldModifierTimes100 (
     TraitType text references Traits(Type),
     YieldType text references Yields(Type),
-    Yield int default 0
+    Yield integer default 0
 );
 create table Trait_PerMajorReligionFollowerYieldModifierMax (
     TraitType text references Traits(Type),
     YieldType text references Yields(Type),
-    Max int default 0
+    Max integer default 0
 );
 
-ALTER TABLE Traits ADD COLUMN 'CiviliansFreePromotion' TEXT DEFAULT NULL;
-CREATE TABLE Trait_FreePromotionUnitClasses(
-    'TraitType' text , 'UnitClassType' text , 'PromotionType' text, 
-    foreign key (TraitType) references Traits(Type), 
-    foreign key (UnitClassType) references UnitClasses(Type), 
-    foreign key (PromotionType) references UnitPromotions(Type)
+alter table Traits add CiviliansFreePromotion text references UnitPromotions(Type);
+create table Trait_FreePromotionUnitClasses(
+    TraitType text references Traits(Type), 
+    UnitClassType text references UnitClasses(Type),
+    PromotionType text references UnitPromotions(Type)
 );
 
-alter table Traits add column `TradeRouteLandGoldBonus` int not null default 0;
-alter table Traits add column `TradeRouteSeaGoldBonus` int not null default 0;
+alter table Traits add TradeRouteLandGoldBonus integer default 0;
+alter table Traits add TradeRouteSeaGoldBonus integer default 0;
 
-alter table Traits add column `FreePolicyWhenFirstConquerMajorCapital` int not null default 0;
-alter table Traits add column `InstantTourismBombWhenFirstConquerMajorCapital` int not null default 0; -- apply tourism (x turn) pressure to all civs
+alter table Traits add FreePolicyWhenFirstConquerMajorCapital integer default 0;
+alter table Traits add InstantTourismBombWhenFirstConquerMajorCapital integer default 0; -- apply tourism (x turn) pressure to all civs
 
-alter table Traits add column `UnitMaxHitPointChangePerRazedCityPop` int not null default 0;
-alter table Traits add column `UnitMaxHitPointChangePerRazedCityPopLimit` int not null default 0;
+alter table Traits add UnitMaxHitPointChangePerRazedCityPop integer default 0;
+alter table Traits add UnitMaxHitPointChangePerRazedCityPopLimit integer default 0;
 
-alter table Traits add column `GreatWorksTourism` int not null default 0;
-alter table Traits add column `RiverCorruptionScoreChange` int not null default 0;
+alter table Traits add GreatWorksTourism integer default 0;
+alter table Traits add RiverCorruptionScoreChange integer default 0;
 
-alter table Traits add column `GoldenAgeResearchTotalCostModifier` int not null default 0;
-alter table Traits add column `GoldenAgeResearchCityCountCostModifier` int not null default 0;
-alter table Traits add column `GoldenAgeGrowThresholdModifier` int not null default 0;
+alter table Traits add GoldenAgeResearchTotalCostModifier integer default 0;
+alter table Traits add GoldenAgeResearchCityCountCostModifier integer default 0;
+alter table Traits add GoldenAgeGrowThresholdModifier integer default 0;
 
-alter table Traits add column `ShareAllyResearchPercent` int not null default 0;
+alter table Traits add ShareAllyResearchPercent integer default 0;
 
-alter table Traits add column `CultureBonusUnitStrengthModify` int not null default 0;
+alter table Traits add CultureBonusUnitStrengthModify integer default 0;
 
-alter table Traits add column `NaturalWonderCorruptionScoreChange` int not null default 0;
-alter table Traits add column `NaturalWonderCorruptionRadius` int not null default 0;
-ALTER TABLE Traits ADD COLUMN 'TriggersIdeologyTech' TEXT DEFAULT NULL;
+alter table Traits add NaturalWonderCorruptionScoreChange integer default 0;
+alter table Traits add NaturalWonderCorruptionRadius integer default 0;
+alter table Traits add TriggersIdeologyTech text references Technologies(Type);
 
-ALTER TABLE Traits ADD COLUMN 'PromotionWhenKilledUnit' TEXT DEFAULT NULL;
-ALTER TABLE Traits ADD COLUMN 'PromotionRadiusWhenKilledUnit' INTEGER DEFAULT 0;
-ALTER TABLE Traits ADD COLUMN 'AttackBonusAdjacentWhenUnitKilled' INTEGER DEFAULT 0;
-ALTER TABLE Traits ADD COLUMN 'KilledAttackBonusDecreasePerTurn' INTEGER DEFAULT 0;
+alter table Traits add PromotionWhenKilledUnit text references UnitPromotions(Type);
+alter table Traits add PromotionRadiusWhenKilledUnit integer default 0;
+alter table Traits add AttackBonusAdjacentWhenUnitKilled integer default 0;
+alter table Traits add KilledAttackBonusDecreasePerTurn integer default 0;
 
-alter table Traits add column `NoDoDeficit` boolean not null default 0;
-alter table Traits add column `OwnedReligionUnitCultureExtraTurns` int not null default 0;
+alter table Traits add NoDoDeficit boolean default 0;
+alter table Traits add OwnedReligionUnitCultureExtraTurns integer default 0;
 
 create table Trait_CityYieldModifierFromAdjacentFeature (
     TraitType text references Traits(Type),
     FeatureType text references Features(Type),
     YieldType text references Yields(Type),
-    Yield int default 0
+    Yield integer default 0
 );
 
 create table Trait_CityYieldPerAdjacentFeature (
     TraitType text references Traits(Type),
     FeatureType text references Features(Type),
     YieldType text references Yields(Type),
-    MaxValue int default 0
+    MaxValue integer default 0
 );
 
-ALTER TABLE Traits ADD 'TrainedAll' BOOLEAN DEFAULT 0; 
-ALTER TABLE Traits ADD 'CanConquerUC' BOOLEAN DEFAULT 0; 
+alter table Traits add TrainedAll boolean default 0; 
+alter table Traits add CanConquerUC boolean default 0; 
 
-ALTER TABLE Traits ADD COLUMN 'NumFreeWorldWonderPerCity' INTEGER DEFAULT 0;
+alter table Traits add NumFreeWorldWonderPerCity integer default 0;
 
-alter table Traits add column `FreeGreatPeoplePerEra` INTEGER DEFAULT 0;
-alter table Traits add column `AwayFromCapitalCombatModifier` INTEGER DEFAULT 0;
-alter table Traits add column `AwayFromCapitalCombatModifierMax` INTEGER DEFAULT 0;
-alter table Traits add column `InfluenceFromGreatPeopleBirth` INTEGER DEFAULT 0;
-alter table Traits add column `WLKDLengthChangeModifier` INTEGER DEFAULT 0;
-ALTER TABLE Traits ADD COLUMN `WLKDCityNoResearchCost` BOOLEAN NOT NULL DEFAULT 0;
-ALTER TABLE Traits ADD COLUMN `GoodyUnitUpgradeFirst` BOOLEAN NOT NULL DEFAULT 0;
-alter table Traits add column `OthersTradeBonusModifier` int not null default 0;
-ALTER TABLE Traits ADD COLUMN `CanPurchaseWonderInGoldenAge` BOOLEAN NOT NULL DEFAULT 0;
+alter table Traits add FreeGreatPeoplePerEra integer default 0;
+alter table Traits add AwayFromCapitalCombatModifier integer default 0;
+alter table Traits add AwayFromCapitalCombatModifierMax integer default 0;
+alter table Traits add InfluenceFromGreatPeopleBirth integer default 0;
+alter table Traits add WLKDLengthChangeModifier integer default 0;
+alter table Traits add WLKDCityNoResearchCost boolean default 0;
+alter table Traits add GoodyUnitUpgradeFirst boolean default 0;
+alter table Traits add OthersTradeBonusModifier integer default 0;
+alter table Traits add CanPurchaseWonderInGoldenAge boolean default 0;
 
 create table Trait_SeaTradeRouteYieldPerEraTimes100 (
 	TraitType text references Traits(Type),
 	YieldType text references Yields(Type),
-	Yield int default 0
+	Yield integer default 0
 );
 create table Trait_SeaTradeRouteYieldTimes100 (
 	TraitType text references Traits(Type),
 	YieldType text references Yields(Type),
-	Yield int default 0
+	Yield integer default 0
 );
 create table Trait_BuildingClassFaithCost (
     TraitType text references Traits(Type),
     BuildingClassType text references BuildingClasses(Type),
-    Cost int default 0
+    Cost integer default 0
 );

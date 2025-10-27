@@ -17,8 +17,8 @@ create table NuclearWinterLevel_GlobalYield (
     Yield integer default 0
 );
 
-ALTER TABLE Units ADD 'NuclearWinterProcess' INTEGER DEFAULT 0;
-ALTER TABLE Buildings ADD 'NoNuclearWinterLocal' boolean DEFAULT 0;
+alter table Units add NuclearWinterProcess integer default 0;
+alter table Buildings add NoNuclearWinterLocal boolean default 0;
 
-INSERT INTO NuclearWinterLevels(Type, Description, Help, TriggerThreshold)
-SELECT 'NO_NUCLEAR_WINTER', 'TXT_KEY_NUCLEAR_LEVEL_NONE', 'TXT_KEY_NUCLEAR_LEVEL_NONE_HELP', 0;
+insert into NuclearWinterLevels(Type, Description, Help, TriggerThreshold)
+select 'NO_NUCLEAR_WINTER', 'TXT_KEY_NUCLEAR_LEVEL_NONE', 'TXT_KEY_NUCLEAR_LEVEL_NONE_HELP', 0;

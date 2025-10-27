@@ -4,4 +4,4 @@ create table LuaFormula (
     Formula text default ''
 );
 
-alter table Yields add column ExcessHappinessModifierFormula text references LuaFormula(Type);
+alter table Yields add ExcessHappinessModifierFormula text references LuaFormula(Type);

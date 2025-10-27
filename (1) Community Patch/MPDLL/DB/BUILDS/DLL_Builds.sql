@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS Build_ResourceRemove (
-    BuildType TEXT DEFAULT NULL  REFERENCES Builds(Type),
-    ResourceType TEXT DEFAULT NULL REFERENCES Resources(Type)
+create table Build_ResourceRemove (
+    BuildType text references Builds(Type),
+    ResourceType text references Resources(Type)
 );

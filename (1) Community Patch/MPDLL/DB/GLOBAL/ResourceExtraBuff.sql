@@ -1,11 +1,11 @@
-alter table Resources add column CreateResouceWightModifier integer not null default 0;
+alter table Resources add CreateResouceWightModifier integer default 0;
 
-alter table Resources add column UnHappinessModifierFormula text null references LuaFormula(Type);
-alter table Resources add column CityConnectionTradeRouteGoldModifierFormula text null references LuaFormula(Type);
-alter table Resources add column GoldHurryCostModifierFormula text null references LuaFormula(Type);
+alter table Resources add UnHappinessModifierFormula text references LuaFormula(Type);
+alter table Resources add CityConnectionTradeRouteGoldModifierFormula text references LuaFormula(Type);
+alter table Resources add GoldHurryCostModifierFormula text references LuaFormula(Type);
 
-alter table Policies add column ResourceCityConnectionTradeRouteGoldModifier integer not null default 0;
-alter table Policies add column ResourceUnhappinessModifier integer not null default 0;
+alter table Policies add ResourceCityConnectionTradeRouteGoldModifier integer default 0;
+alter table Policies add ResourceUnhappinessModifier integer default 0;
 
 create table Resource_GlobalYieldModifiers (
     ResourceType text references Resources(Type),
@@ -15,5 +15,5 @@ create table Resource_GlobalYieldModifiers (
     EndEra text references Eras(Type)
 );
 
-alter table Resources add column NotificationTurn integer not null default 0;
-alter table Resources add column NoDefaultNotification boolean not null default 0;
+alter table Resources add NotificationTurn integer default 0;
+alter table Resources add NoDefaultNotification boolean default 0;

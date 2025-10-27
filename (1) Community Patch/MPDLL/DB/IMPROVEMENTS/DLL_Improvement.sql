@@ -1,55 +1,57 @@
 create table Improvement_UnitXPPerTurn (
-  ImprovementType text default '',
-  Value integer not null default 0,
+  ImprovementType text references Improvements(Type),
+  Value integer default 0,
 
   -- conditional
-  UnitType text default '',
-  PromotionType text default ''
+  UnitType text references Units(Type),
+  PromotionType text references UnitPromotions(Type)
 );
 
 create table Improvement_YieldChangesPerUnit (
-  ImprovementType text default '',
-  YieldType text default '',
-  Yield integer not null default 0,
+  ImprovementType text references Improvements(Type),
+  YieldType text references Yields(Type),
+  Yield integer default 0,
 
   -- conditional
-  UnitType text default '',
-  PromotionType text default ''
+  UnitType text references Units(Type),
+  PromotionType text references UnitPromotions(Type)
 );
 
 create table Improvement_AdjacentImprovementYieldChanges (
   ImprovementType text references Improvements(Type),
   OtherImprovementType text references Improvements(Type),
   YieldType text references Yields(Type),
-  Yield integer not null default 0
+  Yield integer default 0
 );
 create table Improvement_TerrainYieldChanges (
   ImprovementType text references Improvements(Type),
   TerrainType text references Terrains(Type),
   YieldType text references Yields(Type),
-  Yield integer not null default 0
+  Yield integer default 0
 );
 
 -- Additional units allowed by improvements
-ALTER TABLE Improvements ADD AdditionalUnits INTEGER DEFAULT 0;
-ALTER TABLE Improvements ADD COLUMN 'NoLake' BOOLEAN DEFAULT 0;
-ALTER TABLE Improvements ADD COLUMN 'NoFeature' BOOLEAN DEFAULT 0;
-ALTER TABLE Improvements ADD COLUMN 'NoRemove' BOOLEAN DEFAULT 0;
+alter table Improvements add AdditionalUnits integer default 0;
+alter table Improvements add NoLake boolean default 0;
+alter table Improvements add NoFeature boolean default 0;
+alter table Improvements add NoRemove boolean default 0;
 
-ALTER TABLE Improvements ADD NegatesTerrainDamage INTEGER DEFAULT 0;
-ALTER TABLE Improvements ADD NegatesFeatureDamage INTEGER DEFAULT 0;
+alter table Improvements add NegatesTerrainDamage integer default 0;
+alter table Improvements add NegatesFeatureDamage integer default 0;
 
-ALTER TABLE Improvements ADD ExtraScore INTEGER DEFAULT 0;
+alter table Improvements add ExtraScore integer default 0;
 
-CREATE TABLE IF NOT EXISTS Improvement_FeaturesNeeded (
-    `ImprovementType` TEXT DEFAULT '' references Improvements(Type),
-    `FeatureType` TEXT DEFAULT '' references Features(Type)
+create table Improvement_FeaturesNeeded (
+    ImprovementType text references Improvements(Type),
+    FeatureType text references Features(Type)
 );
 
-ALTER TABLE Improvements ADD COLUMN 'NearbyFriendHeal' INTEGER DEFAULT 0;
-ALTER TABLE Improvements ADD COLUMN 'IsFreshWater' BOOLEAN DEFAULT 0;
-ALTER TABLE Improvements ADD COLUMN 'ForbidSameBuildUnitClasses' TEXT DEFAULT NULL;
-ALTER TABLE Improvements ADD COLUMN 'RequiredAdjacentImprovement' TEXT DEFAULT NULL REFERENCES Improvements(Type);
-ALTER TABLE Improvements ADD COLUMN 'RequiredAdjacentCity' BOOLEAN DEFAULT 0;
-ALTER TABLE Improvements ADD COLUMN 'RemoveWhenSetNoFuture' BOOLEAN DEFAULT 0;
-ALTER TABLE Improvements ADD COLUMN 'NumWaterPlotMakesValid' INTEGER DEFAULT 0;
+alter table Improvements add NearbyFriendHeal integer default 0;
+alter table Improvements add IsFreshWater boolean default 0;
+alter table Improvements add RequiredAdjacentImprovement text references Improvements(Type);
+alter table Improvements add RequiredAdjacentCity boolean default 0;
+alter table Improvements add RemoveWhenSetNoFuture boolean default 0;
+alter table Improvements add NumWaterPlotMakesValid integer default 0;
+
+-- Deprecated
+alter table Improvements add ForbidSameBuildUnitClasses text references UnitClasses(Type);

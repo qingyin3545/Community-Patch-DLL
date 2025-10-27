@@ -3,19 +3,19 @@ create table CityScales (
     Type text unique,
     MinPopulation integer not null,
 
-    NeedGrowthBuilding boolean not null default 0,
-    CanImmigrantIn boolean not null default 1,
-    CanImmigrantOut boolean not null default 1
+    NeedGrowthBuilding boolean default 0,
+    CanImmigrantIn boolean default 1,
+    CanImmigrantOut boolean default 1
 );
 
 create table CityScale_FreeBuildingClass (
     CityScaleType text references CityScales(Type),
     BuildingClassType text references BuildingClasses(Type),
-    NumBuildings integer not null default 1,
+    NumBuildings integer default 1,
 
     RequiredTraitType text null,
     RequiredPolicyType text null
 );
 
-alter table Buildings add column 'EnableCityScaleGrowth' text null;
-alter table Buildings add column 'EnableAllCityScaleGrowth' boolean not null default 0;
+alter table Buildings add EnableCityScaleGrowth text references CityScales(Type);
+alter table Buildings add EnableAllCityScaleGrowth boolean default 0;
