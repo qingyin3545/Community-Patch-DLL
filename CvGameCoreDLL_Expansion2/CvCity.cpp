@@ -32481,6 +32481,23 @@ bool CvCity::isValidBuildingLocation(BuildingTypes eBuilding) const
 		if(iMaxLevel >= 0 && iCorruptionLevel > iMinLevel) return false;
 	}
 #endif
+	if (pkBuildingInfo->IsNoPuppet() && IsPuppet() && !GET_PLAYER(getOwner()).GetPlayerTraits()->IsNoAnnexing())
+	{
+		return false;
+	}
+	if (pkBuildingInfo->IsRiverOrCoastal() && (!(isCoastal(pkBuildingInfo->GetMinAreaSize()) || plot()->isRiver())))
+	{
+		return false;
+	}
+	if (pkBuildingInfo->IsOriginalCapitalOnly() && !IsOriginalCapital())
+	{
+		return false;
+	}
+	int iMinNumReligions = pkBuildingInfo->GetMinNumReligions();
+	if(iMinNumReligions > 0 && GetCityReligions()->GetNumReligionsWithFollowers() < iMinNumReligions)
+	{
+		return false;
+	}
 
 	// Requires adjacent Mountain
 	if (pkBuildingInfo->IsMountain())
