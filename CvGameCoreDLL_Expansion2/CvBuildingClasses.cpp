@@ -1964,6 +1964,15 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	m_iSiegeKillCitizensModifier = kResults.GetInt("SiegeKillCitizensModifier");
 #endif
+
+	m_bNoPuppet = kResults.GetBool("NoPuppet");
+	m_bHumanOnly = kResults.GetBool("HumanOnly");
+	m_bRiverOrCoastal = kResults.GetBool("RiverOrCoastal");
+	m_bOriginalCapitalOnly = kResults.GetBool("OriginalCapitalOnly");
+	m_iMinNumReligions = kResults.GetInt("MinNumReligions");
+	szTextVal = kResults.GetText("TechNoPrereqClasses");
+	m_iTechNoPrereqClasses = GC.getInfoTypeForString(szTextVal, true);
+
 	m_iForcedDamageValue = kResults.GetInt("ResetDamageValue");
 	m_iChangeDamageValue = kResults.GetInt("ReduceDamageValue");
 
@@ -5208,6 +5217,30 @@ int CvBuildingEntry::GetSiegeKillCitizensModifier() const
 	return m_iSiegeKillCitizensModifier;
 }
 #endif
+bool CvBuildingEntry::IsNoPuppet() const
+{
+	return m_bNoPuppet;
+}
+bool CvBuildingEntry::IsHumanOnly() const
+{
+	return m_bHumanOnly;
+}
+bool CvBuildingEntry::IsRiverOrCoastal() const
+{
+	return m_bRiverOrCoastal;
+}
+bool CvBuildingEntry::IsOriginalCapitalOnly() const
+{
+	return m_bOriginalCapitalOnly;
+}
+int CvBuildingEntry::GetMinNumReligions() const
+{
+	return m_iMinNumReligions;
+}
+int CvBuildingEntry::GetTechNoPrereqClasses() const
+{
+	return m_iTechNoPrereqClasses;
+}
 int CvBuildingEntry::GetForcedDamageValue() const
 {
 	return m_iForcedDamageValue;
