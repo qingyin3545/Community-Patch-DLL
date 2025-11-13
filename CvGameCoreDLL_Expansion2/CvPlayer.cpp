@@ -14241,6 +14241,14 @@ bool CvPlayer::canConstruct(BuildingTypes eBuilding, const std::vector<int>& vPr
 
 	CvBuildingEntry& pBuildingInfo = *pkBuildingInfo;
 
+	if (pkBuildingInfo->IsHumanOnly())
+	{
+		if (isHuman())
+		{
+			return false;
+		}
+	}
+
 	int iI = 0;
 	CvTeam& currentTeam = GET_TEAM(getTeam());
 
@@ -15643,6 +15651,12 @@ int CvPlayer::getBuildingClassPrereqBuilding(BuildingTypes eBuilding, BuildingCl
 	{
 		ASSERT(pkBuilding, "Should never happen...");
 		return -1;
+	}
+
+	TechTypes eTechNoPrereqClasses = (TechTypes)pkBuilding->GetTechNoPrereqClasses();
+	if(eTechNoPrereqClasses != NO_TECH && HasTech(eTechNoPrereqClasses))
+	{
+		return 0;
 	}
 
 	int iPrereqs = pkBuilding->GetPrereqNumOfBuildingClass(ePrereqBuildingClass);
