@@ -728,6 +728,14 @@ public:
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	int GetSiegeKillCitizensModifier() const;
 #endif
+
+	bool IsNoPuppet() const;
+	bool IsHumanOnly() const;
+	bool IsRiverOrCoastal() const;
+	bool IsOriginalCapitalOnly() const;
+	int GetMinNumReligions() const;
+	int GetTechNoPrereqClasses() const;
+
 	int GetForcedDamageValue() const;
 	int GetChangeDamageValue() const;
 
@@ -1195,6 +1203,14 @@ private:
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	int m_iSiegeKillCitizensModifier = 0;
 #endif
+
+	bool m_bNoPuppet = false;
+	bool m_bHumanOnly = false;
+	bool m_bRiverOrCoastal = false;
+	bool m_bOriginalCapitalOnly = false;
+	int m_iMinNumReligions = 0;
+	int m_iTechNoPrereqClasses = NO_TECH;
+
 	int m_iForcedDamageValue = 0;
 	int m_iChangeDamageValue = 0;
 };
