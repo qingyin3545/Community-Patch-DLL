@@ -1973,6 +1973,12 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 	szTextVal = kResults.GetText("TechNoPrereqClasses");
 	m_iTechNoPrereqClasses = GC.getInfoTypeForString(szTextVal, true);
 
+	kUtility.PopulateArrayByExistence(m_piBuildingsNeededInCity, "Buildings", "Building_BuildingsNeededInCity", "PreBuildingType", "BuildingType", szBuildingType);
+	kUtility.PopulateArrayByExistence(m_piBuildingsNeededGlobal, "Buildings", "Building_BuildingsNeededGlobal", "PreBuildingType", "BuildingType", szBuildingType);
+	kUtility.PopulateArrayByExistence(m_piLocalPlotAnds, "Plots", "Building_LocalPlotAnds", "PlotType", "BuildingType", szBuildingType);
+	kUtility.PopulateArrayByExistence(m_piEmpireResourceAnds, "Resources", "Building_EmpireResourceAnds", "ResourceType", "BuildingType", szBuildingType);
+	kUtility.PopulateArrayByExistence(m_piEmpireResourceOrs, "Resources", "Building_EmpireResourceOrs", "ResourceType", "BuildingType", szBuildingType);
+
 	m_iForcedDamageValue = kResults.GetInt("ResetDamageValue");
 	m_iChangeDamageValue = kResults.GetInt("ReduceDamageValue");
 
@@ -5240,6 +5246,26 @@ int CvBuildingEntry::GetMinNumReligions() const
 int CvBuildingEntry::GetTechNoPrereqClasses() const
 {
 	return m_iTechNoPrereqClasses;
+}
+const std::vector<int>& CvBuildingEntry::GetBuildingsNeededInCity() const
+{
+	return m_piBuildingsNeededInCity;
+}
+const std::vector<int>& CvBuildingEntry::GetBuildingsNeededGlobal() const
+{
+	return m_piBuildingsNeededGlobal;
+}
+const std::vector<int>& CvBuildingEntry::GetPlotAnd() const
+{
+	return m_piLocalPlotAnds;
+}
+const std::vector<int>& CvBuildingEntry::GetEmpireResourceAnd() const
+{
+	return m_piEmpireResourceAnds;
+}
+const std::vector<int>& CvBuildingEntry::GetEmpireResourceOr() const
+{
+	return m_piEmpireResourceOrs;
 }
 int CvBuildingEntry::GetForcedDamageValue() const
 {

@@ -355,12 +355,14 @@ public:
 	void RemoveFromPlotList(CvPlot* pPlot);
 
 	bool IsHasFeatureLocal(FeatureTypes eFeature) const;
+	bool IsHasPlotLocal(PlotTypes ePlot) const;
 	bool IsHasResourceLocal(ResourceTypes eResource, bool bTestVisible) const;
 	int GetNumResourceLocal(ResourceTypes eResource, bool bImproved = false);
 	int GetNumTotalResource(ResourceTypes eResource) const;
 	void ChangeNumResourceLocal(ResourceTypes eResource, int iChange, bool bUnimproved = false);
 
 	bool IsBuildingLocalResourceValid(BuildingTypes eBuilding, bool bTestVisible, CvString* toolTipSink = NULL) const;
+	bool IsBuildingEmpireResourceValid(BuildingTypes eBuilding, CvString* toolTipSink = NULL) const;
 	bool IsBuildingResourceMonopolyValid(BuildingTypes eBuilding, CvString* toolTipSink = NULL) const;
 
 	void GetPlotsBoostedByBuilding(std::vector<int>& aiPlotList, BuildingTypes eBuilding);
@@ -371,6 +373,7 @@ public:
 	void ClearHiddenBuildings();
 
 	bool IsBuildingFeatureValid(BuildingTypes eBuilding, CvString* toolTipSink = NULL) const;
+	bool IsBuildingPlotValid(BuildingTypes eBuilding, CvString* toolTipSink = NULL) const;
 
 	// Resource Demanded
 
