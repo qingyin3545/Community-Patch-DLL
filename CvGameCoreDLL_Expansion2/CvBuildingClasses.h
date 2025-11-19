@@ -736,6 +736,12 @@ public:
 	int GetMinNumReligions() const;
 	int GetTechNoPrereqClasses() const;
 
+	const std::vector<int>& GetBuildingsNeededInCity() const;
+	const std::vector<int>& GetBuildingsNeededGlobal() const;
+	const std::vector<int>& GetPlotAnd() const;
+	const std::vector<int>& GetEmpireResourceAnd() const;
+	const std::vector<int>& GetEmpireResourceOr() const;
+
 	int GetForcedDamageValue() const;
 	int GetChangeDamageValue() const;
 
@@ -1210,6 +1216,12 @@ private:
 	bool m_bOriginalCapitalOnly = false;
 	int m_iMinNumReligions = 0;
 	int m_iTechNoPrereqClasses = NO_TECH;
+
+	std::vector<int> m_piBuildingsNeededInCity;
+	std::vector<int> m_piBuildingsNeededGlobal;
+	std::vector<int> m_piLocalPlotAnds;
+	std::vector<int> m_piEmpireResourceAnds;
+	std::vector<int> m_piEmpireResourceOrs;
 
 	int m_iForcedDamageValue = 0;
 	int m_iChangeDamageValue = 0;
