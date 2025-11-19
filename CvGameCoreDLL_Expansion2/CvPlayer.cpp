@@ -13341,6 +13341,10 @@ std::vector<BuildingTypes> CvPlayer::FindInitialBuildings()
 					break;
 				}
 			}
+			if (pkBuildingInfo->GetBuildingsNeededInCity().size() > 0)
+			{
+				bHasPrereq = true;	
+			}
 			if (!bHasPrereq)
 			{
 				v_StarterBuildings.push_back(eBuilding);
@@ -13391,8 +13395,18 @@ void CvPlayer::SetChainLength(BuildingTypes eBuilding)
 				if (eCivBuilding != eBuilding2)
 					continue;
 
+				bool bIsPreBuilding = false;
+				for(auto iBuilding : pkBuildingInfo2->GetBuildingsNeededInCity())
+				{
+					if (iBuilding == eCurrent)
+					{
+						bIsPreBuilding = true;
+						break;
+					}
+				}
+
 				//if it has a prereq, count it!
-				if (pkBuildingInfo2->IsBuildingClassNeededInCity((int)eBuildingClass))
+				if (bIsPreBuilding || pkBuildingInfo2->IsBuildingClassNeededInCity((int)eBuildingClass))
 				{
 					m_paiBuildingChainSteps[eCurrent] = m_paiBuildingChainSteps[eCurrent] + 1;
 					m_paiBuildingChainSteps[eBuilding] = m_paiBuildingChainSteps[eBuilding] + 1;

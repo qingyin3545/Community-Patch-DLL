@@ -8674,6 +8674,15 @@ bool CvCity::hasBuildingPrerequisites(BuildingTypes eBuilding) const
 		}
 	}
 
+	for(auto iBuilding : pkBuildingInfo->GetBuildingsNeededInCity())
+	{
+		if(!HasBuilding((BuildingTypes)iBuilding)) return false;
+	}
+	for (auto iBuilding : pkBuildingInfo->GetBuildingsNeededGlobal())
+	{
+		if (GET_PLAYER(getOwner()).getNumBuildings((BuildingTypes)iBuilding) <= 0) return false;
+	}
+
 	// Check if a specific prerequisite building is needed in this city
 	BuildingTypes ePrereqBuilding = static_cast<BuildingTypes>(pkBuildingInfo->GetNeedBuildingThisCity());
 
@@ -8978,12 +8987,20 @@ bool CvCity::canConstruct(BuildingTypes eBuilding, const std::vector<int>& vPreE
 	{
 		return false;
 	}
+	if (!IsBuildingEmpireResourceValid(eBuilding, toolTipSink))
+	{
+		return false;
+	}
 	// Resource Monopoly requirements met?
 	if (!IsBuildingResourceMonopolyValid(eBuilding, toolTipSink))
 	{
 		return false;
 	}
 	if (!IsBuildingFeatureValid(eBuilding, toolTipSink))
+	{
+		return false;
+	}
+	if (!IsBuildingPlotValid(eBuilding, toolTipSink))
 	{
 		return false;
 	}
@@ -9652,6 +9669,38 @@ bool CvCity::IsHasFeatureLocal(FeatureTypes eFeature) const
 	return bFoundFeature;
 }
 //	--------------------------------------------------------------------------------
+bool CvCity::IsHasPlotLocal(PlotTypes ePlot) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(ePlot > -1 && ePlot < GC.getNumPlotInfos(), "Invalid resource index.");
+
+	// See if we have the plot this city
+	bool bFoundPlot = false;
+	for (int iCityPlotLoop = 0; iCityPlotLoop < GetNumWorkablePlots(); iCityPlotLoop++)
+	{
+		CvPlot* pLoopPlot = iterateRingPlots(getX(), getY(), iCityPlotLoop);
+		// Invalid plot
+		if (pLoopPlot == NULL)
+			continue;
+
+		// Doesn't have the plot
+		if (pLoopPlot->getPlotType() != ePlot)
+			continue;
+
+		// Not owned by this player
+		if (pLoopPlot->getOwner() != getOwner())
+			continue;
+
+		if (pLoopPlot->getOwningCityID() != GetID())
+			continue;
+
+		bFoundPlot = true;
+		break;
+	}
+
+	return bFoundPlot;
+}
+//	--------------------------------------------------------------------------------
 /// Does this City have eResource nearby?
 bool CvCity::IsHasResourceLocal(ResourceTypes eResource, bool bTestVisible) const
 {
@@ -9910,6 +9959,67 @@ bool CvCity::IsBuildingLocalResourceValid(BuildingTypes eBuilding, bool bTestVis
 	}
 
 	return true;
+}
+
+//	--------------------------------------------------------------------------------
+bool CvCity::IsBuildingEmpireResourceValid(BuildingTypes eBuilding, CvString* toolTipSink) const
+{
+	VALIDATE_OBJECT();
+	CvBuildingEntry* pkBuildingInfo = GC.getBuildingInfo(eBuilding);
+	if (pkBuildingInfo == NULL)
+		return false;
+
+	// ANDs: City must have ALL of these nearby
+	for (auto iResource : pkBuildingInfo->GetEmpireResourceAnd())
+	{
+		ResourceTypes eResource = (ResourceTypes)iResource;
+
+		// Doesn't require a feature in this AND slot
+		if (eResource == NO_RESOURCE)
+			continue;
+
+		CvResourceInfo* pkResource = GC.getResourceInfo(eResource);
+		if (pkResource == NULL)
+			continue;
+
+		//!IsHasFeatureLocal(eResource)
+		// City doesn't have feature locally - return false immediately
+
+		if (GET_PLAYER(getOwner()).getNumResourceAvailable(eResource, 1) <= 0)
+		{
+			GC.getGame().BuildCannotPerformActionHelpText(toolTipSink, "TXT_KEY_NO_ACTION_BUILDING_EMPIRE_RESOURCE", pkResource->GetTextKey());
+			return false;
+		}
+	}
+
+	int iOrResources = 0;
+
+	// ORs: City must have ONE of these nearby
+	for (auto iResource : pkBuildingInfo->GetEmpireResourceOr())
+	{
+		ResourceTypes eResource = (ResourceTypes)iResource;
+
+		// Doesn't require a feature in this AND slot
+		if (eResource == NO_RESOURCE)
+			continue;
+
+		CvResourceInfo* pkResource = GC.getResourceInfo(eResource);
+		if (pkResource == NULL)
+			continue;
+
+		// City has feature locally - return true immediately
+		if (GET_PLAYER(getOwner()).getNumResourceAvailable(eResource, 1) > 0)
+			return true;
+
+		// If we get here it means we passed the AND tests but not one of the OR tests
+		GC.getGame().BuildCannotPerformActionHelpText(toolTipSink, "TXT_KEY_NO_ACTION_BUILDING_EMPIRE_RESOURCE", pkResource->GetTextKey());
+
+		// Increment counter for OR we don't have
+		iOrResources++;
+	}
+
+	// No OR resource requirements (and passed the AND test above)
+	return iOrResources == 0;
 }
 
 //	--------------------------------------------------------------------------------
@@ -10245,6 +10355,36 @@ bool CvCity::IsBuildingFeatureValid(BuildingTypes eBuilding, CvString* toolTipSi
 
 	// No OR resource requirements (and passed the AND test above)
 	return iOrFeatures == 0;
+}
+
+//	--------------------------------------------------------------------------------
+bool CvCity::IsBuildingPlotValid(BuildingTypes eBuilding, CvString* toolTipSink) const
+{
+	VALIDATE_OBJECT();
+	CvBuildingEntry* pkBuildingInfo = GC.getBuildingInfo(eBuilding);
+	if (pkBuildingInfo == NULL)
+		return false;
+
+	// ANDs: City must have ALL of these plots
+	for (auto iPlot : pkBuildingInfo->GetPlotAnd())
+	{
+		PlotTypes ePlot = (PlotTypes)iPlot;
+		// Doesn't require a Plot in this AND slot
+		if (ePlot == NO_PLOT)
+			continue;
+
+		CvPlotInfo* pkPlot = GC.getPlotInfo(ePlot);
+		if (pkPlot == NULL)
+			continue;
+
+		// City doesn't have Plot locally - return false immediately
+		if (!IsHasPlotLocal(ePlot))
+		{
+			GC.getGame().BuildCannotPerformActionHelpText(toolTipSink, "TXT_KEY_NO_ACTION_BUILDING_LOCAL_FEATURE", pkPlot->GetTextKey());
+			return false;
+		}
+	}
+	return true;
 }
 
 //	--------------------------------------------------------------------------------
