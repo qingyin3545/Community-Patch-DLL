@@ -2994,6 +2994,10 @@ public:
 	bool IsRemoveOceanImpassableCivilian() const;
 	void ChangeRemoveOceanImpassableCivilian(int iChange);
 
+	int GetInstantResearchFromFriendlyGreatScientist() const;
+	void ChangeInstantResearchFromFriendlyGreatScientist(int change);
+	void DoInstantResearchFromFriendlyGreatScientist(CvUnit* pUnit);
+
 	static void GetUCTypesFromPlayer(const CvPlayer& player,
 		std::tr1::unordered_set<UnitTypes>* m_sUU,
 		std::tr1::unordered_set<BuildingTypes>* m_sUB,
@@ -3928,6 +3932,8 @@ protected:
 
 	int m_iRemoveOceanImpassableCombatUnit = 0;
 	int m_iRemoveOceanImpassableCivilian = 0;
+
+	int m_iInstantResearchFromFriendlyGreatScientist = 0;
 
 	std::tr1::unordered_set<UnitTypes> m_sUUFromDualEmpire;
 	std::tr1::unordered_set<BuildingTypes> m_sUBFromDualEmpire;
