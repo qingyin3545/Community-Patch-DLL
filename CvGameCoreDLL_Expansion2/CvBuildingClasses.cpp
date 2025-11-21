@@ -1979,6 +1979,8 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 	kUtility.PopulateArrayByExistence(m_piEmpireResourceAnds, "Resources", "Building_EmpireResourceAnds", "ResourceType", "BuildingType", szBuildingType);
 	kUtility.PopulateArrayByExistence(m_piEmpireResourceOrs, "Resources", "Building_EmpireResourceOrs", "ResourceType", "BuildingType", szBuildingType);
 
+	m_iInstantResearchFromFriendlyGreatScientist = kResults.GetInt("InstantResearchFromFriendlyGreatScientist");
+
 	m_iForcedDamageValue = kResults.GetInt("ResetDamageValue");
 	m_iChangeDamageValue = kResults.GetInt("ReduceDamageValue");
 
@@ -5266,6 +5268,10 @@ const std::vector<int>& CvBuildingEntry::GetEmpireResourceAnd() const
 const std::vector<int>& CvBuildingEntry::GetEmpireResourceOr() const
 {
 	return m_piEmpireResourceOrs;
+}
+int CvBuildingEntry::GetInstantResearchFromFriendlyGreatScientist() const
+{
+	return m_iInstantResearchFromFriendlyGreatScientist;
 }
 int CvBuildingEntry::GetForcedDamageValue() const
 {

@@ -740,6 +740,8 @@ public:
 	const std::vector<int>& GetEmpireResourceAnd() const;
 	const std::vector<int>& GetEmpireResourceOr() const;
 
+	int GetInstantResearchFromFriendlyGreatScientist() const;
+
 	int GetForcedDamageValue() const;
 	int GetChangeDamageValue() const;
 
@@ -1219,6 +1221,8 @@ private:
 	std::vector<int> m_piLocalPlotAnds;
 	std::vector<int> m_piEmpireResourceAnds;
 	std::vector<int> m_piEmpireResourceOrs;
+
+	int m_iInstantResearchFromFriendlyGreatScientist = 0;
 
 	int m_iForcedDamageValue = 0;
 	int m_iChangeDamageValue = 0;
