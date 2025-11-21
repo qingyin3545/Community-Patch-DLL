@@ -1689,6 +1689,8 @@ void CvPlayer::uninit()
 	m_iRemoveOceanImpassableCombatUnit = 0;
 	m_iRemoveOceanImpassableCivilian = 0;
 
+	m_iInstantResearchFromFriendlyGreatScientist = 0;
+
 	m_sUUFromDualEmpire.clear();
 	m_sUBFromDualEmpire.clear();
 	m_sUIFromDualEmpire.clear();
@@ -16000,6 +16002,7 @@ void CvPlayer::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst
 		ChangeNumArmeeTotalTimes100(pBuildingInfo->GetNumArmee() * GetTroopsRateTimes100() * iChange);
 	}
 #endif
+	ChangeInstantResearchFromFriendlyGreatScientist(pBuildingInfo->GetInstantResearchFromFriendlyGreatScientist() * iChange);
 
 	for(iI = 0; iI < NUM_YIELD_TYPES; iI++)
 	{
@@ -26679,6 +26682,17 @@ void CvPlayer::doInstantYield(InstantYieldType iType, bool bCityFaith, GreatPers
 						int iModifier = GetPlayerPolicies()->GetNumericModifier(POLICYMOD_DEEP_WATER_NAVAL_STRENGTH_CULTURE_MODIFIER);
 						if (iModifier > 0) iValue = iPassYield * iModifier / 100;
 					}
+					break;
+				}
+				case INSTANT_YIELD_TYPE_NOBEL_PRIZE_PHYSICS:
+				case INSTANT_YIELD_TYPE_NOBEL_PRIZE_CHEMICAL:
+				case INSTANT_YIELD_TYPE_NOBEL_PRIZE_MEDICINE:
+				{
+					if (ePassYield == eYield)
+					{
+						iValue = iPassYield;
+					}
+					break;
 				}
 			}
 
@@ -27725,6 +27739,22 @@ void CvPlayer::doInstantYield(InstantYieldType iType, bool bCityFaith, GreatPers
 				localizedText = Localization::Lookup("TXT_KEY_INSTANT_YIELD_CITY_CREATE_UNIT");
 				localizedText << (pUnit ? pUnit->getNameKey() : "???");
 				localizedText << totalyieldString;
+				break;
+			}
+			case INSTANT_YIELD_TYPE_NOBEL_PRIZE_PHYSICS:
+			case INSTANT_YIELD_TYPE_NOBEL_PRIZE_CHEMICAL:
+			case INSTANT_YIELD_TYPE_NOBEL_PRIZE_MEDICINE:
+			{
+				localizedText = Localization::Lookup("TXT_KEY_NOTIFICATION_WIN_NOBEL_PRIZE_MESSAGE");
+				Localization::String strPrizeType;
+				if (iType == INSTANT_YIELD_TYPE_NOBEL_PRIZE_PHYSICS) strPrizeType = Localization::Lookup("TXT_KEY_NOBEL_PRIZE_PHYSICS");
+				else if (iType == INSTANT_YIELD_TYPE_NOBEL_PRIZE_CHEMICAL) strPrizeType = Localization::Lookup("TXT_KEY_NOBEL_PRIZE_MEDICINE");
+				else if (iType == INSTANT_YIELD_TYPE_NOBEL_PRIZE_PHYSICS) strPrizeType = Localization::Lookup("TXT_KEY_NOBEL_PRIZE_PHYSICS");
+
+				localizedText << (pUnit ? GET_PLAYER(pUnit->getOwner()).getCivilizationShortDescriptionKey() : "???");
+				localizedText << (pUnit ? pUnit->getGreatName() : "???");
+				localizedText << totalyieldString;
+				localizedText << strPrizeType;
 				break;
 			}
 			// These yields intentionally have no notification.
@@ -42044,6 +42074,13 @@ void CvPlayer::LogInstantYield(YieldTypes eYield, int iValue, InstantYieldType e
 				instantYieldName = "City Create Unit";
 				break;
 			}
+	case INSTANT_YIELD_TYPE_NOBEL_PRIZE_PHYSICS:
+	case INSTANT_YIELD_TYPE_NOBEL_PRIZE_CHEMICAL:
+	case INSTANT_YIELD_TYPE_NOBEL_PRIZE_MEDICINE:
+			{
+				instantYieldName = "Nobel Prize";
+				break;
+			}
 	}
 
 	CvString strFileName = "InstantYieldSummary.csv";
@@ -44516,6 +44553,8 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 
 	visitor(player.m_iRemoveOceanImpassableCombatUnit);
 	visitor(player.m_iRemoveOceanImpassableCivilian);
+
+	visitor(player.m_iInstantResearchFromFriendlyGreatScientist);
 
 	visitor(player.m_sUUFromDualEmpire);
 	visitor(player.m_sUBFromDualEmpire);
@@ -50566,6 +50605,69 @@ bool CvPlayer::IsRemoveOceanImpassableCivilian() const
 void CvPlayer::ChangeRemoveOceanImpassableCivilian(int iChange)
 {
 	m_iRemoveOceanImpassableCivilian += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetInstantResearchFromFriendlyGreatScientist() const
+{
+	return m_iInstantResearchFromFriendlyGreatScientist;
+}
+void CvPlayer::ChangeInstantResearchFromFriendlyGreatScientist(int change)
+{
+	m_iInstantResearchFromFriendlyGreatScientist += change;
+}
+void CvPlayer::DoInstantResearchFromFriendlyGreatScientist(CvUnit* pUnit)
+{
+	// gain instant research yield when a friendly great scientist is born
+	if (!pUnit || !(pUnit->getUnitInfo().GetUnitClassType() == GC.getInfoTypeForString("UNITCLASS_SCIENTIST")))
+	{
+		return;
+	}
+
+	PlayerTypes eLoopPlayer;
+	InstantYieldType ePrizeInstantYieldType = static_cast<InstantYieldType>(INSTANT_YIELD_TYPE_NOBEL_PRIZE_PHYSICS + GC.getGame().getJonRandNum(3, "Select one prize type"));
+	bool bHasBoostThisPlayer = false;
+	for (int iPlayerLoop = 0; iPlayerLoop < MAX_MAJOR_CIVS; iPlayerLoop++)
+	{
+		eLoopPlayer = (PlayerTypes) iPlayerLoop;
+
+		if (eLoopPlayer != GetID() && 
+			(
+				!GetDiplomacyAI()->IsPlayerValid(eLoopPlayer) ||
+				!GetDiplomacyAI()->IsDoFAccepted(eLoopPlayer) ||
+				!GET_PLAYER(eLoopPlayer).isAlive())
+			)
+		{
+			continue;
+		}
+
+		int iMod = eLoopPlayer == GetID() ? GetInstantResearchFromFriendlyGreatScientist() : 
+			GET_PLAYER(eLoopPlayer).GetInstantResearchFromFriendlyGreatScientist() + GetInstantResearchFromFriendlyGreatScientist();
+		if (iMod == 0)
+		{
+			continue;
+		}
+
+		int value = pUnit->GetScienceBlastStrength() * iMod / 100;
+		if (value <= 0)
+		{
+			continue;
+		}
+
+		CvPlayer& kLoopPlayer = GET_PLAYER(eLoopPlayer);
+		CvTeam* pTeam = &GET_TEAM(kLoopPlayer.getTeam());
+		kLoopPlayer.doInstantYield(ePrizeInstantYieldType, false, NO_GREATPERSON, NO_BUILDING, value, 
+			false, NO_PLAYER, NULL, false, kLoopPlayer.getCapitalCity(), false, true, false, YIELD_SCIENCE, pUnit, NO_TERRAIN, NULL, NULL, NULL);
+		if (GetID() != eLoopPlayer && !bHasBoostThisPlayer)
+		{
+			GET_PLAYER(pUnit->getOwner()).doInstantYield(ePrizeInstantYieldType, false, NO_GREATPERSON, NO_BUILDING, value,
+				false, NO_PLAYER, NULL, false, GET_PLAYER(pUnit->getOwner()).getCapitalCity(), false, true, false, YIELD_SCIENCE, pUnit, NO_TERRAIN, NULL, NULL, NULL);
+			bHasBoostThisPlayer = true;
+		}
+
+		if (GetID() == this->GetID())
+			bHasBoostThisPlayer = true;
+	}
 }
 
 //	--------------------------------------------------------------------------------
