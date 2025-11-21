@@ -1245,6 +1245,7 @@ void CvUnit::initWithNameOffset(int iID, UnitTypes eUnit, int iNameOffset, UnitA
 		kPlayer.ChangeDomainTroopsUsed(1);
 	}
 #endif
+	kPlayer.DoInstantResearchFromFriendlyGreatScientist(this);
 	if(plot()->isWater() && getUnitInfo().GetBoundWaterImprovement() != NO_IMPROVEMENT)
 	{
 		plot()->setImprovementType((ImprovementTypes)getUnitInfo().GetBoundWaterImprovement(), getOwner());
