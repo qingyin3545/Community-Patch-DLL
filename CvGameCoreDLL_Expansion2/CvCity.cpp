@@ -1821,6 +1821,11 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	m_iSiegeKillCitizensModifier = 0;
 #endif
+#ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
+	m_ppiYieldFromOtherYield.clear();
+	m_bHasYieldFromOtherYield = false;
+	m_bIgnoreFromOtherYield = false;
+#endif
 	m_iForcedDamageValue = 0;
 	m_iChangeDamageValue = 0;
 
@@ -15124,6 +15129,51 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 		ChangeSiegeKillCitizensModifier(pBuildingInfo->GetSiegeKillCitizensModifier() * iChange);
 #endif
+#ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
+		if (pBuildingInfo->HasYieldFromOtherYield())
+		{
+			bool bNewHasYieldFromOtherYield = false;
+			for (size_t i = 0; i < NUM_YIELD_TYPES; i++)
+			{
+				for (size_t j = 0; j < NUM_YIELD_TYPES; j++)
+				{
+					const YieldTypes eOutYieldType = static_cast<YieldTypes>(i);
+					const YieldTypes eInYieldType = static_cast<YieldTypes>(j);
+					auto yieldInValue = pBuildingInfo->GetYieldFromOtherYield(eInYieldType, eOutYieldType, YieldFromYield::IN_VALUE);
+					auto yieldOutValue = pBuildingInfo->GetYieldFromOtherYield(eInYieldType, eOutYieldType, YieldFromYield::OUT_VALUE);
+					if (yieldInValue > 0 && yieldOutValue > 0) {
+						bNewHasYieldFromOtherYield = true;
+						if (iChange > 0) {
+							for (size_t k = 0; k < iChange; k++) {
+								std::tr1::array <int, YieldFromYieldStruct::STRUCT_LENGTH> yieldConvert;
+								yieldConvert[YieldFromYieldStruct::IN_YIELD_TYPE] = eInYieldType;
+								yieldConvert[YieldFromYieldStruct::OUT_YIELD_TYPE] = eOutYieldType;
+								yieldConvert[YieldFromYieldStruct::IN_YIELD_VALUE] = yieldInValue;
+								yieldConvert[YieldFromYieldStruct::OUT_YIELD_VALUE] = yieldOutValue;
+								m_ppiYieldFromOtherYield.push_back(yieldConvert);
+							}
+						}
+						else {
+							for (size_t k = 0; k < -iChange; k++) {
+								for (auto& ite = m_ppiYieldFromOtherYield.begin(); ite != m_ppiYieldFromOtherYield.end(); ite++) {
+									if ((*ite)[YieldFromYieldStruct::IN_YIELD_TYPE] == (int)eInYieldType
+										&& (*ite)[YieldFromYieldStruct::OUT_YIELD_TYPE] == (int)eOutYieldType
+										&& (*ite)[YieldFromYieldStruct::IN_YIELD_VALUE] == yieldInValue
+										&& (*ite)[YieldFromYieldStruct::OUT_YIELD_VALUE] == yieldOutValue
+										) {
+										m_ppiYieldFromOtherYield.erase(ite);
+										break;
+									}
+								}
+							}
+						}
+					}
+					
+				}
+			}
+			m_bHasYieldFromOtherYield = bNewHasYieldFromOtherYield;
+		}
+#endif
 		changeForcedDamageValue(pBuildingInfo->GetForcedDamageValue()* iChange);
 		changeChangeDamageValue(pBuildingInfo->GetChangeDamageValue()* iChange);
 
@@ -23822,6 +23872,14 @@ int CvCity::getBaseYieldRateTimes100(const YieldTypes eYield, CvString* tooltipS
 			GC.getGame().BuildYieldTimes100HelpText(tooltipSink, "TXT_KEY_YIELD_FROM_TILE_EXPEND", iTempYield, szIconString);
 	}
 
+#ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
+	if(MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD && !IsIgnoreFromOtherYield())
+	{
+		iYield += GetBaseYieldRateFromOtherYield(eYield);
+		if (tooltipSink)
+			GC.getGame().BuildYieldTimes100HelpText(tooltipSink, "TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_OTHER_YIELD", iTempYield, szIconString);
+	}
+#endif
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	if(!IsNoNuclearWinterLocal())
 	{
@@ -32533,6 +32591,10 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	visitor(city.m_iSiegeKillCitizensModifier);
 #endif
+#ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
+	visitor(city.m_ppiYieldFromOtherYield);
+	visitor(city.m_bHasYieldFromOtherYield);
+#endif
 	visitor(city.m_iForcedDamageValue);
 	visitor(city.m_iChangeDamageValue);
 }
@@ -36375,6 +36437,55 @@ int CvCity::GetSiegeKillCitizensModifier() const
 void CvCity::ChangeSiegeKillCitizensModifier(int iChange)
 {
 	m_iSiegeKillCitizensModifier += iChange;
+}
+#endif
+#ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
+int CvCity::GetBaseYieldRateFromOtherYield(YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+	if (!m_bHasYieldFromOtherYield)
+	{
+		return 0;
+	}
+
+	int iResult = 0;
+	for (size_t iInYield = YIELD_FOOD; iInYield < NUM_YIELD_TYPES; iInYield++)
+	{
+		
+		const YieldTypes eInYield = static_cast<YieldTypes>(iInYield);
+		if (eInYield == eYield)
+		{
+			// It is disabled to get yields from the yields
+			continue;
+		}
+		for (auto& ite = m_ppiYieldFromOtherYield.begin(); ite != m_ppiYieldFromOtherYield.end(); ite++) {
+			if ((*ite)[YieldFromYieldStruct::IN_YIELD_TYPE] == eInYield && (*ite)[YieldFromYieldStruct::OUT_YIELD_TYPE] == eYield) {
+				const int iInputThreshold = (*ite)[YieldFromYieldStruct::IN_YIELD_VALUE];
+				
+				if (iInputThreshold <= 0)
+				{
+					continue;
+				}
+				m_bIgnoreFromOtherYield = true;
+				const int iInYieldValue = getYieldRateTimes100(eInYield, false, false, false) / 100;
+				m_bIgnoreFromOtherYield = false;
+				const int iInCount = iInYieldValue / iInputThreshold;
+				if (iInCount != 0)
+				{
+					const int iOutUnit = (*ite)[YieldFromYieldStruct::OUT_YIELD_VALUE];
+					iResult += iInCount * iOutUnit;
+				}
+			}
+		}
+	}
+
+	return iResult;
+}
+bool CvCity::IsIgnoreFromOtherYield() const
+{
+	return m_bIgnoreFromOtherYield;
 }
 #endif
 //	--------------------------------------------------------------------------------
