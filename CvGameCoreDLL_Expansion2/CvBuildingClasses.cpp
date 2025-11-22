@@ -1967,6 +1967,48 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	m_iSiegeKillCitizensModifier = kResults.GetInt("SiegeKillCitizensModifier");
 #endif
+#ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
+	{
+		for (size_t i = 0; i < NUM_YIELD_TYPES; i++)
+		{
+			for (size_t j = 0; j < NUM_YIELD_TYPES; j++)
+			{
+				m_ppiYieldFromOtherYield[i][j][0] = 0;
+				m_ppiYieldFromOtherYield[i][j][1] = 0;
+			}
+		}
+		m_bHasYieldFromOtherYield = false;
+
+		std::string strKey("Building_YieldFromOtherYield");
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if (pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select y1.ID, y2.ID, b.InYieldValue, b.OutYieldValue \
+					from Building_YieldFromOtherYield b \
+				    inner join Yields y1 on b.OutYieldType = y1.Type \
+					inner join Yields y2 on b.InYieldType = y2.Type \
+					where b.BuildingType = ?");
+		}
+
+		pResults->Bind(1, szBuildingType);
+
+		while (pResults->Step())
+		{
+			const int OutYieldTypeID = pResults->GetInt(0);
+			const int InYieldTypeID = pResults->GetInt(1);
+			const int InYieldValue = pResults->GetInt(2);
+			const int OutYieldValue = pResults->GetInt(3);
+
+			if (InYieldValue != 0 && OutYieldValue != 0)
+			{
+				m_ppiYieldFromOtherYield[OutYieldTypeID][InYieldTypeID][YieldFromYield::IN_VALUE] = InYieldValue;
+				m_ppiYieldFromOtherYield[OutYieldTypeID][InYieldTypeID][YieldFromYield::OUT_VALUE] = OutYieldValue;
+				m_bHasYieldFromOtherYield = true;
+			}
+		}
+		pResults->Reset();
+	}
+#endif
 
 	m_bNoPuppet = kResults.GetBool("NoPuppet");
 	m_bHumanOnly = kResults.GetBool("HumanOnly");
@@ -5244,6 +5286,23 @@ bool CvBuildingEntry::CanAllScaleImmigrantIn() const
 int CvBuildingEntry::GetSiegeKillCitizensModifier() const
 {
 	return m_iSiegeKillCitizensModifier;
+}
+#endif
+#ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
+int CvBuildingEntry::GetYieldFromOtherYield(const YieldTypes eInType, const YieldTypes eOutType, const YieldFromYield eConvertType) const
+{
+	VALIDATE_OBJECT()
+	PRECONDITION(eInType >= 0, "eInType expected to be >= 0");
+	PRECONDITION(eInType < NUM_YIELD_TYPES, "eInType expected to be < NUM_YIELD_TYPES");
+	PRECONDITION(eOutType >= 0, "eInType expected to be >= 0");
+	PRECONDITION(eOutType < NUM_YIELD_TYPES, "eInType expected to be < NUM_YIELD_TYPES");
+	PRECONDITION(eConvertType < YieldFromYield::LENGTH&& eConvertType >= 0, "eConvertType expected to be < YieldFromYield::LENGTH");
+
+	return m_ppiYieldFromOtherYield[eOutType][eInType][eConvertType];
+}
+bool CvBuildingEntry::HasYieldFromOtherYield() const
+{
+	return m_bHasYieldFromOtherYield;
 }
 #endif
 bool CvBuildingEntry::IsNoPuppet() const
