@@ -71,6 +71,17 @@ struct SPlotStats
 	vector<int> vImprovementCount;
 };
 
+#ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
+enum YieldFromYieldStruct
+{
+	IN_YIELD_TYPE = 0,
+	OUT_YIELD_TYPE,
+	IN_YIELD_VALUE,
+	OUT_YIELD_VALUE,
+	STRUCT_LENGTH,
+};
+#endif
+
 class CvCity
 {
 
@@ -1891,6 +1902,10 @@ public:
 	int GetSiegeKillCitizensModifier() const;
 	void ChangeSiegeKillCitizensModifier(int iChange);
 #endif
+#ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
+	int GetBaseYieldRateFromOtherYield(YieldTypes eYield) const;
+	bool IsIgnoreFromOtherYield() const;
+#endif
 	int getForcedDamageValue()const;
 	void changeForcedDamageValue(int iChange);
 	int getChangeDamageValue()const;
@@ -2333,6 +2348,12 @@ private:
 #endif
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	int m_iSiegeKillCitizensModifier = 0;
+#endif
+#ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
+	std::vector<std::tr1::array<int, YieldFromYieldStruct::STRUCT_LENGTH>> m_ppiYieldFromOtherYield;
+	bool m_bHasYieldFromOtherYield = false;
+	// No Serialization, only use for calculate Other Yields
+	mutable bool m_bIgnoreFromOtherYield = false;
 #endif
 	int m_iForcedDamageValue = 0;
 	int m_iChangeDamageValue = 0;
