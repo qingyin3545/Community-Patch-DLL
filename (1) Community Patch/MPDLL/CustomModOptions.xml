@@ -23,6 +23,7 @@
     <!-- SuperPower -->
     <!-- 1.  -->
     <Row Class="6" Name="SP_BALANCE_CORE" Value="0"/>
+    <Row Class="5" Name="API_BUILDINGS_YIELD_FROM_OTHER_YIELD" Value="1"/>
     <Row Class="5" Name="API_PROMOTION_TO_PROMOTION_MODIFIERS" Value="1"/>
     <Row Class="4" Name="NO_TRAIN_CHECK_INIT_FREE_UNIT" Value="0"/>
     <!-- GameEvents.PlayerSetEra.Add(function(ePlayer, eEra, bFirst) end) -->
