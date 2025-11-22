@@ -23,6 +23,15 @@ struct AccomplishmentBonusInfo
 	int iUnitProductionModifier;
 };
 
+#ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
+enum YieldFromYield
+{
+	IN_VALUE = 0,
+	OUT_VALUE,
+	LENGTH,
+};
+#endif
+
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //  class : CvThemingBonusInfo
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -726,6 +735,10 @@ public:
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	int GetSiegeKillCitizensModifier() const;
 #endif
+#ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
+	int GetYieldFromOtherYield(const YieldTypes eInType, const YieldTypes eOutType, const YieldFromYield eConvertType) const;
+	bool HasYieldFromOtherYield() const;
+#endif
 
 	bool IsNoPuppet() const;
 	bool IsHumanOnly() const;
@@ -1207,6 +1220,10 @@ private:
 #endif
 #ifdef MOD_PROMOTION_CITY_DESTROYER
 	int m_iSiegeKillCitizensModifier = 0;
+#endif
+#ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
+	int m_ppiYieldFromOtherYield[NUM_YIELD_TYPES][NUM_YIELD_TYPES][YieldFromYield::LENGTH];
+	bool m_bHasYieldFromOtherYield = false;
 #endif
 
 	bool m_bNoPuppet = false;
