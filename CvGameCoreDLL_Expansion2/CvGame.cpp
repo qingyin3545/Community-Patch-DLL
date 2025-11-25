@@ -14270,7 +14270,7 @@ int CvGame::GetNuclearWinterYieldMultiplier(YieldTypes eIndex)
 	}
 	return std::max(iModifier, -100);
 }
-int CvGame::GetYieldFromNuclearWinter(YieldTypes eIndex)
+int CvGame::GetYieldFromNuclearWinterTimes100(YieldTypes eIndex)
 {
 	int iYield = GC.getOrderedNuclearWinterLevels()[m_iNuclearWinterLevelIndex]->GetYieldTimes100(eIndex);
 	if(iYield != 0)

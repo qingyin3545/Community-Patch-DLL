@@ -1903,6 +1903,11 @@ public:
 	int GetBaseYieldRateFromOtherYield(YieldTypes eYield) const;
 	bool IsIgnoreFromOtherYield() const;
 #endif
+
+	int GetYieldPercentOthersCityWithSpy(YieldTypes eYield) const;
+	void ChangeYieldPercentOthersCityWithSpy(YieldTypes eYield, int iChange);
+	int GetYieldFromEspionageSpyTimes100(YieldTypes eYield) const;
+
 	int getForcedDamageValue()const;
 	void changeForcedDamageValue(int iChange);
 	int getChangeDamageValue()const;
@@ -2352,6 +2357,8 @@ private:
 	// No Serialization, only use for calculate Other Yields
 	mutable bool m_bIgnoreFromOtherYield = false;
 #endif
+	std::vector<int> m_aiYieldPercentOthersCityWithSpy;
+	
 	int m_iForcedDamageValue = 0;
 	int m_iChangeDamageValue = 0;
 };

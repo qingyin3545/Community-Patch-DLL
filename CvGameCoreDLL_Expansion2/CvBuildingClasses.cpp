@@ -580,6 +580,10 @@ CvBuildingEntry::~CvBuildingEntry(void)
 #if defined(MOD_TROOPS_AND_CROPS_FOR_SP)
 	SAFE_DELETE_ARRAY(m_piDomainTroops);
 #endif
+	SAFE_DELETE_ARRAY(m_piYieldPercentOthersCityWithSpy);
+	SAFE_DELETE_ARRAY(m_piRiverPlotYieldChangeGlobal);
+	CvDatabaseUtility::SafeDelete2DArray(m_ppiFeatureYieldChangesGlobal);
+	CvDatabaseUtility::SafeDelete2DArray(m_ppiTerrainYieldChangesGlobal);
 }
 
 /// Read from XML file
@@ -2006,6 +2010,50 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 		pResults->Reset();
 	}
 #endif
+	kUtility.SetYields(m_piYieldPercentOthersCityWithSpy, "Building_YieldPercentOthersCityWithSpy", "BuildingType", szBuildingType);
+	kUtility.SetYields(m_piRiverPlotYieldChangeGlobal, "Building_RiverPlotYieldChangesGlobal", "BuildingType", szBuildingType);
+	{
+		kUtility.Initialize2DArray(m_ppiFeatureYieldChangesGlobal, "Features", "Yields");
+
+		std::string strKey("Building_FeatureYieldChangesGlobal");
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if (pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select Features.ID as FeatureID, Yields.ID as YieldID, Yield from Building_FeatureYieldChangesGlobal inner join Features on Features.Type = FeatureType inner join Yields on Yields.Type = YieldType where BuildingType = ?");
+		}
+
+		pResults->Bind(1, szBuildingType);
+
+		while (pResults->Step())
+		{
+			const int FeatureID = pResults->GetInt(0);
+			const int YieldID = pResults->GetInt(1);
+			const int yield = pResults->GetInt(2);
+
+			m_ppiFeatureYieldChangesGlobal[FeatureID][YieldID] = yield;
+		}
+	}
+	{
+		kUtility.Initialize2DArray(m_ppiTerrainYieldChangesGlobal, "Terrains", "Yields");
+
+		std::string strKey("Building_TerrainYieldChangesGlobal");
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if (pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select Terrains.ID as TerrainID, Yields.ID as YieldID, Yield from Building_TerrainYieldChangesGlobal inner join Terrains on Terrains.Type = TerrainType inner join Yields on Yields.Type = YieldType where BuildingType = ?");
+		}
+
+		pResults->Bind(1, szBuildingType);
+
+		while (pResults->Step())
+		{
+			const int TerrainID = pResults->GetInt(0);
+			const int YieldID = pResults->GetInt(1);
+			const int yield = pResults->GetInt(2);
+
+			m_ppiTerrainYieldChangesGlobal[TerrainID][YieldID] = yield;
+		}
+	}
 
 	m_bNoPuppet = kResults.GetBool("NoPuppet");
 	m_bHumanOnly = kResults.GetBool("HumanOnly");
@@ -5284,6 +5332,34 @@ bool CvBuildingEntry::HasYieldFromOtherYield() const
 	return m_bHasYieldFromOtherYield;
 }
 #endif
+int CvBuildingEntry::GetYieldPercentOthersCityWithSpy(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piYieldPercentOthersCityWithSpy ? m_piYieldPercentOthersCityWithSpy[i] : -1;
+}
+int CvBuildingEntry::GetRiverPlotYieldChangeGlobal(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piRiverPlotYieldChangeGlobal ? m_piRiverPlotYieldChangeGlobal[i] : -1;
+}
+int CvBuildingEntry::GetFeatureYieldChangesGlobal(int i, int j) const
+{
+	PRECONDITION(i < GC.getNumFeatureInfos(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	PRECONDITION(j < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(j > -1, "Index out of bounds");
+	return m_ppiFeatureYieldChangesGlobal[i][j];  
+}
+int CvBuildingEntry::GetTerrainYieldChangesGlobal(int i, int j) const
+{
+	PRECONDITION(i < GC.getNumTerrainInfos(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	PRECONDITION(j < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(j > -1, "Index out of bounds");
+	return m_ppiTerrainYieldChangesGlobal[i][j];
+}
 bool CvBuildingEntry::IsNoPuppet() const
 {
 	return m_bNoPuppet;

@@ -2986,6 +2986,9 @@ public:
 	int GetYieldPerPopChangeTimes100(YieldTypes eYield) const;
 	void ChangeYieldPerPopChangeTimes100(YieldTypes eYield, int iChange);
 
+	int GetRiverPlotYield(YieldTypes eYield) const;
+	void ChangeRiverPlotYield(YieldTypes eYield, int iChange);
+
 	bool IsRemoveOceanImpassableCombatUnit() const;
 	void ChangeRemoveOceanImpassableCombatUnit(int iChange);
 	bool IsRemoveOceanImpassableCivilian() const;
@@ -3925,6 +3928,8 @@ protected:
 	std::vector<int> m_paiCityNumberCityYieldModifier;
 	std::vector<int> m_paiYieldModifierPerArtifacts;
 	std::vector<int> m_paiYieldPerPopChangeTimes100;
+
+	std::vector<int> m_aiRiverPlotYield;
 
 	int m_iRemoveOceanImpassableCombatUnit = 0;
 	int m_iRemoveOceanImpassableCivilian = 0;
