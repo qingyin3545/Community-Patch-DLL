@@ -741,6 +741,10 @@ public:
 	int GetYieldFromOtherYield(const YieldTypes eInType, const YieldTypes eOutType, const YieldFromYield eConvertType) const;
 	bool HasYieldFromOtherYield() const;
 #endif
+	int GetYieldPercentOthersCityWithSpy(int i) const;
+	int GetRiverPlotYieldChangeGlobal(int i) const;
+	int GetFeatureYieldChangesGlobal(int i, int j) const;
+	int GetTerrainYieldChangesGlobal(int i, int j) const;
 
 	bool IsNoPuppet() const;
 	bool IsHumanOnly() const;
@@ -1228,6 +1232,10 @@ private:
 	int m_ppiYieldFromOtherYield[NUM_YIELD_TYPES][NUM_YIELD_TYPES][YieldFromYield::LENGTH];
 	bool m_bHasYieldFromOtherYield = false;
 #endif
+	int* m_piYieldPercentOthersCityWithSpy = nullptr;
+	int* m_piRiverPlotYieldChangeGlobal = nullptr;
+	int** m_ppiFeatureYieldChangesGlobal = nullptr;;
+	int** m_ppiTerrainYieldChangesGlobal = nullptr;;
 
 	bool m_bNoPuppet = false;
 	bool m_bHumanOnly = false;
