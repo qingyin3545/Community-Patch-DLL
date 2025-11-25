@@ -1833,6 +1833,7 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 	m_bHasYieldFromOtherYield = false;
 	m_bIgnoreFromOtherYield = false;
 #endif
+	m_aiYieldPercentOthersCityWithSpy.resize(NUM_YIELD_TYPES, 0);
 	m_iForcedDamageValue = 0;
 	m_iChangeDamageValue = 0;
 
@@ -15222,6 +15223,11 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 			m_bHasYieldFromOtherYield = bNewHasYieldFromOtherYield;
 		}
 #endif
+		for(int iI = 0; iI < NUM_YIELD_TYPES; iI++)
+		{
+			YieldTypes eYield = (YieldTypes) iI;
+			ChangeYieldPercentOthersCityWithSpy(eYield, pBuildingInfo->GetYieldPercentOthersCityWithSpy(eYield)* iChange);
+		}
 		changeForcedDamageValue(pBuildingInfo->GetForcedDamageValue()* iChange);
 		changeChangeDamageValue(pBuildingInfo->GetChangeDamageValue()* iChange);
 
@@ -22671,7 +22677,7 @@ int CvCity::getRiverPlotYield(YieldTypes eIndex) const
 	VALIDATE_OBJECT();
 	PRECONDITION(eIndex >= 0, "eIndex expected to be >= 0");
 	PRECONDITION(eIndex < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
-	return m_aiRiverPlotYield[eIndex];
+	return m_aiRiverPlotYield[eIndex] + GET_PLAYER(getOwner()).GetRiverPlotYield(eIndex);
 }
 
 //	--------------------------------------------------------------------------------
@@ -23923,15 +23929,22 @@ int CvCity::getBaseYieldRateTimes100(const YieldTypes eYield, CvString* tooltipS
 #ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
 	if(MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD && !IsIgnoreFromOtherYield())
 	{
-		iYield += GetBaseYieldRateFromOtherYield(eYield);
+		iTempYield = GetBaseYieldRateFromOtherYield(eYield) * 100;
+		iYield += iTempYield;
 		if (tooltipSink)
 			GC.getGame().BuildYieldTimes100HelpText(tooltipSink, "TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_OTHER_YIELD", iTempYield, szIconString);
 	}
 #endif
+	{
+		iTempYield = GetYieldFromEspionageSpyTimes100(eYield);
+		iYield += iTempYield;
+		if (tooltipSink)
+			GC.getGame().BuildYieldTimes100HelpText(tooltipSink, "TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_ESPIONAGE_SPY", iTempYield, szIconString);
+	}
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	if(!IsNoNuclearWinterLocal())
 	{
-		iTempYield = GC.getGame().GetYieldFromNuclearWinter(eYield);
+		iTempYield = GC.getGame().GetYieldFromNuclearWinterTimes100(eYield);
 		iYield += iTempYield;
 		if (tooltipSink)
 			GC.getGame().BuildYieldTimes100HelpText(tooltipSink, "TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_NUCLEAR_WINTER", iTempYield, szIconString);
@@ -32646,6 +32659,7 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 	visitor(city.m_ppiYieldFromOtherYield);
 	visitor(city.m_bHasYieldFromOtherYield);
 #endif
+	visitor(city.m_aiYieldPercentOthersCityWithSpy);
 	visitor(city.m_iForcedDamageValue);
 	visitor(city.m_iChangeDamageValue);
 }
@@ -36490,6 +36504,8 @@ void CvCity::ChangeSiegeKillCitizensModifier(int iChange)
 	m_iSiegeKillCitizensModifier += iChange;
 }
 #endif
+
+//	--------------------------------------------------------------------------------
 #ifdef MOD_API_BUILDINGS_YIELD_FROM_OTHER_YIELD
 int CvCity::GetBaseYieldRateFromOtherYield(YieldTypes eYield) const
 {
@@ -36539,6 +36555,47 @@ bool CvCity::IsIgnoreFromOtherYield() const
 	return m_bIgnoreFromOtherYield;
 }
 #endif
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetYieldPercentOthersCityWithSpy(YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+	
+	return m_aiYieldPercentOthersCityWithSpy[eYield];
+}
+void CvCity::ChangeYieldPercentOthersCityWithSpy(YieldTypes eYield, int iChange)
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	m_aiYieldPercentOthersCityWithSpy[eYield] += iChange;
+}
+int CvCity::GetYieldFromEspionageSpyTimes100(YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+	
+	if (GetYieldPercentOthersCityWithSpy(eYield) == 0 || GET_PLAYER(getOwner()).GetEspionage()->GetNumSpies() == 0) return 0;
+	
+	int iValue = 0;
+	CvPlayerEspionage* pkPlayerEspionage = GET_PLAYER(getOwner()).GetEspionage();
+	for (uint uiSpy = 0; uiSpy < pkPlayerEspionage->m_aSpyList.size(); ++uiSpy)
+	{
+		CvCity* pCity = pkPlayerEspionage->GetCityWithSpy(uiSpy);
+		if (pCity == nullptr || pCity->getOwner() == getOwner()) continue;
+		
+		iValue += max(0, pCity->getYieldRateTimes100(eYield));
+	}
+	iValue /= 100;
+	iValue *= GetYieldPercentOthersCityWithSpy(eYield);
+	return iValue;
+}
+
+//	--------------------------------------------------------------------------------
 //	--------------------------------------------------------------------------------
 int CvCity::getForcedDamageValue() const
 {

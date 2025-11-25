@@ -1692,6 +1692,8 @@ void CvPlayer::uninit()
 	m_paiYieldModifierPerArtifacts.clear();
 	m_paiYieldPerPopChangeTimes100.clear();
 
+	m_aiRiverPlotYield.clear();
+
 	m_iRemoveOceanImpassableCombatUnit = 0;
 	m_iRemoveOceanImpassableCivilian = 0;
 
@@ -2348,6 +2350,9 @@ void CvPlayer::reset(PlayerTypes eID, bool bConstructorCall)
 		m_paiYieldModifierPerArtifacts.resize(NUM_YIELD_TYPES, 0);
 		m_paiYieldPerPopChangeTimes100.clear();
 		m_paiYieldPerPopChangeTimes100.resize(NUM_YIELD_TYPES, 0);
+
+		m_aiRiverPlotYield.clear();
+		m_aiRiverPlotYield.resize(NUM_YIELD_TYPES, 0);
 
 		AI_reset();
 	}
@@ -16055,6 +16060,21 @@ void CvPlayer::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst
 	}
 #endif
 	ChangeInstantResearchFromFriendlyGreatScientist(pBuildingInfo->GetInstantResearchFromFriendlyGreatScientist() * iChange);
+	for(iI = 0; iI < NUM_YIELD_TYPES; iI++)
+	{
+		YieldTypes eYield = static_cast<YieldTypes>(iI);
+		ChangeRiverPlotYield(eYield, pBuildingInfo->GetRiverPlotYieldChangeGlobal(eYield) * iChange);
+		for (iJ = 0; iJ < GC.getNumFeatureInfos(); iJ++)
+		{
+			FeatureTypes eFeature = static_cast<FeatureTypes>(iJ);
+			changeFeatureYieldChange(eFeature, eYield, (pBuildingInfo->GetFeatureYieldChangesGlobal(eFeature, eYield) * iChange));
+		}
+		for (iJ = 0; iJ < GC.getNumTerrainInfos(); iJ++)
+		{
+			TerrainTypes eTerrain = static_cast<TerrainTypes>(iJ);
+			changeTerrainYieldChange(eTerrain, eYield, (pBuildingInfo->GetTerrainYieldChangesGlobal(eTerrain, eYield) * iChange));
+		}
+	}
 
 	for(iI = 0; iI < NUM_YIELD_TYPES; iI++)
 	{
@@ -44641,6 +44661,8 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 	visitor(player.m_paiYieldModifierPerArtifacts);
 	visitor(player.m_paiYieldPerPopChangeTimes100);
 
+	visitor(player.m_aiRiverPlotYield);
+
 	visitor(player.m_iRemoveOceanImpassableCombatUnit);
 	visitor(player.m_iRemoveOceanImpassableCivilian);
 
@@ -50677,6 +50699,16 @@ int CvPlayer::GetYieldPerPopChangeTimes100(YieldTypes eYield) const
 void CvPlayer::ChangeYieldPerPopChangeTimes100(YieldTypes eYield, int iChange)
 {
 	m_paiYieldPerPopChangeTimes100[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetRiverPlotYield(YieldTypes eYield) const
+{
+	return m_aiRiverPlotYield[eYield];
+}
+void CvPlayer::ChangeRiverPlotYield(YieldTypes eYield, int iChange)
+{
+	m_aiRiverPlotYield[eYield] += iChange;
 }
 
 //	--------------------------------------------------------------------------------
