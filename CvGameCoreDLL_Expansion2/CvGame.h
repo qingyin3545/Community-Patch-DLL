@@ -803,7 +803,7 @@ public:
 	void DoNuclearWinterTurn();
 	void UpdateNuclearWinterLevel();
 	int GetNuclearWinterYieldMultiplier(YieldTypes eIndex);
-	int GetYieldFromNuclearWinter(YieldTypes eIndex);
+	int GetYieldFromNuclearWinterTimes100(YieldTypes eIndex);
 #endif
 
 protected:
