@@ -581,6 +581,8 @@ CvBuildingEntry::~CvBuildingEntry(void)
 	SAFE_DELETE_ARRAY(m_piDomainTroops);
 #endif
 	SAFE_DELETE_ARRAY(m_piYieldPercentOthersCityWithSpy);
+	SAFE_DELETE_ARRAY(m_piTradeRouteFromTheCityYield);
+	SAFE_DELETE_ARRAY(m_piTradeRouteFromTheCityYieldPerEra);
 	SAFE_DELETE_ARRAY(m_piRiverPlotYieldChangeGlobal);
 	CvDatabaseUtility::SafeDelete2DArray(m_ppiFeatureYieldChangesGlobal);
 	CvDatabaseUtility::SafeDelete2DArray(m_ppiTerrainYieldChangesGlobal);
@@ -2011,6 +2013,8 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 	}
 #endif
 	kUtility.SetYields(m_piYieldPercentOthersCityWithSpy, "Building_YieldPercentOthersCityWithSpy", "BuildingType", szBuildingType);
+	kUtility.SetYields(m_piTradeRouteFromTheCityYield, "Building_TradeRouteFromTheCityYields", "BuildingType", szBuildingType);
+	kUtility.SetYields(m_piTradeRouteFromTheCityYieldPerEra, "Building_TradeRouteFromTheCityYieldsPerEra", "BuildingType", szBuildingType);
 	kUtility.SetYields(m_piRiverPlotYieldChangeGlobal, "Building_RiverPlotYieldChangesGlobal", "BuildingType", szBuildingType);
 	{
 		kUtility.Initialize2DArray(m_ppiFeatureYieldChangesGlobal, "Features", "Yields");
@@ -5337,6 +5341,18 @@ int CvBuildingEntry::GetYieldPercentOthersCityWithSpy(int i) const
 	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
 	PRECONDITION(i > -1, "Index out of bounds");
 	return m_piYieldPercentOthersCityWithSpy ? m_piYieldPercentOthersCityWithSpy[i] : -1;
+}
+int CvBuildingEntry::GetTradeRouteFromTheCityYield(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piTradeRouteFromTheCityYield ? m_piTradeRouteFromTheCityYield[i] : -1;
+}
+int CvBuildingEntry::GetTradeRouteFromTheCityYieldPerEra(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piTradeRouteFromTheCityYieldPerEra ? m_piTradeRouteFromTheCityYieldPerEra[i] : -1;
 }
 int CvBuildingEntry::GetRiverPlotYieldChangeGlobal(int i) const
 {

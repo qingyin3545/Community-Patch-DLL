@@ -1908,6 +1908,12 @@ public:
 	void ChangeYieldPercentOthersCityWithSpy(YieldTypes eYield, int iChange);
 	int GetYieldFromEspionageSpyTimes100(YieldTypes eYield) const;
 
+	int GetTradeRouteFromTheCityYield(YieldTypes eYield) const;
+	void ChangeTradeRouteFromTheCityYield(YieldTypes eYield, int iChange);
+
+	int GetTradeRouteFromTheCityYieldPerEra(YieldTypes eYield) const;
+	void ChangeTradeRouteFromTheCityYieldPerEra(YieldTypes eYield, int iChange);
+
 	int getForcedDamageValue()const;
 	void changeForcedDamageValue(int iChange);
 	int getChangeDamageValue()const;
@@ -2358,6 +2364,9 @@ private:
 	mutable bool m_bIgnoreFromOtherYield = false;
 #endif
 	std::vector<int> m_aiYieldPercentOthersCityWithSpy;
+
+	std::vector<int> m_aiTradeRouteFromTheCityYield;
+	std::vector<int> m_aiTradeRouteFromTheCityYieldPerEra;
 	
 	int m_iForcedDamageValue = 0;
 	int m_iChangeDamageValue = 0;
