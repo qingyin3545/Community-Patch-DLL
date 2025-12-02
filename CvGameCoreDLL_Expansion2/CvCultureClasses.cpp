@@ -1006,7 +1006,7 @@ CvCity* CvPlayerCulture::GetClosestAvailableGreatWorkSlot(int iX, int iY, GreatW
 }
 
 /// How many Great Works are in the entire empure?
-int CvPlayerCulture::GetNumGreatWorks() const
+int CvPlayerCulture::GetNumGreatWorks(bool bIncludeArtifact, bool bIncludeGreatWork) const
 {
 	CvCity* pLoopCity = NULL;
 	int iLoop = 0;
@@ -1014,7 +1014,7 @@ int CvPlayerCulture::GetNumGreatWorks() const
 
 	for(pLoopCity = m_pPlayer->firstCity(&iLoop); pLoopCity != NULL; pLoopCity = m_pPlayer->nextCity(&iLoop))
 	{
-		iRtnValue += pLoopCity->GetCityCulture()->GetNumGreatWorks();
+		iRtnValue += pLoopCity->GetCityCulture()->GetNumGreatWorks(true, bIncludeArtifact, bIncludeGreatWork);
 	}
 
 	return iRtnValue;
@@ -5828,9 +5828,9 @@ void CvCityCulture::Init(CvCity* pCity)
 }
 
 /// How many Great Works are in the city?
-int CvCityCulture::GetNumGreatWorks(bool bIgnoreYield) const
+int CvCityCulture::GetNumGreatWorks(bool bIgnoreYield, bool bIncludeArtifact, bool bIncludeGreatWork) const
 {
-	return m_pCity->GetCityBuildings()->GetNumGreatWorks(bIgnoreYield);
+	return m_pCity->GetCityBuildings()->GetNumGreatWorks(bIgnoreYield, bIncludeArtifact, bIncludeGreatWork);
 }
 
 /// How many Great Works slots are available in the city? (counting both open and filled and counting all types)

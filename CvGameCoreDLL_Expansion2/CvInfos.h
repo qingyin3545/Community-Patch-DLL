@@ -3950,4 +3950,28 @@ inline FDataStream& operator>>(FDataStream& is, PolicyResourceInfo& kResourceInf
 	return is;
 }
 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//  struct : PolicyYieldFormulaInfo
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+struct PolicyYieldFormulaInfo
+{
+	PolicyTypes ePolicy;
+	YieldTypes eYield;
+	LuaFormulaTypes eLuaFormula = NO_LUA_FORMULA;
+};
+inline FDataStream& operator<<(FDataStream& os, const PolicyYieldFormulaInfo& kYield)
+{
+	os << (int)kYield.ePolicy;
+	os << (int)kYield.eYield;
+	os << (int)kYield.eLuaFormula;
+	return os;
+}
+inline FDataStream& operator>>(FDataStream& is, PolicyYieldFormulaInfo& kYield)
+{
+	is >> (int&)kYield.ePolicy;
+	is >> (int&)kYield.eYield;
+	is >> (int&)kYield.eLuaFormula;
+	return is;
+}
+
 #endif
