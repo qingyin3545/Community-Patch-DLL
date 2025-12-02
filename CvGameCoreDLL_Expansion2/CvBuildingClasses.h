@@ -742,6 +742,9 @@ public:
 	bool HasYieldFromOtherYield() const;
 #endif
 	int GetYieldPercentOthersCityWithSpy(int i) const;
+	int GetTradeRouteFromTheCityYield(int i) const;
+	int GetTradeRouteFromTheCityYieldPerEra(int i) const;
+
 	int GetRiverPlotYieldChangeGlobal(int i) const;
 	int GetFeatureYieldChangesGlobal(int i, int j) const;
 	int GetTerrainYieldChangesGlobal(int i, int j) const;
@@ -1233,6 +1236,9 @@ private:
 	bool m_bHasYieldFromOtherYield = false;
 #endif
 	int* m_piYieldPercentOthersCityWithSpy = nullptr;
+	int* m_piTradeRouteFromTheCityYield = nullptr;
+	int* m_piTradeRouteFromTheCityYieldPerEra = nullptr;
+
 	int* m_piRiverPlotYieldChangeGlobal = nullptr;
 	int** m_ppiFeatureYieldChangesGlobal = nullptr;;
 	int** m_ppiTerrainYieldChangesGlobal = nullptr;;
