@@ -1677,8 +1677,20 @@ void CvPlayer::uninit()
 #endif
 	m_paiNumResourceAvailableCache.clear();
 	m_vCityResourcesFromPolicy.clear();
+	m_vHappinessYieldModifier.clear();
 
 	m_iCaptureCityResistanceTurnsChangeFormula = NO_LUA_FORMULA;
+
+	m_paiEraSettlerProductionModifier.clear();
+	m_paiBuildSpeedModifier.clear();
+	m_paiGreatPersonOutputModifierPerGWs.clear();
+	m_paiMinorsTradeRouteYieldRate.clear();
+	m_paiInternalTradeRouteDestYieldRate.clear();
+	m_paiCityWithWorldWonderYieldModifier.clear();
+	m_paiTradeRouteCityYieldModifier.clear();
+	m_paiCityNumberCityYieldModifier.clear();
+	m_paiYieldModifierPerArtifacts.clear();
+	m_paiYieldPerPopChangeTimes100.clear();
 
 	m_iRemoveOceanImpassableCombatUnit = 0;
 	m_iRemoveOceanImpassableCivilian = 0;
@@ -2312,6 +2324,28 @@ void CvPlayer::reset(PlayerTypes eID, bool bConstructorCall)
 #endif
 		m_paiNumResourceAvailableCache.clear();
 		m_paiNumResourceAvailableCache.resize(GC.getNumResourceInfos(), 0);
+
+		m_paiEraSettlerProductionModifier.clear();
+		m_paiEraSettlerProductionModifier.resize(GC.getNumEraInfos(), 0);
+		m_paiBuildSpeedModifier.clear();
+		m_paiBuildSpeedModifier.resize(GC.getNumBuildInfos(), 0);
+		m_paiGreatPersonOutputModifierPerGWs.clear();
+		m_paiGreatPersonOutputModifierPerGWs.resize(GC.getNumGreatPersonInfos(), 0);
+
+		m_paiMinorsTradeRouteYieldRate.clear();
+		m_paiMinorsTradeRouteYieldRate.resize(NUM_YIELD_TYPES, 0);
+		m_paiInternalTradeRouteDestYieldRate.clear();
+		m_paiInternalTradeRouteDestYieldRate.resize(NUM_YIELD_TYPES, 0);
+		m_paiCityWithWorldWonderYieldModifier.clear();
+		m_paiCityWithWorldWonderYieldModifier.resize(NUM_YIELD_TYPES, 0);
+		m_paiTradeRouteCityYieldModifier.clear();
+		m_paiTradeRouteCityYieldModifier.resize(NUM_YIELD_TYPES, 0);
+		m_paiCityNumberCityYieldModifier.clear();
+		m_paiCityNumberCityYieldModifier.resize(NUM_YIELD_TYPES, 0);
+		m_paiYieldModifierPerArtifacts.clear();
+		m_paiYieldModifierPerArtifacts.resize(NUM_YIELD_TYPES, 0);
+		m_paiYieldPerPopChangeTimes100.clear();
+		m_paiYieldPerPopChangeTimes100.resize(NUM_YIELD_TYPES, 0);
 
 		AI_reset();
 	}
@@ -29103,7 +29137,7 @@ void CvPlayer::changeWonderProductionModifier(int iChange)
 
 int CvPlayer::getSettlerProductionModifier() const
 {
-	return m_iSettlerProductionModifier;
+	return m_iSettlerProductionModifier + GetEraSettlerProductionModifier(GetCurrentEra());
 }
 
 void CvPlayer::changeSettlerProductionModifier(int iChange)
@@ -42559,10 +42593,16 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 			if (it->ePolicy == ePolicy) it = m_vCityResourcesFromPolicy.erase(it);
 			else it++;
 		}
+		for (auto it = m_vHappinessYieldModifier.begin(); it != m_vHappinessYieldModifier.end();)
+		{
+			if (it->ePolicy == ePolicy) it = m_vHappinessYieldModifier.erase(it);
+			else it++;
+		}
 	}
 	else
 	{
 		for (const auto& info : pkPolicyInfo->GetCityResources()) m_vCityResourcesFromPolicy.push_back(info);
+		for (const auto& info : pkPolicyInfo->GetHappinessYieldModifier()) m_vHappinessYieldModifier.push_back(info);
 	}
 
 	if (pkPolicyInfo->GetCaptureCityResistanceTurnsChangeFormula() != NO_LUA_FORMULA)
@@ -42575,6 +42615,30 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 		{
 			SetCaptureCityResistanceTurnsChangeFormula(NO_LUA_FORMULA);
 		}
+	}
+
+	for (int iLoopEra = 0; iLoopEra < GC.getNumEraInfos(); iLoopEra++)
+	{
+		ChangeEraSettlerProductionModifier(iLoopEra, pkPolicyInfo->GetEraSettlerProductionModifier(iLoopEra) * iChange);
+	}
+	for (int iLoopBuild = 0; iLoopBuild < GC.getNumBuildInfos(); iLoopBuild++)
+	{
+		ChangeBuildSpeedModifier(iLoopBuild, pkPolicyInfo->GetBuildSpeedModifier(iLoopBuild) * iChange);
+	}
+	for (int iGreatPerson = 0; iGreatPerson < GC.getNumGreatPersonInfos(); iGreatPerson++)
+	{
+		ChangeGreatPersonOutputModifierPerGWs(iGreatPerson, pkPolicyInfo->GetGreatPersonOutputModifierPerGWs(iGreatPerson) * iChange);
+	}
+	for (int iYield = 0; iYield < NUM_YIELD_TYPES; iYield++)
+	{
+		YieldTypes eYield = static_cast<YieldTypes>(iYield);
+		ChangeMinorsTradeRouteYieldRate(eYield, pkPolicyInfo->GetMinorsTradeRouteYieldRate(eYield) * iChange);
+		ChangeInternalTradeRouteDestYieldRate(eYield, pkPolicyInfo->GetInternalTradeRouteDestYieldRate(eYield) * iChange);
+		ChangeCityWithWorldWonderYieldModifier(eYield, pkPolicyInfo->GetCityWithWorldWonderYieldModifier(eYield) * iChange);
+		ChangeTradeRouteCityYieldModifier(eYield, pkPolicyInfo->GetTradeRouteCityYieldModifier(eYield) * iChange);
+		ChangeCityNumberCityYieldModifier(eYield, pkPolicyInfo->GetCityNumberCityYieldModifier(eYield) * iChange);
+		ChangeYieldModifierPerArtifacts(eYield, pkPolicyInfo->GetYieldModifierPerArtifacts(eYield) * iChange);
+		ChangeYieldPerPopChangeTimes100(eYield, pkPolicyInfo->GetYieldPerPopChangeTimes100(eYield) * iChange);
 	}
 
 	// Promotion Removed
@@ -44497,8 +44561,20 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 #endif
 	visitor(player.m_paiNumResourceAvailableCache);
 	visitor(player.m_vCityResourcesFromPolicy);
+	visitor(player.m_vHappinessYieldModifier);
 
 	visitor(player.m_iCaptureCityResistanceTurnsChangeFormula);
+
+	visitor(player.m_paiEraSettlerProductionModifier);
+	visitor(player.m_paiBuildSpeedModifier);
+	visitor(player.m_paiGreatPersonOutputModifierPerGWs);
+	visitor(player.m_paiMinorsTradeRouteYieldRate);
+	visitor(player.m_paiInternalTradeRouteDestYieldRate);
+	visitor(player.m_paiCityWithWorldWonderYieldModifier);
+	visitor(player.m_paiTradeRouteCityYieldModifier);
+	visitor(player.m_paiCityNumberCityYieldModifier);
+	visitor(player.m_paiYieldModifierPerArtifacts);
+	visitor(player.m_paiYieldPerPopChangeTimes100);
 
 	visitor(player.m_iRemoveOceanImpassableCombatUnit);
 	visitor(player.m_iRemoveOceanImpassableCivilian);
@@ -48483,6 +48559,18 @@ int CvPlayer::GetTreatiseCulture(UnitTypes eUnit) const
 		iCulture /= 100;
 	}
 
+	GreatPersonTypes eGreatPerson = GetGreatPersonFromUnitClass((UnitClassTypes)pkUnitInfo->GetUnitClassType());
+	int iPolicyGWsMod = 0;
+	if (eGreatPerson != NO_GREATPERSON)
+	{
+		iPolicyGWsMod += GetGreatPersonOutputModifierPerGWs(eGreatPerson);
+	}
+	if (iPolicyGWsMod != 0)
+	{
+		iCulture *= 100 + (iPolicyGWsMod * GetCulture()->GetNumGreatWorks(false));
+		iCulture /= 100;
+	}
+
 	// Scale with game speed
 	iCulture = iCulture * GC.getGame().getGameSpeedInfo().getCulturePercent() / 100;
 
@@ -48550,6 +48638,18 @@ int CvPlayer::GetBlastTourism(UnitTypes eUnit) const
 	else
 	{
 		iTourism = iTurn * GetCulture()->GetTourism() / 100;
+	}
+
+	GreatPersonTypes eGreatPerson = GetGreatPersonFromUnitClass((UnitClassTypes)pkUnitInfo->GetUnitClassType());
+	int iPolicyGWsMod = 0;
+	if (eGreatPerson != NO_GREATPERSON)
+	{
+		iPolicyGWsMod += GetGreatPersonOutputModifierPerGWs(eGreatPerson);
+	}
+	if (iPolicyGWsMod != 0)
+	{
+		iTourism *= 100 + (iPolicyGWsMod * GetCulture()->GetNumGreatWorks(false));
+		iTourism /= 100;
 	}
 
 	// Give a minimal amount in the early game
@@ -50353,13 +50453,37 @@ void CvPlayer::ChangeResourceCityConnectionTradeRouteGoldModifier(int value)
 #endif
 
 //	--------------------------------------------------------------------------------
-std::vector<PolicyResourceInfo>& CvPlayer::GetCityResourcesFromPolicy()
-{
-	return m_vCityResourcesFromPolicy;
-}
 const std::vector<PolicyResourceInfo>& CvPlayer::GetCityResourcesFromPolicy() const
 {
 	return m_vCityResourcesFromPolicy;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetYieldModifierFromHappinessPolicy(YieldTypes eYield) const
+{
+	int ret = 0;
+	for (auto yieldEntry : m_vHappinessYieldModifier)
+	{
+		if (yieldEntry.eYield != eYield)
+		{
+			continue;
+		}
+		auto* evaluator = GC.GetLuaEvaluatorManager()->GetEvaluator(yieldEntry.eLuaFormula);
+		if (evaluator == nullptr)
+		{
+			continue;
+		}
+		auto result = evaluator->Evaluate<int>(GetExcessHappiness());
+		if (result.ok)
+		{
+			ret += result.value;
+		}
+	}
+	return ret;
+}
+const std::vector<PolicyYieldFormulaInfo>& CvPlayer::GetHappinessYieldModifier() const
+{
+	return m_vHappinessYieldModifier;
 }
 
 //	--------------------------------------------------------------------------------
@@ -50386,6 +50510,106 @@ int CvPlayer::GetCaptureCityResistanceTurnsChange(CvCity* city, int originalResi
 	}
 
 	return result.value;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetEraSettlerProductionModifier(int iEra) const
+{
+	return m_paiEraSettlerProductionModifier[iEra];
+}
+void CvPlayer::ChangeEraSettlerProductionModifier(int iEra, int iChange)
+{
+	m_paiEraSettlerProductionModifier[iEra] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetBuildSpeedModifier(int iBuild) const
+{
+	return m_paiBuildSpeedModifier[iBuild];
+}
+void CvPlayer::ChangeBuildSpeedModifier(int iBuild, int iChange)
+{
+	m_paiBuildSpeedModifier[iBuild] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetGreatPersonOutputModifierPerGWs(int iGreatPerson) const
+{
+	return m_paiGreatPersonOutputModifierPerGWs[iGreatPerson];
+}
+void CvPlayer::ChangeGreatPersonOutputModifierPerGWs(int iGreatPerson, int iChange)
+{
+	m_paiGreatPersonOutputModifierPerGWs[iGreatPerson] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetMinorsTradeRouteYieldRate(YieldTypes eYield) const
+{
+	return m_paiMinorsTradeRouteYieldRate[eYield];
+}
+void CvPlayer::ChangeMinorsTradeRouteYieldRate(YieldTypes eYield, int iChange)
+{
+	m_paiMinorsTradeRouteYieldRate[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetInternalTradeRouteDestYieldRate(YieldTypes eYield) const
+{
+	return m_paiInternalTradeRouteDestYieldRate[eYield];
+}
+void CvPlayer::ChangeInternalTradeRouteDestYieldRate(YieldTypes eYield, int iChange)
+{
+	m_paiInternalTradeRouteDestYieldRate[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetCityWithWorldWonderYieldModifier(YieldTypes eYield) const
+{
+	return m_paiCityWithWorldWonderYieldModifier[eYield];
+}
+void CvPlayer::ChangeCityWithWorldWonderYieldModifier(YieldTypes eYield, int iChange)
+{
+	m_paiCityWithWorldWonderYieldModifier[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetTradeRouteCityYieldModifier(YieldTypes eYield) const
+{
+	return m_paiTradeRouteCityYieldModifier[eYield];
+}
+void CvPlayer::ChangeTradeRouteCityYieldModifier(YieldTypes eYield, int iChange)
+{
+	m_paiTradeRouteCityYieldModifier[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetCityNumberCityYieldModifier(YieldTypes eYield) const
+{
+	return m_paiCityNumberCityYieldModifier[eYield];
+}
+void CvPlayer::ChangeCityNumberCityYieldModifier(YieldTypes eYield, int iChange)
+{
+	m_paiCityNumberCityYieldModifier[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetYieldModifierPerArtifacts(YieldTypes eYield) const
+{
+	return m_paiYieldModifierPerArtifacts[eYield];
+}
+void CvPlayer::ChangeYieldModifierPerArtifacts(YieldTypes eYield, int iChange)
+{
+	m_paiYieldModifierPerArtifacts[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetYieldPerPopChangeTimes100(YieldTypes eYield) const
+{
+	return m_paiYieldPerPopChangeTimes100[eYield];
+}
+void CvPlayer::ChangeYieldPerPopChangeTimes100(YieldTypes eYield, int iChange)
+{
+	m_paiYieldPerPopChangeTimes100[eYield] += iChange;
 }
 
 //	--------------------------------------------------------------------------------

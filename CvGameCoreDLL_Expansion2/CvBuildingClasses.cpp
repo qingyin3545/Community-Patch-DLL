@@ -6701,10 +6701,12 @@ int CvCityBuildings::GetYieldFromGreatWorksTimes100(YieldTypes eYield) const
 }
 
 /// Accessor: How many Great Works of specific slot type present in this city?
-int CvCityBuildings::GetNumGreatWorks(bool bIgnoreYield) const
+int CvCityBuildings::GetNumGreatWorks(bool bIgnoreYield, bool bIncludeArtifact, bool bIncludeGreatWork) const
 {
 	int iRtnValue = 0;
 
+	GreatWorkClass eArtifactClass = (GreatWorkClass)GC.getInfoTypeForString("GREAT_WORK_ARTIFACT");
+	GreatWorkClass eArtClass = (GreatWorkClass)GC.getInfoTypeForString("GREAT_WORK_ART");
 	for (std::vector<BuildingGreatWork>::const_iterator it = m_aBuildingGreatWork.begin(); it != m_aBuildingGreatWork.end(); ++it)
 	{
 		BuildingClassTypes eBuildingClass = it->eBuildingClass;
@@ -6712,10 +6714,11 @@ int CvCityBuildings::GetNumGreatWorks(bool bIgnoreYield) const
 		CvBuildingEntry* pkBuildingInfo = GC.getBuildingInfo(eBuilding);
 		if (pkBuildingInfo)
 		{
-			if (bIgnoreYield || pkBuildingInfo->GetGreatWorkYieldType() != NO_YIELD)
-			{
-				iRtnValue++;
-			}
+			if(!bIgnoreYield && pkBuildingInfo->GetGreatWorkYieldType() == NO_YIELD) continue;
+			if(!bIncludeArtifact && GC.getGame().GetGameCulture()->GetGreatWorkClass((*it).iGreatWorkIndex) == eArtifactClass) continue;
+			if(!bIncludeGreatWork && GC.getGame().GetGameCulture()->GetGreatWorkClass((*it).iGreatWorkIndex) == eArtClass) continue;
+
+			iRtnValue++;
 		}
 	}
 

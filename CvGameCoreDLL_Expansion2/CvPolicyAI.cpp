@@ -4298,6 +4298,17 @@ Firaxis::Array< int, NUM_YIELD_TYPES > CvPolicyAI::WeightPolicyAttributes(CvPlay
 				yield[eYield] += PolicyInfo->GetCoastalCityYieldChange(eYield) * 5 * iNumCities;
 			}
 		}
+		if (PolicyInfo->GetYieldPerPopChangeTimes100(eYield) != 0)
+		{
+			if (pPlayerTraits->IsExpansionist())
+			{
+				yield[eYield] += PolicyInfo->GetYieldPerPopChangeTimes100(eYield) * iPopulation;
+			}
+			else
+			{
+				yield[eYield] += PolicyInfo->GetYieldPerPopChangeTimes100(eYield) * iPopulation;
+			}
+		}
 		if (PolicyInfo->GetCapitalYieldChange(eYield) != 0)
 		{
 			if (pPlayerTraits->IsSmaller() || pPlayerTraits->IsTourism())
