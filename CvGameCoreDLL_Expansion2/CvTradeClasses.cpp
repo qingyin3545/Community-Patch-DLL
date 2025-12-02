@@ -3805,6 +3805,12 @@ int CvPlayerTrade::GetTradeConnectionValueTimes100 (const TradeConnection& kTrad
 				UNREACHABLE();
 			}
 		}
+		CvCity* pOriginCity = GC.getGame().GetGameTrade()->GetOriginCity(kTradeConnection);
+		if (pOriginCity)
+		{
+			iValue += pOriginCity->GetTradeRouteFromTheCityYield(eYield) * 100;
+			iValue += pOriginCity->GetTradeRouteFromTheCityYieldPerEra(eYield) * 100 * (GET_PLAYER(kTradeConnection.m_eOriginOwner).GetCurrentEra() + 1);
+		}
 	}
 	else
 	{

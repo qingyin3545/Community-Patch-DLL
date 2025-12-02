@@ -1827,6 +1827,8 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 	m_bIgnoreFromOtherYield = false;
 #endif
 	m_aiYieldPercentOthersCityWithSpy.resize(NUM_YIELD_TYPES, 0);
+	m_aiTradeRouteFromTheCityYield.resize(NUM_YIELD_TYPES, 0);
+	m_aiTradeRouteFromTheCityYieldPerEra.resize(NUM_YIELD_TYPES, 0);
 	m_iForcedDamageValue = 0;
 	m_iChangeDamageValue = 0;
 
@@ -15164,6 +15166,8 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 		{
 			YieldTypes eYield = (YieldTypes) iI;
 			ChangeYieldPercentOthersCityWithSpy(eYield, pBuildingInfo->GetYieldPercentOthersCityWithSpy(eYield)* iChange);
+			ChangeTradeRouteFromTheCityYield(eYield, pBuildingInfo->GetTradeRouteFromTheCityYield(eYield) * iChange);
+			ChangeTradeRouteFromTheCityYieldPerEra(eYield, pBuildingInfo->GetTradeRouteFromTheCityYieldPerEra(eYield) * iChange);
 		}
 		changeForcedDamageValue(pBuildingInfo->GetForcedDamageValue()* iChange);
 		changeChangeDamageValue(pBuildingInfo->GetChangeDamageValue()* iChange);
@@ -32594,6 +32598,8 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 	visitor(city.m_bHasYieldFromOtherYield);
 #endif
 	visitor(city.m_aiYieldPercentOthersCityWithSpy);
+	visitor(city.m_aiTradeRouteFromTheCityYield);
+	visitor(city.m_aiTradeRouteFromTheCityYieldPerEra);
 	visitor(city.m_iForcedDamageValue);
 	visitor(city.m_iChangeDamageValue);
 }
@@ -36489,6 +36495,42 @@ bool CvCity::IsIgnoreFromOtherYield() const
 	return m_bIgnoreFromOtherYield;
 }
 #endif
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetTradeRouteFromTheCityYield(YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	return m_aiTradeRouteFromTheCityYield[eYield];
+}
+void CvCity::ChangeTradeRouteFromTheCityYield(YieldTypes eYield, int iChange)
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	m_aiTradeRouteFromTheCityYield[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetTradeRouteFromTheCityYieldPerEra(YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	return m_aiTradeRouteFromTheCityYieldPerEra[eYield];
+}
+void CvCity::ChangeTradeRouteFromTheCityYieldPerEra(YieldTypes eYield, int iChange)
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	m_aiTradeRouteFromTheCityYieldPerEra[eYield] += iChange;
+}
 
 //	--------------------------------------------------------------------------------
 int CvCity::GetYieldPercentOthersCityWithSpy(YieldTypes eYield) const
