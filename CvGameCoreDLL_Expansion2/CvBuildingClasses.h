@@ -1315,7 +1315,7 @@ public:
 
 	int GetYieldFromGreatWorksTimes100(YieldTypes eYield) const;
 
-	int GetNumGreatWorks(bool bIgnoreYield = true) const;
+	int GetNumGreatWorks(bool bIgnoreYield = true, bool bIncludeArtifact = true, bool bIncludeGreatWork = true) const;
 	int GetNumGreatWorks(GreatWorkSlotType eGreatWorkSlot, bool bArtifact = false, bool bArt = false) const;
 
 	int GetThemingBonusIndex(BuildingTypes eBuilding) const;
