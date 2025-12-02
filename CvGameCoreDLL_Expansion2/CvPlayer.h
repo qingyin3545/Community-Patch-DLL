@@ -2950,12 +2950,44 @@ public:
 	int GetResourceCityConnectionTradeRouteGoldModifier() const;
 	void ChangeResourceCityConnectionTradeRouteGoldModifier(int value);
 #endif
-	std::vector<PolicyResourceInfo>& GetCityResourcesFromPolicy();
 	const std::vector<PolicyResourceInfo>& GetCityResourcesFromPolicy() const;
+	
+	int GetYieldModifierFromHappinessPolicy(YieldTypes eYield) const;
+	const std::vector<PolicyYieldFormulaInfo>& GetHappinessYieldModifier() const;
 
 	LuaFormulaTypes GetCaptureCityResistanceTurnsChangeFormula() const;
 	void SetCaptureCityResistanceTurnsChangeFormula(LuaFormulaTypes value);
 	int GetCaptureCityResistanceTurnsChange(CvCity* city, int originalResistanceTurn, bool originalOwnerLostCaptal) const;
+
+	int GetEraSettlerProductionModifier(int iEra) const;
+	void ChangeEraSettlerProductionModifier(int iEra, int iChange);
+
+	int GetBuildSpeedModifier(int iBuild) const;
+	void ChangeBuildSpeedModifier(int iBuild, int iChange);
+
+	int GetGreatPersonOutputModifierPerGWs(int iGreatPerson) const;
+	void ChangeGreatPersonOutputModifierPerGWs(int iGreatPerson, int iChange);
+
+	int GetMinorsTradeRouteYieldRate(YieldTypes eYield) const;
+	void ChangeMinorsTradeRouteYieldRate(YieldTypes eYield, int iChange);
+
+	int GetInternalTradeRouteDestYieldRate(YieldTypes eYield) const;
+	void ChangeInternalTradeRouteDestYieldRate(YieldTypes eYield, int iChange);
+
+	int GetCityWithWorldWonderYieldModifier(YieldTypes eYield) const;
+	void ChangeCityWithWorldWonderYieldModifier(YieldTypes eYield, int iChange);
+
+	int GetTradeRouteCityYieldModifier(YieldTypes eYield) const;
+	void ChangeTradeRouteCityYieldModifier(YieldTypes eYield, int iChange);
+
+	int GetCityNumberCityYieldModifier(YieldTypes eYield) const;
+	void ChangeCityNumberCityYieldModifier(YieldTypes eYield, int iChange);
+
+	int GetYieldModifierPerArtifacts(YieldTypes eYield) const;
+	void ChangeYieldModifierPerArtifacts(YieldTypes eYield, int iChange);
+
+	int GetYieldPerPopChangeTimes100(YieldTypes eYield) const;
+	void ChangeYieldPerPopChangeTimes100(YieldTypes eYield, int iChange);
 
 	bool IsRemoveOceanImpassableCombatUnit() const;
 	void ChangeRemoveOceanImpassableCombatUnit(int iChange);
@@ -3879,8 +3911,20 @@ protected:
 #endif
 	std::vector<int> m_paiNumResourceAvailableCache;
 	std::vector<PolicyResourceInfo> m_vCityResourcesFromPolicy;
+	std::vector<PolicyYieldFormulaInfo> m_vHappinessYieldModifier;
 
 	LuaFormulaTypes m_iCaptureCityResistanceTurnsChangeFormula = NO_LUA_FORMULA;
+
+	std::vector<int> m_paiEraSettlerProductionModifier;
+	std::vector<int> m_paiBuildSpeedModifier;
+	std::vector<int> m_paiGreatPersonOutputModifierPerGWs;
+	std::vector<int> m_paiMinorsTradeRouteYieldRate;
+	std::vector<int> m_paiInternalTradeRouteDestYieldRate;
+	std::vector<int> m_paiCityWithWorldWonderYieldModifier;
+	std::vector<int> m_paiTradeRouteCityYieldModifier;
+	std::vector<int> m_paiCityNumberCityYieldModifier;
+	std::vector<int> m_paiYieldModifierPerArtifacts;
+	std::vector<int> m_paiYieldPerPopChangeTimes100;
 
 	int m_iRemoveOceanImpassableCombatUnit = 0;
 	int m_iRemoveOceanImpassableCivilian = 0;

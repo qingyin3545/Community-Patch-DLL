@@ -23024,6 +23024,41 @@ int CvCity::getBaseYieldRateModifier(YieldTypes eIndex, int iAssumedExtraModifie
 			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_RESOURCE_BUFF", iTempMod);
 	}
 #endif
+	iTempMod = owner.GetYieldModifierFromHappinessPolicy(eIndex);
+	if (iTempMod != 0)
+	{
+		iModifier += iTempMod;
+		if (toolTipSink)
+			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_HAPPINESS_POLICY", iTempMod);
+	}
+	iTempMod = owner.GetCityWithWorldWonderYieldModifier(eIndex);
+	if (iTempMod != 0 && getNumWorldWonders() > 0)
+	{
+		iModifier += iTempMod * owner.getNumCities();
+		if (toolTipSink)
+			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_LOCAL_CITY_WONDER", iTempMod);
+	}
+	iTempMod = owner.GetTradeRouteCityYieldModifier(eIndex);
+	if (iTempMod != 0)
+	{
+		iModifier += iTempMod * owner.GetTrade()->GetNumTradeUnits(false);
+		if (toolTipSink)
+			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_POLICY_TRADE_ROUTE_NUM", iTempMod);
+	}
+	iTempMod = owner.GetCityNumberCityYieldModifier(eIndex);
+	if (iTempMod != 0)
+	{
+		iModifier += iTempMod * owner.getNumCities();
+		if (toolTipSink)
+			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_POLICY_CITY_NUMBER", iTempMod);
+	}
+	iTempMod = owner.GetYieldModifierPerArtifacts(eIndex);
+	if (iTempMod != 0)
+	{
+		iModifier += iTempMod * owner.GetCulture()->GetNumGreatWorks(true, false);
+		if (toolTipSink)
+			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_NUM_ARTIFACT", iTempMod);
+	}
 
 	// Puppet
 	if (IsPuppet())
@@ -23587,7 +23622,7 @@ int CvCity::getBaseYieldRateTimes100(const YieldTypes eYield, CvString* tooltipS
 			GC.getGame().BuildYieldTimes100HelpText(tooltipSink, "TXT_KEY_YIELD_FROM_PIETY", iTempYield, szIconString);
 	}
 
-	iTempYield = GetYieldPerPopTimes100(eYield) * getPopulation();
+	iTempYield = (GetYieldPerPopTimes100(eYield) + GET_PLAYER(m_eOwner).GetYieldPerPopChangeTimes100(eYield)) * getPopulation();
 	iYield += iTempYield;
 	if (tooltipSink)
 		GC.getGame().BuildYieldTimes100HelpText(tooltipSink, "TXT_KEY_YIELD_FROM_POP", iTempYield, szIconString);

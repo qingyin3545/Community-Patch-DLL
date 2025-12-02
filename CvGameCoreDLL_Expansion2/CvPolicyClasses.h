@@ -485,7 +485,8 @@ public:
 	int GetResourceUnhappinessModifier() const;
 	int GetResourceCityConnectionTradeRouteGoldModifier() const;
 #endif
-	std::vector<PolicyResourceInfo>& GetCityResources();
+	const std::vector<PolicyResourceInfo>& GetCityResources() const;
+	const std::vector<PolicyYieldFormulaInfo>& GetHappinessYieldModifier() const;
 	LuaFormulaTypes GetCaptureCityResistanceTurnsChangeFormula() const;
 
 	int GetCapitalTradeRouteGoldChange() const;
@@ -523,6 +524,17 @@ public:
 	int GetOriginalCapitalCaptureGreatPerson() const;
 	int GetReligionProductionModifier() const;
 	bool IsUpgradeAllTerritory() const;
+
+	int GetEraSettlerProductionModifier(int iEra) const;
+	int GetBuildSpeedModifier(int iBuild) const;
+	int GetGreatPersonOutputModifierPerGWs(int iGreatPerson) const;
+	int GetMinorsTradeRouteYieldRate(int i) const;
+	int GetInternalTradeRouteDestYieldRate(int i) const;
+	int GetCityWithWorldWonderYieldModifier(int i) const;
+	int GetTradeRouteCityYieldModifier(int i) const;
+	int GetCityNumberCityYieldModifier(int i) const;
+	int GetYieldModifierPerArtifacts(int i) const;
+	int GetYieldPerPopChangeTimes100(int i) const;
 private:
 	int m_iTechPrereq;
 	int m_iCultureCost;
@@ -924,6 +936,7 @@ private:
 	int m_iResourceCityConnectionTradeRouteGoldModifier = 0;
 #endif
 	std::vector<PolicyResourceInfo> m_vCityResources;
+	std::vector<PolicyYieldFormulaInfo> m_vHappinessYieldModifier;
 	LuaFormulaTypes m_eCaptureCityResistanceTurnsChangeFormula = NO_LUA_FORMULA;
 
 	int m_iCapitalTradeRouteGoldChange = 0;
@@ -961,6 +974,17 @@ private:
 	int m_iOriginalCapitalCaptureGreatPerson = 0;
 	int m_iReligionProductionModifier = 0;
 	bool m_bUpgradeAllTerritory = false;
+
+	int* m_piEraSettlerProductionModifier = nullptr;
+	int* m_piBuildSpeedModifier = nullptr;
+	int* m_piGreatPersonOutputModifierPerGWs = nullptr;
+	int* m_piMinorsTradeRouteYieldRate = nullptr;
+	int* m_piInternalTradeRouteDestYieldRate = nullptr;
+	int* m_piCityWithWorldWonderYieldModifier = nullptr;
+	int* m_piTradeRouteCityYieldModifier = nullptr;
+	int* m_piCityNumberCityYieldModifier = nullptr;
+	int* m_piYieldModifierPerArtifacts = nullptr;
+	int* m_piYieldPerPopChangeTimes100 = nullptr;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -995,6 +1019,7 @@ public:
 
 	// Accessor Functions (Arrays)
 	int GetPolicyBranchDisables(int i) const;
+	bool IsLockedByCivilization(int i) const;
 
 private:
 	int m_iEraPrereq;
@@ -1013,6 +1038,7 @@ private:
 	CvString m_wstrIdeologyIcon;
 	// Arrays
 	int* m_piPolicyBranchDisables;
+	std::tr1::unordered_set<int> m_setPolicyBranchCivilizationLocked;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

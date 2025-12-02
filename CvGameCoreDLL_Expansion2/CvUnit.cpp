@@ -12876,6 +12876,18 @@ int CvUnit::getGoldenAgeTurns() const
 		iGoldenAgeTurns /= 100;
 	}
 
+	GreatPersonTypes eGreatPerson = GetGreatPersonFromUnitClass(getUnitClassType());
+	int iPolicyGWsMod = 0;
+	if (eGreatPerson != NO_GREATPERSON)
+	{
+		iPolicyGWsMod += GET_PLAYER(getOwner()).GetGreatPersonOutputModifierPerGWs(eGreatPerson);
+	}
+	if (iPolicyGWsMod != 0)
+	{
+		iGoldenAgeTurns *= 100 + (iPolicyGWsMod * GET_PLAYER(getOwner()).GetCulture()->GetNumGreatWorks(false));
+		iGoldenAgeTurns /= 100;
+	}
+
 	// Game Speed mod
 	iGoldenAgeTurns = GC.getGame().goldenAgeLength(iGoldenAgeTurns);
 
@@ -15774,6 +15786,7 @@ int CvUnit::workRate(bool bMax, BuildTypes eBuild) const
 	if(eBuild != NO_BUILD)
 	{
 		if(GC.getBuildInfo(eBuild)->IsWater()) Modifiers += kPlayer.GetPlayerPolicies()->GetNumericModifier(POLICYMOD_WATER_BUILD_SPEED_MODIFIER);
+		Modifiers += kPlayer.GetBuildSpeedModifier(eBuild);
 	}
 
 	iRate *= Modifiers + 100;
