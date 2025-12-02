@@ -469,6 +469,17 @@ CvPolicyEntry::~CvPolicyEntry(void)
 	m_piUnitClassReplacements.clear();
 	CvDatabaseUtility::SafeDelete2DArray(m_ppiBuildingClassYieldModifiers);
 	CvDatabaseUtility::SafeDelete2DArray(m_ppiBuildingClassYieldChanges);
+
+	SAFE_DELETE_ARRAY(m_piEraSettlerProductionModifier);
+	SAFE_DELETE_ARRAY(m_piBuildSpeedModifier);
+	SAFE_DELETE_ARRAY(m_piGreatPersonOutputModifierPerGWs);
+	SAFE_DELETE_ARRAY(m_piMinorsTradeRouteYieldRate);
+	SAFE_DELETE_ARRAY(m_piInternalTradeRouteDestYieldRate);
+	SAFE_DELETE_ARRAY(m_piCityWithWorldWonderYieldModifier);
+	SAFE_DELETE_ARRAY(m_piTradeRouteCityYieldModifier);
+	SAFE_DELETE_ARRAY(m_piCityNumberCityYieldModifier);
+	SAFE_DELETE_ARRAY(m_piYieldModifierPerArtifacts);
+	SAFE_DELETE_ARRAY(m_piYieldPerPopChangeTimes100);
 }
 
 /// Read from XML file (pass 1)
@@ -1411,6 +1422,27 @@ bool CvPolicyEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility&
 
 		pResults->Reset();
 	}
+	{
+		m_vHappinessYieldModifier.clear();
+		std::string sqlKey = "Policy - m_vHappinessYieldModifier";
+		Database::Results* pResults = kUtility.GetResults(sqlKey);
+		if(pResults == NULL)
+		{
+			const char* szSQL = "select * from Policy_HappinessYieldModifier where PolicyType = ?";
+			pResults = kUtility.PrepareResults(sqlKey, szSQL);
+		}
+
+		pResults->Bind(1, szPolicyType, false);
+
+		while(pResults->Step())
+		{
+			PolicyYieldFormulaInfo p;
+			p.eYield = (YieldTypes)GC.getInfoTypeForString(pResults->GetText("YieldType"));
+			p.ePolicy = (PolicyTypes)GetID();
+			p.eLuaFormula = (LuaFormulaTypes)GC.getInfoTypeForString(pResults->GetText("YieldFormula"));
+			m_vHappinessYieldModifier.push_back(p);
+		}
+	}
 	m_eCaptureCityResistanceTurnsChangeFormula = static_cast<LuaFormulaTypes>(GC.getInfoTypeForString(kResults.GetText("CaptureCityResistanceTurnsChangeFormula")));
 	m_iCapitalTradeRouteGoldChange = kResults.GetInt("CapitalTradeRouteGoldChange");
 	m_iCapitalTradeRouteRangeChange = kResults.GetInt("CapitalTradeRouteRangeChange");
@@ -1450,6 +1482,16 @@ bool CvPolicyEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility&
 	m_iReligionProductionModifier = kResults.GetInt("ReligionProductionModifier");
 	m_bUpgradeAllTerritory = kResults.GetBool("UpgradeAllTerritory");
 
+	kUtility.PopulateArrayByValue(m_piEraSettlerProductionModifier, "Eras", "Policy_EraSettlerProductionModifier", "EraType", "PolicyType", szPolicyType, "Modifier");
+	kUtility.PopulateArrayByValue(m_piBuildSpeedModifier, "Builds", "Policy_BuildSpeedModifier", "BuildType", "PolicyType", szPolicyType, "Modifier");
+	kUtility.PopulateArrayByValue(m_piGreatPersonOutputModifierPerGWs, "GreatPersons", "Policy_GreatPersonOutputModifierPerGWs", "GreatPersonType", "PolicyType", szPolicyType, "Modifier");
+	kUtility.PopulateArrayByValue(m_piMinorsTradeRouteYieldRate, "Yields", "Policy_MinorsTradeRouteYieldRate", "YieldType", "PolicyType", szPolicyType, "Rate");
+	kUtility.PopulateArrayByValue(m_piInternalTradeRouteDestYieldRate, "Yields", "Policy_InternalTradeRouteDestYieldRate", "YieldType", "PolicyType", szPolicyType, "Rate");
+	kUtility.SetYields(m_piCityWithWorldWonderYieldModifier, "Policy_CityWithWorldWonderYieldModifier", "PolicyType", szPolicyType);
+	kUtility.SetYields(m_piTradeRouteCityYieldModifier, "Policy_TradeRouteCityYieldModifier", "PolicyType", szPolicyType);
+	kUtility.SetYields(m_piCityNumberCityYieldModifier, "Policy_CityNumberCityYieldModifier", "PolicyType", szPolicyType);
+	kUtility.SetYields(m_piYieldModifierPerArtifacts, "Policy_YieldModifierPerArtifacts", "PolicyType", szPolicyType);
+	kUtility.SetYields(m_piYieldPerPopChangeTimes100, "Policy_YieldPerPopChangesTimes100", "PolicyType", szPolicyType);
 	return true;
 }
 
@@ -3813,9 +3855,13 @@ int CvPolicyEntry::GetResourceCityConnectionTradeRouteGoldModifier() const
 	return m_iResourceCityConnectionTradeRouteGoldModifier;
 }
 #endif
-std::vector<PolicyResourceInfo>& CvPolicyEntry::GetCityResources()
+const std::vector<PolicyResourceInfo>& CvPolicyEntry::GetCityResources() const
 {
 	return m_vCityResources;
+}
+const std::vector<PolicyYieldFormulaInfo>& CvPolicyEntry::GetHappinessYieldModifier() const
+{
+	return m_vHappinessYieldModifier;
 }
 
 LuaFormulaTypes CvPolicyEntry::GetCaptureCityResistanceTurnsChangeFormula() const
@@ -3963,6 +4009,66 @@ bool CvPolicyEntry::IsUpgradeAllTerritory() const
 {
 	return m_bUpgradeAllTerritory;
 }
+int CvPolicyEntry::GetEraSettlerProductionModifier(int iEra) const
+{
+	PRECONDITION(iEra < GC.getNumEraInfos(), "Index out of bounds");
+	PRECONDITION(iEra > -1, "Index out of bounds");
+	return m_piEraSettlerProductionModifier ? m_piEraSettlerProductionModifier[iEra] : 0;
+}
+int CvPolicyEntry::GetBuildSpeedModifier(int iBuild) const
+{
+	PRECONDITION(iBuild < GC.getNumBuildInfos(), "Index out of bounds");
+	PRECONDITION(iBuild > -1, "Index out of bounds");
+	return m_piBuildSpeedModifier ? m_piBuildSpeedModifier[iBuild] : 0;
+}
+int CvPolicyEntry::GetGreatPersonOutputModifierPerGWs(int i) const
+{
+	PRECONDITION(i < GC.getNumGreatPersonInfos(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piGreatPersonOutputModifierPerGWs ? m_piGreatPersonOutputModifierPerGWs[i] : 0;
+}
+int CvPolicyEntry::GetMinorsTradeRouteYieldRate(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piMinorsTradeRouteYieldRate ? m_piMinorsTradeRouteYieldRate[i] : 0;
+}
+int CvPolicyEntry::GetInternalTradeRouteDestYieldRate(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piInternalTradeRouteDestYieldRate ? m_piInternalTradeRouteDestYieldRate[i] : 0;
+}
+int CvPolicyEntry::GetCityWithWorldWonderYieldModifier(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piCityWithWorldWonderYieldModifier ? m_piCityWithWorldWonderYieldModifier[i] : 0;
+}
+int CvPolicyEntry::GetTradeRouteCityYieldModifier(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piTradeRouteCityYieldModifier ? m_piTradeRouteCityYieldModifier[i] : 0;
+}
+int CvPolicyEntry::GetCityNumberCityYieldModifier(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piCityNumberCityYieldModifier ? m_piCityNumberCityYieldModifier[i] : 0;
+}
+int CvPolicyEntry::GetYieldModifierPerArtifacts(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piYieldModifierPerArtifacts ? m_piYieldModifierPerArtifacts[i] : 0;
+}
+int CvPolicyEntry::GetYieldPerPopChangeTimes100(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piYieldPerPopChangeTimes100 ? m_piYieldPerPopChangeTimes100[i] : 0;
+}
 
 //=====================================
 // CvPolicyBranchEntry
@@ -4041,6 +4147,7 @@ bool CvPolicyBranchEntry::CacheResults(Database::Results& kResults, CvDatabaseUt
 
 		pResults->Reset();
 	}
+	kUtility.PopulateArrayByExistence(m_setPolicyBranchCivilizationLocked, "Civilizations", "PolicyBranch_CivilizationLocked", "CivilizationType", "PolicyBranchType", szPolicyBranchType);
 
 	return true;
 }
@@ -4079,6 +4186,12 @@ int CvPolicyBranchEntry::GetSecondAdopterFreePolicies() const
 int CvPolicyBranchEntry::GetPolicyBranchDisables(int i) const
 {
 	return m_piPolicyBranchDisables ? m_piPolicyBranchDisables[i] : -1;
+}
+
+/// Policy Branches disabled for special Civilization
+bool CvPolicyBranchEntry::IsLockedByCivilization(int i) const
+{
+	return m_setPolicyBranchCivilizationLocked.size() > 0 && m_setPolicyBranchCivilizationLocked.count(i) > 0;
 }
 
 /// Are policies in this branch unlocked by buying lower-level prereq policies?
@@ -5358,6 +5471,11 @@ bool CvPlayerPolicies::CanUnlockPolicyBranch(PolicyBranchTypes eBranchType)
 	{
 		// Ideology branches unlocked through a direct call to SetPolicyBranchUnlocked()
 		if (pkBranchEntry->IsPurchaseByLevel())
+		{
+			return false;
+		}
+
+		if (pkBranchEntry->IsLockedByCivilization(GetPlayer()->getCivilizationType()))
 		{
 			return false;
 		}

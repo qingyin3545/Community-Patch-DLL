@@ -62,6 +62,18 @@ void InitializeArray(T*& pArray, const char* szTableName, T default_ = (T)0);
 	                              const char* szFilterColumn,
 	                              const char* szFilterValue);
 
+	bool PopulateArrayByExistence(std::tr1::unordered_set<int>& set, const char* szTypeTableName,
+	                              const char* szDataTableName,
+	                              const char* szTypeColumn,
+	                              const char* szFilterColumn,
+	                              const char* szFilterValue);
+
+	bool PopulateArrayByExistence(std::vector<int>& vector, const char* szTypeTableName,
+	                              const char* szDataTableName,
+	                              const char* szTypeColumn,
+	                              const char* szFilterColumn,
+	                              const char* szFilterValue);
+
 	bool PopulateVector(std::vector<int>& pVector, const char* szTypeTableName, const char* szDataTableName, const char* szTypeColumn, const char* szFilterColumn, const char* szFilterValue);
 
 	//!Allocates an array to Count(szTypeTableName) and initializes to 0
