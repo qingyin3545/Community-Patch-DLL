@@ -1756,6 +1756,13 @@ int CvPlayerTechs::GetResearchCost(TechTypes eTech) const
 	//apply the modifiers
 	iResearchCost = iResearchCost * (100 + iCityCountMod) / 100;
 
+	// some Building, UA may reduce the modifier.
+	if (m_pPlayer->isGoldenAge())
+	{
+		iResearchCost = iResearchCost * (m_pPlayer->GetResearchTotalCostModifierGoldenAge() + 100) / 100;
+	}
+	iResearchCost = iResearchCost * (m_pPlayer->GetResearchTotalCostModifier() + 100) / 100;
+
 	return iResearchCost;
 }
 
