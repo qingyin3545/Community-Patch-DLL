@@ -1693,6 +1693,20 @@ void CvPlayer::uninit()
 
 	m_iInstantResearchFromFriendlyGreatScientist = 0;
 
+	m_iResearchTotalCostModifierGoldenAge = 0;
+	m_iResearchTotalCostModifier = 0;
+	m_iTradeRouteSeaGoldBonusGlobal = 0;
+	m_iTradeRouteLandGoldBonusGlobal = 0;
+
+	m_iGlobalGrowthFoodNeededModifier = 0;
+
+	m_iGlobalProductionNeededUnitModifier = 0;
+	m_iGlobalProductionNeededBuildingModifier = 0;
+	m_iGlobalProductionNeededProjectModifier = 0;
+	m_iGlobalProductionNeededUnitMax = 0;
+	m_iGlobalProductionNeededBuildingMax = 0;
+	m_iGlobalProductionNeededProjectMax = 0;
+
 	m_sUUFromDualEmpire.clear();
 	m_sUBFromDualEmpire.clear();
 	m_sUIFromDualEmpire.clear();
@@ -15193,6 +15207,9 @@ int CvPlayer::getProductionNeeded(UnitTypes eUnit, bool bIgnoreDifficulty) const
 
 	iProductionNeeded += getUnitExtraCost(eUnitClass);
 
+	iProductionNeeded *= (100 + std::max(GetGlobalProductionNeededUnitMax(), GetGlobalProductionNeededUnitModifier()));
+	iProductionNeeded /= 100;
+
 	return std::max(1, iProductionNeeded);
 }
 
@@ -15376,6 +15393,9 @@ int CvPlayer::getProductionNeeded(BuildingTypes eTheBuilding) const
 	iProductionNeeded *= (100 + iProductionModifier);
 	iProductionNeeded /= 100;
 
+	iProductionNeeded *= (100 + std::max(GetGlobalProductionNeededBuildingMax(), GetGlobalProductionNeededBuildingModifier()));
+	iProductionNeeded /= 100;
+
 	return std::max(1, iProductionNeeded);
 }
 
@@ -15433,6 +15453,9 @@ int CvPlayer::getProductionNeeded(ProjectTypes eProject) const
 		iProductionNeeded *= std::max(0, GC.getGame().getHandicapInfo().getCityStateCreatePerEraModifier() * GC.getGame().getCurrentEra() + 100);
 		iProductionNeeded /= 100;
 	}
+
+	iProductionNeeded *= (100 + std::max(GetGlobalProductionNeededProjectMax(), GetGlobalProductionNeededProjectModifier()));
+	iProductionNeeded /= 100;
 
 	return std::max(1, iProductionNeeded);
 }
@@ -16008,6 +16031,20 @@ void CvPlayer::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst
 	}
 #endif
 	ChangeInstantResearchFromFriendlyGreatScientist(pBuildingInfo->GetInstantResearchFromFriendlyGreatScientist() * iChange);
+
+	ChangeResearchTotalCostModifierGoldenAge(pBuildingInfo->GetResearchTotalCostModifierGoldenAge() * iChange);
+	ChangeResearchTotalCostModifier(pBuildingInfo->GetResearchTotalCostModifier() * iChange);
+	ChangeTradeRouteSeaGoldBonusGlobal(pBuildingInfo->GetTradeRouteSeaGoldBonusGlobal() * iChange);
+	ChangeTradeRouteLandGoldBonusGlobal(pBuildingInfo->GetTradeRouteLandGoldBonusGlobal() * iChange);
+
+	ChangeGlobalGrowthFoodNeededModifier(pBuildingInfo->GetGlobalGrowthFoodNeededModifier() * iChange);
+
+	ChangeGlobalProductionNeededUnitModifier(pBuildingInfo->GetGlobalProductionNeededUnitModifier() * iChange);
+	ChangeGlobalProductionNeededBuildingModifier(pBuildingInfo->GetGlobalProductionNeededBuildingModifier() * iChange);
+	ChangeGlobalProductionNeededProjectModifier(pBuildingInfo->GetGlobalProductionNeededProjectModifier() * iChange);
+	ChangeGlobalProductionNeededUnitMax(pBuildingInfo->GetGlobalProductionNeededUnitMax() * iChange);
+	ChangeGlobalProductionNeededBuildingMax(pBuildingInfo->GetGlobalProductionNeededBuildingMax() * iChange);
+	ChangeGlobalProductionNeededProjectMax(pBuildingInfo->GetGlobalProductionNeededProjectMax() * iChange);
 	for(iI = 0; iI < NUM_YIELD_TYPES; iI++)
 	{
 		YieldTypes eYield = static_cast<YieldTypes>(iI);
@@ -44521,6 +44558,20 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 
 	visitor(player.m_iInstantResearchFromFriendlyGreatScientist);
 
+	visitor(player.m_iResearchTotalCostModifierGoldenAge);
+	visitor(player.m_iResearchTotalCostModifier);
+	visitor(player.m_iTradeRouteSeaGoldBonusGlobal);
+	visitor(player.m_iTradeRouteLandGoldBonusGlobal);
+
+	visitor(player.m_iGlobalGrowthFoodNeededModifier);
+
+	visitor(player.m_iGlobalProductionNeededUnitModifier);
+	visitor(player.m_iGlobalProductionNeededBuildingModifier);
+	visitor(player.m_iGlobalProductionNeededProjectModifier);
+	visitor(player.m_iGlobalProductionNeededUnitMax);
+	visitor(player.m_iGlobalProductionNeededBuildingMax);
+	visitor(player.m_iGlobalProductionNeededProjectMax);
+
 	visitor(player.m_sUUFromDualEmpire);
 	visitor(player.m_sUBFromDualEmpire);
 	visitor(player.m_sUIFromDualEmpire);
@@ -45170,6 +45221,9 @@ int CvPlayer::getGrowthThreshold(int iPopulation) const
 			iThreshold /= 100;
 		}
 	}
+
+	iThreshold *= GetGlobalGrowthFoodNeededModifier() + 100;
+	iThreshold /= 100;
 
 	return std::max(1, iThreshold);
 }
@@ -50643,6 +50697,106 @@ void CvPlayer::DoInstantResearchFromFriendlyGreatScientist(CvUnit* pUnit)
 		if (GetID() == this->GetID())
 			bHasBoostThisPlayer = true;
 	}
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetResearchTotalCostModifierGoldenAge() const
+{
+	return m_iResearchTotalCostModifierGoldenAge;
+}
+void CvPlayer::ChangeResearchTotalCostModifierGoldenAge(int iChange)
+{
+	m_iResearchTotalCostModifierGoldenAge += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetResearchTotalCostModifier() const
+{
+	return m_iResearchTotalCostModifier;
+}
+void CvPlayer::ChangeResearchTotalCostModifier(int iChange)
+{
+	m_iResearchTotalCostModifier += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetTradeRouteSeaGoldBonusGlobal() const
+{
+	return m_iTradeRouteSeaGoldBonusGlobal;
+}
+void CvPlayer::ChangeTradeRouteSeaGoldBonusGlobal(int iChange)
+{
+	m_iTradeRouteSeaGoldBonusGlobal += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetTradeRouteLandGoldBonusGlobal() const
+{
+	return m_iTradeRouteLandGoldBonusGlobal;
+}
+void CvPlayer::ChangeTradeRouteLandGoldBonusGlobal(int iChange)
+{
+	m_iTradeRouteLandGoldBonusGlobal += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetGlobalGrowthFoodNeededModifier() const
+{
+	return m_iGlobalGrowthFoodNeededModifier;
+}
+void CvPlayer::ChangeGlobalGrowthFoodNeededModifier(int iChange)
+{
+	m_iGlobalGrowthFoodNeededModifier += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetGlobalProductionNeededUnitModifier() const
+{
+	return m_iGlobalProductionNeededUnitModifier;
+}
+void CvPlayer::ChangeGlobalProductionNeededUnitModifier(int iChange)
+{
+	m_iGlobalProductionNeededUnitModifier += iChange;
+}
+int CvPlayer::GetGlobalProductionNeededBuildingModifier() const
+{
+	return m_iGlobalProductionNeededBuildingModifier;
+}
+void CvPlayer::ChangeGlobalProductionNeededBuildingModifier(int iChange)
+{
+	m_iGlobalProductionNeededBuildingModifier += iChange;
+}
+int CvPlayer::GetGlobalProductionNeededProjectModifier() const
+{
+	return m_iGlobalProductionNeededProjectModifier;
+}
+void CvPlayer::ChangeGlobalProductionNeededProjectModifier(int iChange)
+{
+	m_iGlobalProductionNeededProjectModifier += iChange;
+}
+int CvPlayer::GetGlobalProductionNeededUnitMax() const
+{
+	return GC.getMIN_PRODUCTION_NEEDED_MODIFIER_UNIT() + m_iGlobalProductionNeededUnitMax;
+}
+void CvPlayer::ChangeGlobalProductionNeededUnitMax(int iChange)
+{
+	m_iGlobalProductionNeededUnitMax += iChange;
+}
+int CvPlayer::GetGlobalProductionNeededBuildingMax() const
+{
+	return GC.getMIN_PRODUCTION_NEEDED_MODIFIER_BUILDING() + m_iGlobalProductionNeededBuildingMax;
+}
+void CvPlayer::ChangeGlobalProductionNeededBuildingMax(int iChange)
+{
+	m_iGlobalProductionNeededBuildingMax += iChange;
+}
+int CvPlayer::GetGlobalProductionNeededProjectMax() const
+{
+	return GC.getMIN_PRODUCTION_NEEDED_MODIFIER_PROJECT() + m_iGlobalProductionNeededProjectMax;
+}
+void CvPlayer::ChangeGlobalProductionNeededProjectMax(int iChange)
+{
+	m_iGlobalProductionNeededProjectMax += iChange;
 }
 
 //	--------------------------------------------------------------------------------

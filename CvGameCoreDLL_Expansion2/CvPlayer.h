@@ -3001,6 +3001,34 @@ public:
 	void ChangeInstantResearchFromFriendlyGreatScientist(int change);
 	void DoInstantResearchFromFriendlyGreatScientist(CvUnit* pUnit);
 
+	int GetResearchTotalCostModifierGoldenAge() const;
+	void ChangeResearchTotalCostModifierGoldenAge(int iChange);
+
+	int GetResearchTotalCostModifier() const;
+	void ChangeResearchTotalCostModifier(int iChange);
+
+	int GetTradeRouteSeaGoldBonusGlobal() const;
+	void ChangeTradeRouteSeaGoldBonusGlobal(int iChange);
+
+	int GetTradeRouteLandGoldBonusGlobal() const;
+	void ChangeTradeRouteLandGoldBonusGlobal(int iChange);
+
+	int GetGlobalGrowthFoodNeededModifier() const;
+	void ChangeGlobalGrowthFoodNeededModifier(int iChange);
+
+	int GetGlobalProductionNeededUnitModifier() const;
+	void ChangeGlobalProductionNeededUnitModifier(int iChange);
+	int GetGlobalProductionNeededBuildingModifier() const;
+	void ChangeGlobalProductionNeededBuildingModifier(int iChange);
+	int GetGlobalProductionNeededProjectModifier() const;
+	void ChangeGlobalProductionNeededProjectModifier(int iChange);
+	int GetGlobalProductionNeededUnitMax() const;
+	void ChangeGlobalProductionNeededUnitMax(int iChange);
+	int GetGlobalProductionNeededBuildingMax() const;
+	void ChangeGlobalProductionNeededBuildingMax(int iChange);
+	int GetGlobalProductionNeededProjectMax() const;
+	void ChangeGlobalProductionNeededProjectMax(int iChange);
+
 	static void GetUCTypesFromPlayer(const CvPlayer& player,
 		std::tr1::unordered_set<UnitTypes>* m_sUU,
 		std::tr1::unordered_set<BuildingTypes>* m_sUB,
@@ -3939,6 +3967,20 @@ protected:
 	int m_iRemoveOceanImpassableCivilian = 0;
 
 	int m_iInstantResearchFromFriendlyGreatScientist = 0;
+
+	int m_iResearchTotalCostModifierGoldenAge = 0;
+	int m_iResearchTotalCostModifier = 0;
+	int m_iTradeRouteSeaGoldBonusGlobal = 0;
+	int m_iTradeRouteLandGoldBonusGlobal = 0;
+
+	int m_iGlobalGrowthFoodNeededModifier = 0;
+
+	int m_iGlobalProductionNeededUnitModifier = 0;
+	int m_iGlobalProductionNeededBuildingModifier = 0;
+	int m_iGlobalProductionNeededProjectModifier = 0;
+	int m_iGlobalProductionNeededUnitMax = 0;
+	int m_iGlobalProductionNeededBuildingMax = 0;
+	int m_iGlobalProductionNeededProjectMax = 0;
 
 	std::tr1::unordered_set<UnitTypes> m_sUUFromDualEmpire;
 	std::tr1::unordered_set<BuildingTypes> m_sUBFromDualEmpire;
