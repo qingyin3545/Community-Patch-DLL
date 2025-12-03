@@ -1836,6 +1836,8 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 	m_aiYieldPercentOthersCityWithSpy.resize(NUM_YIELD_TYPES, 0);
 	m_aiTradeRouteFromTheCityYield.resize(NUM_YIELD_TYPES, 0);
 	m_aiTradeRouteFromTheCityYieldPerEra.resize(NUM_YIELD_TYPES, 0);
+	
+	m_iTradeRouteRiverBonusModifier = 0;
 	m_iForcedDamageValue = 0;
 	m_iChangeDamageValue = 0;
 
@@ -15232,6 +15234,7 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 			ChangeTradeRouteFromTheCityYield(eYield, pBuildingInfo->GetTradeRouteFromTheCityYield(eYield) * iChange);
 			ChangeTradeRouteFromTheCityYieldPerEra(eYield, pBuildingInfo->GetTradeRouteFromTheCityYieldPerEra(eYield) * iChange);
 		}
+		ChangeTradeRouteRiverBonusModifier(pBuildingInfo->GetTradeRouteRiverBonusModifier() * iChange);
 		changeForcedDamageValue(pBuildingInfo->GetForcedDamageValue()* iChange);
 		changeChangeDamageValue(pBuildingInfo->GetChangeDamageValue()* iChange);
 
@@ -32666,6 +32669,7 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 	visitor(city.m_aiYieldPercentOthersCityWithSpy);
 	visitor(city.m_aiTradeRouteFromTheCityYield);
 	visitor(city.m_aiTradeRouteFromTheCityYieldPerEra);
+	visitor(city.m_iTradeRouteRiverBonusModifier);
 	visitor(city.m_iForcedDamageValue);
 	visitor(city.m_iChangeDamageValue);
 }
@@ -36638,6 +36642,15 @@ int CvCity::GetYieldFromEspionageSpyTimes100(YieldTypes eYield) const
 }
 
 //	--------------------------------------------------------------------------------
+int CvCity::GetTradeRouteRiverBonusModifier() const
+{
+	return m_iTradeRouteRiverBonusModifier;
+}
+void CvCity::ChangeTradeRouteRiverBonusModifier(int iChange)
+{
+	m_iTradeRouteRiverBonusModifier += iChange;
+}
+
 //	--------------------------------------------------------------------------------
 int CvCity::getForcedDamageValue() const
 {
