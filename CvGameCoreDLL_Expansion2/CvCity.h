@@ -1917,6 +1917,9 @@ public:
 	int GetTradeRouteFromTheCityYieldPerEra(YieldTypes eYield) const;
 	void ChangeTradeRouteFromTheCityYieldPerEra(YieldTypes eYield, int iChange);
 
+	int GetTradeRouteRiverBonusModifier() const;
+	void ChangeTradeRouteRiverBonusModifier(int iChange);
+
 	int getForcedDamageValue()const;
 	void changeForcedDamageValue(int iChange);
 	int getChangeDamageValue()const;
@@ -2371,6 +2374,7 @@ private:
 	std::vector<int> m_aiTradeRouteFromTheCityYield;
 	std::vector<int> m_aiTradeRouteFromTheCityYieldPerEra;
 	
+	int m_iTradeRouteRiverBonusModifier = 0;
 	int m_iForcedDamageValue = 0;
 	int m_iChangeDamageValue = 0;
 };

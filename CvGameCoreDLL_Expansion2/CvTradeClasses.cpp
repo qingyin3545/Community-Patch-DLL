@@ -2856,10 +2856,12 @@ int CvPlayerTrade::GetTradeConnectionYourBuildingValueTimes100(const TradeConnec
 		if (kTradeConnection.m_eDomain == DOMAIN_SEA)
 		{
 			iBonus += pOriginCity->GetTradeRouteSeaGoldBonus();
+			iBonus += GET_PLAYER(kTradeConnection.m_eOriginOwner).GetTradeRouteLandGoldBonusGlobal();
 		}
 		else if (kTradeConnection.m_eDomain == DOMAIN_LAND)
 		{
 			iBonus += pOriginCity->GetTradeRouteLandGoldBonus();
+			iBonus += GET_PLAYER(kTradeConnection.m_eOriginOwner).GetTradeRouteSeaGoldBonusGlobal();
 		}
 	}
 
@@ -3220,6 +3222,8 @@ int CvPlayerTrade::GetTradeConnectionRiverValueModifierTimes100(const TradeConne
 				if (pOriginCityPlot->isRiver())
 				{
 					iModifier = /*25*/ GD_INT_GET(TRADE_ROUTE_RIVER_CITY_MODIFIER);
+					iModifier *= 100 + pOriginCity->GetTradeRouteRiverBonusModifier();
+					iModifier /= 100;
 				}
 			}
 		}
@@ -3233,6 +3237,8 @@ int CvPlayerTrade::GetTradeConnectionRiverValueModifierTimes100(const TradeConne
 				if (pDestCityPlot->isRiver())
 				{
 					iModifier = /*25*/ GD_INT_GET(TRADE_ROUTE_RIVER_CITY_MODIFIER);
+					iModifier *= 100 + pDestCity->GetTradeRouteRiverBonusModifier();
+					iModifier /= 100;
 				}
 			}
 		}
