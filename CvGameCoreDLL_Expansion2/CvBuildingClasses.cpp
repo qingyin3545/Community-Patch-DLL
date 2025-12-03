@@ -2075,6 +2075,21 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 
 	m_iInstantResearchFromFriendlyGreatScientist = kResults.GetInt("InstantResearchFromFriendlyGreatScientist");
 
+	m_iResearchTotalCostModifierGoldenAge = kResults.GetInt("ResearchTotalCostModifierGoldenAge");
+	m_iResearchTotalCostModifier = kResults.GetInt("ResearchTotalCostModifier");
+	m_iTradeRouteRiverBonusModifier = kResults.GetInt("TradeRouteRiverBonusModifier");
+	m_iTradeRouteSeaGoldBonusGlobal = kResults.GetInt("TradeRouteSeaGoldBonusGlobal");
+	m_iTradeRouteLandGoldBonusGlobal = kResults.GetInt("TradeRouteLandGoldBonusGlobal");
+
+	m_iGlobalGrowthFoodNeededModifier = kResults.GetInt("GlobalGrowthFoodNeededModifier");
+
+	m_iGlobalProductionNeededUnitModifier = kResults.GetInt("GlobalProductionNeededUnitModifier");
+	m_iGlobalProductionNeededBuildingModifier = kResults.GetInt("GlobalProductionNeededBuildingModifier");
+	m_iGlobalProductionNeededProjectModifier = kResults.GetInt("GlobalProductionNeededProjectModifier");
+	m_iGlobalProductionNeededUnitMax = kResults.GetInt("GlobalProductionNeededUnitMax");
+	m_iGlobalProductionNeededBuildingMax = kResults.GetInt("GlobalProductionNeededBuildingMax");
+	m_iGlobalProductionNeededProjectMax = kResults.GetInt("GlobalProductionNeededProjectMax");
+
 	m_iForcedDamageValue = kResults.GetInt("ResetDamageValue");
 	m_iChangeDamageValue = kResults.GetInt("ReduceDamageValue");
 
@@ -5423,6 +5438,54 @@ const std::vector<int>& CvBuildingEntry::GetEmpireResourceOr() const
 int CvBuildingEntry::GetInstantResearchFromFriendlyGreatScientist() const
 {
 	return m_iInstantResearchFromFriendlyGreatScientist;
+}
+int CvBuildingEntry::GetResearchTotalCostModifierGoldenAge() const
+{
+	return m_iResearchTotalCostModifierGoldenAge;
+}
+int CvBuildingEntry::GetResearchTotalCostModifier() const
+{
+	return m_iResearchTotalCostModifier;
+}
+int CvBuildingEntry::GetTradeRouteRiverBonusModifier() const
+{
+	return m_iTradeRouteRiverBonusModifier;
+}
+int CvBuildingEntry::GetTradeRouteSeaGoldBonusGlobal() const
+{
+	return m_iTradeRouteSeaGoldBonusGlobal;
+}
+int CvBuildingEntry::GetTradeRouteLandGoldBonusGlobal() const
+{
+	return m_iTradeRouteLandGoldBonusGlobal;
+}
+int CvBuildingEntry::GetGlobalGrowthFoodNeededModifier() const
+{
+	return m_iGlobalGrowthFoodNeededModifier;
+}
+int CvBuildingEntry::GetGlobalProductionNeededUnitModifier() const
+{
+	return m_iGlobalProductionNeededUnitModifier;
+}
+int CvBuildingEntry::GetGlobalProductionNeededBuildingModifier() const
+{
+	return m_iGlobalProductionNeededBuildingModifier;
+}
+int CvBuildingEntry::GetGlobalProductionNeededProjectModifier() const
+{
+	return m_iGlobalProductionNeededProjectModifier;
+}
+int CvBuildingEntry::GetGlobalProductionNeededUnitMax() const
+{
+	return m_iGlobalProductionNeededUnitMax;
+}
+int CvBuildingEntry::GetGlobalProductionNeededBuildingMax() const
+{
+	return m_iGlobalProductionNeededBuildingMax;
+}
+int CvBuildingEntry::GetGlobalProductionNeededProjectMax() const
+{
+	return m_iGlobalProductionNeededProjectMax;
 }
 int CvBuildingEntry::GetForcedDamageValue() const
 {

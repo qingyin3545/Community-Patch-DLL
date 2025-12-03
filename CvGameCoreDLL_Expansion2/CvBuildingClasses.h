@@ -762,6 +762,21 @@ public:
 
 	int GetInstantResearchFromFriendlyGreatScientist() const;
 
+	int GetResearchTotalCostModifierGoldenAge() const;
+	int GetResearchTotalCostModifier() const;
+	int GetTradeRouteRiverBonusModifier() const;
+	int GetTradeRouteSeaGoldBonusGlobal() const;
+	int GetTradeRouteLandGoldBonusGlobal() const;
+
+	int GetGlobalGrowthFoodNeededModifier() const;
+
+	int GetGlobalProductionNeededUnitModifier() const;
+	int GetGlobalProductionNeededBuildingModifier() const;
+	int GetGlobalProductionNeededProjectModifier() const;
+	int GetGlobalProductionNeededUnitMax() const;
+	int GetGlobalProductionNeededBuildingMax() const;
+	int GetGlobalProductionNeededProjectMax() const;
+
 	int GetForcedDamageValue() const;
 	int GetChangeDamageValue() const;
 
@@ -1254,6 +1269,21 @@ private:
 	std::vector<int> m_piEmpireResourceOrs;
 
 	int m_iInstantResearchFromFriendlyGreatScientist = 0;
+
+	int m_iResearchTotalCostModifierGoldenAge = 0;
+	int m_iResearchTotalCostModifier = 0;
+	int m_iTradeRouteRiverBonusModifier = 0;
+	int m_iTradeRouteSeaGoldBonusGlobal = 0;
+	int m_iTradeRouteLandGoldBonusGlobal = 0;
+
+	int m_iGlobalGrowthFoodNeededModifier = 0;
+
+	int m_iGlobalProductionNeededUnitModifier = 0;
+	int m_iGlobalProductionNeededBuildingModifier = 0;
+	int m_iGlobalProductionNeededProjectModifier = 0;
+	int m_iGlobalProductionNeededUnitMax = 0;
+	int m_iGlobalProductionNeededBuildingMax = 0;
+	int m_iGlobalProductionNeededProjectMax = 0;
 
 	int m_iForcedDamageValue = 0;
 	int m_iChangeDamageValue = 0;
