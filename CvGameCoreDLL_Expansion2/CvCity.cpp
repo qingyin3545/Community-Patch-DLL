@@ -1076,6 +1076,15 @@ void CvCity::init(int iID, PlayerTypes eOwner, int iX, int iY, bool bBumpUnits, 
 #ifdef MOD_GLOBAL_CORRUPTION
 	if (MOD_GLOBAL_CORRUPTION) UpdateCorruption();
 #endif
+	for (int iI = 0; iI < NUM_YIELD_TYPES; iI++)
+	{
+		YieldTypes eYield = (YieldTypes)iI;
+		for (int iJ = 0; iJ < GC.getNumSpecialistInfos(); iJ++)
+		{
+			SpecialistTypes eSpecialist = (SpecialistTypes)iJ;
+			ChangeSpecialistYieldModifier(eSpecialist, eYield, owningPlayer.GetSpecialistYieldModifier(eSpecialist, eYield));
+		}
+	}
 
 	owningPlayer.CalculateNetHappiness();
 
@@ -1831,6 +1840,19 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 	m_aiTradeRouteFromTheCityYieldPerEra.resize(NUM_YIELD_TYPES, 0);
 	
 	m_iTradeRouteRiverBonusModifier = 0;
+
+	m_aiCityStateTradeRouteYieldModifiers.resize(NUM_YIELD_TYPES, 0);
+	m_aiFeatureYieldModifiers.resize(NUM_YIELD_TYPES, 0);
+	m_aiImprovementYieldModifiers.resize(NUM_YIELD_TYPES, 0);
+	m_aiTerrainYieldModifiers.resize(NUM_YIELD_TYPES, 0);
+	m_aiSpecialistYieldModifiers.resize(NUM_YIELD_TYPES, 0);
+	m_aaiFeatureYieldModifiers.resize(GC.getNumFeatureInfos(), std::tr1::array<int, NUM_YIELD_TYPES>{});
+	m_aaiImprovementYieldModifiers.resize(GC.getNumImprovementInfos(), std::tr1::array<int, NUM_YIELD_TYPES>{});
+	m_aaiTerrainYieldModifiers.resize(GC.getNumTerrainInfos(), std::tr1::array<int, NUM_YIELD_TYPES>{});
+	m_aaiSpecialistYieldModifiers.resize(GC.getNumSpecialistInfos(), std::tr1::array<int, NUM_YIELD_TYPES>{});
+
+	m_aiYieldMultiplier.resize(NUM_YIELD_TYPES, 0);
+
 	m_iForcedDamageValue = 0;
 	m_iChangeDamageValue = 0;
 
@@ -15166,10 +15188,28 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 #endif
 		for(int iI = 0; iI < NUM_YIELD_TYPES; iI++)
 		{
-			YieldTypes eYield = (YieldTypes) iI;
+			YieldTypes eYield = (YieldTypes)iI;
 			ChangeYieldPercentOthersCityWithSpy(eYield, pBuildingInfo->GetYieldPercentOthersCityWithSpy(eYield)* iChange);
 			ChangeTradeRouteFromTheCityYield(eYield, pBuildingInfo->GetTradeRouteFromTheCityYield(eYield) * iChange);
 			ChangeTradeRouteFromTheCityYieldPerEra(eYield, pBuildingInfo->GetTradeRouteFromTheCityYieldPerEra(eYield) * iChange);
+			ChangeCityStateTradeRouteYieldModifiers(eYield, pBuildingInfo->GetCityStateTradeRouteYieldModifiers(eYield) * iChange);
+			for(int iJ = 0; iJ < GC.getNumFeatureInfos(); iJ++)
+			{
+				ChangeFeatureYieldModifier((FeatureTypes)iJ, eYield, pBuildingInfo->GetFeatureYieldModifiers((FeatureTypes)iJ, eYield) * iChange);
+			}
+			for (int iJ = 0; iJ < GC.getNumImprovementInfos(); iJ++)
+			{
+				ChangeImprovementYieldModifier((ImprovementTypes)iJ, eYield, pBuildingInfo->GetImprovementYieldModifiers(((ImprovementTypes)iJ), eYield) * iChange);
+			}
+			for(int iJ = 0; iJ < GC.getNumTerrainInfos(); iJ++)
+			{
+				ChangeTerrainYieldModifier((TerrainTypes)iJ, eYield, pBuildingInfo->GetTerrainYieldModifiers((TerrainTypes)iJ, eYield) * iChange);
+			}
+			for (int iJ = 0; iJ < GC.getNumSpecialistInfos(); iJ++)
+			{
+				ChangeSpecialistYieldModifier((SpecialistTypes)iJ, eYield, pBuildingInfo->GetSpecialistYieldModifiers((SpecialistTypes)iJ, eYield) * iChange);
+			}
+			ChangeYieldMultiplier(eYield, pBuildingInfo->GetYieldMultiplier(eYield) * iChange);
 		}
 		ChangeTradeRouteRiverBonusModifier(pBuildingInfo->GetTradeRouteRiverBonusModifier() * iChange);
 		changeForcedDamageValue(pBuildingInfo->GetForcedDamageValue()* iChange);
@@ -15251,7 +15291,7 @@ void CvCity::processProcess(ProcessTypes eProcess, int iChange)
 			iDifficultyMod += GET_PLAYER(getOwner()).isHuman(ISHUMAN_HANDICAP) ? 0 : GC.getGame().getHandicapInfo().getAIProcessBonus();
 			iDifficultyMod += GET_PLAYER(getOwner()).isHuman(ISHUMAN_HANDICAP) ? 0 : GC.getGame().getHandicapInfo().getAIProcessPerEraModifier() * GC.getGame().getCurrentEra();
 
-			changeProductionToYieldModifier((YieldTypes)iI, (pkProcessInfo->getProductionToYieldModifier(iI) + GetYieldFromProcessModifier((YieldTypes)iI) + iDifficultyMod) * iChange);
+			changeProductionToYieldModifier((YieldTypes)iI, (pkProcessInfo->getProductionToYieldModifier(iI) + GetYieldFromProcessModifier((YieldTypes)iI) + GET_PLAYER(getOwner()).GetYieldFromProcessModifier((YieldTypes)iI) + iDifficultyMod) * iChange);
 
 			UpdateCityYields((YieldTypes)iI);
 		}
@@ -15289,6 +15329,7 @@ void CvCity::processSpecialist(SpecialistTypes eSpecialist, int iChange, CvCity:
 	for (int iI = 0; iI < NUM_YIELD_TYPES; iI++)
 	{
 		ChangeBaseYieldRateFromSpecialists(((YieldTypes)iI), (pkSpecialist->getYieldChange(iI) * iChange));
+		ChangeSpecialistYieldModifiers(((YieldTypes)iI), GetSpecialistYieldModifier(eSpecialist, ((YieldTypes)iI)));
 	}
 	updateExtraSpecialistYield();
 	changeSpecialistFreeExperience(pkSpecialist->getExperience() * iChange);
@@ -17940,6 +17981,7 @@ void CvCity::ChangeNumTerrainWorked(TerrainTypes eTerrain, int iChange)
 
 		UpdateYieldPerXTerrain(((YieldTypes)iI), eTerrain);
 		UpdateYieldPerXTerrainFromReligion(((YieldTypes)iI), eTerrain);
+		ChangeTerrainYieldModifiers(((YieldTypes)iI), GetTerrainYieldModifier(eTerrain, ((YieldTypes)iI)) * iChange);
 	}
 }
 
@@ -17991,6 +18033,7 @@ void CvCity::ChangeNumFeatureWorked(FeatureTypes eFeature, int iChange)
 			break;
 
 		UpdateYieldPerXFeature(((YieldTypes)iI), eFeature);
+		ChangeFeatureYieldModifiers(((YieldTypes)iI), GetFeatureYieldModifier(eFeature, ((YieldTypes)iI)) * iChange);
 	}
 }
 //	--------------------------------------------------------------------------------
@@ -18007,6 +18050,12 @@ void CvCity::ChangeNumImprovementWorked(ImprovementTypes eImprovement, int iChan
 	PRECONDITION(eImprovement < GC.getNumImprovementInfos(), "eImprovement is expected to be within maximum bounds (invalid Index)");
 	m_paiNumImprovementWorked[eImprovement] = m_paiNumImprovementWorked[eImprovement] + iChange;
 	ASSERT(GetNumImprovementWorked(eImprovement) >= 0);
+
+	for (int iI = 0; iI < NUM_YIELD_TYPES; iI++)
+	{
+		YieldTypes eYield = static_cast<YieldTypes>(iI);
+		ChangeImprovementYieldModifiers(eYield, GetImprovementYieldModifier(eImprovement, eYield) * iChange);
+	}
 }
 // All improvements controlled by city (including city override plots)
 //	--------------------------------------------------------------------------------
@@ -20897,7 +20946,7 @@ int CvCity::GetNeedModifierForYield(YieldTypes eYield) const
 		CvProcessInfo* pkProcessInfo = GC.getProcessInfo(getProductionProcess());
 		if (pkProcessInfo)
 		{
-			iModifier += (pkProcessInfo->getProductionToYieldModifier(eYield) + GetYieldFromProcessModifier(eYield)) * -1;
+			iModifier += (pkProcessInfo->getProductionToYieldModifier(eYield) + GetYieldFromProcessModifier(eYield) + kPlayer.GetYieldFromProcessModifier(eYield)) * -1;
 		}
 	}
 
@@ -20962,7 +21011,7 @@ int CvCity::GetCityNeedModifierForYield(YieldTypes eYield) const
 		CvProcessInfo* pkProcessInfo = GC.getProcessInfo(getProductionProcess());
 		if (pkProcessInfo)
 		{
-			iModifier += (pkProcessInfo->getProductionToYieldModifier(eYield) + GetYieldFromProcessModifier(eYield)) * -1;
+			iModifier += (pkProcessInfo->getProductionToYieldModifier(eYield) + GetYieldFromProcessModifier(eYield) + kPlayer.GetYieldFromProcessModifier(eYield)) * -1;
 		}
 	}
 
@@ -21428,11 +21477,11 @@ CvString CvCity::GetCityUnhappinessBreakdown(bool bIncludeMedian, bool bCityBann
 			CvProcessInfo* pkProcessInfo = GC.getProcessInfo(getProductionProcess());
 			if (pkProcessInfo)
 			{
-				iFarmingModifier = (pkProcessInfo->getProductionToYieldModifier(YIELD_FOOD) + GetYieldFromProcessModifier(YIELD_FOOD)) * -1;
-				iWealthModifier = (pkProcessInfo->getProductionToYieldModifier(YIELD_GOLD) + GetYieldFromProcessModifier(YIELD_GOLD)) * -1;
-				iResearchModifier = (pkProcessInfo->getProductionToYieldModifier(YIELD_SCIENCE) + GetYieldFromProcessModifier(YIELD_SCIENCE)) * -1;
-				iArtsModifier = (pkProcessInfo->getProductionToYieldModifier(YIELD_CULTURE) + GetYieldFromProcessModifier(YIELD_CULTURE)) * -1;
-				iPrayerModifier = (pkProcessInfo->getProductionToYieldModifier(YIELD_FAITH) + GetYieldFromProcessModifier(YIELD_FAITH)) * -1;
+				iFarmingModifier = (pkProcessInfo->getProductionToYieldModifier(YIELD_FOOD) + GetYieldFromProcessModifier(YIELD_FOOD) + kPlayer.GetYieldFromProcessModifier(YIELD_FOOD)) * -1;
+				iWealthModifier = (pkProcessInfo->getProductionToYieldModifier(YIELD_GOLD) + GetYieldFromProcessModifier(YIELD_GOLD) + kPlayer.GetYieldFromProcessModifier(YIELD_GOLD)) * -1;
+				iResearchModifier = (pkProcessInfo->getProductionToYieldModifier(YIELD_SCIENCE) + GetYieldFromProcessModifier(YIELD_SCIENCE) + kPlayer.GetYieldFromProcessModifier(YIELD_SCIENCE)) * -1;
+				iArtsModifier = (pkProcessInfo->getProductionToYieldModifier(YIELD_CULTURE) + GetYieldFromProcessModifier(YIELD_CULTURE) + kPlayer.GetYieldFromProcessModifier(YIELD_CULTURE)) * -1;
+				iPrayerModifier = (pkProcessInfo->getProductionToYieldModifier(YIELD_FAITH) + GetYieldFromProcessModifier(YIELD_FAITH) + kPlayer.GetYieldFromProcessModifier(YIELD_FAITH)) * -1;
 			}
 		}
 
@@ -23237,31 +23286,64 @@ int CvCity::getBaseYieldRateModifier(YieldTypes eIndex, int iAssumedExtraModifie
 	iTempMod = owner.GetCityWithWorldWonderYieldModifier(eIndex);
 	if (iTempMod != 0 && getNumWorldWonders() > 0)
 	{
-		iModifier += iTempMod * owner.getNumCities();
+		iModifier += iTempMod;
 		if (toolTipSink)
 			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_LOCAL_CITY_WONDER", iTempMod);
 	}
 	iTempMod = owner.GetTradeRouteCityYieldModifier(eIndex);
 	if (iTempMod != 0)
 	{
-		iModifier += iTempMod * owner.GetTrade()->GetNumTradeUnits(false);
+		iTempMod *= owner.GetTrade()->GetNumTradeUnits(false);
+		iModifier += iTempMod;
 		if (toolTipSink)
 			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_POLICY_TRADE_ROUTE_NUM", iTempMod);
 	}
 	iTempMod = owner.GetCityNumberCityYieldModifier(eIndex);
 	if (iTempMod != 0)
 	{
-		iModifier += iTempMod * owner.getNumCities();
+		iTempMod *= owner.getNumCities();
+		iModifier += iTempMod;
 		if (toolTipSink)
 			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_POLICY_CITY_NUMBER", iTempMod);
 	}
 	iTempMod = owner.GetYieldModifierPerArtifacts(eIndex);
 	if (iTempMod != 0)
 	{
-		iModifier += iTempMod * owner.GetCulture()->GetNumGreatWorks(true, false);
+		iTempMod *= owner.GetCulture()->GetNumGreatWorks(true, false);
+		iModifier += iTempMod;
 		if (toolTipSink)
 			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_NUM_ARTIFACT", iTempMod);
 	}
+	// Yield Modifier from City States
+	iTempMod = GetCityStateTradeRouteYieldModifiers(eIndex);	
+	iModifier += iTempMod;
+	if(toolTipSink)
+		GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_MINOR_TRADE_LOCAL", iTempMod);
+	// Yield Modifier Global from City States
+	iTempMod = owner.GetCityStateTradeRouteYieldModifiers(eIndex);
+	iModifier += iTempMod;
+	if(toolTipSink)
+		GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_MINOR_TRADE_GLOBAL", iTempMod);
+	// Feature Yield Modifier
+	iTempMod = GetFeatureYieldModifiers(eIndex);
+	iModifier += iTempMod;
+	if (toolTipSink)
+		GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_FEATURES", iTempMod);
+	// Terrain Yield Modifier
+	iTempMod = GetTerrainYieldModifiers(eIndex);
+	iModifier += iTempMod;
+	if (toolTipSink)
+		GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_TERRAINS", iTempMod);
+	// Improvement Yield Modifier
+	iTempMod = GetImprovementYieldModifiers(eIndex);
+	iModifier += iTempMod;
+	if (toolTipSink)
+		GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_IMPROVEMENTS", iTempMod);
+	// Specialist Yield Modifier
+	iTempMod = GetSpecialistYieldModifiers(eIndex);
+	iModifier += iTempMod;
+	if (toolTipSink)
+		GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_SPECIALIST", iTempMod);
 
 	// Puppet
 	if (IsPuppet())
@@ -23370,6 +23452,15 @@ int CvCity::getBaseYieldRateModifier(YieldTypes eIndex, int iAssumedExtraModifie
 	// only used for internal calculations, so it doesn't need a tooltip
 	iModifier += iAssumedExtraModifier;
 
+	// Yield Multiplier
+	iTempMod = GetYieldMultiplier(eIndex);
+	if(iTempMod != 0)
+	{	
+		iModifier *= (iTempMod + 100);
+		iModifier /= 100;
+		if(iTempMod != 0 && toolTipSink)
+			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_MULTIPLIER_YIELD", iTempMod);
+	}
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	// Yield Modifier from Nuclear Winter
 	iTempMod = 0;
@@ -32604,6 +32695,16 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 	visitor(city.m_aiTradeRouteFromTheCityYield);
 	visitor(city.m_aiTradeRouteFromTheCityYieldPerEra);
 	visitor(city.m_iTradeRouteRiverBonusModifier);
+	visitor(city.m_aiCityStateTradeRouteYieldModifiers);
+	visitor(city.m_aiFeatureYieldModifiers);
+	visitor(city.m_aiImprovementYieldModifiers);
+	visitor(city.m_aiTerrainYieldModifiers);
+	visitor(city.m_aiSpecialistYieldModifiers);
+	visitor(city.m_aaiFeatureYieldModifiers);
+	visitor(city.m_aaiImprovementYieldModifiers);
+	visitor(city.m_aaiTerrainYieldModifiers);
+	visitor(city.m_aaiSpecialistYieldModifiers);
+	visitor(city.m_aiYieldMultiplier);
 	visitor(city.m_iForcedDamageValue);
 	visitor(city.m_iChangeDamageValue);
 }
@@ -36583,6 +36684,214 @@ int CvCity::GetTradeRouteRiverBonusModifier() const
 void CvCity::ChangeTradeRouteRiverBonusModifier(int iChange)
 {
 	m_iTradeRouteRiverBonusModifier += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetCityStateTradeRouteYieldModifiers(YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	if(m_aiCityStateTradeRouteYieldModifiers[eYield] != 0)
+	{
+		return m_aiCityStateTradeRouteYieldModifiers[eYield] * GET_PLAYER(m_eOwner).GetTrade()->GetNumberOfCityStateTradeRoutes();
+	}
+	return 0;
+}
+void CvCity::ChangeCityStateTradeRouteYieldModifiers(YieldTypes eYield, int iChange)
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	m_aiCityStateTradeRouteYieldModifiers[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetFeatureYieldModifiers(YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	return m_aiFeatureYieldModifiers[eYield];
+}
+void CvCity::ChangeFeatureYieldModifiers(YieldTypes eYield, int iChange)
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	m_aiFeatureYieldModifiers[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetImprovementYieldModifiers(YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	return m_aiImprovementYieldModifiers[eYield];
+}
+void CvCity::ChangeImprovementYieldModifiers(YieldTypes eYield, int iChange)
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	m_aiImprovementYieldModifiers[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetTerrainYieldModifiers(YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	return m_aiTerrainYieldModifiers[eYield];
+}
+void CvCity::ChangeTerrainYieldModifiers(YieldTypes eYield, int iChange)
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	m_aiTerrainYieldModifiers[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetSpecialistYieldModifiers(YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	return m_aiSpecialistYieldModifiers[eYield];
+}
+void CvCity::ChangeSpecialistYieldModifiers(YieldTypes eYield, int iChange)
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	m_aiSpecialistYieldModifiers[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetFeatureYieldModifier(FeatureTypes eFeature, YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eFeature >= 0, "eFeature expected to be >= 0");
+	PRECONDITION(eFeature < GC.getNumFeatureInfos(), "eFeature expected to be < GC.getNumFeatureInfos()");
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	return m_aaiFeatureYieldModifiers[eFeature][eYield];
+}
+void CvCity::ChangeFeatureYieldModifier(FeatureTypes eFeature, YieldTypes eYield, int iChange)
+{
+	VALIDATE_OBJECT();
+	if (iChange == 0) return;
+	PRECONDITION(eFeature >= 0, "eFeature expected to be >= 0");
+	PRECONDITION(eFeature < GC.getNumFeatureInfos(), "eFeature expected to be < GC.getNumFeatureInfos()");
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	m_aaiFeatureYieldModifiers[eFeature][eYield] += iChange;
+	ChangeFeatureYieldModifiers(eYield, iChange * GetNumFeatureWorked(eFeature));
+}
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetImprovementYieldModifier(ImprovementTypes eImprovement, YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eImprovement >= 0, "eImprovement expected to be >= 0");
+	PRECONDITION(eImprovement < GC.getNumImprovementInfos(), "eImprovement expected to be < GC.getNumImprovementInfos()");
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	return m_aaiImprovementYieldModifiers[eImprovement][eYield];
+}
+void CvCity::ChangeImprovementYieldModifier(ImprovementTypes eImprovement, YieldTypes eYield, int iChange)
+{
+	VALIDATE_OBJECT();
+	if (iChange == 0) return;
+	PRECONDITION(eImprovement >= 0, "eImprovement expected to be >= 0");
+	PRECONDITION(eImprovement < GC.getNumImprovementInfos(), "eImprovement expected to be < GC.getNumImprovementInfos()");
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	m_aaiImprovementYieldModifiers[eImprovement][eYield] += iChange;
+	ChangeImprovementYieldModifiers(eYield, iChange * GetNumImprovementWorked(eImprovement));
+}
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetTerrainYieldModifier(TerrainTypes eTerrain, YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eTerrain >= 0, "eTerrain expected to be >= 0");
+	PRECONDITION(eTerrain < GC.getNumTerrainInfos(), "eTerrain expected to be < GC.getNumTerrainInfos()");
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	return m_aaiTerrainYieldModifiers[eTerrain][eYield];
+}
+void CvCity::ChangeTerrainYieldModifier(TerrainTypes eTerrain, YieldTypes eYield, int iChange)
+{
+	VALIDATE_OBJECT();
+	if (iChange == 0) return;
+	PRECONDITION(eTerrain >= 0, "eTerrain expected to be >= 0");
+	PRECONDITION(eTerrain < GC.getNumTerrainInfos(), "eTerrain expected to be < GC.getNumTerrainInfos()");
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	m_aaiTerrainYieldModifiers[eTerrain][eYield] += iChange;
+	ChangeTerrainYieldModifiers(eYield, iChange * GetNumTerrainWorked(eTerrain));
+}
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetSpecialistYieldModifier(SpecialistTypes eSpecialist, YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eSpecialist >= 0, "eSpecialist expected to be >= 0");
+	PRECONDITION(eSpecialist < GC.getNumSpecialistInfos(), "eSpecialist expected to be < GC.getNumSpecialistInfos()");
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	return m_aaiSpecialistYieldModifiers[eSpecialist][eYield];
+}
+void CvCity::ChangeSpecialistYieldModifier(SpecialistTypes eSpecialist, YieldTypes eYield, int iChange)
+{
+	VALIDATE_OBJECT();
+	if (iChange == 0) return;
+	PRECONDITION(eSpecialist >= 0, "eSpecialist expected to be >= 0");
+	PRECONDITION(eSpecialist < GC.getNumSpecialistInfos(), "eSpecialist expected to be < GC.getNumSpecialistInfos()");
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	m_aaiSpecialistYieldModifiers[eSpecialist][eYield] += iChange;
+	ChangeSpecialistYieldModifiers(eYield, iChange * GetCityCitizens()->GetSpecialistCount(eSpecialist));
+}
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetYieldMultiplier(YieldTypes eYield) const
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	return m_aiYieldMultiplier[eYield];
+}
+void CvCity::ChangeYieldMultiplier(YieldTypes eYield, int iChange)
+{
+	VALIDATE_OBJECT();
+	PRECONDITION(eYield >= 0, "eIndex expected to be >= 0");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
+
+	m_aiYieldMultiplier[eYield] += iChange;
 }
 
 //	--------------------------------------------------------------------------------

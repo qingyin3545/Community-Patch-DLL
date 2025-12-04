@@ -4176,6 +4176,10 @@ int CityStrategyAIHelpers::GetBuildingYieldValue(CvCity *pCity, BuildingTypes eB
 	{
 		iModifier += (pkBuildingInfo->GetYieldFromProcessModifier(eYield) * 2);
 	}
+	if (pkBuildingInfo->GetYieldFromProcessModifierGlobal(eYield) > 0)
+	{
+		iModifier += (pkBuildingInfo->GetYieldFromProcessModifierGlobal(eYield) * 4);
+	}
 
 	if (pkBuildingInfo->GetYieldModifierEraScaling(eYield) > 0)
 	{

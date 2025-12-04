@@ -1688,6 +1688,10 @@ void CvPlayer::uninit()
 
 	m_aiRiverPlotYield.clear();
 
+	m_aiCityStateTradeRouteYieldModifiers.clear();
+	m_aiYieldFromProcessModifier.clear();
+	m_aaiSpecialistYieldModifiers.clear();
+
 	m_iRemoveOceanImpassableCombatUnit = 0;
 	m_iRemoveOceanImpassableCivilian = 0;
 
@@ -2358,6 +2362,12 @@ void CvPlayer::reset(PlayerTypes eID, bool bConstructorCall)
 
 		m_aiRiverPlotYield.clear();
 		m_aiRiverPlotYield.resize(NUM_YIELD_TYPES, 0);
+		m_aiCityStateTradeRouteYieldModifiers.clear();
+		m_aiCityStateTradeRouteYieldModifiers.resize(NUM_YIELD_TYPES, 0);
+		m_aiYieldFromProcessModifier.clear();
+		m_aiYieldFromProcessModifier.resize(NUM_YIELD_TYPES, 0);
+		m_aaiSpecialistYieldModifiers.clear();
+		m_aaiSpecialistYieldModifiers.resize(GC.getNumSpecialistInfos(), std::tr1::array<int, NUM_YIELD_TYPES>{});
 
 		AI_reset();
 	}
@@ -16058,6 +16068,13 @@ void CvPlayer::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst
 		{
 			TerrainTypes eTerrain = static_cast<TerrainTypes>(iJ);
 			changeTerrainYieldChange(eTerrain, eYield, (pBuildingInfo->GetTerrainYieldChangesGlobal(eTerrain, eYield) * iChange));
+		}
+		ChangeCityStateTradeRouteYieldModifiers(eYield, (pBuildingInfo->GetCityStateTradeRouteYieldModifiersGlobal(iI) * iChange));
+		ChangeCityWithWorldWonderYieldModifier(eYield, (pBuildingInfo->GetCityWithWorldWonderYieldModifierGlobal(iI) * iChange));
+		ChangeYieldFromProcessModifier(eYield, (pBuildingInfo->GetYieldFromProcessModifierGlobal(iI) * iChange));
+		for (int iJ = 0; iJ < GC.getNumSpecialistInfos(); iJ++)
+		{
+			ChangeSpecialistYieldModifier((SpecialistTypes)iJ, eYield, pBuildingInfo->GetSpecialistYieldModifiersGlobal((SpecialistTypes)iJ, eYield) * iChange);
 		}
 	}
 
@@ -44553,6 +44570,10 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 
 	visitor(player.m_aiRiverPlotYield);
 
+	visitor(player.m_aiCityStateTradeRouteYieldModifiers);
+	visitor(player.m_aiYieldFromProcessModifier);
+	visitor(player.m_aaiSpecialistYieldModifiers);
+
 	visitor(player.m_iRemoveOceanImpassableCombatUnit);
 	visitor(player.m_iRemoveOceanImpassableCivilian);
 
@@ -50616,6 +50637,46 @@ int CvPlayer::GetRiverPlotYield(YieldTypes eYield) const
 void CvPlayer::ChangeRiverPlotYield(YieldTypes eYield, int iChange)
 {
 	m_aiRiverPlotYield[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetCityStateTradeRouteYieldModifiers(YieldTypes eYield) const
+{
+	if(m_aiCityStateTradeRouteYieldModifiers[eYield] != 0)
+	{
+		return m_aiCityStateTradeRouteYieldModifiers[eYield] * GetTrade()->GetNumberOfCityStateTradeRoutes();
+	}
+	return 0;
+}
+void CvPlayer::ChangeCityStateTradeRouteYieldModifiers(YieldTypes eYield, int iChange)
+{
+	m_aiCityStateTradeRouteYieldModifiers[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetYieldFromProcessModifier(YieldTypes eYield) const
+{
+	return m_aiYieldFromProcessModifier[eYield];
+}
+void CvPlayer::ChangeYieldFromProcessModifier(YieldTypes eYield, int iChange)
+{
+	m_aiYieldFromProcessModifier[eYield] += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetSpecialistYieldModifier(SpecialistTypes eSpecialist, YieldTypes eYield) const
+{
+	return m_aaiSpecialistYieldModifiers[eSpecialist][eYield];
+}
+void CvPlayer::ChangeSpecialistYieldModifier(SpecialistTypes eSpecialist, YieldTypes eYield, int iChange)
+{
+	if (iChange == 0) return;
+	m_aaiSpecialistYieldModifiers[eSpecialist][eYield] += iChange;
+	int iLoop = 0;
+	for (CvCity* pLoopCity = firstCity(&iLoop); pLoopCity != nullptr; pLoopCity = nextCity(&iLoop))
+	{
+		pLoopCity->ChangeSpecialistYieldModifier(eSpecialist, eYield, iChange);
+	}
 }
 
 //	--------------------------------------------------------------------------------
