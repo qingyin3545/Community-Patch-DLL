@@ -2989,6 +2989,15 @@ public:
 	int GetRiverPlotYield(YieldTypes eYield) const;
 	void ChangeRiverPlotYield(YieldTypes eYield, int iChange);
 
+	int GetCityStateTradeRouteYieldModifiers(YieldTypes eYield) const;
+	void ChangeCityStateTradeRouteYieldModifiers(YieldTypes eYield, int iChange);
+
+	int GetYieldFromProcessModifier(YieldTypes eYield) const;
+	void ChangeYieldFromProcessModifier(YieldTypes eYield, int iChange);
+
+	int GetSpecialistYieldModifier(SpecialistTypes eSpecialist, YieldTypes eYield) const;
+	void ChangeSpecialistYieldModifier(SpecialistTypes eSpecialist, YieldTypes eYield, int iChange);
+
 	bool IsRemoveOceanImpassableCombatUnit() const;
 	void ChangeRemoveOceanImpassableCombatUnit(int iChange);
 	bool IsRemoveOceanImpassableCivilian() const;
@@ -3958,6 +3967,10 @@ protected:
 	std::vector<int> m_paiYieldPerPopChangeTimes100;
 
 	std::vector<int> m_aiRiverPlotYield;
+
+	std::vector<int> m_aiCityStateTradeRouteYieldModifiers;
+	std::vector<int> m_aiYieldFromProcessModifier;
+	std::vector<std::tr1::array<int, NUM_YIELD_TYPES>> m_aaiSpecialistYieldModifiers;
 
 	int m_iRemoveOceanImpassableCombatUnit = 0;
 	int m_iRemoveOceanImpassableCivilian = 0;

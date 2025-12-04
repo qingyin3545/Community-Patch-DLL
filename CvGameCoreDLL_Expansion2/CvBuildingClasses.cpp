@@ -586,6 +586,18 @@ CvBuildingEntry::~CvBuildingEntry(void)
 	SAFE_DELETE_ARRAY(m_piRiverPlotYieldChangeGlobal);
 	CvDatabaseUtility::SafeDelete2DArray(m_ppiFeatureYieldChangesGlobal);
 	CvDatabaseUtility::SafeDelete2DArray(m_ppiTerrainYieldChangesGlobal);
+
+	SAFE_DELETE_ARRAY(m_piCityStateTradeRouteYieldModifiers);
+	SAFE_DELETE_ARRAY(m_piCityStateTradeRouteYieldModifiersGlobal);
+	SAFE_DELETE_ARRAY(m_piCityWithWorldWonderYieldModifierGlobal);
+	CvDatabaseUtility::SafeDelete2DArray(m_ppiFeatureYieldModifiers);
+	CvDatabaseUtility::SafeDelete2DArray(m_ppiImprovementYieldModifiers);
+	CvDatabaseUtility::SafeDelete2DArray(m_ppiTerrainYieldModifiers);
+	CvDatabaseUtility::SafeDelete2DArray(m_ppiSpecialistYieldModifiers);
+	CvDatabaseUtility::SafeDelete2DArray(m_ppiSpecialistYieldModifiersGlobal);
+
+	SAFE_DELETE_ARRAY(m_piYieldFromProcessModifierGlobal);
+	SAFE_DELETE_ARRAY(m_piYieldMultiplier);
 }
 
 /// Read from XML file
@@ -2059,6 +2071,124 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 		}
 	}
 
+	kUtility.SetYields(m_piCityStateTradeRouteYieldModifiers, "Building_CityStateTradeRouteYieldModifiers", "BuildingType", szBuildingType);
+	kUtility.SetYields(m_piCityStateTradeRouteYieldModifiersGlobal, "Building_CityStateTradeRouteYieldModifiersGlobal", "BuildingType", szBuildingType);
+	kUtility.SetYields(m_piCityWithWorldWonderYieldModifierGlobal, "Building_CityWithWorldWonderYieldModifierGlobal", "BuildingType", szBuildingType);
+	//FeatureYieldModifiers
+	{
+		kUtility.Initialize2DArray(m_ppiFeatureYieldModifiers, "Features", "Yields");
+
+		std::string strKey("Building_FeatureYieldModifiers");
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if (pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select Features.ID as FeatureID, Yields.ID as YieldID, Yield from Building_FeatureYieldModifiers inner join Features on Features.Type = FeatureType inner join Yields on Yields.Type = YieldType where BuildingType = ?");
+		}
+
+		pResults->Bind(1, szBuildingType);
+
+		while (pResults->Step())
+		{
+			const int FeatureID = pResults->GetInt(0);
+			const int YieldID = pResults->GetInt(1);
+			const int yield = pResults->GetInt(2);
+
+			m_ppiFeatureYieldModifiers[FeatureID][YieldID] = yield;
+		}
+	}
+	//ImprovementYieldModifiers
+	{
+		kUtility.Initialize2DArray(m_ppiImprovementYieldModifiers, "Improvements", "Yields");
+
+		std::string strKey("Building_ImprovementYieldModifiers");
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if (pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select Improvements.ID as ImprovementID, Yields.ID as YieldID, Yield from Building_ImprovementYieldModifiers inner join Improvements on Improvements.Type = ImprovementType inner join Yields on Yields.Type = YieldType where BuildingType = ?");
+		}
+
+		pResults->Bind(1, szBuildingType);
+
+		while (pResults->Step())
+		{
+			const int ImprovementID = pResults->GetInt(0);
+			const int YieldID = pResults->GetInt(1);
+			const int yield = pResults->GetInt(2);
+
+			m_ppiImprovementYieldModifiers[ImprovementID][YieldID] = yield;
+		}
+	}
+	//TerrainYieldModier
+	{
+		kUtility.Initialize2DArray(m_ppiTerrainYieldModifiers, "Terrains", "Yields");
+
+		std::string strKey("Building_TerrainYieldModifier");
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if (pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select Terrains.ID as TerrainID, Yields.ID as YieldID, Yield from Building_TerrainYieldModifier inner join Terrains on Terrains.Type = TerrainType inner join Yields on Yields.Type = YieldType where BuildingType = ?");
+		}
+
+		pResults->Bind(1, szBuildingType);
+
+		while (pResults->Step())
+		{
+			const int TerrainID = pResults->GetInt(0);
+			const int YieldID = pResults->GetInt(1);
+			const int yield = pResults->GetInt(2);
+
+			m_ppiTerrainYieldModifiers[TerrainID][YieldID] = yield;
+		}
+	}
+	//SpecialistYieldModifiers
+	{
+		kUtility.Initialize2DArray(m_ppiSpecialistYieldModifiers, "Specialists", "Yields");
+
+		std::string strKey("Building_SpecialistYieldModifiers");
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if (pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select Specialists.ID as SpecialistID, Yields.ID as YieldID, Yield from Building_SpecialistYieldModifiers inner join Specialists on Specialists.Type = SpecialistType inner join Yields on Yields.Type = YieldType where BuildingType = ?");
+		}
+
+		pResults->Bind(1, szBuildingType);
+
+		while (pResults->Step())
+		{
+			const int SpecialistID = pResults->GetInt(0);
+			const int YieldID = pResults->GetInt(1);
+			const int yield = pResults->GetInt(2);
+
+			m_ppiSpecialistYieldModifiers[SpecialistID][YieldID] = yield;
+		}
+	}
+	//Building_SpecialistYieldModifiersGlobal
+	{
+
+		kUtility.Initialize2DArray(m_ppiSpecialistYieldModifiersGlobal, "Specialists", "Yields");
+
+		std::string strKey("Building_SpecialistYieldModifiersGlobal");
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if (pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select Specialists.ID as SpecialistID, Yields.ID as YieldID, Yield from Building_SpecialistYieldModifiersGlobal inner join Specialists on Specialists.Type = SpecialistType inner join Yields on Yields.Type = YieldType where BuildingType = ?");
+		}
+
+		pResults->Bind(1, szBuildingType);
+
+		while (pResults->Step())
+		{
+			const int SpecialistID = pResults->GetInt(0);
+			const int YieldID = pResults->GetInt(1);
+			const int yield = pResults->GetInt(2);
+
+			m_ppiSpecialistYieldModifiersGlobal[SpecialistID][YieldID] = yield;
+		}
+	}
+
+	kUtility.SetYields(m_piYieldFromProcessModifierGlobal, "Building_YieldFromProcessModifierGlobal", "BuildingType", szBuildingType);
+	kUtility.SetYields(m_piYieldMultiplier, "Building_YieldMultiplier", "BuildingType", szBuildingType);
+
 	m_bNoPuppet = kResults.GetBool("NoPuppet");
 	m_bHumanOnly = kResults.GetBool("HumanOnly");
 	m_bRiverOrCoastal = kResults.GetBool("RiverOrCoastal");
@@ -3421,6 +3551,10 @@ bool CvBuildingEntry::IsScienceBuilding() const
 		bRtnValue = true;
 	}
 	else if(GetMedianTechPercentChange() > 0)
+	{
+		bRtnValue = true;
+	}
+	else if (GetCityWithWorldWonderYieldModifierGlobal(YIELD_SCIENCE) > 0)
 	{
 		bRtnValue = true;
 	}
@@ -5390,6 +5524,76 @@ int CvBuildingEntry::GetTerrainYieldChangesGlobal(int i, int j) const
 	PRECONDITION(j < NUM_YIELD_TYPES, "Index out of bounds");
 	PRECONDITION(j > -1, "Index out of bounds");
 	return m_ppiTerrainYieldChangesGlobal[i][j];
+}
+int CvBuildingEntry::GetCityStateTradeRouteYieldModifiers(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piCityStateTradeRouteYieldModifiers ? m_piCityStateTradeRouteYieldModifiers[i] : -1;
+}
+int CvBuildingEntry::GetCityStateTradeRouteYieldModifiersGlobal(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piCityStateTradeRouteYieldModifiersGlobal ? m_piCityStateTradeRouteYieldModifiersGlobal[i] : -1;
+}
+int CvBuildingEntry::GetCityWithWorldWonderYieldModifierGlobal(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piCityWithWorldWonderYieldModifierGlobal ? m_piCityWithWorldWonderYieldModifierGlobal[i] : -1;
+}
+int CvBuildingEntry::GetFeatureYieldModifiers(int i, int j) const
+{
+	PRECONDITION(i < GC.getNumFeatureInfos(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	PRECONDITION(j < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(j > -1, "Index out of bounds");
+	return m_ppiFeatureYieldModifiers[i][j];
+}
+int CvBuildingEntry::GetImprovementYieldModifiers(int i, int j) const
+{
+	PRECONDITION(i < GC.getNumImprovementInfos(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	PRECONDITION(j < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(j > -1, "Index out of bounds");
+	return m_ppiImprovementYieldModifiers[i][j];
+}
+int CvBuildingEntry::GetTerrainYieldModifiers(int i, int j) const
+{
+	PRECONDITION(i < GC.getNumTerrainInfos(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	PRECONDITION(j < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(j > -1, "Index out of bounds");
+	return m_ppiTerrainYieldModifiers[i][j];
+}
+int CvBuildingEntry::GetSpecialistYieldModifiers(int i, int j) const
+{
+	PRECONDITION(i < GC.getNumSpecialistInfos(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	PRECONDITION(j < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(j > -1, "Index out of bounds");
+	return m_ppiSpecialistYieldModifiers[i][j];
+}
+int CvBuildingEntry::GetSpecialistYieldModifiersGlobal(int i, int j) const
+{
+	PRECONDITION(i < GC.getNumSpecialistInfos(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	PRECONDITION(j < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(j > -1, "Index out of bounds");
+	return m_ppiSpecialistYieldModifiersGlobal[i][j];
+}
+int CvBuildingEntry::GetYieldFromProcessModifierGlobal(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piYieldFromProcessModifierGlobal ? m_piYieldFromProcessModifierGlobal[i] : -1;
+}
+int CvBuildingEntry::GetYieldMultiplier(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piYieldMultiplier ? m_piYieldMultiplier[i] : -1;
 }
 bool CvBuildingEntry::IsNoPuppet() const
 {
