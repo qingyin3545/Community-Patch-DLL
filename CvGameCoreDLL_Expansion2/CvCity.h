@@ -1920,6 +1920,36 @@ public:
 	int GetTradeRouteRiverBonusModifier() const;
 	void ChangeTradeRouteRiverBonusModifier(int iChange);
 
+	int GetCityStateTradeRouteYieldModifiers(YieldTypes eYield) const;
+	void ChangeCityStateTradeRouteYieldModifiers(YieldTypes eYield, int iChange);
+
+	int GetFeatureYieldModifiers(YieldTypes eYield) const;
+	void ChangeFeatureYieldModifiers(YieldTypes eYield, int iChange);
+
+	int GetImprovementYieldModifiers(YieldTypes eYield) const;
+	void ChangeImprovementYieldModifiers(YieldTypes eYield, int iChange);
+
+	int GetTerrainYieldModifiers(YieldTypes eYield) const;
+	void ChangeTerrainYieldModifiers(YieldTypes eYield, int iChange);
+
+	int GetSpecialistYieldModifiers(YieldTypes eYield) const;
+	void ChangeSpecialistYieldModifiers(YieldTypes eYield, int iChange);
+
+	int GetFeatureYieldModifier(FeatureTypes eFeature, YieldTypes eYield) const;
+	void ChangeFeatureYieldModifier(FeatureTypes eFeature, YieldTypes eYield, int iChange);
+	
+	int GetImprovementYieldModifier(ImprovementTypes eImprovement, YieldTypes eYield) const;
+	void ChangeImprovementYieldModifier(ImprovementTypes eImprovement, YieldTypes eYield, int iChange);
+	
+	int GetTerrainYieldModifier(TerrainTypes eTerrain, YieldTypes eYield) const;
+	void ChangeTerrainYieldModifier(TerrainTypes eTerrain, YieldTypes eYield, int iChange);
+	
+	int GetSpecialistYieldModifier(SpecialistTypes eSpecialist, YieldTypes eYield) const;
+	void ChangeSpecialistYieldModifier(SpecialistTypes eSpecialist, YieldTypes eYield, int iChange);
+
+	int GetYieldMultiplier(YieldTypes eYield) const;
+	void ChangeYieldMultiplier(YieldTypes eYield, int iChange);
+
 	int getForcedDamageValue()const;
 	void changeForcedDamageValue(int iChange);
 	int getChangeDamageValue()const;
@@ -2373,6 +2403,18 @@ private:
 
 	std::vector<int> m_aiTradeRouteFromTheCityYield;
 	std::vector<int> m_aiTradeRouteFromTheCityYieldPerEra;
+
+	std::vector<int> m_aiCityStateTradeRouteYieldModifiers;
+	std::vector<int> m_aiFeatureYieldModifiers;
+	std::vector<int> m_aiImprovementYieldModifiers;
+	std::vector<int> m_aiTerrainYieldModifiers;
+	std::vector<int> m_aiSpecialistYieldModifiers;
+	std::vector<std::tr1::array<int, NUM_YIELD_TYPES>> m_aaiFeatureYieldModifiers;
+	std::vector<std::tr1::array<int, NUM_YIELD_TYPES>> m_aaiImprovementYieldModifiers;
+	std::vector<std::tr1::array<int, NUM_YIELD_TYPES>> m_aaiTerrainYieldModifiers;
+	std::vector<std::tr1::array<int, NUM_YIELD_TYPES>> m_aaiSpecialistYieldModifiers;
+
+	std::vector<int> m_aiYieldMultiplier;
 	
 	int m_iTradeRouteRiverBonusModifier = 0;
 	int m_iForcedDamageValue = 0;

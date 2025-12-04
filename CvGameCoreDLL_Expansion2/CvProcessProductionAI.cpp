@@ -222,6 +222,7 @@ int CvProcessProductionAI::CheckProcessBuildSanity(ProcessTypes eProcess, int iT
 				iModifier += 150;
 
 			int iConvertedYield = (iProduction * m_pCity->GetYieldFromProcessModifier(eYield)) / 100;
+			iConvertedYield += (iProduction * kPlayer.GetYieldFromProcessModifier(eYield)) / 100;
 
 			iModifier += iConvertedYield;
 
