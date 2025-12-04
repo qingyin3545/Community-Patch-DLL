@@ -749,6 +749,18 @@ public:
 	int GetFeatureYieldChangesGlobal(int i, int j) const;
 	int GetTerrainYieldChangesGlobal(int i, int j) const;
 
+	int GetCityStateTradeRouteYieldModifiers(int i) const;
+	int GetCityStateTradeRouteYieldModifiersGlobal(int i) const;
+	int GetCityWithWorldWonderYieldModifierGlobal(int i) const;
+	int GetFeatureYieldModifiers(int i, int j) const;
+	int GetImprovementYieldModifiers(int i, int j) const;
+	int GetTerrainYieldModifiers(int i, int j) const;
+	int GetSpecialistYieldModifiers(int i, int j) const;
+	int GetSpecialistYieldModifiersGlobal(int i, int j) const;
+
+	int GetYieldFromProcessModifierGlobal(int i) const;
+	int GetYieldMultiplier(int i) const;
+
 	bool IsNoPuppet() const;
 	bool IsHumanOnly() const;
 	bool IsRiverOrCoastal() const;
@@ -1255,8 +1267,20 @@ private:
 	int* m_piTradeRouteFromTheCityYieldPerEra = nullptr;
 
 	int* m_piRiverPlotYieldChangeGlobal = nullptr;
-	int** m_ppiFeatureYieldChangesGlobal = nullptr;;
-	int** m_ppiTerrainYieldChangesGlobal = nullptr;;
+	int** m_ppiFeatureYieldChangesGlobal = nullptr;
+	int** m_ppiTerrainYieldChangesGlobal = nullptr;
+
+	int* m_piCityStateTradeRouteYieldModifiers = nullptr;
+	int* m_piCityStateTradeRouteYieldModifiersGlobal = nullptr;
+	int* m_piCityWithWorldWonderYieldModifierGlobal = nullptr;
+	int** m_ppiFeatureYieldModifiers = nullptr;
+	int** m_ppiImprovementYieldModifiers = nullptr;
+	int** m_ppiTerrainYieldModifiers = nullptr;
+	int** m_ppiSpecialistYieldModifiers = nullptr;
+	int** m_ppiSpecialistYieldModifiersGlobal = nullptr;
+
+	int* m_piYieldFromProcessModifierGlobal = nullptr;
+	int* m_piYieldMultiplier = nullptr;
 
 	bool m_bNoPuppet = false;
 	bool m_bHumanOnly = false;
