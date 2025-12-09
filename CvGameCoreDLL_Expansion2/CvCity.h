@@ -1956,6 +1956,9 @@ public:
 	int GetYieldMultiplier(YieldTypes eYield) const;
 	void ChangeYieldMultiplier(YieldTypes eYield, int iChange);
 
+	int GetUnitMaxExperienceLocal() const;
+	void ChangeUnitMaxExperienceLocal(int iChange);
+
 	int getForcedDamageValue()const;
 	void changeForcedDamageValue(int iChange);
 	int getChangeDamageValue()const;
@@ -2424,6 +2427,7 @@ private:
 	std::vector<int> m_aiYieldMultiplier;
 	
 	int m_iTradeRouteRiverBonusModifier = 0;
+	int m_iUnitMaxExperienceLocal = -1;
 	int m_iForcedDamageValue = 0;
 	int m_iChangeDamageValue = 0;
 };
