@@ -791,6 +791,11 @@ public:
 	int GetGlobalProductionNeededBuildingMax() const;
 	int GetGlobalProductionNeededProjectMax() const;
 
+	int GetGoldenAgeUnitCombatModifier() const;
+	int GetUnitMaxExperienceLocal() const;
+
+	int GetCityDefenseModifierGlobal() const;
+	int GetGlobalCityStrengthMod() const;
 	int GetForcedDamageValue() const;
 	int GetChangeDamageValue() const;
 
@@ -1312,6 +1317,11 @@ private:
 	int m_iGlobalProductionNeededBuildingMax = 0;
 	int m_iGlobalProductionNeededProjectMax = 0;
 
+	int m_iGoldenAgeUnitCombatModifier = 0;
+	int m_iUnitMaxExperienceLocal = 0;
+
+	int m_iCityDefenseModifierGlobal = 0;
+	int m_iGlobalCityStrengthMod = 0;
 	int m_iForcedDamageValue = 0;
 	int m_iChangeDamageValue = 0;
 };
