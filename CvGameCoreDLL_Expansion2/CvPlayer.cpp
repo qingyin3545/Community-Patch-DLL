@@ -1709,6 +1709,10 @@ void CvPlayer::uninit()
 	m_iGlobalProductionNeededBuildingMax = 0;
 	m_iGlobalProductionNeededProjectMax = 0;
 
+	m_iGoldenAgeUnitCombatModifier = 0;
+
+	m_iCityDefenseModifierGlobal = 0;
+
 	m_sUUFromDualEmpire.clear();
 	m_sUBFromDualEmpire.clear();
 	m_sUIFromDualEmpire.clear();
@@ -16047,6 +16051,12 @@ void CvPlayer::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst
 	ChangeGlobalProductionNeededUnitMax(pBuildingInfo->GetGlobalProductionNeededUnitMax() * iChange);
 	ChangeGlobalProductionNeededBuildingMax(pBuildingInfo->GetGlobalProductionNeededBuildingMax() * iChange);
 	ChangeGlobalProductionNeededProjectMax(pBuildingInfo->GetGlobalProductionNeededProjectMax() * iChange);
+
+	ChangeGoldenAgeUnitCombatModifier(pBuildingInfo->GetGoldenAgeUnitCombatModifier() * iChange);
+
+	ChangeCityStrengthMod(pBuildingInfo->GetGlobalCityStrengthMod() * iChange);
+	ChangeCityDefenseModifierGlobal(pBuildingInfo->GetCityDefenseModifierGlobal() * iChange);
+
 	for(iI = 0; iI < NUM_YIELD_TYPES; iI++)
 	{
 		YieldTypes eYield = static_cast<YieldTypes>(iI);
@@ -44521,6 +44531,10 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 	visitor(player.m_iGlobalProductionNeededBuildingMax);
 	visitor(player.m_iGlobalProductionNeededProjectMax);
 
+	visitor(player.m_iGoldenAgeUnitCombatModifier);
+
+	visitor(player.m_iCityDefenseModifierGlobal);
+
 	visitor(player.m_sUUFromDualEmpire);
 	visitor(player.m_sUBFromDualEmpire);
 	visitor(player.m_sUIFromDualEmpire);
@@ -50765,6 +50779,34 @@ int CvPlayer::GetGlobalProductionNeededProjectMax() const
 void CvPlayer::ChangeGlobalProductionNeededProjectMax(int iChange)
 {
 	m_iGlobalProductionNeededProjectMax += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetGoldenAgeUnitCombatModifier() const
+{
+	return m_iGoldenAgeUnitCombatModifier;
+}
+void CvPlayer::ChangeGoldenAgeUnitCombatModifier(int iChange)
+{
+	m_iGoldenAgeUnitCombatModifier += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetCityDefenseModifierGlobal() const
+{
+	return m_iCityDefenseModifierGlobal;
+}
+void CvPlayer::ChangeCityDefenseModifierGlobal(int iChange)
+{
+	if(iChange != 0)
+	{
+		m_iCityDefenseModifierGlobal += iChange;
+		int iLoop = 0;
+		for(CvCity* pLoopCity = firstCity(&iLoop); pLoopCity != NULL; pLoopCity = nextCity(&iLoop))
+		{
+			pLoopCity->plot()->plotAction(PUF_makeInfoBarDirty);
+		}
+	}
 }
 
 //	--------------------------------------------------------------------------------

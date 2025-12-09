@@ -2220,6 +2220,11 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 	m_iGlobalProductionNeededBuildingMax = kResults.GetInt("GlobalProductionNeededBuildingMax");
 	m_iGlobalProductionNeededProjectMax = kResults.GetInt("GlobalProductionNeededProjectMax");
 
+	m_iGoldenAgeUnitCombatModifier = kResults.GetInt("GoldenAgeUnitCombatModifier");
+	m_iUnitMaxExperienceLocal = kResults.GetInt("UnitMaxExperienceLocal");
+
+	m_iCityDefenseModifierGlobal = kResults.GetInt("CityDefenseModifierGlobal");
+	m_iGlobalCityStrengthMod = kResults.GetInt("GlobalCityStrengthMod");
 	m_iForcedDamageValue = kResults.GetInt("ResetDamageValue");
 	m_iChangeDamageValue = kResults.GetInt("ReduceDamageValue");
 
@@ -5690,6 +5695,22 @@ int CvBuildingEntry::GetGlobalProductionNeededBuildingMax() const
 int CvBuildingEntry::GetGlobalProductionNeededProjectMax() const
 {
 	return m_iGlobalProductionNeededProjectMax;
+}
+int CvBuildingEntry::GetGoldenAgeUnitCombatModifier() const
+{
+	return m_iGoldenAgeUnitCombatModifier;
+}
+int CvBuildingEntry::GetUnitMaxExperienceLocal() const
+{
+	return m_iUnitMaxExperienceLocal;
+}
+int CvBuildingEntry::GetCityDefenseModifierGlobal() const
+{
+	return m_iCityDefenseModifierGlobal;
+}
+int CvBuildingEntry::GetGlobalCityStrengthMod() const
+{
+	return m_iGlobalCityStrengthMod;
 }
 int CvBuildingEntry::GetForcedDamageValue() const
 {
