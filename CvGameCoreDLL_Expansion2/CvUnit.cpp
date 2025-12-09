@@ -16305,6 +16305,7 @@ int CvUnit::GetGenericMeleeStrengthModifier(const CvUnit* pOtherUnit, const CvPl
 	if(kPlayer.isGoldenAge())
 	{
 		iModifier += kPlayer.GetPlayerTraits()->GetGoldenAgeCombatModifier();
+		iModifier += kPlayer.GetGoldenAgeUnitCombatModifier();
 		iModifier += GetGoldenAgeMod();
 	}
 
@@ -17235,6 +17236,7 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 	if(kPlayer.isGoldenAge())
 	{
 		iModifier += pTraits->GetGoldenAgeCombatModifier();
+		iModifier += kPlayer.GetGoldenAgeUnitCombatModifier();
 		iModifier += GetGoldenAgeMod();
 	}
 	
