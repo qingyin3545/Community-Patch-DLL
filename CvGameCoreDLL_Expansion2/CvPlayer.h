@@ -3038,6 +3038,12 @@ public:
 	int GetGlobalProductionNeededProjectMax() const;
 	void ChangeGlobalProductionNeededProjectMax(int iChange);
 
+	int GetGoldenAgeUnitCombatModifier() const;
+	void ChangeGoldenAgeUnitCombatModifier(int iChange);
+
+	int GetCityDefenseModifierGlobal() const;
+	void ChangeCityDefenseModifierGlobal(int iChange);
+
 	static void GetUCTypesFromPlayer(const CvPlayer& player,
 		std::tr1::unordered_set<UnitTypes>* m_sUU,
 		std::tr1::unordered_set<BuildingTypes>* m_sUB,
@@ -3994,6 +4000,10 @@ protected:
 	int m_iGlobalProductionNeededUnitMax = 0;
 	int m_iGlobalProductionNeededBuildingMax = 0;
 	int m_iGlobalProductionNeededProjectMax = 0;
+
+	int m_iGoldenAgeUnitCombatModifier = 0;
+
+	int m_iCityDefenseModifierGlobal = 0;
 
 	std::tr1::unordered_set<UnitTypes> m_sUUFromDualEmpire;
 	std::tr1::unordered_set<BuildingTypes> m_sUBFromDualEmpire;

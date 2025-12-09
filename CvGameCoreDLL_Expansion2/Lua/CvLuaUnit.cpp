@@ -6910,6 +6910,7 @@ int CvLuaUnit::lGoldenAgeModTotal(lua_State* L)
 	if(pkUnit->getOwner() != NO_PLAYER)
 	{
 		iResult += GET_PLAYER(pkUnit->getOwner()).GetPlayerTraits()->GetGoldenAgeCombatModifier();
+		iResult += GET_PLAYER(pkUnit->getOwner()).GetGoldenAgeUnitCombatModifier();
 	}
 	lua_pushinteger(L, iResult);
 	return 1;

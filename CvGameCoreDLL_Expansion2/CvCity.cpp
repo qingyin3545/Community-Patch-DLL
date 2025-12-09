@@ -1853,6 +1853,8 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 
 	m_aiYieldMultiplier.resize(NUM_YIELD_TYPES, 0);
 
+	m_iUnitMaxExperienceLocal = -1;
+
 	m_iForcedDamageValue = 0;
 	m_iChangeDamageValue = 0;
 
@@ -2373,7 +2375,7 @@ void CvCity::doTurn()
 		int iHitsHealed = /*20 in CP, 8 in VP*/ GD_INT_GET(CITY_HIT_POINTS_HEALED_PER_TURN);
 
 		int iBuildingDefense = m_pCityBuildings->GetBuildingDefense();
-		iBuildingDefense *= (100 + m_pCityBuildings->GetBuildingDefenseMod());
+		iBuildingDefense *= (100 + m_pCityBuildings->GetBuildingDefenseMod() + GET_PLAYER(m_eOwner).GetCityDefenseModifierGlobal());
 		iBuildingDefense /= 100;
 
 		iHitsHealed += iBuildingDefense / 1000;
@@ -10929,6 +10931,9 @@ int CvCity::getProductionExperience(UnitTypes eUnit) const
 		iExperience /= 100;
 	}
 
+	int iMaxExperience = GetUnitMaxExperienceLocal();
+	if (iMaxExperience >= 0) iExperience = std::max(iExperience, iMaxExperience);
+
 	return std::max(0, iExperience);
 }
 
@@ -15227,6 +15232,7 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 			ChangeYieldMultiplier(eYield, pBuildingInfo->GetYieldMultiplier(eYield) * iChange);
 		}
 		ChangeTradeRouteRiverBonusModifier(pBuildingInfo->GetTradeRouteRiverBonusModifier() * iChange);
+		ChangeUnitMaxExperienceLocal(pBuildingInfo->GetUnitMaxExperienceLocal() * iChange);
 		changeForcedDamageValue(pBuildingInfo->GetForcedDamageValue()* iChange);
 		changeChangeDamageValue(pBuildingInfo->GetChangeDamageValue()* iChange);
 
@@ -27752,7 +27758,7 @@ void CvCity::updateStrengthValue()
 
 	// Building Defense
 	int iBuildingDefense = m_pCityBuildings->GetBuildingDefense();
-	iBuildingDefense *= (100 + m_pCityBuildings->GetBuildingDefenseMod());
+	iBuildingDefense *= (100 + m_pCityBuildings->GetBuildingDefenseMod() + GET_PLAYER(m_eOwner).GetCityDefenseModifierGlobal());
 	iBuildingDefense /= 100;
 	iStrengthValue += iBuildingDefense;
 
@@ -32721,6 +32727,7 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 	visitor(city.m_aaiSpecialistYieldModifiers);
 	visitor(city.m_aiYieldMultiplier);
 	visitor(city.m_iForcedDamageValue);
+	visitor(city.m_iForcedDamageValue);
 	visitor(city.m_iChangeDamageValue);
 }
 
@@ -36910,6 +36917,16 @@ void CvCity::ChangeYieldMultiplier(YieldTypes eYield, int iChange)
 }
 
 //	--------------------------------------------------------------------------------
+int CvCity::GetUnitMaxExperienceLocal() const
+{
+	return m_iUnitMaxExperienceLocal;
+}
+void CvCity::ChangeUnitMaxExperienceLocal(int iChange)
+{
+	m_iUnitMaxExperienceLocal += iChange;
+}
+
+//	--------------------------------------------------------------------------------
 int CvCity::getForcedDamageValue() const
 {
 	return m_iForcedDamageValue;
@@ -36932,6 +36949,8 @@ void CvCity::changeChangeDamageValue(int iChange)
 		m_iChangeDamageValue += iChange;
 	}
 }
+
+//	--------------------------------------------------------------------------------
 
 FDataStream& operator<<(FDataStream& saveTo, const SCityExtraYields& readFrom)
 {
