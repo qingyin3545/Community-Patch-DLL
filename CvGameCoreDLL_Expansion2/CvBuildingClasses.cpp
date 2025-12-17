@@ -2231,6 +2231,17 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 	m_iForcedDamageValue = kResults.GetInt("ResetDamageValue");
 	m_iChangeDamageValue = kResults.GetInt("ReduceDamageValue");
 
+	m_iExtraSellRefund = kResults.GetInt("ExtraSellRefund");
+	m_iExtraSellRefundModifierPerEra = kResults.GetInt("ExtraSellRefundModifierPerEra");
+
+	m_iFoodKeptFromPollution = kResults.GetInt("FoodKeptFromPollution");
+	m_iGoldenAgeMeterMod = kResults.GetInt("GoldenAgeMeterMod");
+	m_iGlobalEspionageSpeedModifier = kResults.GetInt("GlobalEspionageSpeedModifier");
+
+	m_iMinorFriendshipAnchorChange = kResults.GetInt("MinorFriendshipAnchorChange");
+	m_iMinorQuestFriendshipMod = kResults.GetInt("MinorQuestFriendshipMod");
+	m_iLiberatedInfluence = kResults.GetInt("LiberatedInfluence");
+
 	return true;
 }
 
@@ -5740,6 +5751,38 @@ int CvBuildingEntry::GetForcedDamageValue() const
 int CvBuildingEntry::GetChangeDamageValue() const
 {
 	return m_iChangeDamageValue;
+}
+int CvBuildingEntry::GetExtraSellRefund() const
+{
+	return m_iExtraSellRefund;
+}
+int CvBuildingEntry::GetExtraSellRefundModifierPerEra() const
+{
+	return m_iExtraSellRefundModifierPerEra;
+}
+int CvBuildingEntry::GetFoodKeptFromPollution() const
+{
+	return m_iFoodKeptFromPollution;
+}
+int CvBuildingEntry::GetGoldenAgeMeterMod() const
+{
+	return m_iGoldenAgeMeterMod;
+}
+int CvBuildingEntry::GetGlobalEspionageSpeedModifier() const
+{
+	return m_iGlobalEspionageSpeedModifier;
+}
+int CvBuildingEntry::GetMinorFriendshipAnchorChange() const
+{
+	return m_iMinorFriendshipAnchorChange;
+}
+int CvBuildingEntry::GetMinorQuestFriendshipMod() const
+{
+	return m_iMinorQuestFriendshipMod;
+}
+int CvBuildingEntry::GetLiberatedInfluence() const
+{
+	return m_iLiberatedInfluence;
 }
 
 //=====================================

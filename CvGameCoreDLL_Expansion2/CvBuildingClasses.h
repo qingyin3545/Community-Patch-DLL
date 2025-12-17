@@ -799,6 +799,17 @@ public:
 	int GetForcedDamageValue() const;
 	int GetChangeDamageValue() const;
 
+	int GetExtraSellRefund() const;
+	int GetExtraSellRefundModifierPerEra() const;
+
+	int GetFoodKeptFromPollution() const;
+	int GetGoldenAgeMeterMod() const;
+	int GetGlobalEspionageSpeedModifier() const;
+
+	int GetMinorFriendshipAnchorChange() const;
+	int GetMinorQuestFriendshipMod() const;
+	int GetLiberatedInfluence() const;
+
 private:
 	int m_iBuildingClassType;
 	const CvBuildingClassInfo* m_pkBuildingClassInfo;
@@ -1324,6 +1335,17 @@ private:
 	int m_iGlobalCityStrengthMod = 0;
 	int m_iForcedDamageValue = 0;
 	int m_iChangeDamageValue = 0;
+
+	int m_iExtraSellRefund = 0;
+	int m_iExtraSellRefundModifierPerEra = 0;
+
+	int m_iFoodKeptFromPollution = 0;
+	int m_iGoldenAgeMeterMod = 0;
+	int m_iGlobalEspionageSpeedModifier = 0;
+
+	int m_iMinorFriendshipAnchorChange = 0;
+	int m_iMinorQuestFriendshipMod = 0;
+	int m_iLiberatedInfluence = 0;
 };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
