@@ -1715,6 +1715,8 @@ void CvPlayer::uninit()
 
 	m_iCityDefenseModifierGlobal = 0;
 
+	m_iEspionageSpeedModifier = 0;
+
 	m_sUUFromDualEmpire.clear();
 	m_sUBFromDualEmpire.clear();
 	m_sUIFromDualEmpire.clear();
@@ -16064,6 +16066,12 @@ void CvPlayer::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst
 
 	ChangeCityStrengthMod(pBuildingInfo->GetGlobalCityStrengthMod() * iChange);
 	ChangeCityDefenseModifierGlobal(pBuildingInfo->GetCityDefenseModifierGlobal() * iChange);
+
+	ChangeGoldenAgeMeterMod(pBuildingInfo->GetGoldenAgeMeterMod() * iChange);
+	ChangeEspionageSpeedModifier(pBuildingInfo->GetGlobalEspionageSpeedModifier() * iChange);
+	ChangeMinorFriendshipAnchorMod(pBuildingInfo->GetMinorFriendshipAnchorChange() * iChange);
+	changeMinorQuestFriendshipMod(pBuildingInfo->GetMinorQuestFriendshipMod() * iChange);
+	changeInfluenceForLiberation(pBuildingInfo->GetLiberatedInfluence() * iChange);
 
 	for(iI = 0; iI < NUM_YIELD_TYPES; iI++)
 	{
@@ -44664,6 +44672,8 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 
 	visitor(player.m_iCityDefenseModifierGlobal);
 
+	visitor(player.m_iEspionageSpeedModifier);
+
 	visitor(player.m_sUUFromDualEmpire);
 	visitor(player.m_sUBFromDualEmpire);
 	visitor(player.m_sUIFromDualEmpire);
@@ -50956,6 +50966,20 @@ void CvPlayer::ChangeCityDefenseModifierGlobal(int iChange)
 		{
 			pLoopCity->plot()->plotAction(PUF_makeInfoBarDirty);
 		}
+	}
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetEspionageSpeedModifier() const
+{
+	return m_iEspionageSpeedModifier;
+}
+void CvPlayer::ChangeEspionageSpeedModifier(int iChange)
+{
+	if(iChange != 0)
+	{
+		m_iEspionageSpeedModifier += iChange;
+		GetEspionage()->UpdateSpies();
 	}
 }
 

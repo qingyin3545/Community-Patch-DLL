@@ -224,17 +224,15 @@ alter table Buildings add ForbiddenForeignSpyGlobal boolean default 0;
 alter table Buildings add ForbiddenForeignSpy boolean default 0;
 alter table Buildings add ImmueVolcanoDamage integer default 0;
 --******************** New Other Effect ********************--
-alter table Buildings add DummyBuilding boolean default 0;
 alter table Buildings add ExtraSellRefund integer default 0;
 alter table Buildings add ExtraSellRefundModifierPerEra integer default 0;
 
 alter table Buildings add FoodKeptFromPollution integer default 0;
 alter table Buildings add GoldenAgeMeterMod integer default 0;
-alter table Buildings add GlobalEspionageSpeedModifier integer default 0;
+alter table Buildings add GlobalEspionageSpeedModifier integer default 0; -- for ours
 
 alter table Buildings add MinorFriendshipAnchorChange integer default 0;
 alter table Buildings add MinorQuestFriendshipMod integer default 0;
-alter table Buildings add MinorCivFriendship integer default 0;
 alter table Buildings add LiberatedInfluence integer default 0;
 
 -- for World Power
@@ -256,11 +254,13 @@ create table Building_ResourceFromImprovement (
 
 -- Deprecated
 alter table Buildings add AllowInstantYield boolean default 0;
+alter table Buildings add DummyBuilding boolean default 0;
 alter table Buildings add NotNeedOccupied boolean default 0; -- Use BuildAnywhere
 alter table Buildings add PolicyNeededType text references Policies(Type); -- Use PolicyType
 alter table Buildings add LandmarksTourismPercentGlobal integer default 0; -- Use GlobalGreatWorksTourismModifier
 alter table Buildings add GreatWorksTourismModifierGlobal integer default 0; -- Use GlobalGreatWorksTourismModifier
 alter table Buildings add CityStateTradeRouteProductionModifierGlobal integer default 0; -- Use Building_CityStateTradeRouteYieldModifiersGlobal
+alter table Buildings add MinorCivFriendship integer default 0; -- Use MinorFriendshipChange
 create table Building_ClassesNeededGlobal( -- Use Building_ClassNeededAnywhere
 	BuildingType text references Buildings(Type), 
 	BuildingClassType text references BuildingClasses(Type)

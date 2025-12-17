@@ -1858,6 +1858,7 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 	m_iForcedDamageValue = 0;
 	m_iChangeDamageValue = 0;
 
+	m_iFoodKeptFromPollution = 0;
 }
 
 
@@ -15236,6 +15237,8 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bFirst, 
 		changeForcedDamageValue(pBuildingInfo->GetForcedDamageValue()* iChange);
 		changeChangeDamageValue(pBuildingInfo->GetChangeDamageValue()* iChange);
 
+		ChangeFoodKeptFromPollution(pBuildingInfo->GetFoodKeptFromPollution()* iChange);
+
 		// Process for our player
 		for (int iI = 0; iI < MAX_PLAYERS; iI++)
 		{
@@ -19328,7 +19331,7 @@ int CvCity::getMaxFoodKeptPercent() const
 	if (MOD_GLOBAL_CITY_SCALES && !CanGrowNormally())
 		return 0;
 #endif
-	return m_iMaxFoodKeptPercent;
+	return m_iMaxFoodKeptPercent + std::min(0, GetFoodKeptFromPollution());
 }
 
 
@@ -32729,6 +32732,7 @@ void CvCity::Serialize(City& city, Visitor& visitor)
 	visitor(city.m_iForcedDamageValue);
 	visitor(city.m_iForcedDamageValue);
 	visitor(city.m_iChangeDamageValue);
+	visitor(city.m_iFoodKeptFromPollution);
 }
 
 //	--------------------------------------------------------------------------------
@@ -36948,6 +36952,16 @@ void CvCity::changeChangeDamageValue(int iChange)
 	{
 		m_iChangeDamageValue += iChange;
 	}
+}
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetFoodKeptFromPollution() const
+{
+	return m_iFoodKeptFromPollution;
+}
+void CvCity::ChangeFoodKeptFromPollution(int iChange)
+{
+	m_iFoodKeptFromPollution += iChange;
 }
 
 //	--------------------------------------------------------------------------------

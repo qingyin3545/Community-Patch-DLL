@@ -3100,6 +3100,21 @@ int CvPlayerEspionage::CalcPerTurn(int iSpyState, CvCity* pCity, int iSpyIndex, 
 				int iMyPoliciesEspionageModifier = m_pPlayer->GetPlayerPolicies()->GetNumericModifier(POLICYMOD_STEAL_TECH_FASTER_MODIFIER);
 				int iFinalModifier = (iBaseYieldRate * (100 + iCityEspionageModifier + iPlayerEspionageModifier + iTheirPoliciesEspionageModifier + iMyPoliciesEspionageModifier)) / 100;
 
+				// I'm not sure why CP removed this, but it's required in SP. —Qingyin
+				if(MOD_SP_BALANCE_CORE && iSpyIndex >= 0)
+				{
+					int iSpyRank = m_aSpyList[iSpyIndex].m_eRank;
+					iSpyRank += m_pPlayer->GetCulture()->GetInfluenceMajorCivSpyRankBonus(eCityOwner);
+					iFinalModifier *= 100 + (GC.getESPIONAGE_GATHERING_INTEL_RATE_BY_SPY_RANK_PERCENT() * iSpyRank);
+					iFinalModifier /= 100;
+				}
+				int iOurModifier = m_pPlayer->GetEspionageSpeedModifier();
+				if (iOurModifier != 0)
+				{
+					iFinalModifier *= 100 + iOurModifier;
+					iFinalModifier /= 100;
+				}
+
 				int iResult = max(iFinalModifier, 1);
 				return iResult;
 			}
