@@ -1964,6 +1964,9 @@ public:
 	int getChangeDamageValue()const;
 	void changeChangeDamageValue(int iChange);
 
+	int GetFoodKeptFromPollution() const;
+	void ChangeFoodKeptFromPollution(int iChange);
+
 protected:
 	SYNC_ARCHIVE_MEMBER(CvCity)
 
@@ -2430,6 +2433,8 @@ private:
 	int m_iUnitMaxExperienceLocal = -1;
 	int m_iForcedDamageValue = 0;
 	int m_iChangeDamageValue = 0;
+
+	int m_iFoodKeptFromPollution = 0;
 };
 
 namespace FSerialization

@@ -5217,6 +5217,10 @@ int CityStrategyAIHelpers::GetBuildingBasicValue(CvCity *pCity, BuildingTypes eB
 	{
 		iValue += pkBuildingInfo->GetFoodKept() * pCity->getPopulation();
 	}
+	if (pkBuildingInfo->GetFoodKeptFromPollution() > 0)
+	{
+		iValue += pkBuildingInfo->GetFoodKeptFromPollution() * pCity->getPopulation();
+	}
 	if (pkBuildingInfo->IsNoStarvationNonSpecialist() && !pCity->IsNoStarvationNonSpecialist())
 	{
 		iValue += 10 * pCity->getPopulation();
