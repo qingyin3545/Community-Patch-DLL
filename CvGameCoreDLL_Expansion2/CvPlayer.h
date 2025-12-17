@@ -3050,6 +3050,9 @@ public:
 	int GetCityDefenseModifierGlobal() const;
 	void ChangeCityDefenseModifierGlobal(int iChange);
 
+	int GetEspionageSpeedModifier() const;
+	void ChangeEspionageSpeedModifier(int iChange);
+
 	static void GetUCTypesFromPlayer(const CvPlayer& player,
 		std::tr1::unordered_set<UnitTypes>* m_sUU,
 		std::tr1::unordered_set<BuildingTypes>* m_sUB,
@@ -4013,6 +4016,8 @@ protected:
 	int m_iGoldenAgeUnitCombatModifier = 0;
 
 	int m_iCityDefenseModifierGlobal = 0;
+
+	int m_iEspionageSpeedModifier = 0;
 
 	std::tr1::unordered_set<UnitTypes> m_sUUFromDualEmpire;
 	std::tr1::unordered_set<BuildingTypes> m_sUBFromDualEmpire;
