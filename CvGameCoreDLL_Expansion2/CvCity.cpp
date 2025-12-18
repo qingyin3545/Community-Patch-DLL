@@ -12013,6 +12013,13 @@ int CvCity::GetPurchaseCost(UnitTypes eUnit)
 		return -1;
 
 	int iModifier = pkUnitInfo->GetHurryCostModifier();
+
+	{
+		int iCollectionsModifer = GC.GetUnitPurchaseCollections()->GetUnitClassPurchaseCost(this, (UnitClassTypes)pkUnitInfo->GetUnitClassType(), YIELD_GOLD);
+		if(iCollectionsModifer > 0 && iModifier > 0) iModifier = std::min(iCollectionsModifer, iModifier);
+		else if(iCollectionsModifer > 0) iModifier = iCollectionsModifer;
+	}
+
 	if (!bIsSpaceshipPart && iModifier == -1)
 	{
 		return -1;
@@ -12269,6 +12276,13 @@ int CvCity::GetFaithPurchaseCost(UnitTypes eUnit, bool bIncludeBeliefDiscounts)
 	else
 	{
 		iCost = pkUnitInfo->GetFaithCost();
+
+		{
+			int iCollectionsMod = GC.GetUnitPurchaseCollections()->GetUnitClassPurchaseCost(this, (UnitClassTypes)pkUnitInfo->GetUnitClassType(), YIELD_FAITH);
+			if(iCollectionsMod > 0 && iCost > 0) iCost = std::min(iCollectionsMod, iCost);
+			else if(iCollectionsMod > 0) iCost = iCollectionsMod;
+		}
+
 		int iMultiplier = 0;
 
 		// Cost goes up in later eras

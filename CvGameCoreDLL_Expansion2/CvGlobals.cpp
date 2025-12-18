@@ -2772,6 +2772,7 @@ void CvGlobals::init()
 	m_pLuaEvaluatorManager = FNEW(lua::EvaluatorManager, c_eCiv5GameplayDLL, 0);
 	m_pLuaEvaluatorManager->Init(this);
 	m_pIndependentPromotion = FNEW(CvIndependentPromotionInfo, c_eCiv5GameplayDLL, 0);
+	m_pUnitPurchaseCollections = FNEW(CvUnitPurchaseCollections, c_eCiv5GameplayDLL, 0);
 
 	CvPlayerAI::initStatics();
 	CvTeam::initStatics();
@@ -2858,6 +2859,7 @@ void CvGlobals::uninit()
 	SAFE_DELETE(m_pLuaFormulaEntries);
 	SAFE_DELETE(m_pLuaEvaluatorManager);
 	SAFE_DELETE(m_pIndependentPromotion);
+	SAFE_DELETE(m_pUnitPurchaseCollections);
 
 	// already deleted outside of the dll, set to null for safety
 	m_pathFinder=NULL;
@@ -5329,6 +5331,10 @@ lua::EvaluatorManager* CvGlobals::GetLuaEvaluatorManager()
 CvIndependentPromotionInfo* CvGlobals::GetIndependentPromotion()
 {
 	return m_pIndependentPromotion;
+}
+CvUnitPurchaseCollections* CvGlobals::GetUnitPurchaseCollections()
+{
+	return m_pUnitPurchaseCollections;
 }
 
 void CvGlobals::cacheGlobals()
