@@ -575,6 +575,9 @@
     <ClCompile Include="CvIndependentPromotionInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CvUnitPurchaseCollections.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="banned.h">
@@ -1412,6 +1415,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CvIndependentPromotionInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CvUnitPurchaseCollections.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
