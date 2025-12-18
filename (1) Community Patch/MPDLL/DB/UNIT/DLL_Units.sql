@@ -4,6 +4,19 @@ alter table Units add CombatStrengthChangeAfterKilling integer default 0;
 alter table Units add RangedCombatStrengthChangeAfterKilling integer default 0;
 alter table Units add TrainPopulationConsume integer default 0;
 
+create table UnitClass_PurchaseCollections(
+    UnitClassType text not null references UnitClasses(Type),
+    BuildingType text references Buildings(Type),
+    PolicyType text references Policies(Type),
+    PlayerBeliefType text references Beliefs(Type),
+    CityBeliefType text references Beliefs(Type),
+
+    FoundersHolyCity boolean default 0,
+
+	YieldType text not null references Yields(Type),
+	CostModifier integer not null default -1
+);
+
 
 alter table Units add ExtraXPValueAttack integer default 0;
 alter table Units add ExtraXPValueDefense integer default 0;

@@ -239,12 +239,6 @@ alter table Buildings add LiberatedInfluence integer default 0;
 alter table Buildings add PlagueMod integer default 0;  --TODO
 alter table Buildings add PlagueModGlobal integer default 0;  --TODO
 
-create table Building_EnableUnitPurchase(
-	BuildingType text references Buildings(Type),
-	UnitClassType text references UnitClasses(Type),
-	YieldType text references Yields(Type),
-	CostModifier integer default -1
-);
 create table Building_ResourceFromImprovement (
 	BuildingType text references Buildings(Type),
 	ResourceType text references Resources(Type),
@@ -274,4 +268,10 @@ create table Building_YieldModifiersChangesPerEra ( --Use Building_YieldModifier
 	BuildingType text references Buildings(Type),
 	YieldType text references Yields(Type),
 	Yield integer default 0
+);
+create table Building_EnableUnitPurchase( -- Use UnitClass_PurchaseCollections
+	BuildingType text references Buildings(Type),
+	UnitClassType text references UnitClasses(Type),
+	YieldType text references Yields(Type),
+	CostModifier integer default -1
 );
