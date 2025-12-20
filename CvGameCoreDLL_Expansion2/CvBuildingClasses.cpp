@@ -2028,8 +2028,8 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 	}
 #endif
 	kUtility.SetYields(m_piYieldPercentOthersCityWithSpy, "Building_YieldPercentOthersCityWithSpy", "BuildingType", szBuildingType);
-	kUtility.SetYields(m_piTradeRouteFromTheCityYield, "Building_TradeRouteFromTheCityYields", "BuildingType", szBuildingType);
-	kUtility.SetYields(m_piTradeRouteFromTheCityYieldPerEra, "Building_TradeRouteFromTheCityYieldsPerEra", "BuildingType", szBuildingType);
+	kUtility.PopulateArrayByValue(m_piTradeRouteFromTheCityYield, "Yields", "Building_TradeRouteFromTheCityYields", "YieldType", "BuildingType", szBuildingType, "YieldValue");
+	kUtility.PopulateArrayByValue(m_piTradeRouteFromTheCityYieldPerEra, "Yields", "Building_TradeRouteFromTheCityYieldsPerEra", "YieldType", "BuildingType", szBuildingType, "YieldValue");
 	kUtility.SetYields(m_piRiverPlotYieldChangeGlobal, "Building_RiverPlotYieldChangesGlobal", "BuildingType", szBuildingType);
 	{
 		kUtility.Initialize2DArray(m_ppiFeatureYieldChangesGlobal, "Features", "Yields");
@@ -2125,11 +2125,11 @@ bool CvBuildingEntry::CacheResults(Database::Results& kResults, CvDatabaseUtilit
 	{
 		kUtility.Initialize2DArray(m_ppiTerrainYieldModifiers, "Terrains", "Yields");
 
-		std::string strKey("Building_TerrainYieldModifier");
+		std::string strKey("Building_TerrainYieldModifiers");
 		Database::Results* pResults = kUtility.GetResults(strKey);
 		if (pResults == NULL)
 		{
-			pResults = kUtility.PrepareResults(strKey, "select Terrains.ID as TerrainID, Yields.ID as YieldID, Yield from Building_TerrainYieldModifier inner join Terrains on Terrains.Type = TerrainType inner join Yields on Yields.Type = YieldType where BuildingType = ?");
+			pResults = kUtility.PrepareResults(strKey, "select Terrains.ID as TerrainID, Yields.ID as YieldID, Yield from Building_TerrainYieldModifiers inner join Terrains on Terrains.Type = TerrainType inner join Yields on Yields.Type = YieldType where BuildingType = ?");
 		}
 
 		pResults->Bind(1, szBuildingType);
