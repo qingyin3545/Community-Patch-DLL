@@ -28636,6 +28636,7 @@ void CvUnit::setPromotionActive(PromotionTypes eIndex, bool bNewValue)
 	ChangePromotionMaintenanceCost(thisPromotion.GetMaintenanceCost() > 0 ? iChange: 0);
 	ChangeMultipleInitExperience(thisPromotion.GetMultipleInitExperience() * iChange);
 	ChangeRangeAttackCostModifier(thisPromotion.GetRangeAttackCostModifier() * iChange);
+	changeIsSlowInEnemyLandCount((thisPromotion.GetNumSlowInEnemyLandCount()) * iChange);
 	ChangeMovePercentCaptureCity(thisPromotion.GetMovePercentCaptureCity() * iChange);
 	ChangeHealPercentCaptureCity(thisPromotion.GetHealPercentCaptureCity() * iChange);
 	ChangeLostAllMovesAttackCity(thisPromotion.GetLostAllMovesAttackCity() * iChange);
