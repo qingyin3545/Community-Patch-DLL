@@ -5,16 +5,6 @@ create table Plot_CityYields (
     YieldType text references Yields(Type),
     Yield integer default 0
 );
-create table Era_MountainCityYieldChanges (
-    EraType text references Eras(Type),
-    YieldType text references Yields(Type),
-    Yield integer not null
-);
-create table Era_CoastCityYieldChanges (
-    EraType text references Eras(Type),
-    YieldType text references Yields(Type),
-    Yield integer not null
-);
 alter table Yields add GreakWorkYieldMod integer default 0;
 
 alter table Features add Volcano boolean default 0;

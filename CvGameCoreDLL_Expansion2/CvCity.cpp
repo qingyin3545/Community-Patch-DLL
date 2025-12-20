@@ -15856,7 +15856,7 @@ PlayerTypes CvCity::GetOwnerForDominationVictory() const
 bool CvCity::isCoastal(int iMinWaterSize) const
 {
 	VALIDATE_OBJECT();
-	return plot()->isCoastalLand(iMinWaterSize);
+	return plot()->isCoastalLand(iMinWaterSize, true, false, true);
 }
 
 //	--------------------------------------------------------------------------------
