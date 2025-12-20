@@ -247,31 +247,31 @@ create table Building_ResourceFromImprovement (
 );
 
 -- Deprecated
-alter table Buildings add AllowInstantYield boolean default 0;
-alter table Buildings add DummyBuilding boolean default 0;
-alter table Buildings add NotNeedOccupied boolean default 0; -- Use BuildAnywhere
-alter table Buildings add PolicyNeededType text references Policies(Type); -- Use PolicyType
-alter table Buildings add LandmarksTourismPercentGlobal integer default 0; -- Use GlobalGreatWorksTourismModifier
-alter table Buildings add GreatWorksTourismModifierGlobal integer default 0; -- Use GlobalGreatWorksTourismModifier
-alter table Buildings add CityStateTradeRouteProductionModifierGlobal integer default 0; -- Use Building_CityStateTradeRouteYieldModifiersGlobal
-alter table Buildings add MinorCivFriendship integer default 0; -- Use MinorFriendshipChange
-create table Building_ClassesNeededGlobal( -- Use Building_ClassNeededAnywhere
-	BuildingType text references Buildings(Type), 
-	BuildingClassType text references BuildingClasses(Type)
-);
-create table Building_YieldChangesPerEra ( -- Use Building_YieldChangesEraScalingTimes100
-	BuildingType text references Buildings(Type),
-	YieldType text references Yields(Type),
-	Yield integer default 0
-);
-create table Building_YieldModifiersChangesPerEra ( --Use Building_YieldModifiersEraScaling
-	BuildingType text references Buildings(Type),
-	YieldType text references Yields(Type),
-	Yield integer default 0
-);
-create table Building_EnableUnitPurchase( -- Use UnitClass_PurchaseCollections
-	BuildingType text references Buildings(Type),
-	UnitClassType text references UnitClasses(Type),
-	YieldType text references Yields(Type),
-	CostModifier integer default -1
-);
+-- alter table Buildings add AllowInstantYield boolean default 0;
+-- alter table Buildings add DummyBuilding boolean default 0;
+-- alter table Buildings add NotNeedOccupied boolean default 0; -- Use BuildAnywhere
+-- alter table Buildings add PolicyNeededType text references Policies(Type); -- Use PolicyType
+-- alter table Buildings add LandmarksTourismPercentGlobal integer default 0; -- Use GlobalLandmarksTourismPercent
+-- alter table Buildings add GreatWorksTourismModifierGlobal integer default 0; -- Use GlobalGreatWorksTourismModifier
+-- alter table Buildings add CityStateTradeRouteProductionModifierGlobal integer default 0; -- Use Building_CityStateTradeRouteYieldModifiersGlobal
+-- alter table Buildings add MinorCivFriendship integer default 0; -- Use MinorFriendshipChange
+-- create table Building_ClassesNeededGlobal( -- Use Building_ClassNeededAnywhere
+-- 	BuildingType text references Buildings(Type), 
+-- 	BuildingClassType text references BuildingClasses(Type)
+-- );
+-- create table Building_YieldChangesPerEra ( -- Use Building_YieldChangesEraScalingTimes100
+-- 	BuildingType text references Buildings(Type),
+-- 	YieldType text references Yields(Type),
+-- 	Yield integer default 0
+-- );
+-- create table Building_YieldModifiersChangesPerEra ( --Use Building_YieldModifiersEraScaling
+-- 	BuildingType text references Buildings(Type),
+-- 	YieldType text references Yields(Type),
+-- 	Yield integer default 0
+-- );
+-- create table Building_EnableUnitPurchase( -- Use UnitClass_PurchaseCollections
+-- 	BuildingType text references Buildings(Type),
+-- 	UnitClassType text references UnitClasses(Type),
+-- 	YieldType text references Yields(Type),
+-- 	CostModifier integer default -1
+-- );

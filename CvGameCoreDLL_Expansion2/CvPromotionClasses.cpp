@@ -1703,6 +1703,7 @@ bool CvPromotionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtili
 	m_iMaintenanceCost = kResults.GetInt("MaintenanceCost");
 	m_iMultipleInitExperience = kResults.GetInt("MultipleInitExperience");
 	m_iRangeAttackCostModifier = kResults.GetInt("RangeAttackCostModifier");
+	m_iNumSlowInEnemyLandCount = kResults.GetInt("NumSlowInEnemyLandCount");
 	m_iMovePercentCaptureCity = kResults.GetInt("MovePercentCaptureCity");
 	m_iHealPercentCaptureCity = kResults.GetInt("HealPercentCaptureCity");
 	m_iLostAllMovesAttackCity = kResults.GetInt("LostAllMovesAttackCity");
@@ -4159,6 +4160,10 @@ int CvPromotionEntry::GetMultipleInitExperience() const
 int CvPromotionEntry::GetRangeAttackCostModifier() const
 {
 	return m_iRangeAttackCostModifier;
+}
+int CvPromotionEntry::GetNumSlowInEnemyLandCount() const
+{
+	return m_iNumSlowInEnemyLandCount;
 }
 int CvPromotionEntry::GetMovePercentCaptureCity() const
 {

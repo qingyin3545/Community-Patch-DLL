@@ -35,30 +35,6 @@ void CvUnitPurchaseCollections::Init()
 {
 	m_pPrivte->m_mCollectionsMap.clear();
     CvDatabaseUtility kUtility;
-    {
-		std::string strKey("Building_EnableUnitPurchase");
-		Database::Results* pResults = kUtility.GetResults(strKey);
-		if(pResults == NULL)
-		{
-			pResults = kUtility.PrepareResults(strKey, 
-				"select UnitClasses.ID as UnitClassID, Buildings.ID as BuildingID, Yields.ID as YieldID, Building_EnableUnitPurchase.CostModifier as CostModifier from Building_EnableUnitPurchase \
-				inner join Yields on Yields.Type = YieldType \
-				inner join UnitClasses on UnitClasses.Type = UnitClassType \
-				inner join Buildings on Buildings.Type = BuildingType;");
-		}
-		while(pResults->Step())
-		{
-            UnitClassTypes eUnitClass = (UnitClassTypes)pResults->GetInt(0);
-            CvUnitPurchaseCollectionsPrivate::UnitPurchaseCollections sCollections;
-            sCollections.eBuilding = (BuildingTypes)pResults->GetInt(1);
-            sCollections.eYield = (YieldTypes)pResults->GetInt(2);
-            sCollections.iCost = pResults->GetInt(3);
-            
-			if (sCollections.eYield != YIELD_GOLD && sCollections.eYield != YIELD_FAITH) continue;
-			if (sCollections.iCost <= 0) continue;
-            m_pPrivte->m_mCollectionsMap.insert(std::make_pair(eUnitClass, sCollections));
-		}
-    }
 	{
 		std::string strKey("UnitClass_PurchaseCollections");
 		Database::Results* pResults = kUtility.GetResults(strKey);

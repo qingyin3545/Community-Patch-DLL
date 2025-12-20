@@ -87,7 +87,6 @@ create table Trait_FreePromotionUnitClasses(
 );
 --******************** New War Bonus ********************--
 alter table Traits add NoResistance boolean default 0;
-alter table Traits add GoldenAgeOnWar boolean default 0;
 alter table Traits add CanConquerUC boolean default 0; 
 alter table Traits add FreePolicyWhenFirstConquerMajorCapital integer default 0;
 alter table Traits add InstantTourismBombWhenFirstConquerMajorCapital integer default 0; -- apply tourism (x turn) pressure to all civs
@@ -127,14 +126,15 @@ alter table Traits add SiegeDamagePercentIfSameReligion integer default 0;
 alter table Traits add FaithPurchaseCombatUnitCostPercent integer default 0;
 
 -- Deprecated
-alter table Traits add CanFoundMountainCity boolean default 0; -- Use MountainPass
-create table Era_MountainCityYieldChanges ( --Use Trait_EraMountainCityYieldChanges
-    EraType text references Eras(Type),
-    YieldType text references Yields(Type),
-    Yield integer not null
-);
-create table Era_CoastCityYieldChanges ( --Use Trait_EraCoastCityYieldChanges
-    EraType text references Eras(Type),
-    YieldType text references Yields(Type),
-    Yield integer not null
-);
+-- alter table Traits add GoldenAgeOnWar boolean default 0;
+-- alter table Traits add CanFoundMountainCity boolean default 0; -- Use MountainPass
+-- create table Era_MountainCityYieldChanges ( --Use Trait_EraMountainCityYieldChanges
+--     EraType text references Eras(Type),
+--     YieldType text references Yields(Type),
+--     Yield integer not null
+-- );
+-- create table Era_CoastCityYieldChanges ( --Use Trait_EraCoastCityYieldChanges
+--     EraType text references Eras(Type),
+--     YieldType text references Yields(Type),
+--     Yield integer not null
+-- );

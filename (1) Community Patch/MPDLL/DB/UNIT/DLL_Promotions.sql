@@ -2,6 +2,7 @@ alter table UnitPromotions add MaintenanceCost integer default 0;
 -- SP-TODO: Column Name MultipleInitExperence -> MultipleInitExperience
 alter table UnitPromotions add MultipleInitExperience integer default 0;
 alter table UnitPromotions add RangeAttackCostModifier integer default 0;
+alter table UnitPromotions add NumSlowInEnemyLandCount integer default 0;
 -- Implemented by CP
 alter table UnitPromotions add CaptureDefeatedEnemyChance integer default 0;
 alter table UnitPromotions add MovePercentCaptureCity integer default 0;
@@ -205,6 +206,6 @@ create table Promotion_RouteMovementChanges (
 alter table UnitPromotions add ShowInTooltip integer default 1;
 alter table UnitPromotions add ShowInPedia integer default 1;
 -- Deprecated
-alter table UnitPromotions add ExtraMoveTimesXX integer default 0;
-alter table UnitPromotions add HeightModLimited integer default 0;
-alter table UnitPromotions add SetUpCostModifier integer default 0;
+-- alter table UnitPromotions add ExtraMoveTimesXX integer default 0;
+-- alter table UnitPromotions add HeightModLimited integer default 0;
+-- alter table UnitPromotions add SetUpCostModifier integer default 0; -- Use 

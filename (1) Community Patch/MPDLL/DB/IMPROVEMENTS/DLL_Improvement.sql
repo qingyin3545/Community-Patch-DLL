@@ -54,4 +54,4 @@ alter table Improvements add RemoveWhenSetNoFuture boolean default 0;
 alter table Improvements add NumWaterPlotMakesValid integer default 0;
 
 -- Deprecated
-alter table Improvements add ForbidSameBuildUnitClasses text references UnitClasses(Type);
+--alter table Improvements add ForbidSameBuildUnitClasses text references UnitClasses(Type);
