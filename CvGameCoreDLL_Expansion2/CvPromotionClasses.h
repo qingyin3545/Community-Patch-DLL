@@ -443,6 +443,7 @@ public:
 	int GetMaintenanceCost() const;
 	int GetMultipleInitExperience() const;
 	int GetRangeAttackCostModifier() const;
+	int GetNumSlowInEnemyLandCount() const;
 	int GetMovePercentCaptureCity() const;
 	int GetHealPercentCaptureCity() const;
 	int GetLostAllMovesAttackCity() const;
@@ -899,6 +900,7 @@ protected:
 	int m_iMaintenanceCost = 0;
 	int m_iMultipleInitExperience = 0;
 	int m_iRangeAttackCostModifier = 0;
+	int m_iNumSlowInEnemyLandCount = 0;
 	int m_iMovePercentCaptureCity = 0;
 	int m_iHealPercentCaptureCity = 0;
 	int m_iLostAllMovesAttackCity = 0;
