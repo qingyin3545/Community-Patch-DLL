@@ -139,7 +139,7 @@ public:
 
 	bool isLake(bool bUseCachedValue=true) const;
 	bool isFreshWater(bool bUseCachedValue=true) const;
-	bool isCoastalLand(int iMinWaterSize = -1, bool bUseCachedValue = true, bool bCheckCanals = false) const;
+	bool isCoastalLand(int iMinWaterSize = -1, bool bUseCachedValue = true, bool bCheckCanals = false, bool bCoastCity = false) const;
 	bool isAdjacentToLand(bool bUseCachedValue = true) const;
 	bool isAdjacentToWater() const;
 	void updateWaterFlags() const;
