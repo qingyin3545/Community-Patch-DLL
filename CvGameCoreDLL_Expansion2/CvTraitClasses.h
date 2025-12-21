@@ -448,6 +448,10 @@ public:
 #endif
 	bool CanDiplomaticMarriage() const;
 	bool IsAbleToDualEmpire() const;
+	bool IsCanFoundCoastCity() const;
+
+	int GetEraMountainCityYieldChanges(EraTypes eIndex1, YieldTypes eIndex2) const;
+	int GetEraCoastCityYieldChanges(EraTypes eIndex1, YieldTypes eIndex2) const;
 
 	virtual bool CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility);
 
@@ -785,6 +789,10 @@ protected:
 #endif
 	bool m_bCanDiplomaticMarriage = false;
 	bool m_bAbleToDualEmpire = false;
+	bool m_bCanFoundCoastCity = false;
+
+	int** m_ppiEraMountainCityYieldChanges = nullptr;
+	int** m_ppiEraCoastCityYieldChanges = nullptr;
 
 private:
 	CvTraitEntry(const CvTraitEntry&);
@@ -2072,6 +2080,13 @@ public:
 	{
 		return m_bAbleToDualEmpire;
 	}
+	bool IsCanFoundCoastCity() const
+	{
+		return m_bCanFoundCoastCity;
+	}
+
+	int GetEraMountainCityYieldChanges(EraTypes eEra, YieldTypes eYield) const;
+	int GetEraCoastCityYieldChanges(EraTypes eEra, YieldTypes eYield) const;
 
 private:
 	bool ConvertBarbarianCamp(CvUnit* pByUnit, CvPlot* pPlot);
@@ -2424,6 +2439,10 @@ private:
 #endif
 	bool m_bCanDiplomaticMarriage = false;
 	bool m_bAbleToDualEmpire = false;
+	bool m_bCanFoundCoastCity = false;
+
+	std::vector< Firaxis::Array<int, NUM_YIELD_TYPES > > m_ppiEraMountainCityYieldChanges;
+	std::vector< Firaxis::Array<int, NUM_YIELD_TYPES > > m_ppiEraCoastCityYieldChanges;
 };
 
 FDataStream& operator>>(FDataStream&, CvPlayerTraits&);

@@ -73,7 +73,12 @@ bool CvCitySiteEvaluator::CanFoundCity(const CvPlot* pPlot, const CvPlayer* pPla
 
 	// Used to have a Python hook: CAN_FOUND_CITIES_ON_WATER_CALLBACK
 
-	if(pPlot->isWater())
+	bool bCanFoundCoastCityHere = pPlayer && pPlayer->GetPlayerTraits()->IsCanFoundCoastCity() && pPlot->isWater() && !pPlot->isLake() && pPlot->isAdjacentToLand();
+	if(bCanFoundCoastCityHere)
+	{
+		// Nothing
+	}
+	else if(pPlot->isWater())
 	{
 		return false;
 	}
@@ -123,6 +128,14 @@ bool CvCitySiteEvaluator::CanFoundCity(const CvPlot* pPlot, const CvPlayer* pPla
 
 	CvTerrainInfo* pTerrainInfo = GC.getTerrainInfo(pPlot->getTerrainType());
 	bool bValid = pTerrainInfo->isFound();
+
+	if(!bValid)
+	{
+		if(bCanFoundCoastCityHere)
+		{
+			bValid = true;
+		}
+	}
 
 	if(!bValid)
 	{
@@ -654,6 +667,23 @@ int CvSiteEvaluatorForSettler::PlotFoundValue(CvPlot* pPlot, const CvPlayer* pPl
 				}
 			}
 		}
+
+		if (pPlot->isMountain())
+		{
+			for(int iYield = 0; iYield < NUM_YIELD_TYPES; iYield++)
+			{
+				iCivModifier += m_iIncaMultiplier * pPlayer->GetPlayerTraits()->GetEraMountainCityYieldChanges(pPlayer->GetCurrentEra(), (YieldTypes)iYield);
+			}
+		}
+		if (pPlot->isWater())
+		{
+			for(int iYield = 0; iYield < NUM_YIELD_TYPES; iYield++)
+			{
+				iCivModifier += m_iPolyMultiplier * pPlayer->GetPlayerTraits()->GetEraCoastCityYieldChanges(pPlayer->GetCurrentEra(), (YieldTypes)iYield);
+			}
+			// if can found city in coast, give a large modifier
+			iValueModifier += 500 * iTotalPlotValue / 100;
+		}
 	}
 
 	// Finally, look at the city plot itself
@@ -1174,6 +1204,8 @@ CvSiteEvaluatorForSettler::CvSiteEvaluatorForSettler(void)
 	m_iFranceMultiplier = 1000; //fertility boost from resources
 	m_iNetherlandsMultiplier = 2000; //fertility boost from marshes and/or flood plains
 	m_iIncaMultiplier = 100; //fertility boost for hill tiles surrounded my mountains
+
+	m_iPolyMultiplier = 100;
 }
 
 /// Destructor

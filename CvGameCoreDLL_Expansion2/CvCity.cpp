@@ -15912,7 +15912,7 @@ PlayerTypes CvCity::GetOwnerForDominationVictory() const
 bool CvCity::isCoastal(int iMinWaterSize) const
 {
 	VALIDATE_OBJECT();
-	return plot()->isCoastalLand(iMinWaterSize);
+	return plot()->isCoastalLand(iMinWaterSize, true, false, true);
 }
 
 //	--------------------------------------------------------------------------------
@@ -30695,7 +30695,7 @@ bool IsValidPlotForUnitType(CvPlot* pPlot, PlayerTypes ePlayer, CvUnitEntry* pkU
 		bAccept = pPlot->isCity();
 		break;
 	case DOMAIN_LAND:
-		bAccept = !pPlot->isWater();
+		bAccept = !pPlot->isWater() || pPlot->isCity();
 		break;
 	case DOMAIN_SEA:
 		bAccept = pPlot->isWater() || pPlot->isCoastalCityOrPassableImprovement(ePlayer, true, true);
@@ -30713,6 +30713,9 @@ bool IsValidPlotForUnitType(CvPlot* pPlot, PlayerTypes ePlayer, CvUnitEntry* pkU
 	if (pkUnitInfo->GetCombat() == 0)
 		return true;
 
+#if defined(MOD_GLOBAL_STACKING_RULES)
+	int iSameTypeUnits = 0;
+#endif
 	const IDInfo* pUnitNode = pPlot->headUnitNode();
 	while (pUnitNode != NULL)
 	{
@@ -30721,6 +30724,9 @@ bool IsValidPlotForUnitType(CvPlot* pPlot, PlayerTypes ePlayer, CvUnitEntry* pkU
 		{
 			// check stacking (see also CountStackingUnitsAtPlot)
 			if (pLoopUnit->IsCombatUnit() && pLoopUnit->getDomainType() == pkUnitInfo->GetDomainType())
+#if defined(MOD_GLOBAL_STACKING_RULES)
+				if (++iSameTypeUnits >= GC.getCITY_UNIT_LIMIT())
+#endif
 				return false;
 		}
 
