@@ -13732,6 +13732,19 @@ void CvPlayer::foundCity(int iX, int iY, ReligionTypes eReligion, bool bForce, C
 	// Grab any "loose" plots we own
 	pCity->AcquireWaywardPlots();
 
+	if(pCity->plot() && pCity->plot()->isWater())
+	{
+		CvPlot* pLoopPlot = NULL;
+		int iX = pCity->getX();
+		int iY = pCity->getY();
+		for(int iI = 0; iI < MAX_CITY_PLOTS; ++iI)
+		{
+			pLoopPlot = iterateRingPlots(iX, iY, iI);
+			if(pLoopPlot == NULL) continue;
+			pLoopPlot->updatePotentialCityWork();
+		}
+	}
+
 	// Free resources near city? Because we have a special method of placing these, do it after we've added any free buildings (that might change the city working range).
 	for (int i = 0; i < GC.getNumResourceInfos(); i++)
 	{

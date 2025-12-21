@@ -1084,12 +1084,14 @@ bool CvPlot::isFreshWater(bool bUseCachedValue) const
 }
 
 //	--------------------------------------------------------------------------------
-bool CvPlot::isCoastalLand(int iMinWaterSize, bool bUseCachedValue, bool bCheckCanals) const
+bool CvPlot::isCoastalLand(int iMinWaterSize, bool bUseCachedValue, bool bCheckCanals, bool bCoastCity) const
 {
 	if (!bUseCachedValue)
 		updateWaterFlags();
 
-	if (m_bIsAdjacentToWater)
+	// Coast City is deemed as Land
+	bCoastCity = bCoastCity && isWater() && isCity();
+	if (bCoastCity || m_bIsAdjacentToWater)
 	{
 		// fast check for ocean or 1-size water bodies
 		if (iMinWaterSize < 2)
@@ -1241,7 +1243,7 @@ void CvPlot::updateWaterFlags() const
 	
 	m_bIsFreshwater = isRiver();
 	//isImpassable() removed this check, Gazebo
-	if(isWater() || m_bIsFreshwater)
+	if((isWater() && !isCity()) || m_bIsFreshwater)
 		return;
 
 	//now the more complex checks
@@ -6470,7 +6472,7 @@ void CvPlot::updatePotentialCityWork()
 
 		if(pLoopPlot != NULL)
 		{
-			if(!(pLoopPlot->isWater()))
+			if(!pLoopPlot->isWater() || pLoopPlot->isCity())
 			{
 				bValid = true;
 				break;
@@ -8261,6 +8263,35 @@ void CvPlot::setImprovementType(ImprovementTypes eNewValue, PlayerTypes eBuilder
 			}
 		}
 
+		// fix Pontoon Bridge
+		if(isWater())
+		{
+			if(eNewValue != NO_IMPROVEMENT && GC.getImprovementInfo(eNewValue)->IsAllowsWalkWater())
+			{
+				// If there are any Units here, disembark them
+				for(int iUnitLoop = 0; iUnitLoop < getNumUnits(); iUnitLoop++)
+				{
+					CvUnit* loopUnit = getUnitByIndex(iUnitLoop);
+					if(!loopUnit || !loopUnit->isEmbarked()) continue;
+
+					loopUnit->disembark(this);
+				}
+			}
+			// AllowsWalkWater -> Not AllowsWalkWater
+			else if(eOldImprovement != NO_IMPROVEMENT && GC.getImprovementInfo(eOldImprovement)->IsAllowsWalkWater())
+			{
+				// If there are any Units here, embark them
+				for(int iUnitLoop = 0; iUnitLoop < getNumUnits(); iUnitLoop++)
+				{
+					CvUnit* loopUnit = getUnitByIndex(iUnitLoop);
+					if(!loopUnit || loopUnit->getUnitInfo().GetDomainType() != DOMAIN_LAND) continue;
+					if(loopUnit->isEmbarked() || loopUnit->canMoveAllTerrain() || loopUnit->canMoveImpassable() || loopUnit->isTrade()) continue;
+
+					loopUnit->embark(this);
+				}
+			}
+		}
+
 		if (m_eImprovementType != NO_IMPROVEMENT)
 		{
 			CvImprovementEntry& newImprovementEntry = *GC.getImprovementInfo(eNewValue);
@@ -9976,6 +10007,15 @@ int CvPlot::calculateNatureYield(YieldTypes eYield, PlayerTypes ePlayer, Feature
 			}
 
 			iYield += iTemp / 100;
+
+			if (pOwningCity->plot()->isMountain())
+			{
+				iYield += kPlayer.GetPlayerTraits()->GetEraMountainCityYieldChanges(kPlayer.GetCurrentEra(), eYield);
+			}
+			if (pOwningCity->plot()->isWater())
+			{
+				iYield += kPlayer.GetPlayerTraits()->GetEraCoastCityYieldChanges(kPlayer.GetCurrentEra(), eYield);
+			}
 		}
 	}
 
@@ -13975,7 +14015,7 @@ bool CvPlot::canTrain(UnitTypes eUnit) const
 		{
 			//fast check for ocean (-1)
 			//check for canals only in Vox Populi
-			if (!isCoastalLand(-1, true, MOD_BALANCE_VP) || !isCoastalLand(thisUnitEntry.GetMinAreaSize(), true, MOD_BALANCE_VP))
+			if (!isCoastalLand(-1, true, MOD_BALANCE_VP, true) || !isCoastalLand(thisUnitEntry.GetMinAreaSize(), true, MOD_BALANCE_VP, true))
 			{
 				return false;
 			}
