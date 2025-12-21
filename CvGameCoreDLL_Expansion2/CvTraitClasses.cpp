@@ -328,6 +328,9 @@ CvTraitEntry::~CvTraitEntry()
 	CvDatabaseUtility::SafeDelete2DArray(m_ppiYieldFromTileSettle);
 	CvDatabaseUtility::SafeDelete2DArray(m_ppiYieldChangePerImprovementBuilt);
 	m_pbiYieldFromBarbarianCampClear.clear();
+
+	CvDatabaseUtility::SafeDelete2DArray(m_ppiEraMountainCityYieldChanges);
+	CvDatabaseUtility::SafeDelete2DArray(m_ppiEraCoastCityYieldChanges);
 }
 
 /// Accessor:: Modifier to experience needed for new level
@@ -2281,6 +2284,28 @@ bool CvTraitEntry::IsAbleToDualEmpire() const
 {
 	return m_bAbleToDualEmpire;
 }
+bool CvTraitEntry::IsCanFoundCoastCity() const
+{
+	return m_bCanFoundCoastCity;
+}
+int CvTraitEntry::GetEraMountainCityYieldChanges(EraTypes eIndex1, YieldTypes eIndex2) const
+{
+	PRECONDITION(eIndex1 < GC.getNumEraInfos(), "Index out of bounds");
+	PRECONDITION(eIndex1 > -1, "Index out of bounds");
+	PRECONDITION(eIndex2 < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(eIndex2 > -1, "Index out of bounds");
+
+	return m_ppiEraMountainCityYieldChanges ? m_ppiEraMountainCityYieldChanges[eIndex1][eIndex2] : 0;
+}
+int CvTraitEntry::GetEraCoastCityYieldChanges(EraTypes eIndex1, YieldTypes eIndex2) const
+{
+	PRECONDITION(eIndex1 < GC.getNumEraInfos(), "Index out of bounds");
+	PRECONDITION(eIndex1 > -1, "Index out of bounds");
+	PRECONDITION(eIndex2 < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(eIndex2 > -1, "Index out of bounds");
+
+	return m_ppiEraCoastCityYieldChanges ? m_ppiEraCoastCityYieldChanges[eIndex1][eIndex2] : 0;
+}
 
 /// Load XML data
 bool CvTraitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility)
@@ -3725,6 +3750,52 @@ bool CvTraitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& 
 #endif
 	m_bCanDiplomaticMarriage = kResults.GetBool("CanDiplomaticMarriage");
 	m_bAbleToDualEmpire = kResults.GetBool("AbleToDualEmpire");
+	m_bCanFoundCoastCity = kResults.GetBool("CanFoundCoastCity");
+
+	//EraMountainCityYieldChanges
+	{
+		kUtility.Initialize2DArray(m_ppiEraMountainCityYieldChanges, "Eras", "Yields");
+
+		std::string strKey("Trait_EraMountainCityYieldChanges");
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if(pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select Eras.ID as EraID, Yields.ID as YieldID, Yield from Trait_EraMountainCityYieldChanges inner join Eras on Eras.Type = EraType inner join Yields on Yields.Type = YieldType where TraitType = ?");
+		}
+
+		pResults->Bind(1, szTraitType);
+
+		while(pResults->Step())
+		{
+			const int EraID = pResults->GetInt(0);
+			const int YieldID = pResults->GetInt(1);
+			const int yield = pResults->GetInt(2);
+
+			m_ppiEraMountainCityYieldChanges[EraID][YieldID] = yield;
+		}
+	}
+	//EraCoastCityYieldChanges
+	{
+		kUtility.Initialize2DArray(m_ppiEraCoastCityYieldChanges, "Eras", "Yields");
+
+		std::string strKey("Trait_EraCoastCityYieldChanges");
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if(pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select Eras.ID as EraID, Yields.ID as YieldID, Yield from Trait_EraCoastCityYieldChanges inner join Eras on Eras.Type = EraType inner join Yields on Yields.Type = YieldType where TraitType = ?");
+		}
+
+		pResults->Bind(1, szTraitType);
+
+		while(pResults->Step())
+		{
+			const int EraID = pResults->GetInt(0);
+			const int YieldID = pResults->GetInt(1);
+			const int yield = pResults->GetInt(2);
+
+			m_ppiEraCoastCityYieldChanges[EraID][YieldID] = yield;
+		}
+	}
 
 	return true;
 }
@@ -5145,6 +5216,16 @@ void CvPlayerTraits::InitPlayerTraits()
 #endif
 			m_bCanDiplomaticMarriage = trait->CanDiplomaticMarriage();
 			m_bAbleToDualEmpire = trait->IsAbleToDualEmpire();
+			m_bCanFoundCoastCity = trait->IsCanFoundCoastCity();
+
+			for(int iEra = 0; iEra < GC.getNumEraInfos(); iEra++)
+			{
+				for(int iYield = 0; iYield < NUM_YIELD_TYPES; iYield++)
+				{
+					m_ppiEraMountainCityYieldChanges[iEra][iYield] += trait->GetEraMountainCityYieldChanges((EraTypes)iEra, (YieldTypes)iYield);
+					m_ppiEraCoastCityYieldChanges[iEra][iYield] += trait->GetEraCoastCityYieldChanges((EraTypes)iEra, (YieldTypes)iYield);
+				}
+			}
 		}
 	}
 
@@ -5684,6 +5765,17 @@ void CvPlayerTraits::Reset()
 #endif
 	m_bCanDiplomaticMarriage = false;
 	m_bAbleToDualEmpire = false;
+	m_bCanFoundCoastCity = false;
+
+	m_ppiEraMountainCityYieldChanges.clear();
+	m_ppiEraMountainCityYieldChanges.resize(GC.getNumEraInfos());
+	m_ppiEraCoastCityYieldChanges.clear();
+	m_ppiEraCoastCityYieldChanges.resize(GC.getNumEraInfos());
+	for(int iEra = 0; iEra < GC.getNumEraInfos(); iEra++)
+	{
+		m_ppiEraMountainCityYieldChanges[iEra] = yield;
+		m_ppiEraCoastCityYieldChanges[iEra] = yield;
+	}
 }
 
 /// Does this player possess a specific trait?
@@ -7288,6 +7380,25 @@ bool CvPlayerTraits::IsFreeMayaGreatPersonChoice() const
 	return ((int)m_aMayaBonusChoices.size() >= iNumGreatPeopleTypes);
 }
 
+int CvPlayerTraits::GetEraMountainCityYieldChanges(EraTypes eEra, YieldTypes eYield) const
+{
+	PRECONDITION(eEra < GC.getNumEraInfos(), "Index out of bounds");
+	PRECONDITION(eEra > -1, "Index out of bounds");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(eYield > -1, "Index out of bounds");
+
+	return m_ppiEraMountainCityYieldChanges[eEra][eYield];
+}
+int CvPlayerTraits::GetEraCoastCityYieldChanges(EraTypes eEra, YieldTypes eYield) const
+{
+	PRECONDITION(eEra < GC.getNumEraInfos(), "Index out of bounds");
+	PRECONDITION(eEra > -1, "Index out of bounds");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(eYield > -1, "Index out of bounds");
+
+	return m_ppiEraCoastCityYieldChanges[eEra][eYield];
+}
+
 // SERIALIZATION METHODS
 
 // FreeResourceXCities
@@ -7713,6 +7824,10 @@ void CvPlayerTraits::Serialize(PlayerTraits& playerTraits, Visitor& visitor)
 #endif
 	visitor(playerTraits.m_bCanDiplomaticMarriage);
 	visitor(playerTraits.m_bAbleToDualEmpire);
+	visitor(playerTraits.m_bCanFoundCoastCity);
+
+	visitor(playerTraits.m_ppiEraMountainCityYieldChanges);
+	visitor(playerTraits.m_ppiEraCoastCityYieldChanges);
 }
 
 /// Serialization read

@@ -1,7 +1,3 @@
--- Insert SQL Rules Here
-alter table Traits add CanDiplomaticMarriage boolean default 0;
-alter table Traits add AbleToDualEmpire boolean default 0;
-
 --******************** New Yield Bonus ********************--
 alter table Traits add TradeRouteLandGoldBonus integer default 0;
 alter table Traits add TradeRouteSeaGoldBonus integer default 0;
@@ -23,6 +19,18 @@ create table Trait_RiverPlotYieldChanges (
 	TraitType text references Traits(Type),
 	YieldType text not null references Yields(Type),
 	Yield integer default 0
+);
+create table Trait_EraMountainCityYieldChanges (
+    TraitType text references Traits(Type),
+    EraType text references Eras(Type),
+    YieldType text references Yields(Type),
+    Yield integer not null
+);
+create table Trait_EraCoastCityYieldChanges (
+    TraitType text references Traits(Type),
+    EraType text references Eras(Type),
+    YieldType text references Yields(Type),
+    Yield integer not null
 );
 create table Trait_CityYieldPerAdjacentFeature (
     TraitType text references Traits(Type),
@@ -84,8 +92,10 @@ alter table Traits add CanConquerUC boolean default 0;
 alter table Traits add FreePolicyWhenFirstConquerMajorCapital integer default 0;
 alter table Traits add InstantTourismBombWhenFirstConquerMajorCapital integer default 0; -- apply tourism (x turn) pressure to all civs
 --******************** Other Bonus ********************--
-alter table Traits add CanFoundMountainCity boolean default 0;
+alter table Traits add CanDiplomaticMarriage boolean default 0;
+alter table Traits add AbleToDualEmpire boolean default 0;
 alter table Traits add CanFoundCoastCity boolean default 0;
+
 alter table Traits add CanPurchaseWonderInGoldenAge boolean default 0;
 insert into Defines(Name, Value) values('WONDER_GOLDEN_AGE_PURCHASE_MODIFIER', 200);
 alter table Traits add NumFreeWorldWonderPerCity integer default 0;
@@ -115,3 +125,16 @@ alter table Traits add InflictDamageChangePerCapturedHolyCity integer default 0;
 alter table Traits add DamageChangePerCapturedHolyCity integer default 0;
 alter table Traits add SiegeDamagePercentIfSameReligion integer default 0;
 alter table Traits add FaithPurchaseCombatUnitCostPercent integer default 0;
+
+-- Deprecated
+alter table Traits add CanFoundMountainCity boolean default 0; -- Use MountainPass
+create table Era_MountainCityYieldChanges ( --Use Trait_EraMountainCityYieldChanges
+    EraType text references Eras(Type),
+    YieldType text references Yields(Type),
+    Yield integer not null
+);
+create table Era_CoastCityYieldChanges ( --Use Trait_EraCoastCityYieldChanges
+    EraType text references Eras(Type),
+    YieldType text references Yields(Type),
+    Yield integer not null
+);
