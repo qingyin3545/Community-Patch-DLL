@@ -1753,12 +1753,19 @@ int CvPlayerTechs::GetResearchCost(TechTypes eTech) const
 	iCityCountMod += m_pPlayer->GetTechCostXCitiesModifier();
 	iCityCountMod *= m_pPlayer->GetNumEffectiveCities(/*bIncludePuppets*/ !MOD_BALANCE_PUPPET_CHANGES);
 
+	if (m_pPlayer->isGoldenAge())
+	{
+		// some UA may reduce the modifier from the city count.
+		iCityCountMod = iCityCountMod * (m_pPlayer->GetPlayerTraits()->GetGoldenAgeResearchCityCountCostModifier() + 100) / 100;
+	}
+
 	//apply the modifiers
 	iResearchCost = iResearchCost * (100 + iCityCountMod) / 100;
 
 	// some Building, UA may reduce the modifier.
 	if (m_pPlayer->isGoldenAge())
 	{
+		iResearchCost = iResearchCost * (m_pPlayer->GetPlayerTraits()->GetGoldenAgeResearchTotalCostModifier() + 100) / 100;
 		iResearchCost = iResearchCost * (m_pPlayer->GetResearchTotalCostModifierGoldenAge() + 100) / 100;
 	}
 	iResearchCost = iResearchCost * (m_pPlayer->GetResearchTotalCostModifier() + 100) / 100;

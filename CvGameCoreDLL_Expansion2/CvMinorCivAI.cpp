@@ -11799,6 +11799,11 @@ int CvMinorCivAI::GetFriendshipChangePerTurnTimes100(PlayerTypes ePlayer)
 			}
 		}
 
+		if (kPlayer.isGoldenAge())
+		{
+			iShift += kPlayer.GetPlayerTraits()->GetGoldenAgeMinorPerTurnInfluence();
+		}
+
 		if (CanMajorBullyGold(ePlayer))
 		{
 			iShift += kPlayer.GetPlayerPolicies()->GetNumericModifier(POLICYMOD_AFRAID_INFLUENCE);
