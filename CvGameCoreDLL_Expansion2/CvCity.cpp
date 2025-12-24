@@ -12398,6 +12398,13 @@ int CvCity::GetPurchaseCost(BuildingTypes eBuilding)
 		return -1;
 
 	int iModifier = pkBuildingInfo->GetHurryCostModifier();
+	
+	int iTraitWonderModifier = GET_PLAYER(getOwner()).GetPlayerTraits()->GetPurchaseWonderInGoldenAgeModifier();
+	if (iTraitWonderModifier > 0 && GET_PLAYER(getOwner()).isGoldenAge())
+	{
+		const CvBuildingClassInfo& pClassInfo = pkBuildingInfo->GetBuildingClassInfo();
+		if (pClassInfo.getMaxGlobalInstances() == 1) iModifier += iTraitWonderModifier;
+	}
 
 	if (iModifier == -1)
 		return -1;
@@ -13545,6 +13552,36 @@ int CvCity::getProductionModifier(BuildingTypes eBuilding, CvString* toolTipSink
 		int iTurns = GET_PLAYER(getOwner()).GetProductionBonusTurnsConquest();
 		if (toolTipSink && iTempMod != 0)
 			*toolTipSink += GetLocalizedText("TXT_KEY_YIELD_MOD_CONQUEST", iTempMod, iTurns);
+	}
+
+	int iNumFreeWorldWonderPerCity = GET_PLAYER(getOwner()).GetPlayerTraits()->GetNumFreeWorldWonderPerCity();
+	if(iNumFreeWorldWonderPerCity > 0 && iNumFreeWorldWonderPerCity - getNumWorldWonders() > 0 && ::isWorldWonderClass(kBuildingClassInfo))
+	{
+		int iBaseYield = getBaseYieldRateTimes100(YIELD_PRODUCTION);
+		iBaseYield /= 100;
+
+		iTempMod = getProductionNeeded(eBuilding) * 100 / iBaseYield;
+		// Make sure it is not affected by multiplications
+		{
+			int iYieldMultiplier = 100 + GetYieldMultiplier(YIELD_PRODUCTION);
+			if(iYieldMultiplier > 0) iTempMod = iTempMod * 100 / iYieldMultiplier;
+			// if 0, then it is meanless
+			else iTempMod = 0;
+		}
+		if(!IsNoNuclearWinterLocal())
+		{
+			int iYieldMultiplier = 100 + GC.getGame().GetNuclearWinterYieldMultiplier(YIELD_PRODUCTION);
+			if(iYieldMultiplier > 0) iTempMod = iTempMod * 100 / iYieldMultiplier;
+			else iTempMod = 0;
+		}
+		if(iTempMod > 0)
+		{
+			iMultiplier += iTempMod;
+			if(toolTipSink)
+			{
+				GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_WONDER_TRAIT", iTempMod);
+			}
+		}
 	}
 
 	return iMultiplier;
@@ -22491,6 +22528,13 @@ void CvCity::ChangeWeLoveTheKingDayCounter(int iChange, bool bUATrigger)
 
 	if (iChange <= 0)
 		return;
+	
+	int iWLTKMod = GET_PLAYER(getOwner()).GetPlayerTraits()->GetWLTKDLengthChangeModifier();
+	if (iWLTKMod > 0)
+	{
+		iChange *= iWLTKMod;
+		iChange /= 100;
+	}
 
 	GET_PLAYER(getOwner()).doInstantYield(INSTANT_YIELD_TYPE_WLTKD_START, false, NO_GREATPERSON, NO_BUILDING, 0, true, NO_PLAYER, NULL, false, this);
 

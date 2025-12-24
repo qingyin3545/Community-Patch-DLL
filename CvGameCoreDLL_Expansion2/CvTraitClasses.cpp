@@ -2288,6 +2288,50 @@ bool CvTraitEntry::IsCanFoundCoastCity() const
 {
 	return m_bCanFoundCoastCity;
 }
+int CvTraitEntry::GetPurchaseWonderInGoldenAgeModifier() const
+{
+	return m_iPurchaseWonderInGoldenAgeModifier;
+}
+int CvTraitEntry::GetNumFreeWorldWonderPerCity() const
+{
+	return m_iNumFreeWorldWonderPerCity;
+}
+int CvTraitEntry::GetTriggersIdeologyTech() const
+{
+	return m_iTriggersIdeologyTech;
+}
+int CvTraitEntry::GetGoldenAgeResearchTotalCostModifier() const
+{
+	return m_iGoldenAgeResearchTotalCostModifier;
+}
+int CvTraitEntry::GetGoldenAgeResearchCityCountCostModifier() const
+{
+	return m_iGoldenAgeResearchCityCountCostModifier;
+}
+int CvTraitEntry::GetGoldenAgeGrowThresholdModifier() const
+{
+	return m_iGoldenAgeGrowThresholdModifier;
+}
+int CvTraitEntry::GetGoldenAgeMinorPerTurnInfluence() const
+{
+	return m_iGoldenAgeMinorPerTurnInfluence;
+}
+int CvTraitEntry::GetAdequateLuxuryCompleteQuestInfluenceModifier() const
+{
+	return m_iAdequateLuxuryCompleteQuestInfluenceModifier;
+}
+int CvTraitEntry::GetAdequateLuxuryCompleteQuestInfluenceModifierMax() const
+{
+	return m_iAdequateLuxuryCompleteQuestInfluenceModifierMax;
+}
+int CvTraitEntry::GetWLTKDLengthChangeModifier() const
+{
+	return m_iWLTKDLengthChangeModifier;
+}
+bool CvTraitEntry::IsWLTKDCityNoResearchCost() const
+{
+	return m_bWLTKDCityNoResearchCost;
+}
 int CvTraitEntry::GetEraMountainCityYieldChanges(EraTypes eIndex1, YieldTypes eIndex2) const
 {
 	PRECONDITION(eIndex1 < GC.getNumEraInfos(), "Index out of bounds");
@@ -3751,6 +3795,21 @@ bool CvTraitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& 
 	m_bCanDiplomaticMarriage = kResults.GetBool("CanDiplomaticMarriage");
 	m_bAbleToDualEmpire = kResults.GetBool("AbleToDualEmpire");
 	m_bCanFoundCoastCity = kResults.GetBool("CanFoundCoastCity");
+	
+	m_iPurchaseWonderInGoldenAgeModifier = kResults.GetInt("PurchaseWonderInGoldenAgeModifier");
+	m_iNumFreeWorldWonderPerCity = kResults.GetInt("NumFreeWorldWonderPerCity");
+	szTextVal = kResults.GetText("TriggersIdeologyTech");
+	if(szTextVal) m_iTriggersIdeologyTech = GC.getInfoTypeForString(szTextVal, true);
+
+	m_iGoldenAgeResearchTotalCostModifier = kResults.GetInt("GoldenAgeResearchTotalCostModifier");
+	m_iGoldenAgeResearchCityCountCostModifier = kResults.GetInt("GoldenAgeResearchCityCountCostModifier");
+	m_iGoldenAgeGrowThresholdModifier = kResults.GetInt("GoldenAgeGrowThresholdModifier");
+	m_iGoldenAgeMinorPerTurnInfluence = kResults.GetInt("GoldenAgeMinorPerTurnInfluence");
+	m_iAdequateLuxuryCompleteQuestInfluenceModifier = kResults.GetInt("AdequateLuxuryCompleteQuestInfluenceModifier");
+	m_iAdequateLuxuryCompleteQuestInfluenceModifierMax = kResults.GetInt("AdequateLuxuryCompleteQuestInfluenceModifierMax");
+
+	m_iWLTKDLengthChangeModifier = kResults.GetInt("WLTKDLengthChangeModifier");
+	m_bWLTKDCityNoResearchCost = kResults.GetBool("WLTKDCityNoResearchCost");
 
 	//EraMountainCityYieldChanges
 	{
@@ -5205,7 +5264,7 @@ void CvPlayerTraits::InitPlayerTraits()
 				m_seFreePromotions.insert(ePromotion);
 			}
 #ifdef MOD_GLOBAL_CORRUPTION
-			m_bCorruptionLevelReduceByOne = trait->GetCorruptionLevelReduceByOne();
+			if(trait->GetCorruptionLevelReduceByOne()) m_bCorruptionLevelReduceByOne = trait->GetCorruptionLevelReduceByOne();
 			m_iMaxCorruptionLevel = trait->GetMaxCorruptionLevel();
 			m_iRiverCorruptionScoreChange += trait->GetRiverCorruptionScoreChange();
 			m_iNaturalWonderCorruptionScoreChange += trait->GetNaturalWonderCorruptionScoreChange();
@@ -5214,9 +5273,23 @@ void CvPlayerTraits::InitPlayerTraits()
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 			m_iExceedingHappinessImmigrationModifier += trait->GetExceedingHappinessImmigrationModifier();
 #endif
-			m_bCanDiplomaticMarriage = trait->CanDiplomaticMarriage();
-			m_bAbleToDualEmpire = trait->IsAbleToDualEmpire();
-			m_bCanFoundCoastCity = trait->IsCanFoundCoastCity();
+			if(trait->CanDiplomaticMarriage()) m_bCanDiplomaticMarriage = trait->CanDiplomaticMarriage();
+			if(trait->IsAbleToDualEmpire()) m_bAbleToDualEmpire = trait->IsAbleToDualEmpire();
+			if(trait->IsCanFoundCoastCity()) m_bCanFoundCoastCity = trait->IsCanFoundCoastCity();
+
+			m_iPurchaseWonderInGoldenAgeModifier += trait->GetPurchaseWonderInGoldenAgeModifier();
+			m_iNumFreeWorldWonderPerCity += trait->GetNumFreeWorldWonderPerCity();
+			if(trait->GetTriggersIdeologyTech() != NO_TECH) m_iTriggersIdeologyTech = trait->GetTriggersIdeologyTech();
+
+			m_iGoldenAgeResearchTotalCostModifier += trait->GetGoldenAgeResearchTotalCostModifier();
+			m_iGoldenAgeResearchCityCountCostModifier += trait->GetGoldenAgeResearchCityCountCostModifier();
+			m_iGoldenAgeGrowThresholdModifier += trait->GetGoldenAgeGrowThresholdModifier();
+			m_iGoldenAgeMinorPerTurnInfluence += trait->GetGoldenAgeMinorPerTurnInfluence();
+			m_iAdequateLuxuryCompleteQuestInfluenceModifier += trait->GetAdequateLuxuryCompleteQuestInfluenceModifier();
+			m_iAdequateLuxuryCompleteQuestInfluenceModifierMax += trait->GetAdequateLuxuryCompleteQuestInfluenceModifierMax();
+
+			m_iWLTKDLengthChangeModifier += trait->GetWLTKDLengthChangeModifier();
+			if(trait->IsWLTKDCityNoResearchCost()) m_bWLTKDCityNoResearchCost = trait->IsWLTKDCityNoResearchCost();
 
 			for(int iEra = 0; iEra < GC.getNumEraInfos(); iEra++)
 			{
@@ -7825,6 +7898,19 @@ void CvPlayerTraits::Serialize(PlayerTraits& playerTraits, Visitor& visitor)
 	visitor(playerTraits.m_bCanDiplomaticMarriage);
 	visitor(playerTraits.m_bAbleToDualEmpire);
 	visitor(playerTraits.m_bCanFoundCoastCity);
+	visitor(playerTraits.m_iPurchaseWonderInGoldenAgeModifier);
+	visitor(playerTraits.m_iNumFreeWorldWonderPerCity);
+	visitor(playerTraits.m_iTriggersIdeologyTech);
+
+	visitor(playerTraits.m_iGoldenAgeResearchTotalCostModifier);
+	visitor(playerTraits.m_iGoldenAgeResearchCityCountCostModifier);
+	visitor(playerTraits.m_iGoldenAgeGrowThresholdModifier);
+	visitor(playerTraits.m_iGoldenAgeMinorPerTurnInfluence);
+	visitor(playerTraits.m_iAdequateLuxuryCompleteQuestInfluenceModifier);
+	visitor(playerTraits.m_iAdequateLuxuryCompleteQuestInfluenceModifierMax);
+
+	visitor(playerTraits.m_iWLTKDLengthChangeModifier);
+	visitor(playerTraits.m_bWLTKDCityNoResearchCost);
 
 	visitor(playerTraits.m_ppiEraMountainCityYieldChanges);
 	visitor(playerTraits.m_ppiEraCoastCityYieldChanges);

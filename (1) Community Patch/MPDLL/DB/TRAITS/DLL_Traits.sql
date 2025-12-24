@@ -95,8 +95,8 @@ alter table Traits add CanDiplomaticMarriage boolean default 0;
 alter table Traits add AbleToDualEmpire boolean default 0;
 alter table Traits add CanFoundCoastCity boolean default 0;
 
-alter table Traits add CanPurchaseWonderInGoldenAge boolean default 0;
-insert into Defines(Name, Value) values('WONDER_GOLDEN_AGE_PURCHASE_MODIFIER', 200);
+-- SP-TODO: Column Name CanPurchaseWonderInGoldenAge -> PurchaseWonderInGoldenAgeModifier
+alter table Traits add PurchaseWonderInGoldenAgeModifier integer default 0;
 alter table Traits add NumFreeWorldWonderPerCity integer default 0;
 alter table Traits add TriggersIdeologyTech text references Technologies(Type);
 
@@ -105,7 +105,7 @@ alter table Traits add GoldenAgeResearchCityCountCostModifier integer default 0;
 alter table Traits add GoldenAgeGrowThresholdModifier integer default 0;
 alter table Traits add GoldenAgeMinorPerTurnInfluence integer default 0;
 alter table Traits add AdequateLuxuryCompleteQuestInfluenceModifier integer default 0;
-alter table Traits add AdequateLuxuryCompleteQuestInfluenceModifierMax integer default -1;
+alter table Traits add AdequateLuxuryCompleteQuestInfluenceModifierMax integer default 0;
 
 -- SP-TODO: Column Name WLKDLengthChangeModifier -> WLTKDLengthChangeModifier
 alter table Traits add WLTKDLengthChangeModifier integer default 0;
