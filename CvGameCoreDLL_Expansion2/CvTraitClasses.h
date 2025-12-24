@@ -450,6 +450,20 @@ public:
 	bool IsAbleToDualEmpire() const;
 	bool IsCanFoundCoastCity() const;
 
+	int GetPurchaseWonderInGoldenAgeModifier() const;
+	int GetNumFreeWorldWonderPerCity() const;
+	int GetTriggersIdeologyTech() const;
+
+	int GetGoldenAgeResearchTotalCostModifier() const;
+	int GetGoldenAgeResearchCityCountCostModifier() const;
+	int GetGoldenAgeGrowThresholdModifier() const;
+	int GetGoldenAgeMinorPerTurnInfluence() const;
+	int GetAdequateLuxuryCompleteQuestInfluenceModifier() const;
+	int GetAdequateLuxuryCompleteQuestInfluenceModifierMax() const;
+
+	int GetWLTKDLengthChangeModifier() const;
+	bool IsWLTKDCityNoResearchCost() const;
+
 	int GetEraMountainCityYieldChanges(EraTypes eIndex1, YieldTypes eIndex2) const;
 	int GetEraCoastCityYieldChanges(EraTypes eIndex1, YieldTypes eIndex2) const;
 
@@ -790,6 +804,20 @@ protected:
 	bool m_bCanDiplomaticMarriage = false;
 	bool m_bAbleToDualEmpire = false;
 	bool m_bCanFoundCoastCity = false;
+
+	int m_iPurchaseWonderInGoldenAgeModifier = 0;
+	int m_iNumFreeWorldWonderPerCity = 0;
+	int m_iTriggersIdeologyTech = NO_TECH;
+
+	int m_iGoldenAgeResearchTotalCostModifier = 0;
+	int m_iGoldenAgeResearchCityCountCostModifier = 0;
+	int m_iGoldenAgeGrowThresholdModifier = 0;
+	int m_iGoldenAgeMinorPerTurnInfluence = 0;
+	int m_iAdequateLuxuryCompleteQuestInfluenceModifier = 0;
+	int m_iAdequateLuxuryCompleteQuestInfluenceModifierMax = 0;
+
+	int m_iWLTKDLengthChangeModifier = 0;
+	bool m_bWLTKDCityNoResearchCost = false;
 
 	int** m_ppiEraMountainCityYieldChanges = nullptr;
 	int** m_ppiEraCoastCityYieldChanges = nullptr;
@@ -2084,6 +2112,50 @@ public:
 	{
 		return m_bCanFoundCoastCity;
 	}
+	int GetPurchaseWonderInGoldenAgeModifier() const
+	{
+		return m_iPurchaseWonderInGoldenAgeModifier;
+	}
+	int GetNumFreeWorldWonderPerCity() const
+	{
+		return m_iNumFreeWorldWonderPerCity;
+	}
+	int GetTriggersIdeologyTech() const
+	{
+		return m_iTriggersIdeologyTech;
+	}
+	int GetGoldenAgeResearchTotalCostModifier() const
+	{
+		return m_iGoldenAgeResearchTotalCostModifier;
+	}
+	int GetGoldenAgeResearchCityCountCostModifier() const
+	{
+		return m_iGoldenAgeResearchCityCountCostModifier;
+	}
+	int GetGoldenAgeGrowThresholdModifier() const
+	{
+		return m_iGoldenAgeGrowThresholdModifier;
+	}
+	int GetGoldenAgeMinorPerTurnInfluence() const
+	{
+		return m_iGoldenAgeMinorPerTurnInfluence;
+	}
+	int GetAdequateLuxuryCompleteQuestInfluenceModifier() const
+	{
+		return m_iAdequateLuxuryCompleteQuestInfluenceModifier;
+	}
+	int GetAdequateLuxuryCompleteQuestInfluenceModifierMax() const
+	{
+		return m_iAdequateLuxuryCompleteQuestInfluenceModifierMax;
+	}
+	int GetWLTKDLengthChangeModifier() const
+	{
+		return m_iWLTKDLengthChangeModifier;
+	}
+	bool IsWLTKDCityNoResearchCost() const
+	{
+		return m_bWLTKDCityNoResearchCost;
+	}
 
 	int GetEraMountainCityYieldChanges(EraTypes eEra, YieldTypes eYield) const;
 	int GetEraCoastCityYieldChanges(EraTypes eEra, YieldTypes eYield) const;
@@ -2440,6 +2512,20 @@ private:
 	bool m_bCanDiplomaticMarriage = false;
 	bool m_bAbleToDualEmpire = false;
 	bool m_bCanFoundCoastCity = false;
+
+	int m_iPurchaseWonderInGoldenAgeModifier = 0;
+	int m_iNumFreeWorldWonderPerCity = 0;
+	int m_iTriggersIdeologyTech = NO_TECH;
+
+	int m_iGoldenAgeResearchTotalCostModifier = 0;
+	int m_iGoldenAgeResearchCityCountCostModifier = 0;
+	int m_iGoldenAgeGrowThresholdModifier = 0;
+	int m_iGoldenAgeMinorPerTurnInfluence = 0;
+	int m_iAdequateLuxuryCompleteQuestInfluenceModifier = 0;
+	int m_iAdequateLuxuryCompleteQuestInfluenceModifierMax = 0;
+
+	int m_iWLTKDLengthChangeModifier = 0;
+	bool m_bWLTKDCityNoResearchCost = false;
 
 	std::vector< Firaxis::Array<int, NUM_YIELD_TYPES > > m_ppiEraMountainCityYieldChanges;
 	std::vector< Firaxis::Array<int, NUM_YIELD_TYPES > > m_ppiEraCoastCityYieldChanges;

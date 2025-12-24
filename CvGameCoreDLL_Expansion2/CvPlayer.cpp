@@ -30078,7 +30078,19 @@ void CvPlayer::changeLevelExperienceModifier(int iChange)
 
 int CvPlayer::getMinorQuestFriendshipMod() const
 {
-	return m_iMinorQuestFriendshipMod;
+	int iTraitMod = 0;
+	if (GetPlayerTraits()->GetAdequateLuxuryCompleteQuestInfluenceModifier() > 0)
+	{
+		// The number of luxury resources we have for which available number > 1 gives bonus
+		iTraitMod += GetAdequateLuxuryKindCount(1) * GetPlayerTraits()->GetAdequateLuxuryCompleteQuestInfluenceModifier();
+		int iMax = GetPlayerTraits()->GetAdequateLuxuryCompleteQuestInfluenceModifierMax();
+		if (iMax > 0)
+		{
+			iTraitMod = std::min(iTraitMod, iMax);
+		}
+	}
+	
+	return m_iMinorQuestFriendshipMod + iTraitMod;
 }
 
 void CvPlayer::changeMinorQuestFriendshipMod(int iChange)
@@ -45427,6 +45439,12 @@ int CvPlayer::getGrowthThreshold(int iPopulation) const
 		}
 	}
 
+	if (isGoldenAge())
+	{
+		iThreshold *= GetPlayerTraits()->GetGoldenAgeGrowThresholdModifier() + 100;
+		iThreshold /= 100;
+	}
+
 	iThreshold *= GetGlobalGrowthFoodNeededModifier() + 100;
 	iThreshold /= 100;
 
@@ -46253,16 +46271,22 @@ int CvPlayer::GetNumEffectiveCities(bool bIncludePuppets) const
 
 	// Don't count cities where the player hasn't decided yet what to do with them
 	int iLoop = 0;
+	bool bIsNoResearchCostWLTKDCity = GetPlayerTraits()->IsWLTKDCityNoResearchCost();
 	for (const CvCity* pLoopCity = firstCity(&iLoop); pLoopCity != NULL; pLoopCity = nextCity(&iLoop))
 	{
 		if (pLoopCity->IsIgnoreCityForHappiness())
 		{
 			iNumCities--;
 		}
+		else if(bIsNoResearchCostWLTKDCity && pLoopCity->GetWeLoveTheKingDayCounter() > 0)
+		{
+			iNumCities--;
+		}
 	}
 
 	//always at least one ...
-	return max(1, iNumCities);
+	//for Trait, it can be Zero 
+	return max(bIsNoResearchCostWLTKDCity ? 0 : 1, iNumCities);
 }
 
 // How many Coastal Cities does this player own
@@ -51224,11 +51248,11 @@ void CvPlayer::RemoveOceanImpassableCombatUnit()
 }
 
 //	--------------------------------------------------------------------------------
-int CvPlayer::GetNumWorldWonders()
+int CvPlayer::GetNumWorldWonders() const
 {
 	int iCount = 0;
 	int iLoop;
-	for (CvCity* pLoopCity = firstCity(&iLoop); pLoopCity != NULL; pLoopCity = nextCity(&iLoop))
+	for (const CvCity* pLoopCity = firstCity(&iLoop); pLoopCity != NULL; pLoopCity = nextCity(&iLoop))
 	{
 		if (pLoopCity->getNumWorldWonders() > 0)
 		{
@@ -51236,6 +51260,38 @@ int CvPlayer::GetNumWorldWonders()
 		}
 	}
 	return iCount;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetAdequateLuxuryKindCount(int threshold) const
+{
+	int iReturn = 0;
+	for (int iResourceLoop = 0; iResourceLoop < GC.getNumResourceInfos(); iResourceLoop++)
+	{
+		ResourceTypes eResource = (ResourceTypes) iResourceLoop;
+		CvResourceInfo* pkResourceInfo = GC.getResourceInfo(eResource);
+		if (!pkResourceInfo)
+		{
+			continue;
+		}
+
+		if (GC.getGame().GetGameLeagues()->IsLuxuryHappinessBanned(GetID(), eResource))
+		{
+			continue;
+		}
+
+		if (pkResourceInfo->getResourceUsage() != RESOURCEUSAGE_LUXURY)
+		{
+			continue;
+		}
+
+		if (getNumResourceAvailable(eResource, /*bIncludeImport*/ true) > threshold)
+		{
+			iReturn++;
+		}
+	}
+
+	return iReturn;
 }
 
 //	--------------------------------------------------------------------------------
