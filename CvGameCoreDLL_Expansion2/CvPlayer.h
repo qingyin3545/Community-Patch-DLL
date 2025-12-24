@@ -3069,7 +3069,8 @@ public:
 	void RemoveOceanImpassableCivilian();
 	void RemoveOceanImpassableCombatUnit();
 
-	int GetNumWorldWonders();
+	int GetNumWorldWonders() const;
+	int GetAdequateLuxuryKindCount(int threshold) const;
 	int GetHappinessFromFaith() const;
 
 	void DoCombatStrengthChangeFromKill(CvUnit* pAttackingUnit, CvUnit* pDefendingUnit, int iX, int iY);
