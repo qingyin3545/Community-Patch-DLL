@@ -12471,6 +12471,9 @@ int CvCity::GetFaithPurchaseCost(BuildingTypes eBuilding)
 	}
 
 	int iCost = pkBuildingInfo->GetFaithCost();
+	int iTraitCost = GET_PLAYER(getOwner()).GetPlayerTraits()->GetBuildingClassFaithCost((BuildingClassTypes)pkBuildingInfo->GetBuildingClassType());
+	if(iTraitCost > 0 && iCost > 0) iCost = std::min(iTraitCost, iCost);
+	else if(iTraitCost > 0) iCost = iTraitCost;
 	int iMultiplier = 0;
 
 	// Cost goes up in later eras (CP only)

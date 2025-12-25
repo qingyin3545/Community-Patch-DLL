@@ -86,8 +86,8 @@ create table Trait_FreePromotionUnitClasses(
     PromotionType text references UnitPromotions(Type)
 );
 --******************** New War Bonus ********************--
-alter table Traits add NoResistance boolean default 0;
-alter table Traits add CanConquerUC boolean default 0; 
+alter table Traits add NoResistance boolean default 0; --TODO
+alter table Traits add CanConquerUC boolean default 0; --TODO
 alter table Traits add FreePolicyWhenFirstConquerMajorCapital integer default 0;
 alter table Traits add InstantTourismBombWhenFirstConquerMajorCapital integer default 0; -- apply tourism (x turn) pressure to all civs
 --******************** Other Bonus ********************--
@@ -117,7 +117,7 @@ create table Trait_BuildingClassFaithCost (
     BuildingClassType text references BuildingClasses(Type),
     Cost integer default 0
 );
---******************** catgrep's Byzantium ********************--
+--******************** catgrep's Byzantium ********************-- --TODO
 alter table Traits add SpreadReligionFromKilledUnitStrengthPercent integer default 0;
 alter table Traits add SpreadReligionRadius integer default 0;
 alter table Traits add InflictDamageChangePerCapturedHolyCity integer default 0;
