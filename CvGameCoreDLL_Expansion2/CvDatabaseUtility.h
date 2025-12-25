@@ -87,6 +87,16 @@ void InitializeArray(T*& pArray, const char* szTableName, T default_ = (T)0);
 							  int iDefaultValue = 0,
 							  int iMinArraySize = 0,
 							  const char* szAdditionalCondition = "");
+	// !!!Waring, Only new pArray when it is Existing
+	bool PopulateExistingArrayByValue(int*& pArray, const char* szTypeTableName,
+	                          const char* szDataTableName,
+	                          const char* szTypeColumn,
+	                          const char* szFilterColumn,
+	                          const char* szFilterValue,
+	                          const char* szValueColumn,
+							  int iDefaultValue = 0,
+							  int iMinArraySize = 0,
+							  const char* szAdditionalCondition = "");
 
 	// Populates a set of Type IDs that satisfies the filter and additional condition in the data table
 	bool PopulateSetByExistence(set<int>& siData, const char* szTypeTableName, const char* szDataTableName, const char* szTypeColumn, const char* szFilterColumn, const char* szFilterValue);

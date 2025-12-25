@@ -366,6 +366,51 @@ bool CvDatabaseUtility::PopulateArrayByValue(int*& pArray, const char* szTypeTab
 	return true;
 }
 //------------------------------------------------------------------------------
+bool CvDatabaseUtility::PopulateExistingArrayByValue(int*& pArray, const char* szTypeTableName, const char* szDataTableName, const char* szTypeColumn, const char* szFilterColumn, const char* szFilterValue, const char* szValueColumn, int iDefaultValue, int iMinArraySize, const char* szAdditionalCondition)
+{
+	int iSize = MaxRows(szTypeTableName);
+
+	std::string strKey = "_PABV_";
+	strKey.append(szTypeTableName);
+	strKey.append(szDataTableName);
+	strKey.append(szFilterColumn);
+	strKey.append(szValueColumn);
+	strKey.append(szAdditionalCondition);
+
+	Database::Results* pResults = GetResults(strKey);
+	if(pResults == NULL)
+	{
+		std::string strAddedClause = "";
+		if (szAdditionalCondition && szAdditionalCondition[0] != '\0')
+		{
+			strAddedClause.append(" and ");
+			strAddedClause.append(szAdditionalCondition);
+		}
+		char szSQL[512];
+		sprintf_s(szSQL, "select %s.ID, %s from %s inner join %s on %s = %s.Type where %s = ?%s", szTypeTableName, szValueColumn, szDataTableName, szTypeTableName, szTypeColumn, szTypeTableName, szFilterColumn, strAddedClause.c_str());
+		pResults = PrepareResults(strKey, szSQL);
+		if(pResults == NULL)
+			return false;
+	}
+
+	if(!pResults->Bind(1, szFilterValue, false))
+	{
+		ASSERT(false, GetErrorMessage());
+		return false;
+	}
+	while(pResults->Step())
+	{
+		if(!pArray) InitializeArray(pArray, (iSize<iMinArraySize)?iMinArraySize:iSize, iDefaultValue);
+		const int idx = pResults->GetInt(0);
+		const int value = pResults->GetInt(1);
+		pArray[idx] = value;
+	}
+
+	pResults->Reset();
+
+	return true;
+}
+//------------------------------------------------------------------------------
 bool CvDatabaseUtility::PopulateSetByExistence(set<int>& siData, const char* szTypeTableName, const char* szDataTableName,
 	const char* szTypeColumn, const char* szFilterColumn, const char* szFilterValue)
 {

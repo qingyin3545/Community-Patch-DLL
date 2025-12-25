@@ -464,6 +464,9 @@ public:
 	int GetWLTKDLengthChangeModifier() const;
 	bool IsWLTKDCityNoResearchCost() const;
 
+	bool IsHasBuildingClassFaithCost() const;
+	int GetBuildingClassFaithCost(int iBuildingClass) const;
+
 	int GetEraMountainCityYieldChanges(EraTypes eIndex1, YieldTypes eIndex2) const;
 	int GetEraCoastCityYieldChanges(EraTypes eIndex1, YieldTypes eIndex2) const;
 
@@ -818,6 +821,8 @@ protected:
 
 	int m_iWLTKDLengthChangeModifier = 0;
 	bool m_bWLTKDCityNoResearchCost = false;
+
+	int* m_piBuildingClassFaithCost = nullptr;
 
 	int** m_ppiEraMountainCityYieldChanges = nullptr;
 	int** m_ppiEraCoastCityYieldChanges = nullptr;
@@ -2157,6 +2162,8 @@ public:
 		return m_bWLTKDCityNoResearchCost;
 	}
 
+	int GetBuildingClassFaithCost(BuildingClassTypes eBuildingClass) const;
+
 	int GetEraMountainCityYieldChanges(EraTypes eEra, YieldTypes eYield) const;
 	int GetEraCoastCityYieldChanges(EraTypes eEra, YieldTypes eYield) const;
 
@@ -2526,6 +2533,8 @@ private:
 
 	int m_iWLTKDLengthChangeModifier = 0;
 	bool m_bWLTKDCityNoResearchCost = false;
+
+	std::vector<int> m_aiBuildingClassFaithCost;
 
 	std::vector< Firaxis::Array<int, NUM_YIELD_TYPES > > m_ppiEraMountainCityYieldChanges;
 	std::vector< Firaxis::Array<int, NUM_YIELD_TYPES > > m_ppiEraCoastCityYieldChanges;
