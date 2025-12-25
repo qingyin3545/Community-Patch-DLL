@@ -329,6 +329,7 @@ CvTraitEntry::~CvTraitEntry()
 	CvDatabaseUtility::SafeDelete2DArray(m_ppiYieldChangePerImprovementBuilt);
 	m_pbiYieldFromBarbarianCampClear.clear();
 
+	SAFE_DELETE_ARRAY(m_piBuildingClassFaithCost);
 	CvDatabaseUtility::SafeDelete2DArray(m_ppiEraMountainCityYieldChanges);
 	CvDatabaseUtility::SafeDelete2DArray(m_ppiEraCoastCityYieldChanges);
 }
@@ -2332,6 +2333,14 @@ bool CvTraitEntry::IsWLTKDCityNoResearchCost() const
 {
 	return m_bWLTKDCityNoResearchCost;
 }
+bool CvTraitEntry::IsHasBuildingClassFaithCost() const
+{
+	return m_piBuildingClassFaithCost != nullptr;
+}
+int CvTraitEntry::GetBuildingClassFaithCost(int iBuildingClass) const
+{
+	return m_piBuildingClassFaithCost ? m_piBuildingClassFaithCost[iBuildingClass] : 0;
+}
 int CvTraitEntry::GetEraMountainCityYieldChanges(EraTypes eIndex1, YieldTypes eIndex2) const
 {
 	PRECONDITION(eIndex1 < GC.getNumEraInfos(), "Index out of bounds");
@@ -3810,6 +3819,8 @@ bool CvTraitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& 
 
 	m_iWLTKDLengthChangeModifier = kResults.GetInt("WLTKDLengthChangeModifier");
 	m_bWLTKDCityNoResearchCost = kResults.GetBool("WLTKDCityNoResearchCost");
+
+	kUtility.PopulateExistingArrayByValue(m_piBuildingClassFaithCost, "BuildingClasses", "Trait_BuildingClassFaithCost", "BuildingClassType", "TraitType", szTraitType, "Cost");
 
 	//EraMountainCityYieldChanges
 	{
@@ -5291,6 +5302,15 @@ void CvPlayerTraits::InitPlayerTraits()
 			m_iWLTKDLengthChangeModifier += trait->GetWLTKDLengthChangeModifier();
 			if(trait->IsWLTKDCityNoResearchCost()) m_bWLTKDCityNoResearchCost = trait->IsWLTKDCityNoResearchCost();
 
+			if(trait->IsHasBuildingClassFaithCost())
+			{
+				if(m_aiBuildingClassFaithCost.size() < GC.getNumBuildingClassInfos()) m_aiBuildingClassFaithCost.resize(GC.getNumBuildingClassInfos(), 0);
+				for(int iBuildingClassLoop = 0; iBuildingClassLoop < GC.getNumBuildingClassInfos(); iBuildingClassLoop++)
+				{
+					m_aiBuildingClassFaithCost[iBuildingClassLoop] += trait->GetBuildingClassFaithCost(iBuildingClassLoop);
+				}
+			}
+			
 			for(int iEra = 0; iEra < GC.getNumEraInfos(); iEra++)
 			{
 				for(int iYield = 0; iYield < NUM_YIELD_TYPES; iYield++)
@@ -5839,6 +5859,9 @@ void CvPlayerTraits::Reset()
 	m_bCanDiplomaticMarriage = false;
 	m_bAbleToDualEmpire = false;
 	m_bCanFoundCoastCity = false;
+
+	m_aiBuildingClassFaithCost.clear();
+	m_aiBuildingClassFaithCost.resize(0);
 
 	m_ppiEraMountainCityYieldChanges.clear();
 	m_ppiEraMountainCityYieldChanges.resize(GC.getNumEraInfos());
@@ -7453,6 +7476,11 @@ bool CvPlayerTraits::IsFreeMayaGreatPersonChoice() const
 	return ((int)m_aMayaBonusChoices.size() >= iNumGreatPeopleTypes);
 }
 
+int CvPlayerTraits::GetBuildingClassFaithCost(BuildingClassTypes eBuildingClass) const
+{
+	return m_aiBuildingClassFaithCost.size() > eBuildingClass ? m_aiBuildingClassFaithCost[eBuildingClass] : 0;
+}
+
 int CvPlayerTraits::GetEraMountainCityYieldChanges(EraTypes eEra, YieldTypes eYield) const
 {
 	PRECONDITION(eEra < GC.getNumEraInfos(), "Index out of bounds");
@@ -7911,6 +7939,8 @@ void CvPlayerTraits::Serialize(PlayerTraits& playerTraits, Visitor& visitor)
 
 	visitor(playerTraits.m_iWLTKDLengthChangeModifier);
 	visitor(playerTraits.m_bWLTKDCityNoResearchCost);
+
+	visitor(playerTraits.m_aiBuildingClassFaithCost);
 
 	visitor(playerTraits.m_ppiEraMountainCityYieldChanges);
 	visitor(playerTraits.m_ppiEraCoastCityYieldChanges);
