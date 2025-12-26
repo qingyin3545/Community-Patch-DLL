@@ -4135,6 +4135,12 @@ void CvDiplomacyAI::SetDoFAccepted(PlayerTypes ePlayer, bool bValue)
 		}
 
 		m_pPlayer->recomputeGreatPeopleModifiers();
+		
+		if (m_pPlayer->GetPlayerTraits()->GetShareAllyResearchPercent() > 0
+				|| GET_PLAYER(ePlayer).GetPlayerTraits()->GetShareAllyResearchPercent() > 0) {
+			m_pPlayer->UpdateScienceTimes100FromFriendships();
+			GET_PLAYER(ePlayer).UpdateScienceTimes100FromFriendships();
+		}
 	}
 }
 
