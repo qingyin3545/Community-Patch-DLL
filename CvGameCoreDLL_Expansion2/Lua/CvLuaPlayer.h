@@ -1300,6 +1300,7 @@ protected:
 	static int lGetInternationalTradeRouteTheirBuildingBonus(lua_State* L);
 	static int lGetInternationalTradeRoutePolicyBonus(lua_State* L);
 	static int lGetInternationalTradeRouteOtherTraitBonus(lua_State* L);
+	static int lGetInternationalTradeRouteTraitBonus(lua_State* L);
 	static int lGetInternationalTradeRouteRiverModifier(lua_State* L);
 	static int lGetTradeConnectionDiplomatModifierTimes100(lua_State* L);
 	static int lGetTradeRouteTurns(lua_State* L);
@@ -1575,6 +1576,7 @@ protected:
 	LUAAPIEXTN(GetCityConnectionTradeRouteGoldModifierFromResourceByIndex, int, eResourceType);
 	LUAAPIEXTN(GetGoldHurryCostModifierFromResourceByIndex, int, eResourceType);
 #endif
+	LUAAPIEXTN(GetScienceTimes100FromFriendsTable);
 	LUAAPIEXTN(IsMarriageAccepted, bool);
 	LUAAPIEXTN(GetMarriageCounter, int);
 	LUAAPIEXTN(IsCanDiplomaticMarriage, bool);

@@ -1208,6 +1208,7 @@ void CvLuaPlayer::PushMethods(lua_State* L, int t)
 	Method(GetInternationalTradeRouteTheirBuildingBonus);
 	Method(GetInternationalTradeRoutePolicyBonus);
 	Method(GetInternationalTradeRouteOtherTraitBonus);
+	Method(GetInternationalTradeRouteTraitBonus);
 	Method(GetInternationalTradeRouteRiverModifier);
 	Method(GetTradeConnectionDiplomatModifierTimes100);
 	Method(GetTradeConnectionDistanceValueModifierTimes100);
@@ -1579,6 +1580,7 @@ void CvLuaPlayer::PushMethods(lua_State* L, int t)
 	Method(GetCityConnectionTradeRouteGoldModifierFromResourceByIndex);
 	Method(GetGoldHurryCostModifierFromResourceByIndex);
 #endif
+	Method(GetScienceTimes100FromFriendsTable);
 	Method(IsMarriageAccepted);
 	Method(GetMarriageCounter);
 	Method(IsCanDiplomaticMarriage);
@@ -5580,6 +5582,31 @@ int CvLuaPlayer::lGetInternationalTradeRouteOtherTraitBonus(lua_State* L)
 	}
 
 	int iResult = pPlayerTrade->GetTradeConnectionOtherTraitValueTimes100(kTradeConnection, YIELD_GOLD, bOrigin);
+	lua_pushinteger(L, iResult);
+	return 1;	
+}
+
+//------------------------------------------------------------------------------
+int CvLuaPlayer::lGetInternationalTradeRouteTraitBonus(lua_State* L)
+{
+	CvPlayerAI* pkPlayer = GetInstance(L);
+	CvPlayerTrade* pPlayerTrade = pkPlayer->GetTrade();
+	CvCity* pOriginCity = CvLuaCity::GetInstance(L, 2, true);
+	CvCity* pDestCity = CvLuaCity::GetInstance(L, 3, true);
+	DomainTypes eDomain = (DomainTypes)lua_tointeger(L, 4);
+	bool bOrigin = lua_toboolean(L, 5);
+
+	TradeConnection kTradeConnection;
+	kTradeConnection.m_iOriginX = pOriginCity->getX();
+	kTradeConnection.m_iOriginY = pOriginCity->getY();
+	kTradeConnection.m_iDestX = pDestCity->getX();
+	kTradeConnection.m_iDestY = pDestCity->getY();
+	kTradeConnection.m_eOriginOwner = pOriginCity->getOwner();
+	kTradeConnection.m_eDestOwner = pDestCity->getOwner();
+	kTradeConnection.m_eDomain = eDomain;
+	kTradeConnection.m_eConnectionType = TRADE_CONNECTION_INTERNATIONAL;
+
+	int iResult = pPlayerTrade->GetTradeConnectionTraitValueTimes100(kTradeConnection, YIELD_GOLD, bOrigin);
 	lua_pushinteger(L, iResult);
 	return 1;	
 }
@@ -19585,6 +19612,22 @@ int CvLuaPlayer::lGetGoldHurryCostModifierFromResourceByIndex(lua_State* L)
 	return 1;
 }
 #endif
+
+//------------------------------------------------------------------------------
+int CvLuaPlayer::lGetScienceTimes100FromFriendsTable(lua_State* L)
+{
+    CvPlayerAI* pkPlayer = GetInstance(L);
+    lua_newtable(L);
+    for (int i = 0; i < MAX_MAJOR_CIVS; ++i) {
+        int value = pkPlayer->GetScienceTimes100FromOneFriend((PlayerTypes)i);
+        if (value != 0) {
+            lua_pushinteger(L, i); // Push the index
+            lua_pushinteger(L, value); // Push the value
+            lua_settable(L, -3); // Sets the table at index -3 with key at index -2 and value at index -1
+        }
+    }
+    return 1;
+}
 
 //------------------------------------------------------------------------------
 int CvLuaPlayer::lIsMarriageAccepted(lua_State* L)

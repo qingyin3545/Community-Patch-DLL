@@ -1723,6 +1723,11 @@ void CvPlayer::uninit()
 
 	m_iEspionageSpeedModifier = 0;
 
+	for (size_t i = 0; i < m_aScienceTimes100FromMajorFriends.size(); ++i)
+	{
+		m_aScienceTimes100FromMajorFriends[i] = 0;
+	}
+
 	m_sUUFromDualEmpire.clear();
 	m_sUBFromDualEmpire.clear();
 	m_sUIFromDualEmpire.clear();
@@ -26832,9 +26837,16 @@ void CvPlayer::doInstantYield(InstantYieldType iType, bool bCityFaith, GreatPers
 				}
 				case INSTANT_YIELD_TYPE_CITY_CREATE_UNIT:
 				{
-					if (eYield == YIELD_CULTURE && pUnit && pUnit->getDomainType() == DOMAIN_SEA && !pUnit->isHasPromotion((PromotionTypes)GD_INT_GET(PROMOTION_OCEAN_IMPASSABLE)))
+					if (eYield == YIELD_CULTURE && pUnit && pUnit->getDomainType() == DOMAIN_SEA) 
 					{
-						int iModifier = GetPlayerPolicies()->GetNumericModifier(POLICYMOD_DEEP_WATER_NAVAL_STRENGTH_CULTURE_MODIFIER);
+						int iModifier = 0;
+						if (!pUnit->isHasPromotion((PromotionTypes)GD_INT_GET(PROMOTION_OCEAN_IMPASSABLE)))
+						{
+							iModifier += GetPlayerPolicies()->GetNumericModifier(POLICYMOD_DEEP_WATER_NAVAL_STRENGTH_CULTURE_MODIFIER);
+						}
+						int iTraitModifier = GetPlayerTraits()->GetCultureBonusUnitStrengthModifier();
+						iModifier += iTraitModifier;
+
 						if (iModifier > 0) iValue = iPassYield * iModifier / 100;
 					}
 					break;
@@ -27891,7 +27903,9 @@ void CvPlayer::doInstantYield(InstantYieldType iType, bool bCityFaith, GreatPers
 			}
 			case INSTANT_YIELD_TYPE_CITY_CREATE_UNIT:
 			{
-				localizedText = Localization::Lookup("TXT_KEY_INSTANT_YIELD_CITY_CREATE_UNIT");
+				// Giving Jap a special tip
+				bool bJap = GetPlayerTraits()->GetCultureBonusUnitStrengthModifier() > 0;
+				localizedText = bJap ? Localization::Lookup("TXT_KEY_TRAIT_CULTURE_FROM_UNIT") : Localization::Lookup("TXT_KEY_INSTANT_YIELD_CITY_CREATE_UNIT");
 				localizedText << (pUnit ? pUnit->getNameKey() : "???");
 				localizedText << totalyieldString;
 				break;
@@ -35668,7 +35682,7 @@ int CvPlayer::GetScience() const
 	return GetScienceTimes100() / 100;
 }
 
-int CvPlayer::GetScienceTimes100() const
+int CvPlayer::GetScienceTimes100(bool bIgnoreFriendships) const
 {
 	// If we're in anarchy, then no Research is done!
 	if(IsAnarchy())
@@ -35714,6 +35728,8 @@ int CvPlayer::GetScienceTimes100() const
 	iValue -= GetYieldPerTurnFromEspionageEvents(YIELD_SCIENCE, false) * 100;
 
 	iValue += GetSciencePerTurnFromPassiveSpyBonusesTimes100();
+
+	if(!bIgnoreFriendships) iValue += GetScienceTimes100FromFriendships();
 
 	return max(iValue, 0);
 }
@@ -42347,6 +42363,8 @@ void CvPlayer::doResearch()
 	}
 	int iOverflowResearch = 0;
 
+	UpdateScienceTimes100FromFriendships();
+
 	if(GetPlayerTechs()->IsResearch())
 	{
 
@@ -44788,6 +44806,8 @@ void CvPlayer::Serialize(Player& player, Visitor& visitor)
 	visitor(player.m_iCityDefenseModifierGlobal);
 
 	visitor(player.m_iEspionageSpeedModifier);
+
+	visitor(player.m_aScienceTimes100FromMajorFriends);
 
 	visitor(player.m_sUUFromDualEmpire);
 	visitor(player.m_sUBFromDualEmpire);
@@ -51160,6 +51180,54 @@ void CvPlayer::GetUCTypesFromPlayer(const CvPlayer& player,
 				}
 			}
 		}
+	}
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetScienceTimes100FromFriendships() const
+{
+	long long result = 0;
+	for (int iPlayerLoop = 0; iPlayerLoop < m_aScienceTimes100FromMajorFriends.size(); iPlayerLoop++)
+	{
+		result += m_aScienceTimes100FromMajorFriends[iPlayerLoop];
+	}
+	result = std::min(result, (long long)0x7FFFFFFF);
+	return (int)result;
+}
+int CvPlayer::GetScienceTimes100FromOneFriend(PlayerTypes ePlayer) const
+{
+	if (ePlayer <= -1 || ePlayer == GetID() || ePlayer >= MAX_MAJOR_CIVS)
+	{
+		return 0;
+	}
+
+	return m_aScienceTimes100FromMajorFriends[ePlayer];
+}
+void CvPlayer::UpdateScienceTimes100FromFriendships()
+{
+	PlayerTypes eLoopPlayer;
+	for (int iPlayerLoop = 0; iPlayerLoop < MAX_MAJOR_CIVS; iPlayerLoop++)
+	{
+		eLoopPlayer = (PlayerTypes) iPlayerLoop;
+
+		if (eLoopPlayer == GetID() ||
+				!GetDiplomacyAI()->IsPlayerValid(eLoopPlayer) ||
+				!GetDiplomacyAI()->IsDoFAccepted(eLoopPlayer) ||
+				!GET_PLAYER(eLoopPlayer).isAlive())
+		{
+			m_aScienceTimes100FromMajorFriends[eLoopPlayer] = 0;
+			continue;
+		}
+
+		int iTraitMod = GET_PLAYER(eLoopPlayer).GetPlayerTraits()->GetShareAllyResearchPercent()
+			+ GetPlayerTraits()->GetShareAllyResearchPercent();
+		if (iTraitMod == 0)
+		{
+			m_aScienceTimes100FromMajorFriends[eLoopPlayer] = 0;
+			continue;
+		}
+
+		m_aScienceTimes100FromMajorFriends[eLoopPlayer] = GET_PLAYER(eLoopPlayer).GetScienceTimes100(true) / 100  * iTraitMod;
 	}
 }
 
