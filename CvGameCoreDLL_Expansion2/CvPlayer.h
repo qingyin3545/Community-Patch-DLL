@@ -1954,7 +1954,7 @@ public:
 	// Science
 
 	int GetScience() const;
-	int GetScienceTimes100() const;
+	int GetScienceTimes100(bool bIgnoreFriendships = false) const;
 
 
 	int GetScienceFromCitiesTimes100(bool bIgnoreTrade) const;
@@ -3047,6 +3047,10 @@ public:
 	int GetEspionageSpeedModifier() const;
 	void ChangeEspionageSpeedModifier(int iChange);
 
+	int GetScienceTimes100FromFriendships() const;
+	int GetScienceTimes100FromOneFriend(PlayerTypes ePlayer) const;
+	void UpdateScienceTimes100FromFriendships();
+
 	static void GetUCTypesFromPlayer(const CvPlayer& player,
 		std::tr1::unordered_set<UnitTypes>* m_sUU,
 		std::tr1::unordered_set<BuildingTypes>* m_sUB,
@@ -4010,6 +4014,8 @@ protected:
 	int m_iCityDefenseModifierGlobal = 0;
 
 	int m_iEspionageSpeedModifier = 0;
+
+	std::tr1::array<unsigned long long, MAX_MAJOR_CIVS> m_aScienceTimes100FromMajorFriends;
 
 	std::tr1::unordered_set<UnitTypes> m_sUUFromDualEmpire;
 	std::tr1::unordered_set<BuildingTypes> m_sUBFromDualEmpire;

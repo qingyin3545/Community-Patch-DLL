@@ -1,9 +1,9 @@
 --******************** New Yield Bonus ********************--
 alter table Traits add TradeRouteLandGoldBonus integer default 0;
 alter table Traits add TradeRouteSeaGoldBonus integer default 0;
-alter table Traits add GreatWorksTourism integer default 0;
+-- SP-TODO: Column Name CultureBonusUnitStrengthModify -> CultureBonusUnitStrengthModifier
+alter table Traits add CultureBonusUnitStrengthModifier integer default 0;
 alter table Traits add ShareAllyResearchPercent integer default 0;
-alter table Traits add CultureBonusUnitStrengthModify integer default 0;
 alter table Traits add OthersTradeBonusModifier integer default 0;
 create table Trait_SeaTradeRouteYieldTimes100 (
 	TraitType text references Traits(Type),
@@ -17,20 +17,20 @@ create table Trait_SeaTradeRouteYieldPerEraTimes100 (
 );
 create table Trait_RiverPlotYieldChanges (
 	TraitType text references Traits(Type),
-	YieldType text not null references Yields(Type),
+	YieldType text references Yields(Type),
 	Yield integer default 0
 );
 create table Trait_EraMountainCityYieldChanges (
     TraitType text references Traits(Type),
     EraType text references Eras(Type),
     YieldType text references Yields(Type),
-    Yield integer not null
+    Yield integer default 0
 );
 create table Trait_EraCoastCityYieldChanges (
     TraitType text references Traits(Type),
     EraType text references Eras(Type),
     YieldType text references Yields(Type),
-    Yield integer not null
+    Yield integer default 0
 );
 create table Trait_CityYieldPerAdjacentFeature (
     TraitType text references Traits(Type),
@@ -80,11 +80,6 @@ alter table Traits add AwayFromCapitalCombatModifierMax integer default 0;
 alter table Traits add PromotionWhenKilledUnit text references UnitPromotions(Type);
 alter table Traits add PromotionRadiusWhenKilledUnit integer default 0;
 alter table Traits add CiviliansFreePromotion text references UnitPromotions(Type);
-create table Trait_FreePromotionUnitClasses(
-    TraitType text references Traits(Type), 
-    UnitClassType text references UnitClasses(Type),
-    PromotionType text references UnitPromotions(Type)
-);
 --******************** New War Bonus ********************--
 alter table Traits add NoResistance boolean default 0; --TODO
 alter table Traits add CanConquerUC boolean default 0; --TODO
@@ -126,6 +121,7 @@ alter table Traits add SiegeDamagePercentIfSameReligion integer default 0;
 alter table Traits add FaithPurchaseCombatUnitCostPercent integer default 0;
 
 -- Deprecated
+alter table Traits add GreatWorksTourism integer default 0; -- Use Trait_GreatWorkYieldChanges
 -- alter table Traits add GoldenAgeOnWar boolean default 0;
 -- alter table Traits add CanFoundMountainCity boolean default 0; -- Use MountainPass
 -- create table Era_MountainCityYieldChanges ( --Use Trait_EraMountainCityYieldChanges
@@ -138,3 +134,8 @@ alter table Traits add FaithPurchaseCombatUnitCostPercent integer default 0;
 --     YieldType text references Yields(Type),
 --     Yield integer not null
 -- );
+create table Trait_FreePromotionUnitClasses( --Use Trait_FreePromotionUnitClass
+    TraitType text references Traits(Type), 
+    UnitClassType text references UnitClasses(Type),
+    PromotionType text references UnitPromotions(Type)
+);

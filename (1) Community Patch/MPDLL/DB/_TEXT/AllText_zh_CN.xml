@@ -714,7 +714,7 @@
 		</Replace>
 
 		<Replace Tag="TXT_KEY_TRAIT_CULTURE_FROM_UNIT">
-			<Text>板载!{2_name}训练完成，获得{1_num}[ICON_CULTURE]文化！</Text>
+			<Text>板载!{2_name}训练完成，获得: [NEWLINE]{1_YieldString}</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_INSTANT_YIELD_CITY_CREATE_UNIT">
 			<Text>{2_name}训练完成，获得: [NEWLINE]{1_YieldString}</Text>

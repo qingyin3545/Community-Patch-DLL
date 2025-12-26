@@ -2277,6 +2277,26 @@ int CvTraitEntry::GetExceedingHappinessImmigrationModifier() const
 	return m_iExceedingHappinessImmigrationModifier;
 }
 #endif
+int CvTraitEntry::GetTradeRouteLandGoldBonus() const
+{
+	return m_iTradeRouteLandGoldBonus;
+}
+int CvTraitEntry::GetTradeRouteSeaGoldBonus() const
+{
+	return m_iTradeRouteSeaGoldBonus;
+}
+int CvTraitEntry::GetOthersTradeBonusModifier() const
+{
+	return m_iOthersTradeBonusModifier;
+}
+int CvTraitEntry::GetCultureBonusUnitStrengthModifier() const
+{
+	return m_iCultureBonusUnitStrengthModifier;
+}
+int CvTraitEntry::GetShareAllyResearchPercent() const
+{
+	return m_iShareAllyResearchPercent;
+}
 bool CvTraitEntry::CanDiplomaticMarriage() const
 {
 	return m_bCanDiplomaticMarriage;
@@ -3801,6 +3821,12 @@ bool CvTraitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& 
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	m_iExceedingHappinessImmigrationModifier = kResults.GetInt("ExceedingHappinessImmigrationModifier");
 #endif
+	m_iTradeRouteLandGoldBonus = kResults.GetInt("TradeRouteLandGoldBonus");
+	m_iTradeRouteSeaGoldBonus = kResults.GetInt("TradeRouteSeaGoldBonus");
+	m_iOthersTradeBonusModifier = kResults.GetInt("OthersTradeBonusModifier");
+	m_iCultureBonusUnitStrengthModifier = kResults.GetInt("CultureBonusUnitStrengthModifier");
+	m_iShareAllyResearchPercent = kResults.GetInt("ShareAllyResearchPercent");
+
 	m_bCanDiplomaticMarriage = kResults.GetBool("CanDiplomaticMarriage");
 	m_bAbleToDualEmpire = kResults.GetBool("AbleToDualEmpire");
 	m_bCanFoundCoastCity = kResults.GetBool("CanFoundCoastCity");
@@ -5284,6 +5310,12 @@ void CvPlayerTraits::InitPlayerTraits()
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 			m_iExceedingHappinessImmigrationModifier += trait->GetExceedingHappinessImmigrationModifier();
 #endif
+			m_iTradeRouteLandGoldBonus = trait->GetTradeRouteLandGoldBonus();
+			m_iTradeRouteSeaGoldBonus = trait->GetTradeRouteSeaGoldBonus();
+			m_iOthersTradeBonusModifier = trait->GetOthersTradeBonusModifier();
+			m_iCultureBonusUnitStrengthModifier = trait->GetCultureBonusUnitStrengthModifier();
+			m_iShareAllyResearchPercent = trait->GetShareAllyResearchPercent();
+
 			if(trait->CanDiplomaticMarriage()) m_bCanDiplomaticMarriage = trait->CanDiplomaticMarriage();
 			if(trait->IsAbleToDualEmpire()) m_bAbleToDualEmpire = trait->IsAbleToDualEmpire();
 			if(trait->IsCanFoundCoastCity()) m_bCanFoundCoastCity = trait->IsCanFoundCoastCity();
@@ -5856,6 +5888,12 @@ void CvPlayerTraits::Reset()
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	m_iExceedingHappinessImmigrationModifier = 0;
 #endif
+	m_iTradeRouteLandGoldBonus = 0;
+	m_iTradeRouteSeaGoldBonus = 0;
+	m_iOthersTradeBonusModifier = 0;
+	m_iCultureBonusUnitStrengthModifier = 0;
+	m_iShareAllyResearchPercent = 0;
+
 	m_bCanDiplomaticMarriage = false;
 	m_bAbleToDualEmpire = false;
 	m_bCanFoundCoastCity = false;
@@ -7923,6 +7961,12 @@ void CvPlayerTraits::Serialize(PlayerTraits& playerTraits, Visitor& visitor)
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	visitor(playerTraits.m_iExceedingHappinessImmigrationModifier);
 #endif
+	visitor(playerTraits.m_iTradeRouteLandGoldBonus);
+	visitor(playerTraits.m_iTradeRouteSeaGoldBonus);
+	visitor(playerTraits.m_iOthersTradeBonusModifier);
+	visitor(playerTraits.m_iCultureBonusUnitStrengthModifier);
+	visitor(playerTraits.m_iShareAllyResearchPercent);
+
 	visitor(playerTraits.m_bCanDiplomaticMarriage);
 	visitor(playerTraits.m_bAbleToDualEmpire);
 	visitor(playerTraits.m_bCanFoundCoastCity);

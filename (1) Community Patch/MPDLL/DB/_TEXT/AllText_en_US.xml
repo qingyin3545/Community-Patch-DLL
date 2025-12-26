@@ -709,7 +709,7 @@
 		</Replace>
 
 		<Replace Tag="TXT_KEY_TRAIT_CULTURE_FROM_UNIT">
-			<Text>Banzai! You received {1_num} [ICON_CULTURE] Culture from building a {2_name}!</Text>
+			<Text>Banzai! {2_name} Training completed, You received: [NEWLINE]{1_YieldString}</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_INSTANT_YIELD_CITY_CREATE_UNIT">
 			<Text>{2_name} Training completed, You received: [NEWLINE]{1_YieldString}</Text>
