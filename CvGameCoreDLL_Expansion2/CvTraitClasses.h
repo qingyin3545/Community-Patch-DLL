@@ -446,6 +446,12 @@ public:
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	int GetExceedingHappinessImmigrationModifier() const;
 #endif
+	int GetTradeRouteLandGoldBonus() const;
+	int GetTradeRouteSeaGoldBonus() const;
+	int GetOthersTradeBonusModifier() const;
+	int GetCultureBonusUnitStrengthModifier() const;
+	int GetShareAllyResearchPercent() const;
+
 	bool CanDiplomaticMarriage() const;
 	bool IsAbleToDualEmpire() const;
 	bool IsCanFoundCoastCity() const;
@@ -804,6 +810,12 @@ protected:
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	int m_iExceedingHappinessImmigrationModifier = 0;
 #endif
+	int m_iTradeRouteLandGoldBonus = 0;
+	int m_iTradeRouteSeaGoldBonus = 0;
+	int m_iOthersTradeBonusModifier = 0;
+	int m_iCultureBonusUnitStrengthModifier = 0;
+	int m_iShareAllyResearchPercent = 0;
+
 	bool m_bCanDiplomaticMarriage = false;
 	bool m_bAbleToDualEmpire = false;
 	bool m_bCanFoundCoastCity = false;
@@ -2105,6 +2117,27 @@ public:
 		return m_iExceedingHappinessImmigrationModifier;
 	}
 #endif
+	int GetTradeRouteLandGoldBonus() const
+	{
+		return m_iTradeRouteLandGoldBonus;
+	}
+	int GetTradeRouteSeaGoldBonus() const
+	{
+		return m_iTradeRouteSeaGoldBonus;
+	}
+	int GetOthersTradeBonusModifier() const
+	{
+		return m_iOthersTradeBonusModifier;
+	}
+	int GetCultureBonusUnitStrengthModifier() const
+	{
+		return m_iCultureBonusUnitStrengthModifier;
+	}
+	int GetShareAllyResearchPercent() const
+	{
+		return m_iShareAllyResearchPercent;
+	}
+
 	bool CanDiplomaticMarriage() const
 	{
 		return m_bCanDiplomaticMarriage;
@@ -2516,6 +2549,12 @@ private:
 #if defined(MOD_INTERNATIONAL_IMMIGRATION_FOR_SP)
 	int m_iExceedingHappinessImmigrationModifier = 0;
 #endif
+	int m_iTradeRouteLandGoldBonus = 0;
+	int m_iTradeRouteSeaGoldBonus = 0;
+	int m_iOthersTradeBonusModifier = 0;
+	int m_iCultureBonusUnitStrengthModifier = 0;
+	int m_iShareAllyResearchPercent = 0;
+
 	bool m_bCanDiplomaticMarriage = false;
 	bool m_bAbleToDualEmpire = false;
 	bool m_bCanFoundCoastCity = false;
