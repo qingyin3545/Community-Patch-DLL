@@ -1,41 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <GameData>
-	<!-- Espionage.xml -->
 	<Language_zh_CN>
-
+		<!-- CP Text -->
 		<Replace Tag="TXT_KEY_UNIT_PLAGUE_CHANCE">
 			<Text>[COLOR_CYAN]受到({1_Name})状态影响的几率[ENDCOLOR]</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_UNIT_ALREADY_PLAGUED">
 			<Text>[COLOR_CYAN]受到{1_Num}状态影响[ENDCOLOR]</Text>
 		</Replace>
-
 		<Replace Tag="TXT_KEY_UNIT_IMMUNE_PLAGUED">
 			<Text>[COLOR_CYAN]免疫{1_Num}[ENDCOLOR]</Text>
 		</Replace>
-		<Replace Tag="TXT_KEY_NOTIFICATION_SPY_EVICTED_FPRBIDDEN_YOU">
-			<Text>您的间谍{1_SpyRank}{2_SpyName}从{3_CityName}离开，因为这座城市不再支持行动。</Text>
+		<Replace Tag="TXT_KEY_UNIT_PLAGUE_TRANSFER_S">
+			<Text>你的{1_Unit}传播了病毒!</Text>
 		</Replace>
-		<Replace Tag="TXT_KEY_NO_ACTION_BUILDING_EMPIRE_RESOURCE">
-			<Text>[NEWLINE]需要国內拥有{1_FeatureName:textkey}。</Text>
+		<Replace Tag="TXT_KEY_UNIT_PLAGUE_TRANSFER">
+			<Text>战斗期间，一种致命的病毒通过你的{1_Unit}转播给了敌方的{2_Unit}!</Text>
 		</Replace>
-		<Replace Tag="TXT_KEY_NO_ACTION_BUILDING_LOCAL_FEATURE">
-			<Text>[NEWLINE]需要城市附近有{1_FeatureName:textkey}。</Text>
+		<Replace Tag="TXT_KEY_UNIT_PLAGUE_TRANSFER_THEM_S">
+			<Text>病毒传播给了你的{1_Unit}!</Text>
 		</Replace>
+		<Replace Tag="TXT_KEY_UNIT_PLAGUE_TRANSFER_THEM">
+			<Text>战斗期间，一种致命的病毒通过敌人的{2_Unit}传播给了你的{1_Unit}!</Text>
+		</Replace>
+
 		<Replace Tag="TXT_KEY_AIR_PATROL_BOMBED_GROUND_TARGETS">
 			<Text>你的{@1_UnitName}没有遇到抵抗，并且攻击了敌人的空军和地面防空单位！</Text>
-		</Replace>
-		<Replace Tag="TXT_KEY_UNIT_MORALE_FALL_BACK">
-			<Text>我们的{2_Unit}被敌人的{1_Unit}击退了！</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_UNIT_MORALE_FALL_BACK_S">
 			<Text>{1_Unit}被击退了！</Text>
 		</Replace>
-		<Replace Tag="TXT_KEY_UNIT_MORALE_FALL_BACK_THEM">
-			<Text>我们的{1_Unit}迫使敌人的{2_Unit}撤退了！</Text>
+		<Replace Tag="TXT_KEY_UNIT_MORALE_FALL_BACK">
+			<Text>我们的{2_Unit}被敌人的{1_Unit}击退了！</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_UNIT_MORALE_FALL_BACK_THEM_S">
 			<Text>敌人的{1_Unit}被击退了！</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_UNIT_MORALE_FALL_BACK_THEM">
+			<Text>我们的{1_Unit}迫使敌人的{2_Unit}撤退了！</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_NOTIFICATION_RESET_PLOT_COST">
 			<Text>新城市的建立重置了你所拥有的城市的地块购买价格!</Text>
@@ -46,48 +48,16 @@
 		<Replace Tag="TXT_KEY_PRODMOD_UNIT_CLASS">
 			<Text>[NEWLINE][ICON_BULLET]来自单位种类的修正: {1_Num}%</Text>
 		</Replace>
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_FEATURES">
-			<Text>[NEWLINE][ICON_BULLET]来自有市民工作的地貌的修正: {1_Num}%</Text>
-		</Replace>
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_TERRAINS">
-			<Text>[NEWLINE][ICON_BULLET]来自有市民工作的地形的修正: {1_Num}%</Text>
-		</Replace>
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_IMPROVEMENTS">
-			<Text>[NEWLINE][ICON_BULLET]来自有市民工作的改良设施的修正: {1_Num}%</Text>
-		</Replace>
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_SPECIALIST">
-			<Text>[NEWLINE][ICON_BULLET]来自专家: {1_Num}%</Text>
-		</Replace>
-		<Replace Tag="TXT_KEY_PRODMOD_SPIES">
-			<Text>[NEWLINE][ICON_BULLET]活跃间谍数的城市修正值: {1_Num}%</Text>
-		</Replace>
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_FROM_HEALTH_MOD">
-			<Text>[NEWLINE][ICON_BULLET]健康度的城市修正值: {1_Num}%</Text>
-		</Replace>
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_FROM_INTER_TRADE_MOD">
-			<Text>[NEWLINE][ICON_BULLET]商路数量的修正值: {1_Num}%</Text>
-		</Replace>
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_FROM_CRIME_MOD">
-			<Text>[NEWLINE][ICON_BULLET]犯罪率的城市修正值: {1_Num}%</Text>
+		<Replace Tag="TXT_KEY_PRODMOD_WONDER_IMPROVEMENT">
+			<Text>[NEWLINE][ICON_BULLET]改良设施提供奇观建造加成: {1_Num}%</Text>
 		</Replace>
 
-		<Replace Tag="TXT_KEY_UNIT_PLAGUE_TRANSFER">
-			<Text>战斗期间，一种致命的病毒通过你的{1_Unit}转播给了敌方的{2_Unit}!</Text>
+		<!-- MPDLL Text -->
+		<Replace Tag="TXT_KEY_NO_ACTION_BUILDING_EMPIRE_RESOURCE">
+			<Text>[NEWLINE]需要国內拥有{1_FeatureName:textkey}。</Text>
 		</Replace>
-		<Replace Tag="TXT_KEY_UNIT_PLAGUE_TRANSFER_S">
-			<Text>你的{1_Unit}传播了病毒!</Text>
-		</Replace>
-		<Replace Tag="TXT_KEY_UNIT_PLAGUE_TRANSFER_THEM">
-			<Text>战斗期间，一种致命的病毒通过敌人的{2_Unit}传播给了你的{1_Unit}!</Text>
-		</Replace>
-		<Replace Tag="TXT_KEY_UNIT_PLAGUE_TRANSFER_THEM_S">
-			<Text>病毒传播给了你的{1_Unit}!</Text>
-		</Replace>
-
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_POLICY_CITY_LOVE_KING">
-			<Text>
-				[NEWLINE][ICON_BULLET]爱领袖日修正(政策): {1_Num}%
-			</Text>
+		<Replace Tag="TXT_KEY_NO_ACTION_BUILDING_LOCAL_FEATURE">
+			<Text>[NEWLINE]需要城市附近有{1_FeatureName:textkey}。</Text>
 		</Replace>
 
 		<Replace Tag="TXT_KEY_YIELD_HEALTH">
@@ -117,15 +87,13 @@
 		<Replace Tag="TXT_KEY_YIELD_GREAT_ADMIRAL_POINTS">
 			<Text>海军统帅点数</Text>
 		</Replace>
+	</Language_zh_CN>
 
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_LOCAL_CITY_WONDER_GLOBAL">
-			<Text>[NEWLINE][ICON_BULLET]全局城市修正(世界奇观): {1_Num}%</Text>
+	<!-- Espionage.xml -->
+	<Language_zh_CN>
+		<Replace Tag="TXT_KEY_NOTIFICATION_SPY_EVICTED_FPRBIDDEN_YOU">
+			<Text>您的间谍{1_SpyRank}{2_SpyName}从{3_CityName}离开，因为这座城市不再支持行动。</Text>
 		</Replace>
-
-		<Replace Tag="TXT_KEY_PRODMOD_WONDER_IMPROVEMENT">
-			<Text>[NEWLINE][ICON_BULLET]改良设施提供奇观建造加成: {1_Num}%</Text>
-		</Replace>
-
 		<Replace Tag="TXT_KEY_SPY_STATE_TERMINATED">
 			<Text>被消灭了！</Text>
 		</Replace>
@@ -133,42 +101,24 @@
 
 	<!-- GoodyHutMessages.xml -->
 	<Language_zh_CN>
-		<Update>
-			<Where Tag="TXT_KEY_GOODY_GOLD" />
-			<Set>
-				<Text>您在该遗迹中找到了上古帝国的宝藏！</Text>
-			</Set>
-		</Update>
-		<Update>
-			<Where Tag="TXT_KEY_GOODY_PROPHET_FAITH" />
-			<Set>
-				<Text>您发现了一处秘密的宗教社区。传教士预言了大预言家的降临。</Text>
-			</Set>
-		</Update>
-		<Update>
-			<Where Tag="TXT_KEY_GOODY_CHOOSE_PROPHET_FAITH" />
-			<Set>
-				<Text>让传教士预言大先知的降临。</Text>
-			</Set>
-		</Update>
-		<Update>
-			<Where Tag="TXT_KEY_GOODY_FAITH" />
-			<Set>
-				<Text>您发现了一座古老的祭司神殿。祭司向您揭示了神的啟示，赐予您祝福。</Text>
-			</Set>
-		</Update>
-		<Update>
-			<Where Tag="TXT_KEY_GOODY_CULTURE" />
-			<Set>
-				<Text>您找到了让人民敬畏的文化宝物！</Text>
-			</Set>
-		</Update>
-		<Update>
-			<Where Tag="TXT_KEY_MISC_RECEIVED_GOLD" />
-			<Set>
-				<Text>[SPACE]您获得了{1_Num}[ICON_GOLD]枚金币！</Text>
-			</Set>
-		</Update>
+		<Replace Tag="TXT_KEY_GOODY_CHOOSE_PROPHET_FAITH">
+			<Text>让传教士预言大先知的降临。</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_GOODY_GOLD">
+			<Text>您在该遗迹中找到了上古帝国的宝藏！</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_GOODY_PROPHET_FAITH">
+			<Text>您发现了一处秘密的宗教社区。传教士预言了大预言家的降临。</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_GOODY_FAITH">
+			<Text>您发现了一座古老的祭司神殿。祭司向您揭示了神的啟示，赐予您祝福。</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_GOODY_CULTURE">
+			<Text>您找到了让人民敬畏的文化宝物！</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_MISC_RECEIVED_GOLD">
+			<Text>[SPACE]您获得了{1_Num}[ICON_GOLD]枚金币！</Text>
+		</Replace>
 		<Replace Tag="TXT_KEY_MISC_RECEIVED_CULTURE">
 			<Text>[SPACE]您获得了{1_Num}[ICON_CULTURE]文化！</Text>
 		</Replace>
@@ -308,6 +258,39 @@
 
 	<!-- New Yield Modifier -->
 	<Language_zh_CN>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_FEATURES">
+			<Text>[NEWLINE][ICON_BULLET]来自有市民工作的地貌的修正: {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_TERRAINS">
+			<Text>[NEWLINE][ICON_BULLET]来自有市民工作的地形的修正: {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_IMPROVEMENTS">
+			<Text>[NEWLINE][ICON_BULLET]来自有市民工作的改良设施的修正: {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_SPECIALIST">
+			<Text>[NEWLINE][ICON_BULLET]来自专家: {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_SPIES">
+			<Text>[NEWLINE][ICON_BULLET]活跃间谍数的城市修正值: {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_FROM_HEALTH_MOD">
+			<Text>[NEWLINE][ICON_BULLET]健康度的城市修正值: {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_FROM_INTER_TRADE_MOD">
+			<Text>[NEWLINE][ICON_BULLET]商路数量的修正值: {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_FROM_CRIME_MOD">
+			<Text>[NEWLINE][ICON_BULLET]犯罪率的城市修正值: {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_POLICY_CITY_LOVE_KING">
+			<Text>[NEWLINE][ICON_BULLET]爱领袖日修正(政策): {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_LOCAL_CITY_WONDER">
+			<Text>[NEWLINE][ICON_BULLET]城市级修正(世界奇观): {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_LOCAL_CITY_WONDER_GLOBAL">
+			<Text>[NEWLINE][ICON_BULLET]全局城市修正(世界奇观): {1_Num}%</Text>
+		</Replace>
 		<Replace Tag="TXT_KEY_PRODMOD_YIELD_NUM_GREAT_WORK">
 			<Text>[NEWLINE][ICON_BULLET]杰作修正: {1_Num}%</Text>
 		</Replace>
@@ -316,6 +299,36 @@
 		</Replace>
 		<Replace Tag="TXT_KEY_PRODMOD_YIELD_NUM_PER_GP_CREATION">
 			<Text>[NEWLINE][ICON_BULLET]文明诞生的伟人数量修正: {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_POLICY_TRADE_ROUTE_NUM">
+			<Text>[NEWLINE][ICON_BULLET]商路数量修正(政策): {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_POLICY_CITY_NUMBER">
+			<Text>[NEWLINE][ICON_BULLET]城市数量修正(政策): {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_RESOURCE_BUFF">
+			<Text>[NEWLINE][ICON_BULLET]战略资源修正: {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_HAPPINESS_GLOBAL">
+			<Text>[NEWLINE][ICON_BULLET]快乐度修正(全局): {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_HAPPINESS_POLICY">
+			<Text>[NEWLINE][ICON_BULLET]快乐度修正(政策): {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_PER_ERA">
+			<Text>[NEWLINE][ICON_BULLET]时代修正: {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_MINOR_TRADE_LOCAL">
+			<Text>[NEWLINE][ICON_BULLET]城邦商路本地修正: {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_YIELD_MINOR_TRADE_GLOBAL">
+			<Text>[NEWLINE][ICON_BULLET]城邦商路全局修正: {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_PRODMOD_WONDER_TRAIT">
+			<Text>[NEWLINE][ICON_BULLET]特质修正(奇观): {1_Num}%</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_ADJACENT_FEATURE">
+			<Text>[NEWLINE][ICON_BULLET]临近地貌修正: {1_Num}%</Text>
 		</Replace>
 	</Language_zh_CN>
 
@@ -381,24 +394,6 @@
 			<Text>[COLOR_NEGATIVE_TEXT]{1_num}[ENDCOLOR] [ICON_CITIZEN] 市民在你的城市中被杀害：{2_CityName}</Text>
 		</Replace>
 
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_LOCAL_CITY_WONDER">
-			<Text>
-				[NEWLINE][ICON_BULLET]城市级修正(世界奇观): {1_Num}%
-			</Text>
-		</Replace>
-
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_POLICY_TRADE_ROUTE_NUM">
-			<Text>
-				[NEWLINE][ICON_BULLET]商路数量修正(政策): {1_Num}%
-			</Text>
-		</Replace>
-
-		<Replace Tag="TXT_KEY_TP_HAPPINESS_FAITH">
-			<Text>
-				{1_Happiness}来自[ICON_PEACE]信仰。
-			</Text>
-		</Replace>
-
 		<Replace Tag="TXT_KEY_NOTIFICATION_CITY_POPULATION_LOST_BY_RANGEDFIRE">
 			<Text>{2_CityName:textkey}的防御工事已经被摧毁殆尽，你的市民失去了庇护！一个单位的人口被敌方{1_UnitName}的远程火力杀死。</Text>
 		</Replace>
@@ -406,32 +401,17 @@
 			<Text>城市遭到轰炸！</Text>
 		</Replace>
 
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_POLICY_CITY_NUMBER">
-			<Text>
-				[NEWLINE][ICON_BULLET]城市数量修正(政策): {1_Num}%
-			</Text>
-		</Replace>
 		<Replace Tag="TXT_KEY_NOTIFICATION_ATTACKING_CITY_LOST_MOVEMENT">
 			<Text>你的{@1_name}攻击城市后失去了所有[ICON_MOVES]移动力！</Text>
 		</Replace>
 
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_RESOURCE_BUFF">
-			<Text>
-				[NEWLINE][ICON_BULLET]战略资源修正: {1_Num}%
-			</Text>
+		<Replace Tag="TXT_KEY_NOTIFICATION_CHAIN_REACTION_ATTACKER">
+			<Text>你的{1_UnitName}对敌方所有可见地块上的军事单位造成[COLOR_POSITIVE_TEXT]{2_Percent}%[ENDCOLOR]链式反应伤害</Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_NOTIFICATION_CHAIN_REACTION_DEFENDER">
+			<Text>敌方的{1_UnitName}对你所有其可见地块上的军事单位造成[COLOR_NEGATIVE_TEXT]{2_Percent}%[ENDCOLOR]链式反应伤害</Text>
 		</Replace>
 
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_HAPPINESS_GLOBAL">
-			<Text>
-				[NEWLINE][ICON_BULLET]快乐度修正(全局): {1_Num}%
-			</Text>
-		</Replace>
-
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_HAPPINESS_POLICY">
-			<Text>
-				[NEWLINE][ICON_BULLET]快乐度修正(政策): {1_Num}%
-			</Text>
-		</Replace>
 		<Replace Tag="TXT_KEY_LEAGUE_OVERVIEW_EFFECT_SUMMARY_EMBARGO_IDEOLOGY">
 			<Text>无法与非同一意识形态的文明以及非结盟城邦建立国际[ICON_INTERNATIONAL_TRADE]商路。已结盟的城邦[ICON_INFLUENCE]影响力不会衰退。</Text>
 		</Replace>
@@ -504,6 +484,13 @@
 		<Replace Tag="TXT_KEY_FOUNDED_CITY_LEVEL_PREVIEW">
 			<Text>如果你在此建立城市，预计腐败分数为：{1_score} ({2_level})</Text>
 		</Replace>
+	</Language_zh_CN>
+
+	<Language_zh_CN>
+		<Replace Tag="TXT_KEY_TP_HAPPINESS_FAITH">
+			<Text>{1_Happiness}来自[ICON_PEACE]信仰。</Text>
+		</Replace>
+
 		<Replace Tag="TXT_KEY_TOURISM_FROM_CITY_RATE">
 			<Text>{1_Num}[ICON_TOURISM]魅力 来自建筑、地形等:</Text>
 		</Replace>
@@ -524,6 +511,9 @@
 		</Replace>
 		<Replace Tag="TXT_KEY_TOURISM_HELP_INFO">
 			<Text>[ICON_TOURISM]魅力由杰作、文物或建筑来产生，是你将你的文化影响力扩张到其它文明的主要途径。 </Text>
+		</Replace>
+		<Replace Tag="TXT_KEY_CO_PLAYER_TOURISM_IGNOR_TECH_BONUS">
+			<Text>无视科技加成[NEWLINE]</Text>
 		</Replace>
 		
 		<Replace Tag="TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_NON_SPECIALIST_CITIZENS">
@@ -625,17 +615,15 @@
 		<Replace Tag="TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_LEAGUES">
 			<Text>[NEWLINE][ICON_BULLET]{1_Num}{2_IconString} 来自世界议会</Text>
 		</Replace>
-
 		<Replace Tag="TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_PROJECTS">
 			<Text>[NEWLINE][ICON_BULLET]{1_Num}{2_IconString} 来自已完成计划</Text>
 		</Replace>
 		<Replace Tag="TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_ERA">
 			<Text>[NEWLINE][ICON_BULLET]{1_Num}{2_IconString} 来自时代</Text>
 		</Replace>
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_PER_ERA">
-			<Text>[NEWLINE][ICON_BULLET]时代修正: {1_Num}%</Text>
-		</Replace>
+	</Language_zh_CN>
 
+	<Language_zh_CN>
 		<Replace Tag="TXT_KEY_VOLCAN_EVENT_TITLE">
 			<Text>火山爆发！</Text>
 		</Replace>
@@ -647,13 +635,6 @@
 		</Replace>
 		<Replace Tag="TXT_KEY_VOLCANO_EVENT_3">
 			<Text>一处火山发生了超大规模喷发。</Text>
-		</Replace>
-
-		<Replace Tag="TXT_KEY_NOTIFICATION_INSTANT_TOURISM_WHEN_CONQUER">
-			<Text>你征服了{1_city}，对所有已见面文明传播了+{2_num}[ICON_TOURISM]魅力影响。</Text>
-		</Replace>
-		<Replace Tag="TXT_KEY_CO_PLAYER_TOURISM_DIFFERENT_IDEOLOGY">
-			<Text>+{1_Num}%奖励 由于政策对不同意识形态加成[NEWLINE]</Text>
 		</Replace>
 
 		<Replace Tag="TXT_KEY_NO_ACTION_LACKING_TROOPS">
@@ -671,15 +652,7 @@
 		<Replace Tag="TXT_KEY_NOTIFICATION_OVER_RESOURCE_LIMIT_UNHAPPINESS">
 			<Text>[NEWLINE][ICON_BULLET]全国[ICON_HAPPINESS_4]不满[COLOR_NEGATIVE_TEXT]+{1_Num}%[ENDCOLOR]</Text>
 		</Replace>
-		<Replace Tag="TXT_KEY_CO_PLAYER_TOURISM_IGNOR_TECH_BONUS">
-			<Text>无视科技加成[NEWLINE]</Text>
-		</Replace>
-		<Replace Tag="TXT_KEY_NOTIFICATION_CHAIN_REACTION_ATTACKER">
-			<Text>你的{1_UnitName}对敌方所有可见地块上的军事单位造成[COLOR_POSITIVE_TEXT]{2_Percent}%[ENDCOLOR]链式反应伤害</Text>
-		</Replace>
-		<Replace Tag="TXT_KEY_NOTIFICATION_CHAIN_REACTION_DEFENDER">
-			<Text>敌方的{1_UnitName}对你所有其可见地块上的军事单位造成[COLOR_NEGATIVE_TEXT]{2_Percent}%[ENDCOLOR]链式反应伤害</Text>
-		</Replace>
+
 		<Replace Tag="TXT_KEY_MISC_CAPTURE_PROJECT">
 			<Text>{1_PlyrName}已知悉{@2_PrjctName}的秘密!</Text>
 		</Replace>
@@ -703,14 +676,11 @@
 			<Text>[COLOR_NEGATIVE_TEXT]您曾经签订大规模交易合约，但没有履行到底！[ENDCOLOR]</Text>
 		</Replace>
 
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_MINOR_TRADE_LOCAL">
-			<Text>[NEWLINE][ICON_BULLET]城邦商路本地修正: {1_Num}%</Text>
+		<Replace Tag="TXT_KEY_NOTIFICATION_INSTANT_TOURISM_WHEN_CONQUER">
+			<Text>你征服了{1_city}，对所有已见面文明传播了+{2_num}[ICON_TOURISM]魅力影响。</Text>
 		</Replace>
-		<Replace Tag="TXT_KEY_PRODMOD_YIELD_MINOR_TRADE_GLOBAL">
-			<Text>[NEWLINE][ICON_BULLET]城邦商路全局修正: {1_Num}%</Text>
-		</Replace>
-		<Replace Tag="TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_ADJACENT_FEATURE">
-			<Text>[NEWLINE][ICON_BULLET]临近地貌修正: {1_Num}%</Text>
+		<Replace Tag="TXT_KEY_CO_PLAYER_TOURISM_DIFFERENT_IDEOLOGY">
+			<Text>+{1_Num}%奖励 由于政策对不同意识形态加成[NEWLINE]</Text>
 		</Replace>
 
 		<Replace Tag="TXT_KEY_TRAIT_CULTURE_FROM_UNIT">
@@ -799,10 +769,6 @@
 			<Text>{1_IconString}{2_Description}总值[COLOR_NEGATIVE_TEXT]{3_Num}%[ENDCOLOR]</Text>
 		</Replace>
 
-		<Replace Tag="TXT_KEY_PRODMOD_WONDER_TRAIT">
-			<Text>[NEWLINE][ICON_BULLET]特质修正(奇观): {1_Num}%</Text>
-		</Replace>
-
 		<Replace Tag="TXT_KEY_HOLY_CITY_REGAINED">
 			<Text>[ICON_RELIGION]圣城光复！</Text>
 		</Replace>
@@ -831,5 +797,4 @@
 			<Text>[COLOR_NEGATIVE_TEXT]MPDLL出现错误，如果你使用的都是最新版本，请和管理员联系[COLOR_NEGATIVE_TEXT]</Text>
 		</Replace>
 	</Language_zh_CN>
-
 </GameData>
