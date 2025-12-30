@@ -22803,7 +22803,7 @@ int CvCity::getRiverPlotYield(YieldTypes eIndex) const
 	VALIDATE_OBJECT();
 	PRECONDITION(eIndex >= 0, "eIndex expected to be >= 0");
 	PRECONDITION(eIndex < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
-	return m_aiRiverPlotYield[eIndex] + GET_PLAYER(getOwner()).GetRiverPlotYield(eIndex);
+	return m_aiRiverPlotYield[eIndex] + GET_PLAYER(getOwner()).GetRiverPlotYield(eIndex) + GET_PLAYER(getOwner()).GetPlayerTraits()->GetRiverPlotYieldChanges(eIndex);
 }
 
 //	--------------------------------------------------------------------------------
@@ -23477,6 +23477,24 @@ int CvCity::getBaseYieldRateModifier(YieldTypes eIndex, int iAssumedExtraModifie
 	iModifier += iTempMod;
 	if (toolTipSink)
 		GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_SPECIALIST", iTempMod);
+	// Trait Modifier from Adjacent Feature
+	iTempMod = kOwner.GetPlayerTraits()->GetCityYieldModifierFromAdjacentFeature(eIndex, this);
+	iModifier += iTempMod;
+	if (toolTipSink)
+		GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_ADJACENT_FEATURE", iTempMod);
+	// Trait Modifier from Major Religion Follower
+	if (pReligion)
+	{
+		int iFollowers = GetCityReligions()->GetNumFollowers(eMajority);
+		int iTraitModifierTimes100 = iFollowers * kOwner.GetPlayerTraits()->GetPerMajorReligionFollowerYieldModifierTimes100(eIndex) / 100;
+		int iMax = kOwner.GetPlayerTraits()->GetPerMajorReligionFollowerYieldModifierMax(eIndex);
+		if (iMax > 0) iTraitModifierTimes100 = std::min(iMax, iTraitModifierTimes100);
+
+		iTempMod = iTraitModifierTimes100;
+		iModifier += iTempMod;
+		if (toolTipSink)
+			GC.getGame().BuildProdModHelpText(toolTipSink, "TXT_KEY_PRODMOD_YIELD_BELIEF", iTempMod);
+	}
 
 	// Puppet
 	if (IsPuppet())
@@ -24108,6 +24126,12 @@ int CvCity::getBaseYieldRateTimes100(const YieldTypes eYield, CvString* tooltipS
 		iYield += iTempYield;
 		if (tooltipSink)
 			GC.getGame().BuildYieldTimes100HelpText(tooltipSink, "TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_ESPIONAGE_SPY", iTempYield, szIconString);
+	}
+	{
+		iTempYield = GET_PLAYER(m_eOwner).GetPlayerTraits()->GetCityYieldPerAdjacentFeature(eYield, this);
+		iYield += iTempYield;
+		if (tooltipSink)
+			GC.getGame().BuildYieldTimes100HelpText(tooltipSink, "TXT_KEY_CITYVIEW_BASE_YIELD_TT_FROM_PER_ADJACENT_FEATURES", iTempYield, szIconString);
 	}
 #if defined(MOD_NUCLEAR_WINTER_FOR_SP)
 	if(!IsNoNuclearWinterLocal())

@@ -470,11 +470,21 @@ public:
 	int GetWLTKDLengthChangeModifier() const;
 	bool IsWLTKDCityNoResearchCost() const;
 
+	int GetSeaTradeRouteYieldTimes100(int i) const;
+	int GetSeaTradeRouteYieldPerEraTimes100(int i) const;
+	int GetRiverPlotYieldChanges(int i) const;
+
 	bool IsHasBuildingClassFaithCost() const;
 	int GetBuildingClassFaithCost(int iBuildingClass) const;
 
 	int GetEraMountainCityYieldChanges(EraTypes eIndex1, YieldTypes eIndex2) const;
 	int GetEraCoastCityYieldChanges(EraTypes eIndex1, YieldTypes eIndex2) const;
+	
+	int GetCityYieldPerAdjacentFeature(FeatureTypes eIndex1, YieldTypes eIndex2) const;
+	const std::vector<std::tr1::unordered_map<FeatureTypes, std::pair<int, int>>>& GetCityYieldModifierFromAdjacentFeature() const;
+
+	int GetPerMajorReligionFollowerYieldModifierTimes100(int i) const;
+	int GetPerMajorReligionFollowerYieldModifierMax(int i) const;
 
 	virtual bool CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility);
 
@@ -834,10 +844,20 @@ protected:
 	int m_iWLTKDLengthChangeModifier = 0;
 	bool m_bWLTKDCityNoResearchCost = false;
 
+	int* m_piSeaTradeRouteYieldTimes100 = nullptr;
+	int* m_piSeaTradeRouteYieldPerEraTimes100 = nullptr;
+	int* m_piRiverPlotYieldChanges = nullptr;
+
 	int* m_piBuildingClassFaithCost = nullptr;
 
 	int** m_ppiEraMountainCityYieldChanges = nullptr;
 	int** m_ppiEraCoastCityYieldChanges = nullptr;
+
+	int** m_ppiCityYieldPerAdjacentFeature;
+	std::vector<std::tr1::unordered_map<FeatureTypes, std::pair<int, int>>> m_CityYieldModifierFromAdjacentFeature;
+
+	int* m_piPerMajorReligionFollowerYieldModifierTimes100 = nullptr;
+	int* m_piPerMajorReligionFollowerYieldModifierMax = nullptr;
 
 private:
 	CvTraitEntry(const CvTraitEntry&);
@@ -2195,10 +2215,38 @@ public:
 		return m_bWLTKDCityNoResearchCost;
 	}
 
+	int GetSeaTradeRouteYieldTimes100(YieldTypes eYield) const
+	{
+		return m_aiSeaTradeRouteYieldTimes100[eYield];
+	}
+	int GetSeaTradeRouteYieldPerEraTimes100(YieldTypes eYield) const
+	{
+		return m_aiSeaTradeRouteYieldPerEraTimes100[eYield];
+	}
+	int GetRiverPlotYieldChanges(YieldTypes eYield) const
+	{
+		return m_aiRiverPlotYieldChanges[eYield];
+	}
+
 	int GetBuildingClassFaithCost(BuildingClassTypes eBuildingClass) const;
 
 	int GetEraMountainCityYieldChanges(EraTypes eEra, YieldTypes eYield) const;
 	int GetEraCoastCityYieldChanges(EraTypes eEra, YieldTypes eYield) const;
+
+	bool IsCityYieldPerAdjacentFeature(FeatureTypes eFeature, YieldTypes eYield) const;
+	int GetCityYieldPerAdjacentFeature(YieldTypes eYield, const CvCity* pCity) const;
+
+	bool IsCityYieldModifierFromAdjacentFeature(YieldTypes eYield, FeatureTypes eFeature) const;
+	int GetCityYieldModifierFromAdjacentFeature(YieldTypes eYield, const CvCity* pCity) const;
+
+	int GetPerMajorReligionFollowerYieldModifierTimes100(YieldTypes eYieldType) const
+	{
+		return m_aiPerMajorReligionFollowerYieldModifierTimes100[eYieldType];
+	}
+	int GetPerMajorReligionFollowerYieldModifierMax(YieldTypes eYieldType) const
+	{
+		return m_aiPerMajorReligionFollowerYieldModifierMax[eYieldType];
+	}
 
 private:
 	bool ConvertBarbarianCamp(CvUnit* pByUnit, CvPlot* pPlot);
@@ -2573,10 +2621,20 @@ private:
 	int m_iWLTKDLengthChangeModifier = 0;
 	bool m_bWLTKDCityNoResearchCost = false;
 
+	std::vector<int> m_aiSeaTradeRouteYieldTimes100;
+	std::vector<int> m_aiSeaTradeRouteYieldPerEraTimes100;
+	std::vector<int> m_aiRiverPlotYieldChanges;
+
 	std::vector<int> m_aiBuildingClassFaithCost;
 
 	std::vector< Firaxis::Array<int, NUM_YIELD_TYPES > > m_ppiEraMountainCityYieldChanges;
 	std::vector< Firaxis::Array<int, NUM_YIELD_TYPES > > m_ppiEraCoastCityYieldChanges;
+
+	std::vector< Firaxis::Array<int, NUM_YIELD_TYPES > > m_ppiCityYieldPerAdjacentFeature;
+	std::vector<std::tr1::unordered_map<FeatureTypes, std::pair<int, int>>> m_CityYieldModifierFromAdjacentFeature;
+
+	std::vector<int> m_aiPerMajorReligionFollowerYieldModifierTimes100;
+	std::vector<int> m_aiPerMajorReligionFollowerYieldModifierMax;
 };
 
 FDataStream& operator>>(FDataStream&, CvPlayerTraits&);
