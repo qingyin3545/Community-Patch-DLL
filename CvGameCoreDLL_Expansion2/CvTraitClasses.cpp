@@ -329,9 +329,17 @@ CvTraitEntry::~CvTraitEntry()
 	CvDatabaseUtility::SafeDelete2DArray(m_ppiYieldChangePerImprovementBuilt);
 	m_pbiYieldFromBarbarianCampClear.clear();
 
+	SAFE_DELETE_ARRAY(m_piSeaTradeRouteYieldTimes100);
+	SAFE_DELETE_ARRAY(m_piSeaTradeRouteYieldPerEraTimes100);
+	SAFE_DELETE_ARRAY(m_piRiverPlotYieldChanges);
+
 	SAFE_DELETE_ARRAY(m_piBuildingClassFaithCost);
 	CvDatabaseUtility::SafeDelete2DArray(m_ppiEraMountainCityYieldChanges);
 	CvDatabaseUtility::SafeDelete2DArray(m_ppiEraCoastCityYieldChanges);
+
+	CvDatabaseUtility::SafeDelete2DArray(m_ppiCityYieldPerAdjacentFeature);
+	SAFE_DELETE_ARRAY(m_piPerMajorReligionFollowerYieldModifierTimes100);
+	SAFE_DELETE_ARRAY(m_piPerMajorReligionFollowerYieldModifierMax);
 }
 
 /// Accessor:: Modifier to experience needed for new level
@@ -2353,6 +2361,18 @@ bool CvTraitEntry::IsWLTKDCityNoResearchCost() const
 {
 	return m_bWLTKDCityNoResearchCost;
 }
+int CvTraitEntry::GetSeaTradeRouteYieldTimes100(int i) const
+{
+	return m_piSeaTradeRouteYieldTimes100 ? m_piSeaTradeRouteYieldTimes100[i] : 0;
+}
+int CvTraitEntry::GetSeaTradeRouteYieldPerEraTimes100(int i) const
+{
+	return m_piSeaTradeRouteYieldPerEraTimes100 ? m_piSeaTradeRouteYieldPerEraTimes100[i] : 0;
+}
+int CvTraitEntry::GetRiverPlotYieldChanges(int i) const
+{
+	return m_piRiverPlotYieldChanges ? m_piRiverPlotYieldChanges[i] : 0;
+}
 bool CvTraitEntry::IsHasBuildingClassFaithCost() const
 {
 	return m_piBuildingClassFaithCost != nullptr;
@@ -2378,6 +2398,30 @@ int CvTraitEntry::GetEraCoastCityYieldChanges(EraTypes eIndex1, YieldTypes eInde
 	PRECONDITION(eIndex2 > -1, "Index out of bounds");
 
 	return m_ppiEraCoastCityYieldChanges ? m_ppiEraCoastCityYieldChanges[eIndex1][eIndex2] : 0;
+}
+int CvTraitEntry::GetCityYieldPerAdjacentFeature(FeatureTypes eIndex1, YieldTypes eIndex2) const
+{
+	PRECONDITION(eIndex1 < GC.getNumFeatureInfos(), "Index out of bounds");
+	PRECONDITION(eIndex1 > -1, "Index out of bounds");
+	PRECONDITION(eIndex2 < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(eIndex2 > -1, "Index out of bounds");
+	return m_ppiCityYieldPerAdjacentFeature ? m_ppiCityYieldPerAdjacentFeature[eIndex1][eIndex2] : 0;
+}
+const std::vector<std::tr1::unordered_map<FeatureTypes, std::pair<int, int>>>& CvTraitEntry::GetCityYieldModifierFromAdjacentFeature() const
+{
+	return m_CityYieldModifierFromAdjacentFeature;
+}
+int CvTraitEntry::GetPerMajorReligionFollowerYieldModifierTimes100(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piPerMajorReligionFollowerYieldModifierTimes100 ? m_piPerMajorReligionFollowerYieldModifierTimes100[i] : 0;
+}
+int CvTraitEntry::GetPerMajorReligionFollowerYieldModifierMax(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piPerMajorReligionFollowerYieldModifierMax ? m_piPerMajorReligionFollowerYieldModifierMax[i] : 0;
 }
 
 /// Load XML data
@@ -3846,6 +3890,10 @@ bool CvTraitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& 
 	m_iWLTKDLengthChangeModifier = kResults.GetInt("WLTKDLengthChangeModifier");
 	m_bWLTKDCityNoResearchCost = kResults.GetBool("WLTKDCityNoResearchCost");
 
+	kUtility.SetYields(m_piSeaTradeRouteYieldTimes100, "Trait_SeaTradeRouteYieldTimes100", "TraitType", szTraitType);
+	kUtility.SetYields(m_piSeaTradeRouteYieldPerEraTimes100, "Trait_SeaTradeRouteYieldPerEraTimes100", "TraitType", szTraitType);
+	kUtility.SetYields(m_piRiverPlotYieldChanges, "Trait_RiverPlotYieldChanges", "TraitType", szTraitType);
+
 	kUtility.PopulateExistingArrayByValue(m_piBuildingClassFaithCost, "BuildingClasses", "Trait_BuildingClassFaithCost", "BuildingClassType", "TraitType", szTraitType, "Cost");
 
 	//EraMountainCityYieldChanges
@@ -3892,6 +3940,54 @@ bool CvTraitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& 
 			m_ppiEraCoastCityYieldChanges[EraID][YieldID] = yield;
 		}
 	}
+	{
+		kUtility.Initialize2DArray(m_ppiCityYieldPerAdjacentFeature, "Features", "Yields");
+
+		std::string strKey("Trait_CityYieldPerAdjacentFeature");
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if(pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select Features.ID as FeatureID, Yields.ID as YieldID, MaxValue from Trait_CityYieldPerAdjacentFeature inner join Features on Features.Type = FeatureType inner join Yields on Yields.Type = YieldType where TraitType = ?");
+		}
+
+		pResults->Bind(1, szTraitType);
+
+		while(pResults->Step())
+		{
+			const int FeatureID = pResults->GetInt(0);
+			const int YieldID = pResults->GetInt(1);
+			const int maxValue = pResults->GetInt(2);
+
+			m_ppiCityYieldPerAdjacentFeature[FeatureID][YieldID] = maxValue;
+		}
+	}
+	{
+		m_CityYieldModifierFromAdjacentFeature.clear();
+		std::string strKey("Trait_m_CityYieldModifierFromAdjacentFeature");
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if(pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select Features.ID as FeatureID, Yields.ID as YieldID, Trait_m_CityYieldModifierFromAdjacentFeature.Yield, Trait_m_CityYieldModifierFromAdjacentFeature.MaxValue from Trait_m_CityYieldModifierFromAdjacentFeature inner join Features on Features.Type = FeatureType inner join Yields on Yields.Type = YieldType where TraitType = ?");
+		}
+
+		pResults->Bind(1, szTraitType);
+
+		while(pResults->Step())
+		{
+			if (m_CityYieldModifierFromAdjacentFeature.size() < NUM_YIELD_TYPES)
+			{
+				m_CityYieldModifierFromAdjacentFeature.clear();
+				m_CityYieldModifierFromAdjacentFeature.resize(NUM_YIELD_TYPES);
+			}
+			FeatureTypes eFeature = (FeatureTypes)pResults->GetInt(0);
+			YieldTypes eYield = (YieldTypes)pResults->GetInt(1);
+			int iYield = pResults->GetInt(2);
+			int iMax = pResults->GetInt(3);
+			m_CityYieldModifierFromAdjacentFeature[eYield][eFeature] = std::make_pair(iYield, iMax);
+		}
+	}
+	kUtility.PopulateArrayByValue(m_piPerMajorReligionFollowerYieldModifierTimes100, "Yields", "Trait_PerMajorReligionFollowerYieldModifierTimes100", "YieldType", "TraitType", szTraitType, "Yield");
+	kUtility.PopulateArrayByValue(m_piPerMajorReligionFollowerYieldModifierMax, "Yields", "Trait_PerMajorReligionFollowerYieldModifierMax", "YieldType", "TraitType", szTraitType, "Max");
 
 	return true;
 }
@@ -5334,6 +5430,15 @@ void CvPlayerTraits::InitPlayerTraits()
 			m_iWLTKDLengthChangeModifier += trait->GetWLTKDLengthChangeModifier();
 			if(trait->IsWLTKDCityNoResearchCost()) m_bWLTKDCityNoResearchCost = trait->IsWLTKDCityNoResearchCost();
 
+			for(int iYield = 0; iYield < NUM_YIELD_TYPES; iYield++)
+			{
+				m_aiSeaTradeRouteYieldTimes100[iYield] += trait->GetSeaTradeRouteYieldTimes100(iYield);
+				m_aiSeaTradeRouteYieldPerEraTimes100[iYield] += trait->GetSeaTradeRouteYieldPerEraTimes100(iYield);
+				m_aiRiverPlotYieldChanges[iYield] += trait->GetRiverPlotYieldChanges(iYield);	
+
+				m_aiPerMajorReligionFollowerYieldModifierTimes100[iYield] += trait->GetPerMajorReligionFollowerYieldModifierTimes100(iYield);
+				m_aiPerMajorReligionFollowerYieldModifierMax[iYield] += trait->GetPerMajorReligionFollowerYieldModifierMax(iYield);
+			}
 			if(trait->IsHasBuildingClassFaithCost())
 			{
 				if(m_aiBuildingClassFaithCost.size() < GC.getNumBuildingClassInfos()) m_aiBuildingClassFaithCost.resize(GC.getNumBuildingClassInfos(), 0);
@@ -5350,6 +5455,17 @@ void CvPlayerTraits::InitPlayerTraits()
 					m_ppiEraMountainCityYieldChanges[iEra][iYield] += trait->GetEraMountainCityYieldChanges((EraTypes)iEra, (YieldTypes)iYield);
 					m_ppiEraCoastCityYieldChanges[iEra][iYield] += trait->GetEraCoastCityYieldChanges((EraTypes)iEra, (YieldTypes)iYield);
 				}
+			}
+			for(int iFeature = 0; iFeature < GC.getNumFeatureInfos(); iFeature++)
+			{
+				for(int iYield = 0; iYield < NUM_YIELD_TYPES; iYield++)
+				{
+					m_ppiCityYieldPerAdjacentFeature[iFeature][iYield] += trait->GetCityYieldPerAdjacentFeature((FeatureTypes)iFeature, (YieldTypes)iYield);
+				}
+			}
+			if(trait->GetCityYieldModifierFromAdjacentFeature().size() > 0)
+			{
+				m_CityYieldModifierFromAdjacentFeature = trait->GetCityYieldModifierFromAdjacentFeature();
 			}
 		}
 	}
@@ -5898,6 +6014,13 @@ void CvPlayerTraits::Reset()
 	m_bAbleToDualEmpire = false;
 	m_bCanFoundCoastCity = false;
 
+	m_aiSeaTradeRouteYieldTimes100.clear();
+	m_aiSeaTradeRouteYieldTimes100.resize(NUM_YIELD_TYPES, 0);
+	m_aiSeaTradeRouteYieldPerEraTimes100.clear();
+	m_aiSeaTradeRouteYieldPerEraTimes100.resize(NUM_YIELD_TYPES, 0);
+	m_aiRiverPlotYieldChanges.clear();
+	m_aiRiverPlotYieldChanges.resize(NUM_YIELD_TYPES, 0);
+
 	m_aiBuildingClassFaithCost.clear();
 	m_aiBuildingClassFaithCost.resize(0);
 
@@ -5910,6 +6033,17 @@ void CvPlayerTraits::Reset()
 		m_ppiEraMountainCityYieldChanges[iEra] = yield;
 		m_ppiEraCoastCityYieldChanges[iEra] = yield;
 	}
+	m_ppiCityYieldPerAdjacentFeature.clear();
+	m_ppiCityYieldPerAdjacentFeature.resize(GC.getNumEraInfos());
+	for(int iFeature = 0; iFeature < GC.getNumFeatureInfos(); iFeature++)
+	{
+		m_ppiCityYieldPerAdjacentFeature[iFeature] = yield;
+	}
+	m_CityYieldModifierFromAdjacentFeature.clear();
+	m_aiPerMajorReligionFollowerYieldModifierTimes100.clear();
+	m_aiPerMajorReligionFollowerYieldModifierTimes100.resize(NUM_YIELD_TYPES, 0);
+	m_aiPerMajorReligionFollowerYieldModifierMax.clear();
+	m_aiPerMajorReligionFollowerYieldModifierMax.resize(NUM_YIELD_TYPES, 0);
 }
 
 /// Does this player possess a specific trait?
@@ -7537,6 +7671,80 @@ int CvPlayerTraits::GetEraCoastCityYieldChanges(EraTypes eEra, YieldTypes eYield
 
 	return m_ppiEraCoastCityYieldChanges[eEra][eYield];
 }
+bool CvPlayerTraits::IsCityYieldPerAdjacentFeature(FeatureTypes eFeature, YieldTypes eYield) const
+{
+	PRECONDITION(eFeature < GC.getNumFeatureInfos(),  "Invalid eImprovement parameter in call to CvPlayerTraits::GetUnimprovedFeatureYieldChange()");
+	PRECONDITION(eYield < NUM_YIELD_TYPES,  "Invalid eYield parameter in call to CvPlayerTraits::GetUnimprovedFeatureYieldChange()");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(eYield > -1, "Index out of bounds");
+
+	return m_ppiCityYieldPerAdjacentFeature[eFeature][eYield] > 0;
+}
+int CvPlayerTraits::GetCityYieldPerAdjacentFeature(YieldTypes eYield, const CvCity* pCity) const
+{
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(eYield > -1, "Index out of bounds");
+
+	int iRtnValue = 0;
+	CvPlot* pAdjacentPlot = NULL;
+	int iMaxValue = 0;
+	for (int iI = 0; iI < NUM_DIRECTION_TYPES; iI++)
+	{
+		pAdjacentPlot = plotDirection(pCity->getX(), pCity->getY(), ((DirectionTypes)iI));
+		if (!pAdjacentPlot) continue;
+		FeatureTypes eFeature = pAdjacentPlot->getFeatureType();
+		if (eFeature == NO_FEATURE) continue;
+		int iTempMax = m_ppiCityYieldPerAdjacentFeature[eFeature][eYield];
+		if(iTempMax <= 0) continue;
+		iRtnValue++;
+		iMaxValue = std::max(iMaxValue, iTempMax);
+	}
+	return std::min(iRtnValue, iMaxValue);
+}
+bool CvPlayerTraits::IsCityYieldModifierFromAdjacentFeature(YieldTypes eYield, FeatureTypes eFeature) const
+{
+	PRECONDITION(eFeature < GC.getNumFeatureInfos(),  "Invalid eImprovement parameter in call to CvPlayerTraits::GetUnimprovedFeatureYieldChange()");
+	PRECONDITION(eYield < NUM_YIELD_TYPES,  "Invalid eYield parameter in call to CvPlayerTraits::GetUnimprovedFeatureYieldChange()");
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(eYield > -1, "Index out of bounds");
+
+	if (m_CityYieldModifierFromAdjacentFeature.size() < NUM_YIELD_TYPES) return false;
+	for (const auto& mapIt : m_CityYieldModifierFromAdjacentFeature[eYield])
+	{
+		FeatureTypes eMapFeature = mapIt.first;
+		if (eMapFeature == eFeature) return true;
+	}
+	return false;
+}
+int CvPlayerTraits::GetCityYieldModifierFromAdjacentFeature(YieldTypes eYield, const CvCity* pCity) const
+{
+	PRECONDITION(eYield < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(eYield > -1, "Index out of bounds");
+
+	if (m_CityYieldModifierFromAdjacentFeature.size() < NUM_YIELD_TYPES) return 0;
+	int iRtnValue = 0;
+	for (const auto& mapIt : m_CityYieldModifierFromAdjacentFeature[eYield])
+	{
+		FeatureTypes eFeature = mapIt.first;
+		const std::pair<int, int>& data = mapIt.second;
+		int iFeatureValue = 0;
+		for (int iI = 0; iI < NUM_DIRECTION_TYPES; iI++)
+		{
+			CvPlot* pAdjacentPlot = plotDirection(pCity->getX(), pCity->getY(), ((DirectionTypes)iI));
+			if (!pAdjacentPlot) continue;
+			FeatureTypes ePlotFeature = pAdjacentPlot->getFeatureType();
+			if (ePlotFeature != eFeature) continue;
+			iFeatureValue += data.first;
+			if (data.second > 0 && iFeatureValue > data.second)
+			{
+				iFeatureValue = data.second;
+				break;
+			}
+		}
+		iRtnValue += iFeatureValue;
+	}
+	return iRtnValue;
+}
 
 // SERIALIZATION METHODS
 
@@ -7984,10 +8192,19 @@ void CvPlayerTraits::Serialize(PlayerTraits& playerTraits, Visitor& visitor)
 	visitor(playerTraits.m_iWLTKDLengthChangeModifier);
 	visitor(playerTraits.m_bWLTKDCityNoResearchCost);
 
+	visitor(playerTraits.m_aiSeaTradeRouteYieldTimes100);
+	visitor(playerTraits.m_aiSeaTradeRouteYieldPerEraTimes100);
+	visitor(playerTraits.m_aiRiverPlotYieldChanges);
+
 	visitor(playerTraits.m_aiBuildingClassFaithCost);
 
 	visitor(playerTraits.m_ppiEraMountainCityYieldChanges);
 	visitor(playerTraits.m_ppiEraCoastCityYieldChanges);
+	
+	visitor(playerTraits.m_ppiCityYieldPerAdjacentFeature);
+	visitor(playerTraits.m_CityYieldModifierFromAdjacentFeature);
+	visitor(playerTraits.m_aiPerMajorReligionFollowerYieldModifierTimes100);
+	visitor(playerTraits.m_aiPerMajorReligionFollowerYieldModifierMax);
 }
 
 /// Serialization read

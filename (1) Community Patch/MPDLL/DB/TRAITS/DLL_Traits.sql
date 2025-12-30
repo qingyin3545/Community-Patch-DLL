@@ -38,16 +38,13 @@ create table Trait_CityYieldPerAdjacentFeature (
     YieldType text references Yields(Type),
     MaxValue integer default 0
 );
+-- SP-TODO:  New column MaxValue
 create table Trait_CityYieldModifierFromAdjacentFeature (
     TraitType text references Traits(Type),
     FeatureType text references Features(Type),
     YieldType text references Yields(Type),
-    Yield integer default 0
-);
-create table Trait_PerMajorReligionFollowerYieldModifier (
-    TraitType text references Traits(Type),
-    YieldType text references Yields(Type),
-    Yield integer default 0
+    Yield integer default 0,
+    MaxValue integer default 0
 );
 create table Trait_PerMajorReligionFollowerYieldModifierTimes100 (
     TraitType text references Traits(Type),
@@ -79,7 +76,6 @@ alter table Traits add AwayFromCapitalCombatModifierMax integer default 0;
 
 alter table Traits add PromotionWhenKilledUnit text references UnitPromotions(Type);
 alter table Traits add PromotionRadiusWhenKilledUnit integer default 0;
-alter table Traits add CiviliansFreePromotion text references UnitPromotions(Type);
 --******************** New War Bonus ********************--
 alter table Traits add NoResistance boolean default 0; --TODO
 alter table Traits add CanConquerUC boolean default 0; --TODO
@@ -122,6 +118,7 @@ alter table Traits add FaithPurchaseCombatUnitCostPercent integer default 0;
 
 -- Deprecated
 alter table Traits add GreatWorksTourism integer default 0; -- Use Trait_GreatWorkYieldChanges
+alter table Traits add CiviliansFreePromotion text references UnitPromotions(Type); --Use Trait_FreePromotion && UnitPromotions_CivilianUnitType
 -- alter table Traits add GoldenAgeOnWar boolean default 0;
 -- alter table Traits add CanFoundMountainCity boolean default 0; -- Use MountainPass
 -- create table Era_MountainCityYieldChanges ( --Use Trait_EraMountainCityYieldChanges
@@ -138,4 +135,9 @@ create table Trait_FreePromotionUnitClasses( --Use Trait_FreePromotionUnitClass
     TraitType text references Traits(Type), 
     UnitClassType text references UnitClasses(Type),
     PromotionType text references UnitPromotions(Type)
+);
+create table Trait_PerMajorReligionFollowerYieldModifier (
+    TraitType text references Traits(Type),
+    YieldType text references Yields(Type),
+    Yield integer default 0
 );
