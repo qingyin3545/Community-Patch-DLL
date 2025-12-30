@@ -3842,10 +3842,16 @@ int CvPlayerTrade::GetTradeConnectionValueTimes100 (const TradeConnection& kTrad
 			}
 		}
 		CvCity* pOriginCity = GC.getGame().GetGameTrade()->GetOriginCity(kTradeConnection);
+		CvPlayerAI& kOriginPlayer = GET_PLAYER(kTradeConnection.m_eOriginOwner);
 		if (pOriginCity)
 		{
 			iValue += pOriginCity->GetTradeRouteFromTheCityYield(eYield) * 100;
-			iValue += pOriginCity->GetTradeRouteFromTheCityYieldPerEra(eYield) * 100 * (GET_PLAYER(kTradeConnection.m_eOriginOwner).GetCurrentEra() + 1);
+			iValue += pOriginCity->GetTradeRouteFromTheCityYieldPerEra(eYield) * 100 * (kOriginPlayer.GetCurrentEra() + 1);
+		}
+		if(kTradeConnection.m_eDomain == DOMAIN_SEA)
+		{
+			iValue += kOriginPlayer.GetPlayerTraits()->GetSeaTradeRouteYieldPerEraTimes100(eYield) * (kOriginPlayer.GetCurrentEra() + 1);
+			iValue += kOriginPlayer.GetPlayerTraits()->GetSeaTradeRouteYieldTimes100(eYield);
 		}
 	}
 	else
