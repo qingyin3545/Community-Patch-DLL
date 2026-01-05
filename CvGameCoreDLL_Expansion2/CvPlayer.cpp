@@ -3520,6 +3520,24 @@ CvCity* CvPlayer::acquireCity(CvCity* pCity, bool bConquest, bool bGift, bool bO
 					DoTechFromCityConquer(pCity);
 			}
 
+			if (GetPlayerTraits()->GetFreePolicyWhenFirstConquerMajorCapital() > 0 && pCity->IsOriginalMajorCapital())
+			{
+				ChangeNumFreePolicies(GetPlayerTraits()->GetFreePolicyWhenFirstConquerMajorCapital());
+			}
+
+			if (GetPlayerTraits()->GetInstantTourismBombWhenFirstConquerMajorCapital() > 0 && pCity->IsOriginalMajorCapital())
+			{
+				int iTurn = GetPlayerTraits()->GetInstantTourismBombWhenFirstConquerMajorCapital();
+				const int iValue = iTurn * GetCulture()->GetTourism() / 100;
+				if (iValue > 0)
+				{
+					GetCulture()->AddTourismAllKnownCivs(iValue);
+					CvString strBuffer = GetLocalizedText("TXT_KEY_NOTIFICATION_INSTANT_TOURISM_WHEN_CONQUER", pCity->getNameKey(), iValue);
+					ICvUserInterface2* pkDLLInterface = GC.GetEngineUserInterface();
+					pkDLLInterface->AddMessage(0, GetID(), true, GC.getEVENT_MESSAGE_TIME(), strBuffer /*, "AS2D_COMBAT", MESSAGE_TYPE_INFO, pkDefender->getUnitInfo().GetButton(), (ColorTypes)GC.getInfoTypeForString("COLOR_GREEN"), pkTargetPlot->getX(), pkTargetPlot->getY()*/);
+				}
+			}
+
 			// Golden Age turns from conquering a city?
 			if (GetPlayerTraits()->IsConquestOfTheWorld())
 			{
@@ -25595,6 +25613,35 @@ void CvPlayer::DoUnitKilledCombat(CvUnit* pKillingUnit, PlayerTypes eKilledPlaye
 		pKilledPlayer.CheckAndUpdateWarCasualtiesCounter();
 	}
 #endif
+	if(pKillingUnit != NULL && pKillingUnit->plot() != NULL)
+	{
+		CvPlayerAI &pKillingPlayer = GET_PLAYER(pKillingUnit->getOwner());
+		PromotionTypes promotionWhenKilledUnit = (PromotionTypes)pKillingPlayer.GetPlayerTraits()->GetPromotionWhenKilledUnit();
+		if(promotionWhenKilledUnit != NO_PROMOTION)
+		{
+			CvPlot* pPlot = pKillingUnit->plot();
+			int iRange = pKillingPlayer.GetPlayerTraits()->GetPromotionRadiusWhenKilledUnit();
+			int iPlotX = pPlot->getX();
+			int iPlotY = pPlot->getY();
+			for(int iSX = -iRange; iSX <= iRange; iSX++)
+			{
+				for(int iSY = -iRange; iSY <= iRange; iSY++)
+				{
+					CvPlot* pLoopPlot = plotXYWithRangeCheck(iPlotX, iPlotY, iSX, iSY, iRange);
+					if (pLoopPlot == NULL) continue;
+					int iPlotNumUnits = pLoopPlot->getNumUnits();
+
+					for (int iK = 0; iK < iPlotNumUnits; iK++)
+					{
+						CvUnit* pLoopUnit = pLoopPlot->getUnitByIndex(iK);
+						if (pLoopUnit == NULL || pLoopUnit->getOwner() != pKillingUnit->getOwner()) continue;
+						
+						pLoopUnit->setHasPromotion(promotionWhenKilledUnit,true);
+					}
+				}
+			}
+		}
+	}
 }
 void CvPlayer::doInstantYield(InstantYieldType iType, bool bCityFaith, GreatPersonTypes eGreatPerson, BuildingTypes ePassBuilding, int iPassYield, bool bEraScale, PlayerTypes ePlayer, CvPlot* pPlot, bool bSuppress, CvCity* pCity, bool bDomainSea, bool bInternational, bool bEvent, YieldTypes ePassYield, CvUnit* pUnit, TerrainTypes ePassTerrain, CvMinorCivQuest* pQuestData, CvCity* pOtherCity, CvUnit* pAttackingUnit)
 {
@@ -35784,6 +35831,8 @@ void CvPlayer::SetGetsScienceFromPlayer(PlayerTypes ePlayer, bool bNewValue)
 /// Player spending too much cash?
 void CvPlayer::DoBankruptcy()
 {
+	if(GetPlayerTraits()->IsNoDoDeficit()) return;
+
 	if (GAMEEVENTINVOKE_TESTALL(GAMEEVENT_PlayerCanDisband, GetID()) == GAMEEVENTRETURN_FALSE)
 		return;
 
@@ -51278,6 +51327,38 @@ int CvPlayer::GetHappinessFromFaith() const
 	int iModifier = GetPlayerPolicies()->GetNumericModifier(POLICYMOD_GLOBAL_HAPPINESS_FROM_FAITH_PERCENT);
 	if (iModifier == 0) return 0;
 	return iModifier * GetFaithTimes100();
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetAllyCityStateCombatModifier()
+{
+	if (GetPlayerTraits()->GetAllyCityStateCombatModifier() == 0) return 0;
+
+	int iTraitModifier = GetNumCSAllies() * GetPlayerTraits()->GetAllyCityStateCombatModifier();
+	if (GetPlayerTraits()->GetAllyCityStateCombatModifierMax() > 0)
+	{
+		iTraitModifier = std::min(iTraitModifier, GetPlayerTraits()->GetAllyCityStateCombatModifierMax());
+	}
+	return iTraitModifier;
+}
+
+//	--------------------------------------------------------------------------------
+int CvPlayer::GetAwayFromCapitalCombatModifier(const CvPlot* pBattlePlot)
+{
+	int iTraitModifier = GetPlayerTraits()->GetAwayFromCapitalCombatModifier();
+	if(iTraitModifier == 0) return 0;
+
+	CvCity* pCapital = getCapitalCity();
+	if(pCapital)
+	{
+		int iDistanceToCapital = plotDistance(pBattlePlot->getX(), pBattlePlot->getY(), pCapital->getX(), pCapital->getY());
+		iTraitModifier = iDistanceToCapital * iTraitModifier;
+		if (GetPlayerTraits()->GetAwayFromCapitalCombatModifierMax() > 0)
+		{
+			iTraitModifier = std::min(iTraitModifier, GetPlayerTraits()->GetAwayFromCapitalCombatModifierMax());
+		}
+	}
+	return iTraitModifier;
 }
 
 //	--------------------------------------------------------------------------------

@@ -715,12 +715,16 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(GetHappinessCombatModifier);
 	Method(GetResourceCombatModifier);
 	Method(GetNearbyUnitPromotionBonus);
+	Method(GetAwayFromCapitalCombatModifier);
 	Method(GetCombatStrengthChangeFromKilledUnits);
 	Method(ChangeCombatStrengthChangeFromKilledUnits);
 	Method(SetCombatStrengthChangeFromKilledUnits);
 	Method(GetRangedCombatStrengthChangeFromKilledUnits);
 	Method(ChangeRangedCombatStrengthChangeFromKilledUnits);
 	Method(SetRangedCombatStrengthChangeFromKilledUnits);
+	Method(GetMaxHitPointsChangeFromRazedCityPop);
+	Method(ChangeMaxHitPointsChangeFromRazedCityPop);
+	Method(SetMaxHitPointsChangeFromRazedCityPop);
 	Method(GetExtraPopConsume);
 	Method(SetExtraPopConsume);
 	Method(IsCannotBeCapturedUnit);
@@ -7032,7 +7036,9 @@ int CvLuaUnit::lGetHeightAdvantageAttckMod(lua_State* L)
 int CvLuaUnit::lGetAllyCityStateCombatModifier(lua_State* L)
 {
 	CvUnit* pkUnit = GetInstance(L);
-	lua_pushinteger(L, GC.GetIndependentPromotion()->GetAllyCityStateCombatModifier(*pkUnit));
+	int iResult = GC.GetIndependentPromotion()->GetAllyCityStateCombatModifier(*pkUnit);
+	iResult += GET_PLAYER(pkUnit->getOwner()).GetAllyCityStateCombatModifier();
+	lua_pushinteger(L, iResult);
 	return 1;
 }
 int CvLuaUnit::lGetHappinessCombatModifier(lua_State* L)
@@ -7051,6 +7057,16 @@ int CvLuaUnit::lGetNearbyUnitPromotionBonus(lua_State* L)
 {
 	CvUnit* pkUnit = GetInstance(L);
 	lua_pushinteger(L, GC.GetIndependentPromotion()->GetNearbyUnitPromotionBonus(*pkUnit));
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetAwayFromCapitalCombatModifier(lua_State* L)
+{
+	CvUnit* pkUnit = GetInstance(L);
+	CvPlot* TargetPlot = CvLuaPlot::GetInstance(L, 2, false);
+	int iResult = 0;
+	if(TargetPlot != nullptr)
+		iResult = GET_PLAYER(pkUnit->getOwner()).GetAwayFromCapitalCombatModifier(TargetPlot);
 	return 1;
 }
 //------------------------------------------------------------------------------
@@ -7179,6 +7195,10 @@ int CvLuaUnit::lSetRangedCombatStrengthChangeFromKilledUnits(lua_State* L)
 	pkUnit->SetRangedCombatStrengthChangeFromKilledUnits(iValue);
 	return 0;
 }
+//------------------------------------------------------------------------------
+LUAAPIIMPL(Unit, GetMaxHitPointsChangeFromRazedCityPop)
+LUAAPIIMPL(Unit, ChangeMaxHitPointsChangeFromRazedCityPop)
+LUAAPIIMPL(Unit, SetMaxHitPointsChangeFromRazedCityPop)
 //------------------------------------------------------------------------------
 LUAAPIIMPL(Unit, GetExtraPopConsume)
 LUAAPIIMPL(Unit, SetExtraPopConsume)

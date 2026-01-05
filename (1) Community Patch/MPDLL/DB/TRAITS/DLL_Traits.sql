@@ -57,20 +57,19 @@ create table Trait_PerMajorReligionFollowerYieldModifierMax (
     Max integer default 0
 );
 --******************** New Unit/Combat Bonus ********************--
-alter table Traits add TrainedAll boolean default 0;
+alter table Traits add TrainedAll boolean default 0; --TODO
 alter table Traits add NoDoDeficit boolean default 0;
-alter table Traits add FreeGreatPeoplePerEra integer default 0;
-alter table Traits add OwnedReligionUnitCultureExtraTurns integer default 0;
-alter table Traits add InfluenceFromGreatPeopleBirth integer default 0;
-alter table Traits add GoodyUnitUpgradeFirst boolean default 0;
+alter table Traits add FreeGreatPeoplePerEra integer default 0; --TODO
+alter table Traits add InfluenceFromGreatPeopleBirth integer default 0; --TODO
+alter table Traits add GoodyUnitUpgradeFirst boolean default 0; --TODO
 
 alter table Traits add UnitMaxHitPointChangePerRazedCityPop integer default 0;
 alter table Traits add UnitMaxHitPointChangePerRazedCityPopLimit integer default 0;
 
+-- SP-TODO: Lua Interface Changed
 alter table Traits add AllyCityStateCombatModifier integer default 0;
-alter table Traits add AllyCityStateCombatModifierMax integer default -1;
-alter table Traits add AttackBonusAdjacentWhenUnitKilled integer default 0;
-alter table Traits add KilledAttackBonusDecreasePerTurn integer default 0;
+alter table Traits add AllyCityStateCombatModifierMax integer default 0;
+-- SP-TODO: Lua Interface Changed
 alter table Traits add AwayFromCapitalCombatModifier integer default 0;
 alter table Traits add AwayFromCapitalCombatModifierMax integer default 0;
 
@@ -119,6 +118,9 @@ alter table Traits add FaithPurchaseCombatUnitCostPercent integer default 0;
 -- Deprecated
 alter table Traits add GreatWorksTourism integer default 0; -- Use Trait_GreatWorkYieldChanges
 alter table Traits add CiviliansFreePromotion text references UnitPromotions(Type); --Use Trait_FreePromotion && UnitPromotions_CivilianUnitType
+alter table Traits add OwnedReligionUnitCultureExtraTurns integer default 0;
+alter table Traits add AttackBonusAdjacentWhenUnitKilled integer default 0;
+alter table Traits add KilledAttackBonusDecreasePerTurn integer default 0;
 -- alter table Traits add GoldenAgeOnWar boolean default 0;
 -- alter table Traits add CanFoundMountainCity boolean default 0; -- Use MountainPass
 -- create table Era_MountainCityYieldChanges ( --Use Trait_EraMountainCityYieldChanges
