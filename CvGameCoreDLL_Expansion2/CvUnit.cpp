@@ -1768,6 +1768,8 @@ void CvUnit::reset(int iID, UnitTypes eUnit, PlayerTypes eOwner, bool bConstruct
 	m_iCombatStrengthChangeFromKilledUnits = 0;
 	m_iRangedCombatStrengthChangeFromKilledUnits = 0;
 
+	m_iMaxHitPointsChangeFromRazedCityPop = 0;
+
 	m_iExtraPopConsume = 0;
 
 	if(!bConstructorCall)
@@ -2205,6 +2207,10 @@ void CvUnit::convert(CvUnit* pUnit, bool bIsUpgrade)
 
 	SetCombatStrengthChangeFromKilledUnits(pUnit->GetCombatStrengthChangeFromKilledUnits());
 	SetRangedCombatStrengthChangeFromKilledUnits(pUnit->GetRangedCombatStrengthChangeFromKilledUnits());
+
+	SetMaxHitPointsChangeFromRazedCityPop(pUnit->GetMaxHitPointsChangeFromRazedCityPop());
+
+	SetExtraPopConsume(pUnit->GetExtraPopConsume());
 
 	pTransportUnit = pUnit->getTransportUnit();
 
@@ -16298,12 +16304,16 @@ int CvUnit::GetGenericMeleeStrengthModifier(const CvUnit* pOtherUnit, const CvPl
 				}
 			}
 		}
+
+		// Near Promotion Bonus
+		iModifier += GC.GetIndependentPromotion()->GetNearbyUnitPromotionBonus(*this);
 	}
 
 	iModifier += GC.GetIndependentPromotion()->GetAllyCityStateCombatModifier(*this);
 	iModifier += GC.GetIndependentPromotion()->GetHappinessCombatModifier(*this);
 	iModifier += GC.GetIndependentPromotion()->GetResourceCombatModifier(*this);
-	iModifier += GC.GetIndependentPromotion()->GetNearbyUnitPromotionBonus(*this);
+
+	iModifier += kPlayer.GetAllyCityStateCombatModifier();
 
 	// Our empire fights well in Golden Ages?
 	if(kPlayer.isGoldenAge())
@@ -16431,6 +16441,7 @@ int CvUnit::GetGenericMeleeStrengthModifier(const CvUnit* pOtherUnit, const CvPl
 
 		// Capital Defense
 		iModifier += GetCombatModifierFromCapitalDistance(pBattlePlot);
+		iModifier += kPlayer.GetAwayFromCapitalCombatModifier(pBattlePlot);
 
 		// Trait (player level) bonus against higher tech units
 		// Only applies defending friendly territory
@@ -17229,12 +17240,16 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 
 		// Near city bonus
 		iModifier += GetNearbyCityBonusCombatMod(pMyPlot);
+
+		// Near Promotion Bonus
+		iModifier += GC.GetIndependentPromotion()->GetNearbyUnitPromotionBonus(*this);
 	}
 
 	iModifier += GC.GetIndependentPromotion()->GetAllyCityStateCombatModifier(*this);
 	iModifier += GC.GetIndependentPromotion()->GetHappinessCombatModifier(*this);
 	iModifier += GC.GetIndependentPromotion()->GetResourceCombatModifier(*this);
-	iModifier += GC.GetIndependentPromotion()->GetNearbyUnitPromotionBonus(*this);
+
+	iModifier += kPlayer.GetAllyCityStateCombatModifier();
 
 	// Our empire fights well in Golden Ages?
 	if(kPlayer.isGoldenAge())
@@ -17697,6 +17712,7 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 
 	// Fighting near capital
 	iModifier += GetCombatModifierFromCapitalDistance(pMyPlot);
+	iModifier += kPlayer.GetAwayFromCapitalCombatModifier(pMyPlot);
 
 	////////////////////////
 	// ATTACKING A CITY
@@ -29479,6 +29495,7 @@ void CvUnit::Serialize(Unit& unit, Visitor& visitor)
 	visitor(unit.m_iAirSweepDamageMod);
 	visitor(unit.m_iCombatStrengthChangeFromKilledUnits);
 	visitor(unit.m_iRangedCombatStrengthChangeFromKilledUnits);
+	visitor(unit.m_iMaxHitPointsChangeFromRazedCityPop);
 	visitor(unit.m_iExtraPopConsume);
 }
 
@@ -36239,6 +36256,20 @@ void CvUnit::ChangeRangedCombatStrengthChangeFromKilledUnits(int iChange)
 void CvUnit::SetRangedCombatStrengthChangeFromKilledUnits(int iValue)
 {
 	m_iRangedCombatStrengthChangeFromKilledUnits = iValue;
+}
+
+//	--------------------------------------------------------------------------------
+int CvUnit::GetMaxHitPointsChangeFromRazedCityPop() const
+{
+	return m_iMaxHitPointsChangeFromRazedCityPop;
+}
+void CvUnit::ChangeMaxHitPointsChangeFromRazedCityPop(int iValue)
+{
+	m_iMaxHitPointsChangeFromRazedCityPop += iValue;
+}
+void CvUnit::SetMaxHitPointsChangeFromRazedCityPop(int iChange)
+{
+	m_iMaxHitPointsChangeFromRazedCityPop = iChange;
 }
 
 //	--------------------------------------------------------------------------------

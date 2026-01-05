@@ -2305,6 +2305,50 @@ int CvTraitEntry::GetShareAllyResearchPercent() const
 {
 	return m_iShareAllyResearchPercent;
 }
+bool CvTraitEntry::IsNoDoDeficit() const
+{
+	return m_bNoDoDeficit;
+}
+int CvTraitEntry::GetUnitMaxHitPointChangePerRazedCityPop() const
+{
+	return m_iUnitMaxHitPointChangePerRazedCityPop;
+}
+int CvTraitEntry::GetUnitMaxHitPointChangePerRazedCityPopLimit() const
+{
+	return m_iUnitMaxHitPointChangePerRazedCityPopLimit;
+}
+int CvTraitEntry::GetAllyCityStateCombatModifier() const
+{
+	return m_iAllyCityStateCombatModifier;
+}
+int CvTraitEntry::GetAllyCityStateCombatModifierMax() const
+{
+	return m_iAllyCityStateCombatModifierMax;
+}
+int CvTraitEntry::GetAwayFromCapitalCombatModifier() const
+{
+	return m_iAwayFromCapitalCombatModifier;
+}
+int CvTraitEntry::GetAwayFromCapitalCombatModifierMax() const
+{
+	return m_iAwayFromCapitalCombatModifierMax;
+}
+int CvTraitEntry::GetPromotionWhenKilledUnit() const
+{
+	return m_iPromotionWhenKilledUnit;
+}
+int CvTraitEntry::GetPromotionRadiusWhenKilledUnit() const
+{
+	return m_iPromotionRadiusWhenKilledUnit;
+}
+int CvTraitEntry::GetFreePolicyWhenFirstConquerMajorCapital() const
+{
+	return m_iFreePolicyWhenFirstConquerMajorCapital;
+}
+int CvTraitEntry::GetInstantTourismBombWhenFirstConquerMajorCapital() const
+{
+	return m_iInstantTourismBombWhenFirstConquerMajorCapital;
+}
 bool CvTraitEntry::CanDiplomaticMarriage() const
 {
 	return m_bCanDiplomaticMarriage;
@@ -3871,6 +3915,23 @@ bool CvTraitEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& 
 	m_iCultureBonusUnitStrengthModifier = kResults.GetInt("CultureBonusUnitStrengthModifier");
 	m_iShareAllyResearchPercent = kResults.GetInt("ShareAllyResearchPercent");
 
+	m_bNoDoDeficit = kResults.GetBool("NoDoDeficit");
+	
+	m_iUnitMaxHitPointChangePerRazedCityPop = kResults.GetInt("UnitMaxHitPointChangePerRazedCityPop");
+	m_iUnitMaxHitPointChangePerRazedCityPopLimit = kResults.GetInt("UnitMaxHitPointChangePerRazedCityPopLimit");
+	
+	m_iAllyCityStateCombatModifier = kResults.GetInt("AllyCityStateCombatModifier");
+	m_iAllyCityStateCombatModifierMax = kResults.GetInt("AllyCityStateCombatModifierMax");
+	m_iAwayFromCapitalCombatModifier = kResults.GetInt("AwayFromCapitalCombatModifier");
+	m_iAwayFromCapitalCombatModifierMax = kResults.GetInt("AwayFromCapitalCombatModifierMax");
+	
+	szTextVal = kResults.GetText("PromotionWhenKilledUnit");
+	if (szTextVal) m_iPromotionWhenKilledUnit = GC.getInfoTypeForString(szTextVal, true);
+	m_iPromotionRadiusWhenKilledUnit = kResults.GetInt("PromotionRadiusWhenKilledUnit");
+	
+	m_iFreePolicyWhenFirstConquerMajorCapital = kResults.GetInt("FreePolicyWhenFirstConquerMajorCapital");
+	m_iInstantTourismBombWhenFirstConquerMajorCapital = kResults.GetInt("InstantTourismBombWhenFirstConquerMajorCapital");
+
 	m_bCanDiplomaticMarriage = kResults.GetBool("CanDiplomaticMarriage");
 	m_bAbleToDualEmpire = kResults.GetBool("AbleToDualEmpire");
 	m_bCanFoundCoastCity = kResults.GetBool("CanFoundCoastCity");
@@ -5412,6 +5473,22 @@ void CvPlayerTraits::InitPlayerTraits()
 			m_iCultureBonusUnitStrengthModifier = trait->GetCultureBonusUnitStrengthModifier();
 			m_iShareAllyResearchPercent = trait->GetShareAllyResearchPercent();
 
+			if(trait->IsNoDoDeficit()) m_bNoDoDeficit = trait->IsNoDoDeficit();
+			
+			m_iUnitMaxHitPointChangePerRazedCityPop += trait->GetUnitMaxHitPointChangePerRazedCityPop();
+			m_iUnitMaxHitPointChangePerRazedCityPopLimit += trait->GetUnitMaxHitPointChangePerRazedCityPopLimit();
+			
+			m_iAllyCityStateCombatModifier += trait->GetAllyCityStateCombatModifier();
+			m_iAllyCityStateCombatModifierMax += trait->GetAllyCityStateCombatModifierMax();
+			m_iAwayFromCapitalCombatModifier += trait->GetAwayFromCapitalCombatModifier();
+			m_iAwayFromCapitalCombatModifierMax += trait->GetAwayFromCapitalCombatModifierMax();
+			
+			if(trait->GetPromotionWhenKilledUnit() != NO_PROMOTION) m_ePromotionWhenKilledUnit = (PromotionTypes)trait->GetPromotionWhenKilledUnit();
+			m_iPromotionRadiusWhenKilledUnit += trait->GetPromotionRadiusWhenKilledUnit();
+			
+			m_iFreePolicyWhenFirstConquerMajorCapital += trait->GetFreePolicyWhenFirstConquerMajorCapital();
+			m_iInstantTourismBombWhenFirstConquerMajorCapital += trait->GetInstantTourismBombWhenFirstConquerMajorCapital();
+
 			if(trait->CanDiplomaticMarriage()) m_bCanDiplomaticMarriage = trait->CanDiplomaticMarriage();
 			if(trait->IsAbleToDualEmpire()) m_bAbleToDualEmpire = trait->IsAbleToDualEmpire();
 			if(trait->IsCanFoundCoastCity()) m_bCanFoundCoastCity = trait->IsCanFoundCoastCity();
@@ -6009,6 +6086,22 @@ void CvPlayerTraits::Reset()
 	m_iOthersTradeBonusModifier = 0;
 	m_iCultureBonusUnitStrengthModifier = 0;
 	m_iShareAllyResearchPercent = 0;
+
+	m_bNoDoDeficit = false;
+	
+	m_iUnitMaxHitPointChangePerRazedCityPop = 0;
+	m_iUnitMaxHitPointChangePerRazedCityPopLimit = 0;
+	
+	m_iAllyCityStateCombatModifier = 0;
+	m_iAllyCityStateCombatModifierMax = 0;
+	m_iAwayFromCapitalCombatModifier = 0;
+	m_iAwayFromCapitalCombatModifierMax = 0;
+	
+	m_ePromotionWhenKilledUnit = NO_PROMOTION;
+	m_iPromotionRadiusWhenKilledUnit = 0;
+	
+	m_iFreePolicyWhenFirstConquerMajorCapital = 0;
+	m_iInstantTourismBombWhenFirstConquerMajorCapital = 0;
 
 	m_bCanDiplomaticMarriage = false;
 	m_bAbleToDualEmpire = false;
@@ -8174,6 +8267,22 @@ void CvPlayerTraits::Serialize(PlayerTraits& playerTraits, Visitor& visitor)
 	visitor(playerTraits.m_iOthersTradeBonusModifier);
 	visitor(playerTraits.m_iCultureBonusUnitStrengthModifier);
 	visitor(playerTraits.m_iShareAllyResearchPercent);
+
+	visitor(playerTraits.m_bNoDoDeficit);
+	
+	visitor(playerTraits.m_iUnitMaxHitPointChangePerRazedCityPop);
+	visitor(playerTraits.m_iUnitMaxHitPointChangePerRazedCityPopLimit);
+	
+	visitor(playerTraits.m_iAllyCityStateCombatModifier);
+	visitor(playerTraits.m_iAllyCityStateCombatModifierMax);
+	visitor(playerTraits.m_iAwayFromCapitalCombatModifier);
+	visitor(playerTraits.m_iAwayFromCapitalCombatModifierMax);
+	
+	visitor(playerTraits.m_ePromotionWhenKilledUnit);
+	visitor(playerTraits.m_iPromotionRadiusWhenKilledUnit);
+	
+	visitor(playerTraits.m_iFreePolicyWhenFirstConquerMajorCapital);
+	visitor(playerTraits.m_iInstantTourismBombWhenFirstConquerMajorCapital);
 
 	visitor(playerTraits.m_bCanDiplomaticMarriage);
 	visitor(playerTraits.m_bAbleToDualEmpire);

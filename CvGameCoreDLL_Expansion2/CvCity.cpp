@@ -19849,6 +19849,8 @@ bool CvCity::DoRazingTurn()
 		iPopulationDrop *= (100 + kPlayer.GetPlayerTraits()->GetRazeSpeedModifier() + kPlayer.GetRazingSpeedBonus());
 		iPopulationDrop /= 100;
 
+		int iPrePopulation = getPopulation();
+
 		ChangeRazingTurns(-1);
 		changePopulation(-iPopulationDrop, true);
 
@@ -19864,6 +19866,27 @@ bool CvCity::DoRazingTurn()
 		//don't kill the city on an 'off' turn.
 		if (GetRazingTurns() > 0 && getPopulation() <= 0)
 			setPopulation(1);
+
+		int iPopulationDropActual = iPrePopulation - getPopulation();
+		if (iPopulationDropActual > 0 && kPlayer.GetPlayerTraits()->GetUnitMaxHitPointChangePerRazedCityPop() > 0)
+		{
+			int iHitPoint = kPlayer.GetPlayerTraits()->GetUnitMaxHitPointChangePerRazedCityPop() * iPopulationDropActual;
+			int iHitPointMax = kPlayer.GetPlayerTraits()->GetUnitMaxHitPointChangePerRazedCityPopLimit();
+			for(int iPlotLoop = 0; iPlotLoop < GetNumWorkablePlots(); iPlotLoop++)
+			{
+				CvPlot* pLoopPlot = GetCityCitizens()->GetCityPlotFromIndex(iPlotLoop);
+				if (pLoopPlot == NULL || pLoopPlot->getEffectiveOwningCity() != this) continue;
+				
+				for (int iUnitLoop = 0; iUnitLoop < pLoopPlot->getNumUnits(); iUnitLoop++)
+				{
+					CvUnit* unit = pLoopPlot->getUnitByIndex(iUnitLoop);
+					if (unit == NULL || !unit->IsCombatUnit() || unit->getOwner() != getOwner()) continue;
+
+					int iValue = min(iHitPointMax, unit->GetMaxHitPointsChangeFromRazedCityPop() + iHitPoint);
+					unit->SetMaxHitPointsChangeFromRazedCityPop(iValue);
+				}
+			}
+		}
 
 		// Counter has reached 0, disband the City
 		if (GetRazingTurns() <= 0 || getPopulation() <= 0)

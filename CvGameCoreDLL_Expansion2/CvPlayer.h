@@ -3077,6 +3077,9 @@ public:
 	int GetAdequateLuxuryKindCount(int threshold) const;
 	int GetHappinessFromFaith() const;
 
+	int GetAllyCityStateCombatModifier();
+	int GetAwayFromCapitalCombatModifier(const CvPlot* pBattlePlot);
+
 	void DoCombatStrengthChangeFromKill(CvUnit* pAttackingUnit, CvUnit* pDefendingUnit, int iX, int iY);
 
 protected:
