@@ -452,6 +452,22 @@ public:
 	int GetCultureBonusUnitStrengthModifier() const;
 	int GetShareAllyResearchPercent() const;
 
+	bool IsNoDoDeficit() const;
+
+	int GetUnitMaxHitPointChangePerRazedCityPop() const;
+	int GetUnitMaxHitPointChangePerRazedCityPopLimit() const;
+
+	int GetAllyCityStateCombatModifier() const;
+	int GetAllyCityStateCombatModifierMax() const;
+	int GetAwayFromCapitalCombatModifier() const;
+	int GetAwayFromCapitalCombatModifierMax() const;
+
+	int GetPromotionWhenKilledUnit() const;
+	int GetPromotionRadiusWhenKilledUnit() const;
+
+	int GetFreePolicyWhenFirstConquerMajorCapital() const;
+	int GetInstantTourismBombWhenFirstConquerMajorCapital() const;
+
 	bool CanDiplomaticMarriage() const;
 	bool IsAbleToDualEmpire() const;
 	bool IsCanFoundCoastCity() const;
@@ -825,6 +841,22 @@ protected:
 	int m_iOthersTradeBonusModifier = 0;
 	int m_iCultureBonusUnitStrengthModifier = 0;
 	int m_iShareAllyResearchPercent = 0;
+
+	bool m_bNoDoDeficit = false;
+
+	int m_iUnitMaxHitPointChangePerRazedCityPop = 0;
+	int m_iUnitMaxHitPointChangePerRazedCityPopLimit = 0;
+	
+	int m_iAllyCityStateCombatModifier = 0;
+	int m_iAllyCityStateCombatModifierMax = 0;
+	int m_iAwayFromCapitalCombatModifier = 0;
+	int m_iAwayFromCapitalCombatModifierMax = 0;
+	
+	int m_iPromotionWhenKilledUnit = NO_PROMOTION;
+	int m_iPromotionRadiusWhenKilledUnit = 0;
+	
+	int m_iFreePolicyWhenFirstConquerMajorCapital = 0;
+	int m_iInstantTourismBombWhenFirstConquerMajorCapital = 0;
 
 	bool m_bCanDiplomaticMarriage = false;
 	bool m_bAbleToDualEmpire = false;
@@ -2158,6 +2190,55 @@ public:
 		return m_iShareAllyResearchPercent;
 	}
 
+	bool IsNoDoDeficit() const
+	{
+		return m_bNoDoDeficit;
+	}
+
+	int GetUnitMaxHitPointChangePerRazedCityPop() const
+	{
+		return m_iUnitMaxHitPointChangePerRazedCityPop;
+	}
+	int GetUnitMaxHitPointChangePerRazedCityPopLimit() const
+	{
+		return m_iUnitMaxHitPointChangePerRazedCityPopLimit;
+	}
+
+	int GetAllyCityStateCombatModifier() const
+	{
+		return m_iAllyCityStateCombatModifier;
+	}
+	int GetAllyCityStateCombatModifierMax() const
+	{
+		return m_iAllyCityStateCombatModifierMax;
+	}
+	int GetAwayFromCapitalCombatModifier() const
+	{
+		return m_iAwayFromCapitalCombatModifier;
+	}
+	int GetAwayFromCapitalCombatModifierMax() const
+	{
+		return m_iAwayFromCapitalCombatModifierMax;
+	}
+
+	PromotionTypes GetPromotionWhenKilledUnit() const
+	{
+		return m_ePromotionWhenKilledUnit;
+	}
+	int GetPromotionRadiusWhenKilledUnit() const
+	{
+		return m_iPromotionRadiusWhenKilledUnit;
+	}
+
+	int GetFreePolicyWhenFirstConquerMajorCapital() const
+	{
+		return m_iFreePolicyWhenFirstConquerMajorCapital;
+	}
+	int GetInstantTourismBombWhenFirstConquerMajorCapital() const
+	{
+		return m_iInstantTourismBombWhenFirstConquerMajorCapital;
+	}
+
 	bool CanDiplomaticMarriage() const
 	{
 		return m_bCanDiplomaticMarriage;
@@ -2602,6 +2683,22 @@ private:
 	int m_iOthersTradeBonusModifier = 0;
 	int m_iCultureBonusUnitStrengthModifier = 0;
 	int m_iShareAllyResearchPercent = 0;
+
+	bool m_bNoDoDeficit = false;
+	
+	int m_iUnitMaxHitPointChangePerRazedCityPop = 0;
+	int m_iUnitMaxHitPointChangePerRazedCityPopLimit = 0;
+	
+	int m_iAllyCityStateCombatModifier = 0;
+	int m_iAllyCityStateCombatModifierMax = 0;
+	int m_iAwayFromCapitalCombatModifier = 0;
+	int m_iAwayFromCapitalCombatModifierMax = 0;
+	
+	PromotionTypes m_ePromotionWhenKilledUnit = NO_PROMOTION;
+	int m_iPromotionRadiusWhenKilledUnit = 0;
+	
+	int m_iFreePolicyWhenFirstConquerMajorCapital = 0;
+	int m_iInstantTourismBombWhenFirstConquerMajorCapital = 0;
 
 	bool m_bCanDiplomaticMarriage = false;
 	bool m_bAbleToDualEmpire = false;

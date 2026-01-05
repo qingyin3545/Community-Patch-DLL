@@ -715,12 +715,16 @@ protected:
 	LUAAPIEXTN(GetHappinessCombatModifier, int);
 	LUAAPIEXTN(GetResourceCombatModifier, int);
 	LUAAPIEXTN(GetNearbyUnitPromotionBonus, int);
+	LUAAPIEXTN(GetAwayFromCapitalCombatModifier, pPlot);
 	static int lGetCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lChangeCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lSetCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lGetRangedCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lChangeRangedCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lSetRangedCombatStrengthChangeFromKilledUnits(lua_State* L);
+	LUAAPIEXTN(GetMaxHitPointsChangeFromRazedCityPop, int);
+	LUAAPIEXTN(ChangeMaxHitPointsChangeFromRazedCityPop, void, iValue);
+	LUAAPIEXTN(SetMaxHitPointsChangeFromRazedCityPop, void, iChange);
 	LUAAPIEXTN(GetExtraPopConsume, int);
 	LUAAPIEXTN(SetExtraPopConsume, void, iValue);
 	LUAAPIEXTN(IsCannotBeCapturedUnit, bool);
