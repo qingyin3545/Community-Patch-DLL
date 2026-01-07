@@ -501,3 +501,6 @@ public:
 //------------------------------------------------------------------------------
 CvString FormatYieldTimes100(int iYieldTimes100);
 void PrintMemoryInfo(const char* hint);
+
+extern "C" unsigned int _ftoui3(const float x);
+extern "C" double _ltod3(const __int64 x);
