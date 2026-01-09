@@ -30560,14 +30560,6 @@ CvUnit* CvCity::CreateUnit(UnitTypes eUnitType, UnitAITypes eAIType, UnitCreatio
 		kOwner.changeUnitsBuiltCount(eUnitType, 1);
 
 	doUnitCompletionYields(pUnit, eReason);
-
-	int iStrength = std::max(pUnit->GetBaseCombatStrength(), pUnit->GetBaseRangedCombatStrength());
-	if (iStrength > 0)
-	{
-		GET_PLAYER(getOwner()).doInstantYield(INSTANT_YIELD_TYPE_CITY_CREATE_UNIT, false, NO_GREATPERSON, NO_BUILDING, iStrength, 
-			false, NO_PLAYER, NULL, false, this, false, true, false, NO_YIELD, pUnit, NO_TERRAIN, NULL, NULL, NULL);
-	}
-
 	return pUnit;
 }
 
@@ -32324,6 +32316,8 @@ void CvCity::doUnitCompletionYields(CvUnit* pUnit, UnitCreationReason eReason)
 	{
 		return;
 	}
+
+	int iStrength = std::max(pUnit->GetBaseCombatStrength(), pUnit->GetBaseRangedCombatStrength());
 	
 	for (int iYieldLoop = 0; iYieldLoop < NUM_YIELD_TYPES; iYieldLoop++)
 	{
@@ -32352,6 +32346,12 @@ void CvCity::doUnitCompletionYields(CvUnit* pUnit, UnitCreationReason eReason)
 			}
 
 			GET_PLAYER(getOwner()).doInstantYield(eIYieldType, false, NO_GREATPERSON, NO_BUILDING, iYieldQuantityOnCompletion, 
+				false, NO_PLAYER, NULL, false, this, false, true, false, (YieldTypes)iYieldLoop, pUnit, NO_TERRAIN, NULL, NULL, NULL);
+			
+		}
+		if (iStrength > 0)
+		{
+			GET_PLAYER(getOwner()).doInstantYield(INSTANT_YIELD_TYPE_CITY_CREATE_UNIT, false, NO_GREATPERSON, NO_BUILDING, iStrength, 
 				false, NO_PLAYER, NULL, false, this, false, true, false, (YieldTypes)iYieldLoop, pUnit, NO_TERRAIN, NULL, NULL, NULL);
 		}
 	}

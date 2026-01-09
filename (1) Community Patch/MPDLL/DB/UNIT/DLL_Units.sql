@@ -21,12 +21,6 @@ create table UnitClass_PurchaseCollections(
 alter table Units add ExtraXPValueAttack integer default 0;
 alter table Units add ExtraXPValueDefense integer default 0;
 
-create table Unit_InstantYieldFromTrainings (
-    UnitType text references Units(Type),
-    YieldType text references Yields(Type),
-    Yield integer default 0
-);
-
 alter table Units add GivePoliciesWithSpreaded boolean default 0;
 alter table Units add GoldenAgeWithSpreaded boolean default 0;
 alter table Units add GoldFromTourismModifier integer default 0;
@@ -55,3 +49,8 @@ alter table Units add ExtraNukeBlastRadius integer default 0;
 alter table Units add BarbarianCanTrait boolean default 0;
 alter table Units add BarbarianTraitTechObsolete boolean default 0;
 alter table Units add NoSpreadTurnPopModifierAfterRemovingHeresy integer default 0;
+create table Unit_InstantYieldFromTrainings ( -- Use Unit_YieldOnCompletion
+    UnitType text references Units(Type),
+    YieldType text references Yields(Type),
+    Yield integer default 0
+);
