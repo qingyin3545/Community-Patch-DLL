@@ -1961,6 +1961,8 @@ public:
 	int GetFoodKeptFromPollution() const;
 	void ChangeFoodKeptFromPollution(int iChange);
 
+	int GetCuttingBonusModifier() const;
+
 protected:
 	SYNC_ARCHIVE_MEMBER(CvCity)
 

@@ -11795,7 +11795,17 @@ int CvMinorCivAI::GetFriendshipChangePerTurnTimes100(PlayerTypes ePlayer)
 	if (iCurrentInfluence < iRestingPoint)
 	{
 		iChangeThisTurn += /*100*/ GD_INT_GET(MINOR_FRIENDSHIP_NEGATIVE_INCREASE_PER_TURN);
-		int iReligionBonus = IsSameReligionAsMajor(ePlayer) ? /*50*/ GD_INT_GET(MINOR_FRIENDSHIP_RATE_MOD_SHARED_RELIGION) : 0;
+		int iReligionBonus = 0;
+		if (IsSameReligionAsMajor(ePlayer))
+		{
+			iReligionBonus += /*50*/ GD_INT_GET(MINOR_FRIENDSHIP_RATE_MOD_SHARED_RELIGION);
+			ReligionTypes eMajorReligion = GC.getGame().GetGameReligions()->GetReligionCreatedByPlayer(ePlayer);
+			if (eMajorReligion != NO_RELIGION)
+			{
+				const CvReligion* pReligion = GC.getGame().GetGameReligions()->GetReligion(eMajorReligion, ePlayer);
+				if (pReligion) iReligionBonus += pReligion->m_Beliefs.GetSameReligionMinorRecoveryModifier(ePlayer);
+			}
+		}
 
 		if (iChangeThisTurn > 0)
 		{

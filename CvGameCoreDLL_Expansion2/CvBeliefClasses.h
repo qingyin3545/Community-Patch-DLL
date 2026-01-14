@@ -188,6 +188,17 @@ public:
 
 	virtual bool CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility);
 
+	int GetExtraSpies() const;
+	int GetCuttingBonusModifier() const;
+	int GetLandmarksTourismPercent() const;
+	int GetGoldenAgeModifier() const;
+	int GetHolyCityUnitExperence() const;
+	int GetHolyCityPressureModifier() const;
+	bool IsInquisitorProhibitSpreadInAlly() const;
+	int GetSameReligionMinorRecoveryModifier() const;
+	int GetCityExtraMissionarySpreads() const;
+	bool IsGreatPersonPointsPerCity() const;
+
 protected:
 	int m_iMinPopulation;
 	int m_iMinFollowers;
@@ -346,6 +357,17 @@ protected:
 	int m_iPolicyReductionWonderXFollowerCities;
 	bool m_bAIGoodStartingPantheon;
 	CivilizationTypes m_eRequiredCivilization;
+
+	int m_iExtraSpies = 0;
+	int m_iCuttingBonusModifier = 0;
+	int m_iLandmarksTourismPercent = 0;
+	int m_iGoldenAgeModifier = 0;
+	int m_iHolyCityUnitExperence = 0;
+	int m_iHolyCityPressureModifier = 0;
+	bool m_bInquisitorProhibitSpreadInAlly = false;
+	int m_iSameReligionMinorRecoveryModifier = 0;
+	int m_iCityExtraMissionarySpreads = 0;
+	bool m_bGreatPersonPointsPerCity = false;
 
 private:
 	CvBeliefEntry(const CvBeliefEntry&);
@@ -548,6 +570,15 @@ public:
 	int GetIgnorePolicyRequirementsAmount(EraTypes eEra, PlayerTypes ePlayer = NO_PLAYER, const CvCity* pCity = NULL, bool bHolyCityOnly = false) const;
 	int GetCSYieldBonus(PlayerTypes ePlayer = NO_PLAYER, const CvCity* pCity = NULL, bool bHolyCityOnly = false) const;
 	fraction GetVoteFromOwnedImprovement(ImprovementTypes eImprovement, PlayerTypes ePlayer = NO_PLAYER, const CvCity* pCity = NULL, bool bHolyCityOnly = false) const;
+
+
+	int GetCuttingBonusModifier(PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly = false) const;
+	int GetLandmarksTourismPercent(PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly = false) const;
+	int GetHolyCityUnitExperence(PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly = true) const;
+	int GetHolyCityPressureModifier(PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly = true) const;
+	bool IsInquisitorProhibitSpreadInAlly(PlayerTypes ePlayer, const CvCity* pCity = NULL, bool bHolyCityOnly = false) const;
+	int GetSameReligionMinorRecoveryModifier(PlayerTypes ePlayer, const CvCity* pCity = NULL, bool bHolyCityOnly = false) const;
+	int GetCityExtraMissionarySpreads(PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly = false) const;
 
 	const BeliefList& GetBeliefList() const { return m_ReligionBeliefs; }
 

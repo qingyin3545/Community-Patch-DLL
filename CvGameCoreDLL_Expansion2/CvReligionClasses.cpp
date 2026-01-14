@@ -2822,6 +2822,10 @@ int CvGameReligions::GetAdjacentCityReligiousPressure(ReligionTypes eReligion, C
 	// Building that boosts pressure from originating city?
 	iPressureMod += pFromCity->GetCityReligions()->GetReligiousPressureModifier(eReligion);
 
+	// Belief that boosts pressure from originating city?
+	int iHolyCityModifier = pReligion->m_Beliefs.GetHolyCityPressureModifier(pFromCity->getOwner(), pFromCity);
+	iPressureMod += iHolyCityModifier;
+
 	// Double pressure to vassals
 	if (GET_TEAM(GET_PLAYER(pToCity->getOwner()).getTeam()).IsVassal(GET_PLAYER(pFromCity->getOwner()).getTeam()))
 	{
@@ -4246,7 +4250,11 @@ bool CvCityReligions::IsDefendedAgainstSpread(ReligionTypes eReligion)
 			if (eUnitOwner != eCityOwner)
 			{
 				bool bAllyUnit = false;
-				if (MOD_RELIGION_ALLIED_INQUISITORS && GET_PLAYER(eCityOwner).isMinorCiv())
+				bool bAlliedProtect = MOD_RELIGION_ALLIED_INQUISITORS;
+				const CvReligion* kReligion = GC.getGame().GetGameReligions()->GetReligion(pLoopUnit->GetReligionData()->GetReligion(), pLoopUnit->getOwner());
+				if (kReligion && kReligion->m_Beliefs.IsInquisitorProhibitSpreadInAlly(pLoopUnit->getOwner())) bAlliedProtect = true;
+				
+				if (bAlliedProtect && GET_PLAYER(eCityOwner).isMinorCiv())
 				{
 					PlayerTypes eAlly = GET_PLAYER(eCityOwner).GetMinorCivAI()->GetAlly();
 					if (eAlly != NO_PLAYER && GET_PLAYER(eAlly).getTeam() == GET_PLAYER(eUnitOwner).getTeam())
@@ -5770,6 +5778,9 @@ int CvUnitReligion::GetMaxSpreads(const CvUnit* pUnit) const
 		CvCity* pOriginCity = pUnit->getOriginCity();
 		iReligionSpreads += pOriginCity ? pOriginCity->GetCityBuildings()->GetMissionaryExtraSpreads() : 0;
 		iReligionSpreads += GET_PLAYER(pUnit->getOwner()).GetNumMissionarySpreads();
+		
+		const CvReligion* pReligion = GC.getGame().GetGameReligions()->GetReligion(GetReligion(), pUnit->getOwner());
+		if (pReligion) iReligionSpreads += pReligion->m_Beliefs.GetCityExtraMissionarySpreads(pUnit->getOwner(), pOriginCity);
 	}
 
 	return iReligionSpreads;
@@ -8597,6 +8608,15 @@ int CvReligionAI::ScorePantheonBeliefAtCity(CvBeliefEntry* pEntry, CvCity* pCity
 		}
 	}
 
+	////////////////////
+	// MPDLL New
+	///////////////////
+	if (pCity && pCity->GetCityReligions()->IsHolyCityAnyReligion())
+	{
+		iRtnValue += pEntry->GetHolyCityUnitExperence() * (iFlavorDefense + iFlavorOffense) / 2;
+		iRtnValue += pEntry->GetHolyCityPressureModifier() / 5;
+	}
+
 	return iRtnValue;
 }
 
@@ -10173,6 +10193,27 @@ int CvReligionAI::ScoreBeliefForPlayer(CvBeliefEntry* pEntry, bool bReturnConque
 					}
 				}
 			}
+		}
+	}
+
+	////////////////////
+	// MPDLL New
+	///////////////////
+	iDiploTemp += pEntry->GetExtraSpies() * 25;
+	iDiploTemp += pEntry->GetSameReligionMinorRecoveryModifier() / 20;
+	iCultureTemp += pEntry->GetLandmarksTourismPercent();
+	iGoldenAgeTemp += pEntry->GetGoldenAgeModifier() / 2;
+	iSpreadTemp += pEntry->IsInquisitorProhibitSpreadInAlly() ? 10 : 0;
+	iSpreadTemp += pEntry->GetCityExtraMissionarySpreads() * 25;
+	if (pEntry->IsGreatPersonPointsPerCity())
+	{
+		for (int iJ = 0; iJ < GC.getNumGreatPersonInfos(); iJ++)
+		{
+			GreatPersonTypes eGP = (GreatPersonTypes)iJ;
+			if (eGP == NO_GREATPERSON) continue;
+			if (pEntry->GetGreatPersonPoints(eGP) <= 0) continue;
+			
+			iGPTemp += 15 * pEntry->GetGreatPersonPoints(eGP);
 		}
 	}
 

@@ -1210,6 +1210,47 @@ bool CvBeliefEntry::IsBuildingClassEnabled(int i) const
 	return m_pbBuildingClassEnabled ? m_pbBuildingClassEnabled[i] : false;
 }
 
+int CvBeliefEntry::GetExtraSpies() const
+{
+	return m_iExtraSpies;
+}
+int CvBeliefEntry::GetCuttingBonusModifier() const
+{
+	return m_iCuttingBonusModifier;
+}
+int CvBeliefEntry::GetLandmarksTourismPercent() const
+{
+	return m_iLandmarksTourismPercent;
+}
+int CvBeliefEntry::GetGoldenAgeModifier() const
+{
+	return m_iGoldenAgeModifier;
+}
+int CvBeliefEntry::GetHolyCityUnitExperence() const
+{
+	return m_iHolyCityUnitExperence;
+}
+int CvBeliefEntry::GetHolyCityPressureModifier() const
+{
+	return m_iHolyCityPressureModifier;
+}
+bool CvBeliefEntry::IsInquisitorProhibitSpreadInAlly() const
+{
+	return m_bInquisitorProhibitSpreadInAlly;
+}
+int CvBeliefEntry::GetSameReligionMinorRecoveryModifier() const
+{
+	return m_iSameReligionMinorRecoveryModifier;
+}
+int CvBeliefEntry::GetCityExtraMissionarySpreads() const
+{
+	return m_iCityExtraMissionarySpreads;
+}
+bool CvBeliefEntry::IsGreatPersonPointsPerCity() const
+{
+	return m_bGreatPersonPointsPerCity;
+}
+
 /// Load XML data
 bool CvBeliefEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility)
 {
@@ -1800,6 +1841,18 @@ bool CvBeliefEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility&
 		}
 	}
 
+
+	m_iExtraSpies = kResults.GetInt("ExtraSpies");
+	m_iCuttingBonusModifier = kResults.GetInt("CuttingBonusModifier");
+	m_iLandmarksTourismPercent = kResults.GetInt("LandmarksTourismPercent");
+	m_iGoldenAgeModifier = kResults.GetInt("GoldenAgeModifier");
+	m_iHolyCityUnitExperence = kResults.GetInt("HolyCityUnitExperence");
+	m_iHolyCityPressureModifier = kResults.GetInt("HolyCityPressureModifier");
+	m_bInquisitorProhibitSpreadInAlly = kResults.GetBool("InquisitorProhibitSpreadInAlly");
+	m_iSameReligionMinorRecoveryModifier = kResults.GetInt("SameReligionMinorRecoveryModifier");
+	m_iCityExtraMissionarySpreads = kResults.GetInt("CityExtraMissionarySpreads");
+	m_bGreatPersonPointsPerCity = kResults.GetBool("GreatPersonPointsPerCity");
+
 	return true;
 }
 
@@ -1907,6 +1960,21 @@ void CvReligionBeliefs::AddBelief(BeliefTypes eBelief, PlayerTypes ePlayer, bool
 			GET_PLAYER(ePlayer).CompleteAccomplishment(ACCOMPLISHMENT_BELIEF_ENHANCER);
 		else if (belief->IsReformationBelief())
 			GET_PLAYER(ePlayer).CompleteAccomplishment(ACCOMPLISHMENT_BELIEF_REFORMATION);
+
+		
+		// Add Player Level's Bonus Here
+		int iGoldenAgeModifier = belief->GetGoldenAgeModifier();
+		if(iGoldenAgeModifier != 0)
+		{
+			GET_PLAYER(ePlayer).changeGoldenAgeModifier(iGoldenAgeModifier);
+		}
+		int iNumSpies = belief->GetExtraSpies();
+		if (iNumSpies > 0)
+		{
+			CvPlayerEspionage* pEspionage = GET_PLAYER(ePlayer).GetEspionage();
+			ASSERT(pEspionage, "pEspionage is null! What's up with that?!");
+			for (int i = 0; i < iNumSpies; i++) pEspionage->CreateSpy();
+		}
 	}
 }
 
@@ -3547,8 +3615,17 @@ int CvReligionBeliefs::GetGreatPersonPoints(GreatPersonTypes eGreatPerson, Playe
 	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
 	{
 		int iValue = pBeliefs->GetEntry(*it)->GetGreatPersonPoints(eGreatPerson);
-		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly && !pBeliefs->GetEntry(*it)->IsGreatPersonPointsPerCity()))
 		{
+			rtnValue += iValue;
+		}
+	}
+	if (pCity)
+	{
+		BeliefTypes eSecondaryPantheon = pCity->GetCityReligions()->GetSecondaryReligionPantheonBelief();
+		if (eSecondaryPantheon != NO_BELIEF && pBeliefs->GetEntry(eSecondaryPantheon)->IsGreatPersonPointsPerCity())
+		{
+			int iValue = pBeliefs->GetEntry(eSecondaryPantheon)->GetGreatPersonPoints(eGreatPerson);
 			rtnValue += iValue;
 		}
 	}
@@ -3603,13 +3680,23 @@ std::vector<int> CvReligionBeliefs::GetFreePromotions(PlayerTypes ePlayer, const
 		// combine all the free promotions from the beliefs
 		for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
 		{
-			std::vector<int> aPromotions = pBeliefs->GetEntry(*it)->GetFreePromotions();
+			const std::vector<int>& aPromotions = pBeliefs->GetEntry(*it)->GetFreePromotions();
 			if (!aPromotions.empty() && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
 			{
-				for (std::vector<int>::iterator itPromotions = aPromotions.begin(); itPromotions != aPromotions.end(); ++itPromotions)
+				for (std::vector<int>::const_iterator itPromotions = aPromotions.begin(); itPromotions != aPromotions.end(); ++itPromotions)
 				{
 					rtnVector.push_back(*itPromotions);
 				}
+			}
+		}
+
+		if (pCity)
+		{
+			BeliefTypes eSecondaryPantheon = pCity->GetCityReligions()->GetSecondaryReligionPantheonBelief();
+			if (eSecondaryPantheon != NO_BELIEF)
+			{
+				const std::vector<int>& aPromotions = pBeliefs->GetEntry(eSecondaryPantheon)->GetFreePromotions();
+				for(auto iPromotion : aPromotions) rtnVector.push_back(iPromotion);
 			}
 		}
 
@@ -4191,6 +4278,14 @@ int CvReligionBeliefs::GetYieldPerBirth(YieldTypes eYieldType, PlayerTypes ePlay
 			}
 		}
 	}
+	if (pCity)
+	{
+		BeliefTypes eSecondaryPantheon = pCity->GetCityReligions()->GetSecondaryReligionPantheonBelief();
+		if (eSecondaryPantheon != NO_BELIEF)
+		{
+			rtnValue += pBeliefs->GetEntry(eSecondaryPantheon)->GetYieldPerBirth(eYieldType);
+		}
+	}
 
 	return rtnValue;
 }
@@ -4597,6 +4692,143 @@ CivilizationTypes CvReligionBeliefs::GetUniqueCiv(PlayerTypes ePlayer, bool bHol
 
 	return eCivilization;
 }
+
+
+int CvReligionBeliefs::GetCuttingBonusModifier(PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly) const
+{
+	CvBeliefXMLEntries* pBeliefs = GC.GetGameBeliefs();
+	int rtnValue = 0;
+
+	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
+	{
+		int iValue = pBeliefs->GetEntry(*it)->GetCuttingBonusModifier();
+		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		{
+			rtnValue += iValue;
+		}
+	}
+	if (pCity)
+	{
+		BeliefTypes eSecondaryPantheon = pCity->GetCityReligions()->GetSecondaryReligionPantheonBelief();
+		if (eSecondaryPantheon != NO_BELIEF)
+		{
+			rtnValue += pBeliefs->GetEntry(eSecondaryPantheon)->GetCuttingBonusModifier();
+		}
+	}
+
+	return rtnValue;
+}
+int CvReligionBeliefs::GetLandmarksTourismPercent(PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly) const
+{
+	CvBeliefXMLEntries* pBeliefs = GC.GetGameBeliefs();
+	int rtnValue = 0;
+
+	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
+	{
+		int iValue = pBeliefs->GetEntry(*it)->GetLandmarksTourismPercent();
+		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		{
+			rtnValue += iValue;
+		}
+	}
+	if (pCity)
+	{
+		BeliefTypes eSecondaryPantheon = pCity->GetCityReligions()->GetSecondaryReligionPantheonBelief();
+		if (eSecondaryPantheon != NO_BELIEF)
+		{
+			rtnValue += pBeliefs->GetEntry(eSecondaryPantheon)->GetLandmarksTourismPercent();
+		}
+	}
+
+	return rtnValue;
+}
+int CvReligionBeliefs::GetHolyCityUnitExperence(PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly) const
+{
+	CvBeliefXMLEntries* pBeliefs = GC.GetGameBeliefs();
+	int rtnValue = 0;
+
+	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
+	{
+		int iValue = pBeliefs->GetEntry(*it)->GetHolyCityUnitExperence();
+		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		{
+			rtnValue += iValue;
+		}
+	}
+
+	return rtnValue;
+}
+int CvReligionBeliefs::GetHolyCityPressureModifier(PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly) const
+{
+	CvBeliefXMLEntries* pBeliefs = GC.GetGameBeliefs();
+	int rtnValue = 0;
+
+	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
+	{
+		int iValue = pBeliefs->GetEntry(*it)->GetHolyCityPressureModifier();
+		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		{
+			rtnValue += iValue;
+		}
+	}
+
+	return rtnValue;
+}
+bool CvReligionBeliefs::IsInquisitorProhibitSpreadInAlly(PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly) const
+{
+	CvBeliefXMLEntries* pBeliefs = GC.GetGameBeliefs();
+
+	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
+	{
+		if (pBeliefs->GetEntry(*it)->IsInquisitorProhibitSpreadInAlly() && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+int CvReligionBeliefs::GetSameReligionMinorRecoveryModifier(PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly) const
+{
+	CvBeliefXMLEntries* pBeliefs = GC.GetGameBeliefs();
+	int rtnValue = 0;
+
+	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
+	{
+		int iValue = pBeliefs->GetEntry(*it)->GetSameReligionMinorRecoveryModifier();
+		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		{
+			rtnValue += iValue;
+		}
+	}
+
+	return rtnValue;
+}
+int CvReligionBeliefs::GetCityExtraMissionarySpreads(PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly) const
+{
+	CvBeliefXMLEntries* pBeliefs = GC.GetGameBeliefs();
+	int rtnValue = 0;
+
+	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
+	{
+		int iValue = pBeliefs->GetEntry(*it)->GetCityExtraMissionarySpreads();
+		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		{
+			rtnValue += iValue;
+		}
+	}
+	if (pCity)
+	{
+		BeliefTypes eSecondaryPantheon = pCity->GetCityReligions()->GetSecondaryReligionPantheonBelief();
+		if (eSecondaryPantheon != NO_BELIEF)
+		{
+			rtnValue += pBeliefs->GetEntry(eSecondaryPantheon)->GetCityExtraMissionarySpreads();
+		}
+	}
+
+	return rtnValue;
+}
+
 
 template<typename ReligionBeliefs, typename Visitor>
 void CvReligionBeliefs::Serialize(ReligionBeliefs& religionBeliefs, Visitor& visitor)
