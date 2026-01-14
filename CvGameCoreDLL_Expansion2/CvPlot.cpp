@@ -3561,7 +3561,11 @@ int CvPlot::getFeatureProduction(BuildTypes eBuild, PlayerTypes ePlayer, CvCity*
 		iProduction *= /*67*/ GD_INT_GET(DIFFERENT_TEAM_FEATURE_PRODUCTION_PERCENT);
 		iProduction /= 100;
 	}
-
+	if (ppCity)
+	{
+		iProduction *= (*ppCity)->GetCuttingBonusModifier();
+		iProduction /= 100;
+	}
 	return std::max(0, iProduction);
 }
 
