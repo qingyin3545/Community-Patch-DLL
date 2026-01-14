@@ -978,6 +978,10 @@ void CvCity::init(int iID, PlayerTypes eOwner, int iX, int iY, bool bBumpUnits, 
 				iProduction *= gCustomMods.getOption("GLOBAL_CITY_JUNGLE_BONUS_PERCENT", 50);
 				iProduction /= 100;
 			}
+			{
+				iProduction *= GetCuttingBonusModifier();
+				iProduction /= 100;
+			}
 
 			changeFeatureProduction(iProduction);
 
@@ -10976,6 +10980,12 @@ int CvCity::getProductionExperience(UnitTypes eUnit) const
 
 			iExperience += GetExperienceFromPreviousGoldenAges();
 			iExperience += getSpecialistFreeExperience();
+			// Experence from Religion
+			ReligionTypes eCityReligion = GetCityReligions()->GetReligiousMajority();
+			if(eCityReligion != NO_RELIGION)
+			{
+				iExperience += GC.getGame().GetGameReligions()->GetReligion(eCityReligion, getOwner())->m_Beliefs.GetHolyCityUnitExperence(getOwner(), this);
+			}
 		}
 	}
 
@@ -24061,6 +24071,11 @@ int CvCity::getBaseYieldRateTimes100(const YieldTypes eYield, CvString* tooltipS
 	{
 		// Landmarks, Wonders, Natural Wonders, Improvements
 		int iPercent = GetCityBuildings()->GetLandmarksTourismPercent() + kOwner.GetLandmarksTourismPercentGlobal();
+		ReligionTypes eCityReligion = GetCityReligions()->GetReligiousMajority();
+		if(eCityReligion != NO_RELIGION)
+		{
+			iPercent += GC.getGame().GetGameReligions()->GetReligion(eCityReligion, getOwner())->m_Beliefs.GetLandmarksTourismPercent(getOwner(), this);
+		}
 		if (iPercent != 0)
 		{
 			int iFromWonders = GetCityCulture()->GetCultureFromWonders();
@@ -37142,6 +37157,22 @@ int CvCity::GetFoodKeptFromPollution() const
 void CvCity::ChangeFoodKeptFromPollution(int iChange)
 {
 	m_iFoodKeptFromPollution += iChange;
+}
+
+//	--------------------------------------------------------------------------------
+int CvCity::GetCuttingBonusModifier() const
+{
+	ReligionTypes eMajority = GetCityReligions()->GetReligiousMajority();
+	int iCuttingBonusModifier = 100;
+	if(eMajority != NO_RELIGION)
+	{
+		const CvReligion* pReligion = GC.getGame().GetGameReligions()->GetReligion(eMajority, getOwner());
+		if(pReligion)
+		{
+			iCuttingBonusModifier += pReligion->m_Beliefs.GetCuttingBonusModifier(getOwner(), this);
+		}
+	}
+	return iCuttingBonusModifier;
 }
 
 //	--------------------------------------------------------------------------------
