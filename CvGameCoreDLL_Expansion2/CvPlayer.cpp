@@ -42373,6 +42373,10 @@ void CvPlayer::processPolicies(PolicyTypes ePolicy, int iChange)
 			if (iBuildingCount <= 0)
 				continue;
 
+			// No Bonus for Obsoleted Building
+			if(GET_TEAM(getTeam()).isObsoleteBuilding(eBuilding))
+				continue;
+
 			const CvBuildingEntry* pkBuildingInfo = GC.getBuildingInfo(eBuilding);
 			const CvBuildingClassInfo& kBuildingClassInfo = pkBuildingInfo->GetBuildingClassInfo();
 			if (isWorldWonderClass(kBuildingClassInfo))
