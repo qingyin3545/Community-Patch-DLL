@@ -7137,18 +7137,11 @@ int CvLuaCity::lGetFoodConsumptionPerPopTimes100(lua_State* L)
 	}
 
 	int iConsumptionModifier = 100;
-#ifdef TODO_SP
 	ReligionTypes eMajority = pCity->GetCityReligions()->GetReligiousMajority();
 	if(eMajority != NO_RELIGION)
 	{
-		iConsumptionModifier += GC.getGame().GetGameReligions()->GetReligion(eMajority, pCity->getOwner())->m_Beliefs.GetTerrainCityFoodConsumption(eTerrain);
-	}	
-	BeliefTypes eSecondaryPantheon = pCity->GetCityReligions()->GetSecondaryReligionPantheonBelief();
-	if(eSecondaryPantheon != NO_BELIEF)
-	{
-		iConsumptionModifier += GC.GetGameBeliefs()->GetEntry(eSecondaryPantheon)->GetTerrainCityFoodConsumption(eTerrain);
+		iConsumptionModifier += pCity->GetCityReligions()->GetMajorityReligion()->m_Beliefs.GetTerrainCityFoodConsumption(eTerrain, pCity->getOwner(), pCity);
 	}
-#endif
 	iResult = iResult * iConsumptionModifier;
 	iResult /= 100;
 	lua_pushinteger(L, iResult);
