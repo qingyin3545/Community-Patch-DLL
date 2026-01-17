@@ -7992,6 +7992,12 @@ int CvReligionAI::GetValidPlotYieldTimes100(CvBeliefEntry* pEntry, CvPlot* pPlot
 		iRtnValue += pEntry->GetLakePlotYieldChange(iI) * 100;
 	}
 
+	// River
+	if (pPlot->isRiver())
+	{
+		iRtnValue += pEntry->GetRiverPlotYieldChanges(iI) * 100;
+	}
+
 	// Resource
 	if (eResource != NO_RESOURCE)
 	{
@@ -8000,6 +8006,19 @@ int CvReligionAI::GetValidPlotYieldTimes100(CvBeliefEntry* pEntry, CvPlot* pPlot
 		{
 			iRtnValue += ((pPlot->getNumResource() * pEntry->GetResourceQuantityModifier(eResource)) * 5);
 		}
+	}
+
+	bool bAdjacentCity = false;
+	for(int iI = 0; iI < NUM_DIRECTION_TYPES; ++iI)
+	{
+		CvPlot* pAdjacentPlot = plotDirection(pPlot->getX(), pPlot->getY(), ((DirectionTypes)iI));
+		if(!pAdjacentPlot || !pAdjacentPlot->isCity()) continue;
+
+		// Is the owner of this Plot (with the Improvement) also the owner of an adjacent City?
+		if(pAdjacentPlot->getPlotCity()->getOwner() != m_pPlayer->GetID())  continue;
+
+		bAdjacentCity = true;
+		break;
 	}
 
 	// Improvement
@@ -8016,6 +8035,7 @@ int CvReligionAI::GetValidPlotYieldTimes100(CvBeliefEntry* pEntry, CvPlot* pPlot
 					continue;
 
 				int iImprovementChange = pEntry->GetImprovementYieldChange((ImprovementTypes)jJ, iI);
+				if (bAdjacentCity) iImprovementChange += pEntry->GetImprovementAdjacentCityYieldChanges((ImprovementTypes)jJ, iI);
 				if (iImprovementChange > 0)
 				{
 					// modify value based on how much time we still need to build the improvement
@@ -8085,6 +8105,7 @@ int CvReligionAI::GetValidPlotYieldTimes100(CvBeliefEntry* pEntry, CvPlot* pPlot
 		if (pPlot->getImprovementType() != NO_IMPROVEMENT)
 		{
 			iRtnValue += (pEntry->GetImprovementYieldChange(pPlot->getImprovementType(), iI)) * 100;
+			if (bAdjacentCity) iRtnValue += pEntry->GetImprovementAdjacentCityYieldChanges(pPlot->getImprovementType(), iI) * 100;
 		}
 	}
 
@@ -8615,6 +8636,13 @@ int CvReligionAI::ScorePantheonBeliefAtCity(CvBeliefEntry* pEntry, CvCity* pCity
 	{
 		iRtnValue += pEntry->GetHolyCityUnitExperence() * (iFlavorDefense + iFlavorOffense) / 2;
 		iRtnValue += pEntry->GetHolyCityPressureModifier() / 5;
+	}
+	TerrainTypes eTerrain = pCity->plot()->getTerrainType();
+	if(eTerrain != NO_TERRAIN)
+	{
+		for (int iI = 0; iI < NUM_YIELD_TYPES; iI++)
+			iRtnValue += pEntry->GetTerrainCityYieldChanges(eTerrain, iI) * 10;
+		iRtnValue -= pEntry->GetTerrainCityFoodConsumption(eTerrain);
 	}
 
 	return iRtnValue;
@@ -10205,6 +10233,11 @@ int CvReligionAI::ScoreBeliefForPlayer(CvBeliefEntry* pEntry, bool bReturnConque
 	iGoldenAgeTemp += pEntry->GetGoldenAgeModifier() / 2;
 	iSpreadTemp += pEntry->IsInquisitorProhibitSpreadInAlly() ? 10 : 0;
 	iSpreadTemp += pEntry->GetCityExtraMissionarySpreads() * 25;
+	if (!bForeignSpreadImmune)
+	{
+		for (int iI = 0; iI < NUM_YIELD_TYPES; iI++)
+			iSpreadTemp += pEntry->GetCityYieldPerOtherReligion(iI) * 10;
+	}
 	if (pEntry->IsGreatPersonPointsPerCity())
 	{
 		for (int iJ = 0; iJ < GC.getNumGreatPersonInfos(); iJ++)
@@ -10333,6 +10366,20 @@ int CvReligionAI::ScoreBeliefForPlayer(CvBeliefEntry* pEntry, bool bReturnConque
 		return(iGoldTemp + iScienceTemp + iBuildingTemp + iGPTemp + iGoldenAgeTemp) / 2;
 
 	iRtnValue = (iWarTemp + iHappinessTemp + iGoldenAgeTemp + iScienceTemp + iGPTemp + iCultureTemp + iPolicyGainTemp + iGoldTemp + iSpreadTemp +  iBuildingTemp + iDiploTemp);
+
+	int iTotalExtraFlavor = 0;
+	CvFlavorManager* pFlavorManager = m_pPlayer->GetFlavorManager();
+	for(int i = 0; i < GC.getNumFlavorTypes(); i++)
+	{
+		FlavorTypes eFlavor = (FlavorTypes)i;
+		int iFlavorValue = pFlavorManager->GetPersonalityIndividualFlavor(eFlavor);
+		
+		int iExtraFlavor = pEntry->GetExtraFlavors(eFlavor);
+		if(iExtraFlavor == 0) continue;
+		iTotalExtraFlavor += (iExtraFlavor * iFlavorValue) / 100;
+	}
+	iRtnValue += iTotalExtraFlavor;
+	iRtnValue += pEntry->GetCivilizationFlavors(m_pPlayer->getCivilizationType());
 
 	if (iMissionary > 0 && bNoMissionary)
 		iRtnValue /= 100;

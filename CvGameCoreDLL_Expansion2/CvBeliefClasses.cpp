@@ -199,6 +199,17 @@ CvBeliefEntry::~CvBeliefEntry()
 		m_pbiYieldFromImprovementBuild.clear();
 		m_pbiYieldFromPillageGlobal.clear();
 	}
+
+	SAFE_DELETE_ARRAY(m_piCuttingInstantYieldModifier);
+	SAFE_DELETE_ARRAY(m_piCuttingInstantYield);
+	SAFE_DELETE_ARRAY(m_piRiverPlotYieldChanges);
+	SAFE_DELETE_ARRAY(m_piCityYieldPerOtherReligion);
+	SAFE_DELETE_ARRAY(m_piTerrainCityFoodConsumption);
+	SAFE_DELETE_ARRAY(m_piExtraFlavors);
+	SAFE_DELETE_ARRAY(m_piCivilizationFlavors);
+
+	CvDatabaseUtility::SafeDelete2DArray(m_ppiImprovementAdjacentCityYieldChanges);
+	CvDatabaseUtility::SafeDelete2DArray(m_ppiTerrainCityYieldChanges);
 }
 
 /// Accessor:: Minimum population in this city for belief to be active (0 = no such requirement)
@@ -1250,6 +1261,64 @@ bool CvBeliefEntry::IsGreatPersonPointsPerCity() const
 {
 	return m_bGreatPersonPointsPerCity;
 }
+int CvBeliefEntry::GetCuttingInstantYieldModifier(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piCuttingInstantYieldModifier ? m_piCuttingInstantYieldModifier[i] : 0;
+}
+int CvBeliefEntry::GetCuttingInstantYield(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piCuttingInstantYield ? m_piCuttingInstantYield[i] : 0;
+}
+int CvBeliefEntry::GetRiverPlotYieldChanges(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piRiverPlotYieldChanges ? m_piRiverPlotYieldChanges[i] : 0;
+}
+int CvBeliefEntry::GetCityYieldPerOtherReligion(int i) const
+{
+	PRECONDITION(i < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piCityYieldPerOtherReligion ? m_piCityYieldPerOtherReligion[i] : 0;
+}
+int CvBeliefEntry::GetTerrainCityFoodConsumption(int i) const
+{
+	PRECONDITION(i < GC.getNumTerrainInfos(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piTerrainCityFoodConsumption ? m_piTerrainCityFoodConsumption[i] : 0;
+}
+int CvBeliefEntry::GetExtraFlavors(int i) const
+{
+	PRECONDITION(i < GC.getNumFlavorTypes(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piExtraFlavors ? m_piExtraFlavors[i] : 0;
+}
+int CvBeliefEntry::GetCivilizationFlavors(int i) const
+{
+	PRECONDITION(i < GC.getNumFlavorTypes(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_piCivilizationFlavors ? m_piCivilizationFlavors[i] : 0;
+}
+int CvBeliefEntry::GetImprovementAdjacentCityYieldChanges(int i, int j) const
+{
+	PRECONDITION(i < GC.getNumImprovementInfos(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	PRECONDITION(j < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(j > -1, "Index out of bounds");
+	return m_ppiImprovementAdjacentCityYieldChanges ? m_ppiImprovementAdjacentCityYieldChanges[i][j] : 0;
+}
+int CvBeliefEntry::GetTerrainCityYieldChanges(int i, int j) const
+{
+	PRECONDITION(i < GC.getNumTerrainInfos(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	PRECONDITION(j < NUM_YIELD_TYPES, "Index out of bounds");
+	PRECONDITION(j > -1, "Index out of bounds");
+	return m_ppiTerrainCityYieldChanges ? m_ppiTerrainCityYieldChanges[i][j] : 0;
+}
 
 /// Load XML data
 bool CvBeliefEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility& kUtility)
@@ -1852,6 +1921,60 @@ bool CvBeliefEntry::CacheResults(Database::Results& kResults, CvDatabaseUtility&
 	m_iSameReligionMinorRecoveryModifier = kResults.GetInt("SameReligionMinorRecoveryModifier");
 	m_iCityExtraMissionarySpreads = kResults.GetInt("CityExtraMissionarySpreads");
 	m_bGreatPersonPointsPerCity = kResults.GetBool("GreatPersonPointsPerCity");
+
+	kUtility.PopulateArrayByValue(m_piCuttingInstantYieldModifier, "Yields", "Belief_CuttingInstantYieldModifier", "YieldType", "BeliefType", szBeliefType, "Modifier");
+	kUtility.PopulateArrayByValue(m_piCuttingInstantYield, "Yields", "Belief_CuttingInstantYield", "YieldType", "BeliefType", szBeliefType, "Yield");
+	kUtility.SetYields(m_piRiverPlotYieldChanges, "Belief_RiverPlotYieldChanges", "BeliefType", szBeliefType);
+	kUtility.PopulateArrayByValue(m_piCityYieldPerOtherReligion, "Yields", "Belief_CityYieldPerOtherReligion", "YieldType", "BeliefType", szBeliefType, "Yield");
+	kUtility.PopulateArrayByValue(m_piTerrainCityFoodConsumption, "Terrains", "Belief_TerrainCityFoodConsumption", "TerrainType", "BeliefType", szBeliefType, "Modifier");
+	kUtility.SetFlavors(m_piExtraFlavors, "Belief_ExtraFlavors", "BeliefType",szBeliefType);
+	kUtility.PopulateArrayByValue(m_piCivilizationFlavors, "Civilizations", "Belief_CivilizationFlavors", "CivilizationType", "BeliefType", szBeliefType, "Flavor");
+	
+	//ImprovementAdjacentCityYieldChanges;
+	{
+		kUtility.Initialize2DArray(m_ppiImprovementAdjacentCityYieldChanges, "Improvements", "Yields");
+
+		std::string strKey("Belief_ImprovementAdjacentCityYieldChanges;");
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if(pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select Improvements.ID as ImprovementID, Yields.ID as YieldID, Yield from Belief_ImprovementAdjacentCityYieldChanges inner join Improvements on Improvements.Type = ImprovementType inner join Yields on Yields.Type = YieldType where BeliefType = ?");
+		}
+
+		pResults->Bind(1, szBeliefType);
+
+		while(pResults->Step())
+		{
+			const int ImprovementID = pResults->GetInt(0);
+			const int YieldID = pResults->GetInt(1);
+			const int yield = pResults->GetInt(2);
+
+			m_ppiImprovementAdjacentCityYieldChanges[ImprovementID][YieldID] = yield;
+		}
+	}
+	//TerrainCityYieldChanges
+	{
+		kUtility.Initialize2DArray(m_ppiTerrainCityYieldChanges, "Terrains", "Yields");
+
+		std::string strKey("TerrainCityYieldChanges");
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if(pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select Terrains.ID as TerrainID, Yields.ID as YieldID, Yield from Belief_TerrainCityYieldChanges inner join Terrains on Terrains.Type = TerrainType inner join Yields on Yields.Type = YieldType where BeliefType = ?");
+		}
+
+		pResults->Bind(1, szBeliefType);
+
+		while(pResults->Step())
+		{
+			const int TerrainID = pResults->GetInt(0);
+			const int YieldID = pResults->GetInt(1);
+			const int yield = pResults->GetInt(2);
+
+			m_ppiTerrainCityYieldChanges[TerrainID][YieldID] = yield;
+		}
+	}
+
 
 	return true;
 }
@@ -4823,6 +4946,168 @@ int CvReligionBeliefs::GetCityExtraMissionarySpreads(PlayerTypes ePlayer, const 
 		if (eSecondaryPantheon != NO_BELIEF)
 		{
 			rtnValue += pBeliefs->GetEntry(eSecondaryPantheon)->GetCityExtraMissionarySpreads();
+		}
+	}
+
+	return rtnValue;
+}
+int CvReligionBeliefs::GetCuttingInstantYieldModifier(YieldTypes eYieldType, PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly) const
+{
+	CvBeliefXMLEntries* pBeliefs = GC.GetGameBeliefs();
+	int rtnValue = 0;
+
+	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
+	{
+		int iValue = pBeliefs->GetEntry(*it)->GetCuttingInstantYieldModifier(eYieldType);
+		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		{
+			rtnValue += iValue;
+		}
+	}
+	if (pCity)
+	{
+		BeliefTypes eSecondaryPantheon = pCity->GetCityReligions()->GetSecondaryReligionPantheonBelief();
+		if (eSecondaryPantheon != NO_BELIEF)
+		{
+			rtnValue += pBeliefs->GetEntry(eSecondaryPantheon)->GetCuttingInstantYieldModifier(eYieldType);
+		}
+	}
+
+	return rtnValue;
+}
+int CvReligionBeliefs::GetCuttingInstantYield(YieldTypes eYieldType, PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly) const
+{
+	CvBeliefXMLEntries* pBeliefs = GC.GetGameBeliefs();
+	int rtnValue = 0;
+
+	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
+	{
+		int iValue = pBeliefs->GetEntry(*it)->GetCuttingInstantYield(eYieldType);
+		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		{
+			rtnValue += iValue;
+		}
+	}
+	if (pCity)
+	{
+		BeliefTypes eSecondaryPantheon = pCity->GetCityReligions()->GetSecondaryReligionPantheonBelief();
+		if (eSecondaryPantheon != NO_BELIEF)
+		{
+			rtnValue += pBeliefs->GetEntry(eSecondaryPantheon)->GetCuttingInstantYield(eYieldType);
+		}
+	}
+
+	return rtnValue;
+}
+int CvReligionBeliefs::GetRiverPlotYieldChanges(YieldTypes eYieldType, PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly) const
+{
+	CvBeliefXMLEntries* pBeliefs = GC.GetGameBeliefs();
+	int rtnValue = 0;
+
+	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
+	{
+		int iValue = pBeliefs->GetEntry(*it)->GetRiverPlotYieldChanges(eYieldType);
+		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		{
+			rtnValue += iValue;
+		}
+	}
+	// Secondary Pantheon Bonus is in CvPlot::calculateReligionNatureYield
+
+	return rtnValue;
+}
+int CvReligionBeliefs::GetCityYieldPerOtherReligion(YieldTypes eYieldType, PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly) const
+{
+	CvBeliefXMLEntries* pBeliefs = GC.GetGameBeliefs();
+	int rtnValue = 0;
+
+	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
+	{
+		int iValue = pBeliefs->GetEntry(*it)->GetCityYieldPerOtherReligion(eYieldType);
+		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		{
+			rtnValue += iValue;
+		}
+	}
+	if (pCity)
+	{
+		BeliefTypes eSecondaryPantheon = pCity->GetCityReligions()->GetSecondaryReligionPantheonBelief();
+		if (eSecondaryPantheon != NO_BELIEF)
+		{
+			rtnValue += pBeliefs->GetEntry(eSecondaryPantheon)->GetCityYieldPerOtherReligion(eYieldType);
+		}
+	}
+
+	return rtnValue;
+}
+int CvReligionBeliefs::GetTerrainCityFoodConsumption(TerrainTypes eTerrain, PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly) const
+{
+	CvBeliefXMLEntries* pBeliefs = GC.GetGameBeliefs();
+	int rtnValue = 0;
+
+	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
+	{
+		int iValue = pBeliefs->GetEntry(*it)->GetTerrainCityFoodConsumption(eTerrain);
+		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		{
+			rtnValue += iValue;
+		}
+	}
+	if (pCity)
+	{
+		BeliefTypes eSecondaryPantheon = pCity->GetCityReligions()->GetSecondaryReligionPantheonBelief();
+		if (eSecondaryPantheon != NO_BELIEF)
+		{
+			rtnValue += pBeliefs->GetEntry(eSecondaryPantheon)->GetTerrainCityFoodConsumption(eTerrain);
+		}
+	}
+
+	return rtnValue;
+}
+
+int CvReligionBeliefs::GetImprovementAdjacentCityYieldChanges(ImprovementTypes eImprovement, YieldTypes eYieldType, PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly) const
+{
+	CvBeliefXMLEntries* pBeliefs = GC.GetGameBeliefs();
+	int rtnValue = 0;
+
+	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
+	{
+		int iValue = pBeliefs->GetEntry(*it)->GetImprovementAdjacentCityYieldChanges(eImprovement, eYieldType);
+		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		{
+			rtnValue += iValue;
+		}
+	}
+	if (pCity)
+	{
+		BeliefTypes eSecondaryPantheon = pCity->GetCityReligions()->GetSecondaryReligionPantheonBelief();
+		if (eSecondaryPantheon != NO_BELIEF)
+		{
+			rtnValue += pBeliefs->GetEntry(eSecondaryPantheon)->GetImprovementAdjacentCityYieldChanges(eImprovement, eYieldType);
+		}
+	}
+
+	return rtnValue;
+}
+int CvReligionBeliefs::GetTerrainCityYieldChanges(TerrainTypes eTerrain, YieldTypes eYieldType, PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly) const
+{
+	CvBeliefXMLEntries* pBeliefs = GC.GetGameBeliefs();
+	int rtnValue = 0;
+
+	for (BeliefList::const_iterator it = m_ReligionBeliefs.begin(); it != m_ReligionBeliefs.end(); ++it)
+	{
+		int iValue = pBeliefs->GetEntry(*it)->GetTerrainCityYieldChanges(eTerrain, eYieldType);
+		if (iValue != 0 && IsBeliefValid((BeliefTypes)*it, GetReligion(), ePlayer, pCity, bHolyCityOnly))
+		{
+			rtnValue += iValue;
+		}
+	}
+	if (pCity)
+	{
+		BeliefTypes eSecondaryPantheon = pCity->GetCityReligions()->GetSecondaryReligionPantheonBelief();
+		if (eSecondaryPantheon != NO_BELIEF)
+		{
+			rtnValue += pBeliefs->GetEntry(eSecondaryPantheon)->GetTerrainCityYieldChanges(eTerrain, eYieldType);
 		}
 	}
 

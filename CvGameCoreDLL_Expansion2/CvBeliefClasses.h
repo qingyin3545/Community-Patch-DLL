@@ -199,6 +199,17 @@ public:
 	int GetCityExtraMissionarySpreads() const;
 	bool IsGreatPersonPointsPerCity() const;
 
+	int GetCuttingInstantYieldModifier(int i) const;
+	int GetCuttingInstantYield(int i) const;
+	int GetRiverPlotYieldChanges(int i) const;
+	int GetCityYieldPerOtherReligion(int i) const;
+	int GetTerrainCityFoodConsumption(int i) const;
+	int GetExtraFlavors(int i) const;
+	int GetCivilizationFlavors(int i) const;
+
+	int GetImprovementAdjacentCityYieldChanges(int i, int j) const;
+	int GetTerrainCityYieldChanges(int i, int j) const;
+
 protected:
 	int m_iMinPopulation;
 	int m_iMinFollowers;
@@ -368,6 +379,17 @@ protected:
 	int m_iSameReligionMinorRecoveryModifier = 0;
 	int m_iCityExtraMissionarySpreads = 0;
 	bool m_bGreatPersonPointsPerCity = false;
+
+	int *m_piCuttingInstantYieldModifier = nullptr;
+	int *m_piCuttingInstantYield = nullptr;
+	int *m_piRiverPlotYieldChanges = nullptr;
+	int *m_piCityYieldPerOtherReligion = nullptr;
+	int *m_piTerrainCityFoodConsumption = nullptr;
+	int *m_piExtraFlavors = nullptr;
+	int *m_piCivilizationFlavors = nullptr;
+
+	int **m_ppiImprovementAdjacentCityYieldChanges = nullptr;
+	int **m_ppiTerrainCityYieldChanges = nullptr;
 
 private:
 	CvBeliefEntry(const CvBeliefEntry&);
@@ -579,6 +601,15 @@ public:
 	bool IsInquisitorProhibitSpreadInAlly(PlayerTypes ePlayer, const CvCity* pCity = NULL, bool bHolyCityOnly = false) const;
 	int GetSameReligionMinorRecoveryModifier(PlayerTypes ePlayer, const CvCity* pCity = NULL, bool bHolyCityOnly = false) const;
 	int GetCityExtraMissionarySpreads(PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly = false) const;
+
+	int GetCuttingInstantYieldModifier(YieldTypes eYieldType, PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly = false) const;
+	int GetCuttingInstantYield(YieldTypes eYieldType, PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly = false) const;
+	int GetRiverPlotYieldChanges(YieldTypes eYieldType, PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly = false) const;
+	int GetCityYieldPerOtherReligion(YieldTypes eYieldType, PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly = true) const;
+	int GetTerrainCityFoodConsumption(TerrainTypes eTerrain, PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly = false) const;
+
+	int GetImprovementAdjacentCityYieldChanges(ImprovementTypes eImprovement, YieldTypes eYieldType, PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly = false) const;
+	int GetTerrainCityYieldChanges(TerrainTypes eTerrain, YieldTypes eYieldType, PlayerTypes ePlayer, const CvCity* pCity, bool bHolyCityOnly = false) const;
 
 	const BeliefList& GetBeliefList() const { return m_ReligionBeliefs; }
 

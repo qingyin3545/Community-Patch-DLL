@@ -14,9 +14,13 @@ create table Belief_CuttingInstantYield (
 );
 --******************** New Yield Bonus ********************--
 alter table Beliefs add LandmarksTourismPercent integer default 0;
-create table Belief_TerrainYieldChangesAdditive (
+create table Belief_RiverPlotYieldChanges (
     BeliefType text references Beliefs(Type),
-    TerrainType text references Terrains(Type),
+    YieldType text references Yields(Type),
+    Yield integer default 0
+);
+create table Belief_CityYieldPerOtherReligion (
+    BeliefType text references Beliefs(Type),
     YieldType text references Yields(Type),
     Yield integer default 0
 );
@@ -26,32 +30,11 @@ create table Belief_TerrainCityYieldChanges (
     YieldType text references Yields(Type),
     Yield integer default 0
 );
-create table Belief_RiverPlotYieldChanges (
-    BeliefType text references Beliefs(Type),
-    YieldType text references Yields(Type),
-    Yield integer default 0
-);
 create table Belief_ImprovementAdjacentCityYieldChanges (
     BeliefType text references Beliefs(Type),
     ImprovementType text references Improvements(Type),
     YieldType text references Yields(Type),
     Yield integer default 0
-);
-create table Belief_CityYieldPerOtherReligion (
-    BeliefType text references Beliefs(Type),
-    YieldType text references Yields(Type),
-    Yield integer default 0
-);
-create table Belief_HolyCityYieldPerForeignFollowers (
-    BeliefType text references Beliefs(Type),
-    YieldType text references Yields(Type),
-    PerForeignFollowers integer default 0
-);
---Need define Belief_MaxYieldModifierPerFollower before use this, Actual value = 100 + Modifier
-create table Belief_YieldModifierPerFollowerTimes100 (
-    BeliefType text references Beliefs(Type),
-    YieldType text references Yields(Type),
-    Modifier integer default 0
 );
 --******************** New Other Bonus ********************--
 alter table Beliefs add GoldenAgeModifier integer default 0;
@@ -92,4 +75,21 @@ create table Belief_LakePlotYieldChanges ( -- Use Belief_LakePlotYield
     BeliefType text references Beliefs(Type),
     YieldType text references Yields(Type),
     Yield integer default 0
+);
+create table Belief_TerrainYieldChangesAdditive ( -- Use Belief_TerrainYieldChanges
+    BeliefType text references Beliefs(Type),
+    TerrainType text references Terrains(Type),
+    YieldType text references Yields(Type),
+    Yield integer default 0
+);
+--Need define Belief_MaxYieldModifierPerFollower before use this, Actual value = 100 + Modifier
+create table Belief_YieldModifierPerFollowerTimes100 ( -- Use Belief_MaxYieldModifierPerFollowerPercent
+    BeliefType text references Beliefs(Type),
+    YieldType text references Yields(Type),
+    Modifier integer default 0
+);
+create table Belief_HolyCityYieldPerForeignFollowers ( -- Use Belief_YieldChangePerXForeignFollowers
+    BeliefType text references Beliefs(Type),
+    YieldType text references Yields(Type),
+    PerForeignFollowers integer default 0
 );

@@ -10211,6 +10211,14 @@ int CvPlot::calculateReligionNatureYield(YieldTypes eYield, PlayerTypes ePlayer,
 			iYield += pSecondaryPantheon->GetLakePlotYieldChange(eYield);
 		}
 	}
+	if (isRiver())
+	{
+		iYield += pMajorityReligion->m_Beliefs.GetRiverPlotYieldChanges(eYield, ePlayer, pOwningCity);
+		if (pSecondaryPantheon)
+		{
+			iYield += pSecondaryPantheon->GetRiverPlotYieldChanges(eYield);
+		}
+	}
 
 	if (eFeature != NO_FEATURE)
 	{
@@ -10326,6 +10334,23 @@ int CvPlot::calculateReligionImprovementYield(YieldTypes eYield, PlayerTypes ePl
 	else
 	{
 		iReligionChange += pMajorityReligion->m_Beliefs.GetImprovementYieldChange(eImprovement, eYield, pOwningCity->getOwner(), pOwningCity);
+	}
+	
+	// Include Secondary Pantheon Bonus
+	int iAdjacentCityImprovementChange = pMajorityReligion->m_Beliefs.GetImprovementAdjacentCityYieldChanges(eImprovement, eYield, pOwningCity->getOwner(), pOwningCity);
+	if (iAdjacentCityImprovementChange != 0)
+	{
+		for(int iI = 0; iI < NUM_DIRECTION_TYPES; ++iI)
+		{
+			CvPlot* pAdjacentPlot = plotDirection(getX(), getY(), ((DirectionTypes)iI));
+			if(!pAdjacentPlot || !pAdjacentPlot->isCity()) continue;
+
+			// Is the owner of this Plot (with the Improvement) also the owner of an adjacent City?
+			if(pAdjacentPlot->getPlotCity()->getOwner() != getOwner())  continue;
+
+			iReligionChange += iAdjacentCityImprovementChange;
+			break;
+		}
 	}
 	
 	if (!pSecondaryPantheon)

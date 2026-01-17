@@ -16508,7 +16508,23 @@ int CvCity::getFoodConsumptionTimes100(bool bIgnoreProcess, bool bAssumeNoReduct
 		iConsumptionNonSpecialists = min(iFoodPerTurnBeforeConsumption, iConsumptionNonSpecialists);
 	}
 
-	int iTotalConsumption =  max(100, iConsumptionNonSpecialists + getFoodConsumptionSpecialistTimes100() * iSpecialists);
+	int iTotalConsumption = iConsumptionNonSpecialists + getFoodConsumptionSpecialistTimes100() * iSpecialists;
+	
+	TerrainTypes eTerrain = plot()->getTerrainType();
+	if(eTerrain != NO_TERRAIN)
+	{
+		int iConsumptionModifier = 100;
+		ReligionTypes eMajority = GetCityReligions()->GetReligiousMajority();
+		if(eMajority != NO_RELIGION)
+		{
+			iConsumptionModifier += GetCityReligions()->GetMajorityReligion()->m_Beliefs.GetTerrainCityFoodConsumption(eTerrain, getOwner(), this);
+		}
+		iTotalConsumption *= iConsumptionModifier;
+		iTotalConsumption /= 100;
+	}
+
+	iTotalConsumption = max(100, iTotalConsumption);
+
 	//cannot starve if at size 1 and nothing stored
 	if (getPopulation() == 1 && getFoodTimes100() == 0)
 	{
@@ -23068,6 +23084,21 @@ void CvCity::UpdateSpecialReligionYields(YieldTypes eYield)
 			}
 
 			iYieldValue += pReligion->m_Beliefs.GetYieldPerActiveTR(eYield, getOwner(), this) * 100;
+
+			int iCityYieldPerOtherReligion = pReligion->m_Beliefs.GetCityYieldPerOtherReligion(eYield, getOwner(), this) * 100;
+			if(iCityYieldPerOtherReligion != 0)
+			{
+				int iOtherReligions = GetCityReligions()->GetNumReligionsWithFollowers() - 1;
+				if(iOtherReligions > 0)
+				{
+					iYieldValue += iCityYieldPerOtherReligion * iOtherReligions;
+				}
+			}
+			TerrainTypes eTerrain = plot()->getTerrainType();
+			if(eTerrain != NO_TERRAIN)
+			{
+				iYieldValue += pReligion->m_Beliefs.GetTerrainCityYieldChanges(eTerrain, eYield, getOwner(), this) * 100;
+			}
 		}
 	}
 	SetSpecialReligionYieldsTimes100(eYield, iYieldValue);
@@ -37158,6 +37189,41 @@ int CvCity::GetCuttingBonusModifier() const
 		}
 	}
 	return iCuttingBonusModifier;
+}
+void CvCity::DoCuttingExtraInstantYield(int iBaseYield) 
+{
+	ReligionTypes eMajority = GetCityReligions()->GetReligiousMajority();
+	if(eMajority == NO_RELIGION) return;
+
+	const CvReligion* pReligion = GC.getGame().GetGameReligions()->GetReligion(eMajority, getOwner());
+	if(!pReligion) return;
+
+	std::ostringstream yieldDetailsTip;
+	bool bShowTip = (getOwner() == GC.getGame().getActivePlayer());
+	for (int iYieldLoop = 0; iYieldLoop < NUM_YIELD_TYPES; iYieldLoop++)
+	{
+		YieldTypes eYieldType = (YieldTypes)iYieldLoop;
+		CvYieldInfo* pYieldInfo = GC.getYieldInfo(eYieldType);
+		int iExtraInstantModifier = pReligion->m_Beliefs.GetCuttingInstantYieldModifier(eYieldType, getOwner(), this);
+		int iExtraInstantYield = pReligion->m_Beliefs.GetCuttingInstantYield(eYieldType, getOwner(), this);
+
+		if (iExtraInstantYield <= 0 && iExtraInstantModifier <= 0) continue;
+
+		iExtraInstantYield += (iExtraInstantModifier * iBaseYield) / 100;
+		GET_PLAYER(getOwner()).doInstantYield(INSTANT_YIELD_TYPE_INSTANT, false, NO_GREATPERSON, NO_BUILDING, iExtraInstantYield, false, NO_PLAYER, NULL, false, this, false, true, true, eYieldType);
+
+		if (!bShowTip) continue;
+		if (!yieldDetailsTip.str().empty()) yieldDetailsTip << ", ";
+		yieldDetailsTip << pYieldInfo->getColorString()
+                        << "+" << iExtraInstantYield
+                        << "[ENDCOLOR]" 
+                        << pYieldInfo->getIconString();
+	}
+	if(!yieldDetailsTip.str().empty())
+	{
+		CvString strBuffer = GetLocalizedText("TXT_KEY_BELIEF_CUTTING_NONUS", getNameKey(), yieldDetailsTip.str().c_str());
+		GC.GetEngineUserInterface()->AddCityMessage(0,GetIDInfo(),getOwner(), false, GC.getEVENT_MESSAGE_TIME(), strBuffer);
+	}
 }
 
 //	--------------------------------------------------------------------------------
