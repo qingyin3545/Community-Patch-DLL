@@ -1962,6 +1962,7 @@ public:
 	void ChangeFoodKeptFromPollution(int iChange);
 
 	int GetCuttingBonusModifier() const;
+	void DoCuttingExtraInstantYield(int iBaseYield);
 
 protected:
 	SYNC_ARCHIVE_MEMBER(CvCity)
