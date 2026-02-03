@@ -134,6 +134,9 @@ struct CvResolutionEffects
 	int iChangeTourism;
 	int iVassalMaintenanceGoldPercent;
 	bool bEndAllCurrentVassals;
+
+	int iGlobalAttackModifier = 0;
+	int iGlobalWarCasualtiesChanges = 0;
 };
 
 FDataStream& operator>>(FDataStream&, CvResolutionEffects&);
@@ -835,6 +838,11 @@ public:
 	bool IsIdeologyEmbargoed(PlayerTypes ePlayer);
 	bool IsIdeologyEmbargoed(PlayerTypes eTrader, PlayerTypes eRecipient);
 
+	int GetGlobalAttackModifier() const;
+	void ChangeGlobalAttackModifier(int iChange);
+	int GetGlobalWarCasualtiesChanges() const;
+	void ChangeGlobalWarCasualtiesChanges(int iChange);
+
 	// General Logging
 	CvString GetLogFileName() const;
 	void LogLeagueMessage(CvString& kMessage);
@@ -844,6 +852,9 @@ public:
 	int m_iNumLeaguesEverFounded;
 	PlayerTypes m_eDiplomaticVictor;
 	EraTypes m_eLastEraTrigger;
+
+	int m_iGlobalAttackModifier = 0;
+	int m_iGlobalWarCasualtiesChanges = 0;
 
 private:
 	// Logging
@@ -1397,6 +1408,9 @@ public:
 	int GetVassalMaintenanceGoldPercent() const;
 	bool IsEndAllCurrentVassals() const;
 
+	int GetGlobalAttackModifier() const;
+	int GetGlobalWarCasualtiesChanges() const;
+
 protected:
 	ResolutionDecisionTypes m_eVoterDecision;
 	ResolutionDecisionTypes m_eProposerDecision;
@@ -1441,6 +1455,9 @@ protected:
 	bool m_bEmbargoIdeology;
 	int m_iVassalMaintenanceGoldPercent;
 	bool m_bEndAllCurrentVassals;
+
+	int m_iGlobalAttackModifier = 0;
+	int m_iGlobalWarCasualtiesChanges = 0;
 
 private:
 	CvResolutionEntry(const CvResolutionEntry&);
