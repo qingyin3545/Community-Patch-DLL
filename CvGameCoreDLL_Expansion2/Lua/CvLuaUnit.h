@@ -716,6 +716,7 @@ protected:
 	LUAAPIEXTN(GetResourceCombatModifier, int);
 	LUAAPIEXTN(GetNearbyUnitPromotionBonus, int);
 	LUAAPIEXTN(GetAwayFromCapitalCombatModifier, pPlot);
+	LUAAPIEXTN(GetAttackModifierFromWorldCongress, int);
 	static int lGetCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lChangeCombatStrengthChangeFromKilledUnits(lua_State* L);
 	static int lSetCombatStrengthChangeFromKilledUnits(lua_State* L);

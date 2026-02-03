@@ -716,6 +716,7 @@ void CvLuaUnit::PushMethods(lua_State* L, int t)
 	Method(GetResourceCombatModifier);
 	Method(GetNearbyUnitPromotionBonus);
 	Method(GetAwayFromCapitalCombatModifier);
+	Method(GetAttackModifierFromWorldCongress);
 	Method(GetCombatStrengthChangeFromKilledUnits);
 	Method(ChangeCombatStrengthChangeFromKilledUnits);
 	Method(SetCombatStrengthChangeFromKilledUnits);
@@ -7067,6 +7068,14 @@ int CvLuaUnit::lGetAwayFromCapitalCombatModifier(lua_State* L)
 	int iResult = 0;
 	if(TargetPlot != nullptr)
 		iResult = GET_PLAYER(pkUnit->getOwner()).GetAwayFromCapitalCombatModifier(TargetPlot);
+	lua_pushinteger(L, iResult);
+	return 1;
+}
+//------------------------------------------------------------------------------
+int CvLuaUnit::lGetAttackModifierFromWorldCongress(lua_State* L)
+{
+	//CvUnit* pkUnit = GetInstance(L);
+	lua_pushinteger(L, GC.getGame().GetGameLeagues()->GetGlobalAttackModifier());
 	return 1;
 }
 //------------------------------------------------------------------------------

@@ -303,6 +303,9 @@ bool CvResolutionEffects::SetType(ResolutionTypes eType)
 		iChangeTourism						= pInfo->GetTourismMod();
 		iVassalMaintenanceGoldPercent		= pInfo->GetVassalMaintenanceGoldPercent();
 		bEndAllCurrentVassals				= pInfo->IsEndAllCurrentVassals();
+		
+		iGlobalAttackModifier 				= pInfo->GetGlobalAttackModifier();
+		iGlobalWarCasualtiesChanges 		= pInfo->GetGlobalWarCasualtiesChanges();
 		return true;
 	}
 	return false;
@@ -395,6 +398,11 @@ bool CvResolutionEffects::HasOngoingEffects() const
 	if(iChangeTourism != 0)
 		return true;
 
+	if (iGlobalAttackModifier != 0)
+		return true;	
+	if (iGlobalWarCasualtiesChanges != 0)
+		return true;
+
 	return false;
 }
 
@@ -433,6 +441,9 @@ void CvResolutionEffects::AddOngoingEffects(const CvResolutionEffects* pOtherEff
 	bSphereOfInfluence						|= pOtherEffects->bSphereOfInfluence;
 	iChangeTourism							+= pOtherEffects->iChangeTourism; //Global
 	iVassalMaintenanceGoldPercent			+= pOtherEffects->iVassalMaintenanceGoldPercent;
+
+	iGlobalAttackModifier					+= pOtherEffects->iGlobalAttackModifier; //Global
+	iGlobalWarCasualtiesChanges				+= pOtherEffects->iGlobalWarCasualtiesChanges; //Global
 }
 
 template<typename ResolutionEffects, typename Visitor>
@@ -473,6 +484,9 @@ void CvResolutionEffects::Serialize(ResolutionEffects& resolutionEffects, Visito
 	visitor(resolutionEffects.iChangeTourism);
 	visitor(resolutionEffects.iVassalMaintenanceGoldPercent);
 	visitor(resolutionEffects.bEndAllCurrentVassals);
+
+	visitor(resolutionEffects.iGlobalAttackModifier);
+	visitor(resolutionEffects.iGlobalWarCasualtiesChanges);
 }
 
 // Serialization Read
@@ -1732,6 +1746,13 @@ void CvActiveResolution::DoEffects(PlayerTypes ePlayer)
 		}
 		GC.getGame().GetGameTrade()->ClearAllCityStateTradeRoutesSpecial();
 	}
+	
+	if (GetEffects()->iGlobalAttackModifier != 0)
+	{
+	}
+	if (GetEffects()->iGlobalWarCasualtiesChanges != 0)
+	{
+	}
 
 	GET_PLAYER(ePlayer).ProcessLeagueResolutions();
 
@@ -1946,6 +1967,13 @@ void CvActiveResolution::RemoveEffects(PlayerTypes ePlayer)
 	{
 	}
 
+	if (GetEffects()->iGlobalAttackModifier != 0)
+	{
+	}
+	if (GetEffects()->iGlobalWarCasualtiesChanges != 0)
+	{
+	}
+	
 	GET_PLAYER(ePlayer).ProcessLeagueResolutions();
 
 	m_iTurnEnacted = -1;
@@ -7011,6 +7039,19 @@ std::vector<CvString> CvLeague::GetCurrentEffectsSummary(PlayerTypes /*eObserver
 		vsEffects.push_back(sTemp.toUTF8());
 	}
 
+	if (effects.iGlobalAttackModifier != 0)
+	{
+		Localization::String sTemp = Localization::Lookup("TXT_KEY_LEAGUE_OVERVIEW_EFFECT_SUMMARY_GLOBAL_ATTACK_MODIFIER");
+		sTemp << effects.iGlobalAttackModifier;
+		vsEffects.push_back(sTemp.toUTF8());
+	}
+	if (effects.iGlobalWarCasualtiesChanges != 0)
+	{
+		Localization::String sTemp = Localization::Lookup("TXT_KEY_LEAGUE_OVERVIEW_EFFECT_SUMMARY_GLOBAL_WAR_CASUTIES_CHANGES");
+		sTemp << effects.iGlobalWarCasualtiesChanges;
+		vsEffects.push_back(sTemp.toUTF8());
+	}
+
 	if (vsEffects.empty())
 	{
 		vsEffects.push_back(Localization::Lookup("TXT_KEY_LEAGUE_OVERVIEW_EFFECT_SUMMARY_NONE").toUTF8());
@@ -8458,6 +8499,17 @@ void CvLeague::DoEnactResolution(CvEnactProposal* pProposal)
 	{
 		resolution.DoEffects(m_vMembers[i].ePlayer);
 	}
+
+	int iGAttackModifier = resolution.GetEffects()->iGlobalAttackModifier;
+	if(iGAttackModifier != 0)
+	{
+		GC.getGame().GetGameLeagues()->ChangeGlobalAttackModifier(iGAttackModifier);
+	}
+	int iGWarCasualtiesChanges = resolution.GetEffects()->iGlobalWarCasualtiesChanges;
+	if(iGWarCasualtiesChanges != 0)
+	{
+		GC.getGame().GetGameLeagues()->ChangeGlobalWarCasualtiesChanges(iGWarCasualtiesChanges);
+	}
 	
 	// Active Resolutions with only one-time effects immediately expire
 	if (resolution.HasOngoingEffects())
@@ -8494,6 +8546,17 @@ void CvLeague::DoRepealResolution(CvRepealProposal* pProposal)
 			for (uint i = 0; i < m_vMembers.size(); i++)
 			{
 				it->RemoveEffects(m_vMembers[i].ePlayer);
+			}
+			
+			int iGAttackModifier = it->GetEffects()->iGlobalAttackModifier;
+			if(iGAttackModifier != 0)
+			{
+				GC.getGame().GetGameLeagues()->ChangeGlobalAttackModifier(-iGAttackModifier);
+			}
+			int iGWarCasualtiesChanges = it->GetEffects()->iGlobalWarCasualtiesChanges;
+			if(iGWarCasualtiesChanges != 0)
+			{
+				GC.getGame().GetGameLeagues()->ChangeGlobalWarCasualtiesChanges(-iGWarCasualtiesChanges);
 			}
 
 			it = m_vActiveResolutions.erase(it);
@@ -10065,6 +10128,24 @@ bool CvGameLeagues::IsIdeologyEmbargoed(PlayerTypes eTrader, PlayerTypes eRecipi
 	return false;
 }
 
+
+int CvGameLeagues::GetGlobalAttackModifier() const
+{
+	return m_iGlobalAttackModifier;
+}
+void CvGameLeagues::ChangeGlobalAttackModifier(int iChange)
+{
+	m_iGlobalAttackModifier += iChange;
+}
+int CvGameLeagues::GetGlobalWarCasualtiesChanges() const
+{
+	return m_iGlobalWarCasualtiesChanges;
+}
+void CvGameLeagues::ChangeGlobalWarCasualtiesChanges(int iChange)
+{
+	m_iGlobalWarCasualtiesChanges += iChange;
+}
+
 CvString CvGameLeagues::GetLogFileName() const
 {
 	CvString strLogName;
@@ -10152,6 +10233,9 @@ void CvGameLeagues::Serialize(GameLeagues& gameLeagues, Visitor& visitor)
 	visitor(gameLeagues.m_iNumLeaguesEverFounded);
 	visitor(gameLeagues.m_eDiplomaticVictor);
 	visitor(gameLeagues.m_eLastEraTrigger);
+
+	visitor(gameLeagues.m_iGlobalAttackModifier);
+	visitor(gameLeagues.m_iGlobalWarCasualtiesChanges);
 }
 
 // Serialization Read
@@ -13718,6 +13802,41 @@ int CvLeagueAI::ScoreVoteChoiceYesNo(CvProposal* pProposal, int iChoice, bool bE
 		}
 	}
 
+	int iAttackModifier = pProposal->GetEffects()->iGlobalAttackModifier;
+	if(iAttackModifier != 0)
+	{
+		int iExtra = 0;
+		int iWarmongerThreat = 0;
+		int iWarStates = 0;
+		for (int iPlayerLoop = 0; iPlayerLoop < MAX_MAJOR_CIVS; iPlayerLoop++)
+		{
+			PlayerTypes eLoopPlayer = (PlayerTypes)iPlayerLoop;
+			CvPlayer& iPlayer = GET_PLAYER(eLoopPlayer);
+			if (iPlayer.isAlive() && iPlayer.isMajorCiv() && iPlayer.getNumCities() > 0 && GET_TEAM(GetPlayer()->getTeam()).isHasMet(iPlayer.getTeam()))
+			{
+				iWarmongerThreat += pDiplo->GetWarmongerThreat(eLoopPlayer);
+				if (GetPlayer()->IsAtWarWith(eLoopPlayer))
+				{
+					WarStateTypes eWarState = pDiplo->GetWarState(eLoopPlayer);
+					if (eWarState != NO_WAR_STATE_TYPE)
+					{
+						iWarStates += 2 * ((int)eWarState - WAR_STATE_STALEMATE) - 1;
+					}
+				}
+			}
+		}
+		iExtra -= iAttackModifier * min(iWarmongerThreat * 7, 35);
+		iExtra += iAttackModifier * min(iWarStates * 5, 25);
+		int iCivWarFlavor = GetPlayer()->getLeaderInfo().GetWarBias(true) - 8;
+		iExtra += iAttackModifier * min(iCivWarFlavor * 5, 25);
+		iScore += iExtra;
+	}
+	int iCasualtiesChanges = pProposal->GetEffects()->iGlobalWarCasualtiesChanges;
+	if(iCasualtiesChanges != 0)
+	{
+		iScore -= iCasualtiesChanges * 15;
+	}
+
 	if (!bEnact)
 	{
 		iScore *= -1; // Flip the score when the proposal is to repeal these effects
@@ -14982,6 +15101,9 @@ bool CvResolutionEntry::CacheResults(Database::Results& kResults, CvDatabaseUtil
 	m_bEndAllCurrentVassals				= kResults.GetInt("EndAllCurrentVassals")>0;
 	m_iTourismMod					= kResults.GetInt("TourismMod");
 
+	m_iGlobalAttackModifier				= kResults.GetInt("GlobalAttackModifier");
+	m_iGlobalWarCasualtiesChanges		= kResults.GetInt("GlobalWarCasualtiesChanges");
+
 	return true;
 }
 
@@ -15191,6 +15313,15 @@ int CvResolutionEntry::GetVassalMaintenanceGoldPercent() const
 bool CvResolutionEntry::IsEndAllCurrentVassals() const
 {
 	return m_bEndAllCurrentVassals;
+}
+
+int CvResolutionEntry::GetGlobalAttackModifier() const
+{
+	return m_iGlobalAttackModifier;
+}
+int CvResolutionEntry::GetGlobalWarCasualtiesChanges() const
+{
+	return m_iGlobalWarCasualtiesChanges;
 }
 
 

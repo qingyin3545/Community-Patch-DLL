@@ -16304,6 +16304,7 @@ int CvUnit::GetGenericMeleeStrengthModifier(const CvUnit* pOtherUnit, const CvPl
 	iModifier += GC.GetIndependentPromotion()->GetResourceCombatModifier(*this);
 
 	iModifier += kPlayer.GetAllyCityStateCombatModifier();
+	iModifier += GC.getGame().GetGameLeagues()->GetGlobalAttackModifier();
 
 	// Our empire fights well in Golden Ages?
 	if(kPlayer.isGoldenAge())
@@ -17240,6 +17241,7 @@ int CvUnit::GetMaxRangedCombatStrength(const CvUnit* pOtherUnit, const CvCity* p
 	iModifier += GC.GetIndependentPromotion()->GetResourceCombatModifier(*this);
 
 	iModifier += kPlayer.GetAllyCityStateCombatModifier();
+	iModifier += GC.getGame().GetGameLeagues()->GetGlobalAttackModifier();
 
 	// Our empire fights well in Golden Ages?
 	if(kPlayer.isGoldenAge())
