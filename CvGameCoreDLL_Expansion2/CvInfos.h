@@ -2419,6 +2419,9 @@ public:
 	int getReformationPercent() const;
 	int GetEstimatedNumCities() const;
 
+	int GetExtraCityDistance() const;
+	int GetHandicapExtraAIStartingUnit(int i) const;
+
 	static CvWorldInfo CreateCustomWorldSize(const CvWorldInfo& kTemplate, int iWidth, int iHeight);
 	static CvWorldInfo CreateCustomWorldSize(const CvWorldInfo& kTemplate, int iWidth, int iHeight, int iPlayers, int iMinorCivs);
 
@@ -2462,6 +2465,9 @@ protected:
 	int m_iMinDistanceCityStates;
 	int m_iReformationPercent;
 	int m_iEstimatedNumCities;
+
+	int m_iExtraCityDistance = 0;
+	std::vector<int> m_viHandicapExtraAIStartingUnit;
 };
 
 FDataStream& operator<<(FDataStream&, const CvWorldInfo&);

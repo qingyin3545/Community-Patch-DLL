@@ -2579,6 +2579,7 @@ void CvPlayer::initFreeUnits()
 			int iUnitCountMultiplier = gameStartEra.getStartingUnitMultiplier();
 			iUnitCountMultiplier += playerHandicap.getStartingUnitMultiplier();
 			iUnitCountMultiplier += isHuman(ISHUMAN_HANDICAP) ? 0 : gameHandicap.getAIStartingUnitMultiplier();
+			iUnitCountMultiplier += isHuman(ISHUMAN_HANDICAP) ? 0 : GC.getMap().getWorldInfo().GetHandicapExtraAIStartingUnit(gameHandicap.GetID());
 			iFreeUnitsOfThisClass *= iUnitCountMultiplier;
 		}
 
@@ -2705,6 +2706,7 @@ void CvPlayer::initFreeUnits()
 			int iUnitCountMultiplier = gameStartEra.getStartingUnitMultiplier();
 			iUnitCountMultiplier += playerHandicap.getStartingUnitMultiplier();
 			iUnitCountMultiplier += isHuman(ISHUMAN_HANDICAP) ? 0 : gameHandicap.getAIStartingUnitMultiplier();
+			iUnitCountMultiplier += isHuman(ISHUMAN_HANDICAP) ? 0 : GC.getMap().getWorldInfo().GetHandicapExtraAIStartingUnit(gameHandicap.GetID());
 			iNumSettlersToSpawn *= iUnitCountMultiplier;
 		}
 		addFreeUnitAI(UNITAI_SETTLE, true, iNumSettlersToSpawn);
@@ -46847,7 +46849,7 @@ CvPlot* CvPlayer::GetBestSettlePlot(CvUnit* pUnit, CvAIOperation* pOpToIgnore, b
 			CvPlot* pPlot = GC.getMap().plotByIndexUnchecked(iI);
 			if (pPlot->isOwned() && pPlot->getOwner() != m_eID)
 				ignorePlots[iI] = 1;
-			else if (pPlot->IsAdjacentOwnedByTeamOtherThan(getTeam()) && GC.getGame().GetClosestCityDistanceInPlots(pPlot) < /*3*/ GD_INT_GET(MIN_CITY_RANGE))
+			else if (pPlot->IsAdjacentOwnedByTeamOtherThan(getTeam()) && GC.getGame().GetClosestCityDistanceInPlots(pPlot) < /*3*/ GD_INT_GET(MIN_CITY_RANGE) + GC.getMap().getWorldInfo().GetExtraCityDistance())
 				ignorePlots[iI] = 1;
 		}
 	}
@@ -50247,7 +50249,7 @@ void CvPlayer::updatePlotFoundValues()
 			if (pPlot->getOwner() != m_eID) //if we own it ourselves it's fine
 				ignoreYieldPlots[iI] = 1;
 		}
-		else if (pPlot->IsAdjacentOwnedByTeamOtherThan(getTeam()) && GC.getGame().GetClosestCityDistanceInPlots(pPlot) < /*3*/ GD_INT_GET(MIN_CITY_RANGE))
+		else if (pPlot->IsAdjacentOwnedByTeamOtherThan(getTeam()) && GC.getGame().GetClosestCityDistanceInPlots(pPlot) < /*3*/ GD_INT_GET(MIN_CITY_RANGE) + GC.getMap().getWorldInfo().GetExtraCityDistance())
 		{
 			ignoreYieldPlots[iI] = 1;
 		}
