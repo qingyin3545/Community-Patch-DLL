@@ -41,6 +41,8 @@ alter table Policies add UpgradeAllTerritory boolean default 0;
 alter table Policies add WLTKDFromGoldenAgeLengthModifier integer default 0;
 -- SP-TODO: Column Name AlwaysWeLoveKindDayInGoldenAge -> AlwaysWLTKDInGoldenAge
 alter table Policies add AlwaysWLTKDInGoldenAge boolean default 0;
+alter table Policies add NoTechForWonder boolean default 0; --TODO
+alter table Policies add NoTechForProject boolean default 0; --TODO
 
 create table Policy_EraSettlerProductionModifier (
     PolicyType text references Policies(Type),

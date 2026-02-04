@@ -167,7 +167,7 @@ bool CvCitySiteEvaluator::CanFoundCity(const CvPlot* pPlot, const CvPlayer* pPla
 
 	if(!bIgnoreDistanceToExistingCities)
 	{
-		int iMinDist = /*3*/ GD_INT_GET(MIN_CITY_RANGE);
+		int iMinDist = /*3*/ GD_INT_GET(MIN_CITY_RANGE) + GC.getMap().getWorldInfo().GetExtraCityDistance();
 
 		if(pPlayer && pPlayer->isMinorCiv())
 		{
@@ -824,7 +824,7 @@ int CvSiteEvaluatorForSettler::PlotFoundValue(CvPlot* pPlot, const CvPlayer* pPl
 
 		// where is our personal sweet spot?
 		// this is handled in plots, not in turns
-		int iMinDistance = /*3*/ GD_INT_GET(MIN_CITY_RANGE);
+		int iMinDistance = /*3*/ GD_INT_GET(MIN_CITY_RANGE) + GC.getMap().getWorldInfo().GetExtraCityDistance();
 		if(pPlayer->isMinorCiv())
 		{
 			if(GC.getMap().getWorldInfo().getMinDistanceCityStates() > 0)

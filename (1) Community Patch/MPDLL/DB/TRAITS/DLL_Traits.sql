@@ -61,6 +61,7 @@ alter table Traits add TrainedAll boolean default 0; --TODO
 alter table Traits add NoDoDeficit boolean default 0;
 alter table Traits add FreeGreatPeoplePerEra integer default 0; --TODO
 alter table Traits add InfluenceFromGreatPeopleBirth integer default 0; --TODO
+alter table Traits add ExtraUnitPlayerInstances integer default 0; --TODO
 alter table Traits add GoodyUnitUpgradeFirst boolean default 0; --TODO
 
 alter table Traits add UnitMaxHitPointChangePerRazedCityPop integer default 0;

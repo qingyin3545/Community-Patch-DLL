@@ -18,5 +18,12 @@ alter table HandicapInfos add AIMinExpansionFlavor integer default 0;
 -- If AIFirstProphetPercent is positive, it overrides AITrainPercent on AI's First Prophet Cost;
 alter table HandicapInfos add AIFirstProphetPercent integer default 0;
 
+alter table Worlds add ExtraCityDistance integer default 0;
+create table World_HandicapExtraAIStartingUnit (
+    WorldType text references Worlds(Type),
+    HandicapType text references HandicapInfos(Type),
+    ExtraAIStartingUnit integer default 0
+);
+
 alter table Civilizations add SpecialGAText text default 'TXT_KEY_GOLDEN_AGE_ANNOUNCE';
 alter table Civilizations add SpecialGAHelpText text default 'TXT_KEY_TP_GOLDEN_AGE_EFFECT';

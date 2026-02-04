@@ -8284,6 +8284,18 @@ int CvWorldInfo::GetEstimatedNumCities() const
 	return m_iEstimatedNumCities;
 }
 //------------------------------------------------------------------------------
+int CvWorldInfo::GetExtraCityDistance() const
+{
+	return m_iExtraCityDistance;
+}
+//------------------------------------------------------------------------------
+int CvWorldInfo::GetHandicapExtraAIStartingUnit(int i) const
+{
+	PRECONDITION(i < GC.getNumHandicapInfos(), "Index out of bounds");
+	PRECONDITION(i > -1, "Index out of bounds");
+	return m_viHandicapExtraAIStartingUnit[i];
+}
+//------------------------------------------------------------------------------
 CvWorldInfo CvWorldInfo::CreateCustomWorldSize(const CvWorldInfo& kTemplate, int iWidth, int iHeight)
 {
 	CvWorldInfo kWorldInfo(kTemplate);
@@ -8334,6 +8346,31 @@ bool CvWorldInfo::CacheResults(Database::Results& kResults, CvDatabaseUtility& k
 	m_iReformationPercent			= kResults.GetInt("ReformationPercentRequired");
 	m_iEstimatedNumCities			= kResults.GetInt("EstimatedNumCities");
 
+	m_iExtraCityDistance			= kResults.GetInt("ExtraCityDistance");
+	//Arrays
+	{
+		m_viHandicapExtraAIStartingUnit.clear();
+		m_viHandicapExtraAIStartingUnit.resize(GC.getNumHandicapInfos(), 0);
+		std::string strKey = "World_HandicapExtraAIStartingUnit";
+		Database::Results* pResults = kUtility.GetResults(strKey);
+		if (pResults == NULL)
+		{
+			pResults = kUtility.PrepareResults(strKey, "select HandicapInfos.ID, World_HandicapExtraAIStartingUnit.ExtraAIStartingUnit from World_HandicapExtraAIStartingUnit \
+			inner join Worlds on World_HandicapExtraAIStartingUnit.WorldType = Worlds.Type \
+			inner join HandicapInfos on World_HandicapExtraAIStartingUnit.HandicapType = HandicapInfos.Type \
+			where World_HandicapExtraAIStartingUnit.WorldType = ?");
+		}
+		pResults->Bind(1, GetType());
+
+		while (pResults->Step())
+		{
+			HandicapTypes eHandicap = static_cast<HandicapTypes>(pResults->GetInt(0));
+			int iExtraAIStartingUnit = pResults->GetInt(1);
+			m_viHandicapExtraAIStartingUnit[eHandicap] += iExtraAIStartingUnit;
+		}
+		pResults->Reset();
+	}
+
 	return true;
 }
 
@@ -8364,6 +8401,8 @@ bool CvWorldInfo::operator==(const CvWorldInfo& rhs) const
 	if(m_iMinDistanceCityStates != rhs.m_iMinDistanceCityStates) return false;
 	if(m_iReformationPercent != rhs.m_iReformationPercent) return false;
 	if(m_iNumCitiesTechCostMod != rhs.m_iNumCitiesTechCostMod) return false;
+	if(m_iExtraCityDistance != rhs.m_iExtraCityDistance) return false;
+	if(m_viHandicapExtraAIStartingUnit != rhs.m_viHandicapExtraAIStartingUnit) return false;
 	return true;
 }
 
@@ -8398,6 +8437,8 @@ void CvWorldInfo::Serialize(WorldInfo& worldInfo, Visitor& visitor)
 	visitor(worldInfo.m_iMinDistanceCities);
 	visitor(worldInfo.m_iMinDistanceCityStates);
 	visitor(worldInfo.m_iReformationPercent);
+	visitor(worldInfo.m_iExtraCityDistance);
+	visitor(worldInfo.m_viHandicapExtraAIStartingUnit);
 }
 
 void CvWorldInfo::readFrom(FDataStream& loadFrom)

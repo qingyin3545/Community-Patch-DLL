@@ -131,6 +131,11 @@ create table UnitPromotions_UnitType (
     PromotionType text references UnitPromotions(Type),
     UnitType text references Units(Type)
 );
+--Have any needed promotions will unlock Promotion
+create table Promotion_PromotionPrereqOrs (
+	PromotionType text references UnitPromotions(Type),
+	PrereqPromotionType text references UnitPromotions(Type)
+);
 --Must have all needed promotions to unlock Promotion
 create table Promotion_PromotionPrereqAnds (
 	PromotionType text references UnitPromotions(Type),
