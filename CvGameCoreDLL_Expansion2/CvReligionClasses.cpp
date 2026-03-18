@@ -8172,6 +8172,8 @@ int CvReligionAI::ScorePantheonBeliefAtCity(CvBeliefEntry* pEntry, CvCity* pCity
 	int jJ = 0;
 
 	CvFlavorManager* pFlavorManager = m_pPlayer->GetFlavorManager();
+	int iFlavorOffense = pFlavorManager->GetPersonalityIndividualFlavor((FlavorTypes)GC.getInfoTypeForString("FLAVOR_OFFENSE"));
+	int iFlavorDefense = pFlavorManager->GetPersonalityIndividualFlavor((FlavorTypes)GC.getInfoTypeForString("FLAVOR_DEFENSE"));
 
 	bool bIsCapital = pCity && pCity->isCapital();
 

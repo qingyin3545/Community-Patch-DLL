@@ -433,16 +433,10 @@ int CvLuaDeal::lGetNumResource(lua_State* L)
 	int iNumInExistingDeal = 0;
 
 	// count any that are in the renew deal
-	std::vector<CvDeal*> pRenewDeals = GET_PLAYER(ePlayer).GetDiplomacyAI()->GetDealsToRenew(eOtherPlayer);
-	if (pRenewDeals.size() > 0)
-	{
-		for (uint i = 0; i < pRenewDeals.size(); i++)
-		{
-			if (pRenewDeals[i]->IsCheckedForRenewal()) continue;
-			iNumInRenewDeal += pRenewDeals[i]->GetNumResourcesInDeal(ePlayer, eResource);
-			iNumInRenewDeal -= pRenewDeals[i]->GetNumResourcesInDeal(eOtherPlayer, eResource);
-		}
-	}
+	CvDeal* pRenewDeal = GC.getGame().GetGameDeals().GetRenewDeal(ePlayer, eOtherPlayer);
+	iNumInRenewDeal += pRenewDeal ? pRenewDeal->GetNumResourcesInDeal(ePlayer, eResource) : 0;
+	iNumInRenewDeal -= pRenewDeal ? pRenewDeal->GetNumResourcesInDeal(eOtherPlayer, eResource) : 0;
+
 	// remove any that are in this deal
 	for (auto it = pkDeal->m_TradedItems.begin(); it != pkDeal->m_TradedItems.end(); ++it)
 	{
